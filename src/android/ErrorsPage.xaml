@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.ErrorsPage">
+
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<Label x:Name="SelectionLabel" />
+				<Button x:Name="KKTButton" />
+
+				<Label x:Name="ErrorCodeLabel" />
+				<Button x:Name="ErrorCodeButton" />
+				
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="ErrorSearchText" VerticalOptions="Center" />
+					<Button x:Name="ErrorSearchButton" VerticalOptions="Center" />
+					<Button x:Name="ErrorClearButton" VerticalOptions="Center" />
+				</StackLayout>
+
+				<Label x:Name="ResultTextLabel" />
+				<Label x:Name="ResultText" />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>

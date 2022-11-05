@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.OFDPage">
+
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+				<Label x:Name="OFDNameLabel" VerticalOptions="Center"/>
+				<Button x:Name="OFDName" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Label x:Name="OFDINNLabel" VerticalOptions="Center" />
+					<Editor x:Name="OFDINN" VerticalOptions="Center" />
+					<Button x:Name="OFDINNCopy" VerticalOptions="Center" />
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="OFDSearchText" VerticalOptions="Center" />
+					<Button x:Name="OFDSearchButton" VerticalOptions="Center" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
+				</StackLayout>
+
+				<Label />
+
+				<Label x:Name="OFDDisabledLabel" HorizontalOptions="Center" />
+
+				<FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center">
+
+					<StackLayout HorizontalOptions="Center">
+						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+							<Label x:Name="OFDDNSNameLabel" VerticalOptions="Center" />
+							<Button x:Name="OFDDNSName" VerticalOptions="Center" />
+						</StackLayout>
+						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+							<Button x:Name="OFDIP" VerticalOptions="Center" />
+							<Button x:Name="OFDPort" VerticalOptions="Center" />
+						</StackLayout>
+
+						<Label />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Center">
+						<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+							<Label x:Name="OFDEmailLabel" VerticalOptions="Center" />
+							<Button x:Name="OFDEmail" />
+						</StackLayout>
+						<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+							<Label x:Name="OFDSiteLabel" VerticalOptions="Center" />
+							<Button x:Name="OFDSite" />
+						</StackLayout>
+
+						<Label />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Center">
+						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+							<Label x:Name="OFDDNSNameMLabel" VerticalOptions="Center" />
+							<Button x:Name="OFDDNSNameM" VerticalOptions="Center" />
+						</StackLayout>
+						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+							<Button x:Name="OFDIPM" VerticalOptions="Center" />
+							<Button x:Name="OFDPortM" VerticalOptions="Center" />
+						</StackLayout>
+
+						<Label />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Center">
+						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+							<Label x:Name="OFDDNSNameKLabel" VerticalOptions="Center" />
+							<Button x:Name="OFDDNSNameK" VerticalOptions="Center" />
+						</StackLayout>
+						<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+							<Button x:Name="OFDIPK" VerticalOptions="Center" />
+							<Button x:Name="OFDPortK" VerticalOptions="Center" />
+						</StackLayout>
+
+						<Label />
+					</StackLayout>
+
+				</FlexLayout>
+
+				<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+					<Label x:Name="OFDNalogSiteLabel" VerticalOptions="Center" />
+					<Button x:Name="OFDNalogSite" />
+				</StackLayout>
+
+				<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+					<Label x:Name="OFDYaDNSLabel" VerticalOptions="Center" />
+					<Button x:Name="OFDYaDNS1" />
+					<Button x:Name="OFDYaDNS2" />
+				</StackLayout>
+
+				<Label x:Name="OFDHelpLabel" />
+
+				<Label />
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.TagsPage">
+
+	<StackLayout>
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<Label x:Name="TLVSearchLabel" VerticalOptions="Center" />
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="TLVSearchText" VerticalOptions="Center" />
+					<Button x:Name="TLVSearchButton" VerticalOptions="Center" />
+					<Label />
+					<Button x:Name="TLVClearButton" VerticalOptions="Center" />
+				</StackLayout>
+
+				<Label x:Name="TLVDescriptionLabel" />
+				<Label x:Name="TLVDescription" />
+
+				<Label x:Name="TLVTypeLabel" />
+				<Label x:Name="TLVType" />
+
+				<Label x:Name="TLVValuesLabel" />
+				<Label x:Name="TLVValues" />
+
+				<Label x:Name="TLVObligationLabel" />
+				<Label x:Name="TLVObligation" />
+
+				<Button x:Name="TLVObligationHelpLabel" />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>

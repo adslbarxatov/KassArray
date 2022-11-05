@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.BarCodesPage">
+
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="BarcodeFieldLabel" VerticalOptions="Center" />
+					<Button x:Name="GetFromClipboard" VerticalOptions="Center" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
+				</StackLayout>
+				<Editor x:Name="BarcodeField" />
+
+				<Label x:Name="BarcodeDescriptionLabel" />
+				<Label x:Name="BarcodeDescription" />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>

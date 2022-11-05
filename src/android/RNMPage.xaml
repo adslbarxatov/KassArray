@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.RNMPage">
+
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Label x:Name="SNLabel" VerticalOptions="Center" />
+					<Editor x:Name="SN" VerticalOptions="Center" />
+					<Button x:Name="Find" VerticalOptions="Center" />
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Label x:Name="TypeLabel" VerticalOptions="Center" />
+
+					<Label x:Name="RNMSupport105" HorizontalTextAlignment="Center" />
+					<Label x:Name="RNMSupport11" HorizontalTextAlignment="Center" />
+					<Label x:Name="RNMSupport12" HorizontalTextAlignment="Center" />
+				</StackLayout>
+
+				<Label x:Name="INNLabel" />
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="INN" />
+					<Label x:Name="INNCheckLabel" VerticalOptions="Center" />
+				</StackLayout>
+
+				<Label x:Name="RNMLabel" />
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="RNM" />
+					<Label x:Name="RNMCheckLabel" VerticalOptions="Center" />
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Button x:Name="RNMGenerate" />
+					<Button x:Name="Clear" />
+				</StackLayout>
+
+				<Label x:Name="RNMAbout" />
+
+				<Label />
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>
+    

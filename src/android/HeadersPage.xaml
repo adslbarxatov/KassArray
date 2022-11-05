@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.HeadersPage">
+
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<Button x:Name="Button01" IsVisible="False" />
+				<Button x:Name="Button02" IsVisible="False" />
+				<Button x:Name="Button03" IsVisible="False" />
+				<Button x:Name="Button04" IsVisible="False" />
+				<Button x:Name="Button05" IsVisible="False" />
+				<Button x:Name="Button06" IsVisible="False" />
+				<Button x:Name="Button07" IsVisible="False" />
+				<Button x:Name="Button08" IsVisible="False" />
+				<Button x:Name="Button09" IsVisible="False" />
+				<Button x:Name="Button10" IsVisible="False" />
+				<Button x:Name="Button11" IsVisible="False" />
+
+				<Label />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Switch x:Name="AllowService" />
+					<Label x:Name="AllowServiceLabel" />
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Switch x:Name="KeepAppState" />
+					<Label x:Name="KeepAppStateLabel" />
+				</StackLayout>
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>
+   

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.ConnectorsPage">
+
+	<StackLayout>
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<Label x:Name="CableLabel" />
+				<Button x:Name="CableTypeButton" />
+
+				<Label />
+
+				<Label x:Name="CableLeftSide" HorizontalOptions="Center" />
+				<Label x:Name="CableLeftPins" HorizontalOptions="Center" />
+				<Label x:Name="CableRightPins" HorizontalOptions="Center" />
+				<Label x:Name="CableRightSide" HorizontalOptions="Center" />
+
+				<Label />
+
+				<Label x:Name="CableDescription" HorizontalOptions="Center" />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>
+    

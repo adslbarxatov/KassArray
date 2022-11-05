@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.AboutPage">
+
+	<StackLayout>
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+				<Label x:Name="AboutLabel" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Button x:Name="AppPage" HorizontalOptions="Center" />
+					<Button x:Name="ADPPage" HorizontalOptions="Center" />
+				</StackLayout>
+
+				<Button x:Name="ManualPage" HorizontalOptions="Center" />
+				<Button x:Name="DevPage" HorizontalOptions="Center" />
+
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#606060" Margin="9" />
+
+				<Label x:Name="Alert" />
+				<Button x:Name="CommunityPage" HorizontalOptions="Center" />
+
+				<Button x:Name="UpdatePage" HorizontalOptions="Center" />
+
+				<Label x:Name="UnlockLabel" IsVisible="false" />
+				<Editor x:Name="UnlockField" IsVisible="false" HorizontalOptions="CenterAndExpand" />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>

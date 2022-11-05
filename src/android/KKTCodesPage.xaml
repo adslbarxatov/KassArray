@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.KKTCodesPage">
+
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<!--<StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+					<Label x:Name="SelectionLabel" />
+					<StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
+						<Switch x:Name="OnlyNewCodes" />
+						<Label x:Name="OnlyNewCodesLabel" />
+					</StackLayout>
+				</StackLayout>-->
+
+				<Label x:Name="SelectionLabel" />
+				<Button x:Name="KKTButton" />
+
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="SourceTextLabel" VerticalOptions="Center" />
+					<Button x:Name="GetFromClipboard" VerticalOptions="Center" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
+				</StackLayout>
+				<Editor x:Name="SourceText" />
+
+				<Label x:Name="ResultTextLabel" />
+				<Label x:Name="ErrorLabel" />
+				<Label x:Name="ResultText" />
+
+				<Label x:Name="HelpLabel" />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>

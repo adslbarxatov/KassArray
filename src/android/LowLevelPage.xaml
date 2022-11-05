@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.LowLevelPage">
+
+	<StackLayout>
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="ProtocolLabel" VerticalOptions="Center" />
+					<Button x:Name="ProtocolButton" VerticalOptions="Center" />
+				</StackLayout>
+
+				<Label x:Name="CommandLabel" />
+				<Button x:Name="CommandButton" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="CommandSearchText" VerticalOptions="Center" />
+					<Button x:Name="CommandSearchButton" VerticalOptions="Center" />
+					<Button x:Name="CommandClearButton" VerticalOptions="Center" />
+				</StackLayout>
+
+				<Label x:Name="CommandCodeLabel" />
+				<Button x:Name="CommandCodeButton" />
+
+				<Label x:Name="LowLevelHelpLabel" />
+
+				<Label x:Name="CommandDescrLabel" />
+				<Label x:Name="CommandDescr" />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>
+    
