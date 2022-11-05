@@ -1,5 +1,5 @@
 # KassArray v 3.0
-> PCC: 0011FC52935FC002
+> PCC: 00122C0647BF674E
 
 
 Инструмент сервис-инженера контрольно-кассовой техники (54-ФЗ)
@@ -46,7 +46,7 @@
 
 Язык интерфейса: ru_ru.
 
-Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/KassArray/blob/master/src/FNReader/FNEnums.h).
+Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/KassArray/blob/master/src/KassArrayFN/FNEnums.h).
 
 #
 

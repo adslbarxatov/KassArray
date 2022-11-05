@@ -4,7 +4,7 @@ name: Release
 # Активация по ручному вызову
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths: .release/Release.md
 
 # Содержит одно задание build с названием Project release с несколькими шагами
@@ -15,8 +15,8 @@ jobs:
     
 # Константы, используемые далее по тексту
     env:
-      PROJ: TextToKKT
-      TAG: 9.7
+      PROJ: KassArray
+      TAG: 3.0
 
     steps:
 # Проверка состава репозитория
