@@ -889,7 +889,8 @@ namespace RD_AAOW
 			if (pageNumber == 1)
 				{
 				line = "• " + ProgramDescription.AssemblyMainName + " • v " + ProgramDescription.AssemblyVersion + " •";
-				line = line.PadLeft ((charactersPerLine - line.Length) / 2 + line.Length) + " ".PadLeft (charactersPerLine / 2);
+				line = line.PadLeft ((charactersPerLine - line.Length) / 2 + line.Length) + 
+					" ".PadLeft (charactersPerLine / 2);
 				}
 
 			int count = 0;
@@ -967,7 +968,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс описывает сборщик задания на печать
 	/// </summary>
-	public class CustomPrintDocumentAdapter:PrintDocumentAdapter
+	public class CustomPrintDocumentAdapter: PrintDocumentAdapter
 		{
 		// Переменные
 		private PrintedPdfDocument document;

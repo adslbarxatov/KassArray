@@ -128,9 +128,6 @@ namespace RD_AAOW
 		/// </summary>
 		public List<string> GetKKTTypeNames ()
 			{
-			//if (NewOnly)
-			//	return names.GetRange (0, newKKTCount);
-
 			return names;
 			}
 		}

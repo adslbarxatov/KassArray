@@ -2,7 +2,7 @@
 <!-- texttokkt.huawei -->
 <!-- texttokkt.xiaomi -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="600915" android:versionName="9.7">
+	android:installLocation="internalOnly" android:versionCode="601302" android:versionName="3.0">
 
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33" />
 
@@ -11,8 +11,8 @@
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
-	<application android:label="Text to KKT" android:icon="@drawable/launcher_foreground">
-		<receiver android:name="com.RD_AAOW.TextToKKTBoot" android:label="TextToKKTBoot" android:exported="true">
+	<application android:label="KassArray" android:icon="@drawable/launcher_foreground">
+		<receiver android:name="com.RD_AAOW.KassArrayBoot" android:label="KassArrayBoot" android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 				<action android:name="android.intent.action.QUICKBOOT_POWERON" />

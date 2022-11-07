@@ -379,7 +379,8 @@ namespace RD_AAOW
 				aboutFieldBackColor, ManualButton_Clicked, false);
 
 			AndroidSupport.ApplyButtonSettings (aboutPage, "UpdatePage",
-				"Инструмент чтения данных ФН FNReader", aboutFieldBackColor, UpdateButton_Clicked, false);
+				"Работа с ФН в " + ProgramDescription.AssemblyMainName, aboutFieldBackColor,
+				UpdateButton_Clicked, false);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				RDGenerics.AssemblyCompany, aboutFieldBackColor, CommunityButton_Clicked, false);
 
@@ -460,8 +461,8 @@ namespace RD_AAOW
 			//
 			AndroidSupport.ApplyLabelSettingsForKKT (fnLifePage, "SetDate", "Дата фискализации:",
 				false, false);
-			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (fnLifePage, "FNLifeStartDate", fnLifeFieldBackColor,
-				FnLifeStartDate_DateSelected);
+			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (fnLifePage, "FNLifeStartDate",
+				fnLifeFieldBackColor, FnLifeStartDate_DateSelected);
 			fnLifeStartDate.FontSize *= fontSizeMultiplier;
 
 			//
@@ -664,7 +665,8 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "ProtocolLabel", "Протокол:",
 				true, false);
 			lowLevelProtocol = AndroidSupport.ApplyButtonSettings (lowLevelPage, "ProtocolButton",
-				ll.GetProtocolsNames ()[(int)ca.LowLevelProtocol], lowLevelFieldBackColor, LowLevelProtocol_Clicked, true);
+				ll.GetProtocolsNames ()[(int)ca.LowLevelProtocol], lowLevelFieldBackColor,
+				LowLevelProtocol_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (lowLevelPage, "CommandLabel", "Команда:",
 				true, false);

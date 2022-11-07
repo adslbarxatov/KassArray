@@ -19,7 +19,7 @@ namespace RD_AAOW.Droid
 	/// <summary>
 	/// Класс описывает загрузчик приложения
 	/// </summary>
-	[Activity (Label = "Text to KKT",
+	[Activity (Label = "KassArray",
 		Icon = "@drawable/launcher_foreground",
 		Theme = "@style/SplashTheme",
 		MainLauncher = true,
@@ -91,7 +91,7 @@ namespace RD_AAOW.Droid
 	/// Класс описывает фоновую службу приложения
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKT",
-		Label = "TextToKKT",
+		Label = "KassArray",
 		Exported = true)]
 	public class MainService:global::Android.App.Service
 		{
@@ -282,8 +282,8 @@ namespace RD_AAOW.Droid
 	/// <summary>
 	/// Класс описывает задание на открытие приложения
 	/// </summary>
-	[Service (Name = "com.RD_AAOW.TextToKKTLink",
-		Label = "TextToKKTLink",
+	[Service (Name = "com.RD_AAOW.KassArrayLink",
+		Label = "KassArrayLink",
 		Exported = true)]
 	public class NotificationLink:JobIntentService
 		{
@@ -331,8 +331,8 @@ namespace RD_AAOW.Droid
 	/// <summary>
 	/// Класс описывает приёмник события окончания загрузки ОС
 	/// </summary>
-	[BroadcastReceiver (Name = "com.RD_AAOW.TextToKKTBoot",
-		Label = "TextToKKTBoot",
+	[BroadcastReceiver (Name = "com.RD_AAOW.KassArrayBoot",
+		Label = "KassArrayBoot",
 		Exported = true)]
 	public class BootReceiver:BroadcastReceiver
 		{
