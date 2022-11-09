@@ -189,7 +189,7 @@ namespace RD_AAOW
 
 			ni.ContextMenu = new ContextMenu ();
 
-			ni.ContextMenu.MenuItems.Add (new MenuItem ("FNReader", FNReader_Click));
+			ni.ContextMenu.MenuItems.Add (new MenuItem ("Работа с &ФН", FNReader_Click));
 			ni.ContextMenu.MenuItems[0].Enabled = FNReader.Enabled;
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("В&ыход", CloseService));
 
@@ -252,8 +252,10 @@ namespace RD_AAOW
 			// Контроль
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
-				MessageBox.Show ("Завершите работу с модулем FNReader, чтобы выйти из приложения",
+				MessageBox.Show ("Завершите работу с ФН, чтобы выйти из приложения",
 					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+				CallFNReader ("");
 				e.Cancel = true;
 				return;
 				}
@@ -398,7 +400,7 @@ namespace RD_AAOW
 
 			if (!result)
 				{
-				MessageBox.Show ("Модуль FNReader для работы с данными фискального накопителя отсутствует.\n\n" +
+				MessageBox.Show ("Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
 					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
 					" (раздел «Прочее», кнопка «О программе»)",
 					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -435,8 +437,9 @@ namespace RD_AAOW
 				if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 					{
 					ConfigAccessor.NextDumpPath = "";
-					MessageBox.Show ("Завершите работу с модулем FNReader, чтобы открыть новый файл",
+					MessageBox.Show ("Завершите работу с ФН, чтобы открыть новый файл",
 						ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					CallFNReader ("");
 					}
 				else
 					{
@@ -460,8 +463,9 @@ namespace RD_AAOW
 			// Контроль
 			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
 				{
-				MessageBox.Show ("Статус ФН в FNReader ещё не запрашивался или содержит не все требуемые поля",
+				MessageBox.Show ("Статус ФН ещё не запрашивался или содержит не все требуемые поля",
 					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				CallFNReader ("");
 				return;
 				}
 
@@ -513,17 +517,20 @@ namespace RD_AAOW
 				}
 
 			// Раздел контроля ЗН ККТ, РНМ и ИНН
-			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) &&
+				((right = status.IndexOf ("(", left)) >= 0))
 				{
 				left += 21;
 				RNMSerial.Text = status.Substring (left, right - left).Trim ();
 				}
-			if (((left = status.LastIndexOf ("Регистрационный номер ККТ: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
+			if (((left = status.LastIndexOf ("Регистрационный номер ККТ: ")) >= 0) &&
+				((right = status.IndexOf ("\n", left)) >= 0))
 				{
 				left += 27;
 				RNMValue.Text = status.Substring (left, right - left).Trim ();
 				}
-			if (((left = status.LastIndexOf ("ИНН пользователя: ")) >= 0) && ((right = status.IndexOf ("\r", left)) >= 0))
+			if (((left = status.LastIndexOf ("ИНН пользователя: ")) >= 0) &&
+				((right = status.IndexOf ("\n", left)) >= 0))
 				{
 				left += 18;
 				RNMUserINN.Text = status.Substring (left, right - left).Trim ();
