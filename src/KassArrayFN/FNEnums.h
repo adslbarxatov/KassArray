@@ -1,4 +1,4 @@
-// Общие перечисления
+﻿// Общие перечисления
 
 // Возможные типы фискальных документов
 enum FNDocumentTypes
@@ -210,6 +210,10 @@ enum TLVTags
 
 	// Сумма наличными (1031)
 	RealCashValue = 0x0407,
+
+#define PROC_CASHVALUE(src,dst,offset,sz,nm)\
+	if ((sz > 0) && ((sz > 1) || src[offset]))\
+		sprintf (dst, "%s  " nm ": %s р.\r\n", dst, BuildNumber (src, offset, sz, 1));
 
 	// Номер автомата (терминала) (1036)
 	TerminalNumber = 0x040C,
@@ -611,7 +615,7 @@ enum TLVTags
 #define PROC_EXTENDEDREGOPT(src,dest,type)\
 		case ExtendedRegOptions:\
 			if (REG_CAUSE (type))\
-				sprintf (dest, "%s  - Признаки регистрации: %s\r\n", dest, GetExtendedRegOptions (src));\
+				sprintf (dest, "%s  Признаки регистрации: %s\r\n", dest, GetExtendedRegOptions (src));\
 			break;
 
 	// Типы кодов маркировки (1300 - 1309, 1320 - 1325)
