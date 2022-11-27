@@ -2,7 +2,7 @@
 <!-- texttokkt.huawei -->
 <!-- texttokkt.xiaomi -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="601302" android:versionName="3.0">
+	android:installLocation="internalOnly" android:versionCode="601303" android:versionName="3.2.2">
 
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33" />
 
