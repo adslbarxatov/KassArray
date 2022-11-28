@@ -772,20 +772,24 @@ namespace RD_AAOW
 			// Контроль
 			if (string.IsNullOrWhiteSpace (TextForPrinting))
 				return "No text specified";
+
 			string txt = TextForPrinting;
 			internalPrinterType = PrinterType;
 			pageNumber = 0;
 
 			// Удаление отступов (только для чековой ленты)
 			int pageLength = 0;
-			if ((internalPrinterType != PrinterTypes.DefaultA4) && (internalPrinterType != PrinterTypes.ManualA4))
+			if (!IsA4)
 				{
 				while (txt.Contains ("\n "))
 					txt = txt.Replace ("\n ", "\n");
+				txt = txt.Replace ("\r", "");
 
 				// Расчёт примерной длины страницы (A4 или менее)
 				string chk = txt.Replace ("\n", "");
-				pageLength = 14 * (txt.Length - chk.Length); // ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
+				pageLength = 14 * (txt.Length - chk.Length + 2);    // +1 - линия отреза
+																	// ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
+
 				if (pageLength > 1170)  // ~300000 / 254, А4
 					pageLength = 1170;
 				}
@@ -838,6 +842,15 @@ namespace RD_AAOW
 			}
 
 		// Обработчик событий принтера
+		private static bool IsA4
+			{
+			get
+				{
+				return ((internalPrinterType == PrinterTypes.DefaultA4) ||
+					(internalPrinterType == PrinterTypes.ManualA4));
+				}
+			}
+
 		private static void PrintPage (object sender, PrintPageEventArgs ev)
 			{
 			// Инициализация
@@ -889,21 +902,33 @@ namespace RD_AAOW
 			if (pageNumber == 1)
 				{
 				line = "• " + ProgramDescription.AssemblyMainName + " • v " + ProgramDescription.AssemblyVersion + " •";
-				line = line.PadLeft ((charactersPerLine - line.Length) / 2 + line.Length) + 
+				line = line.PadLeft ((charactersPerLine - line.Length) / 2 + line.Length) +
 					" ".PadLeft (charactersPerLine / 2);
 				}
 
 			int count = 0;
 			while (count < linesPerPage)
 				{
+				// Запрос следующей строки
 				if (line == "")
 					line = printStream.ReadLine ();
+
+				// Отсечка при завершении печати
 				if (line == null)
+					{
+					if (!IsA4)
+						{
+						yPos = topMargin + (count * printFont.GetHeight (ev.Graphics));
+						ev.Graphics.DrawString ("_".PadLeft (charactersPerLine, '_'),
+							printFont, printBrush, leftMargin, yPos, new StringFormat ());
+						}
+
 					break;
+					}
 
 				yPos = topMargin + (count * printFont.GetHeight (ev.Graphics));
-				ev.Graphics.DrawString ((line.Length > charactersPerLine) ? line.Substring (0, charactersPerLine) : line,
-					printFont, printBrush, leftMargin, yPos, new StringFormat ());
+				ev.Graphics.DrawString ((line.Length > charactersPerLine) ? line.Substring (0, charactersPerLine) :
+					line, printFont, printBrush, leftMargin, yPos, new StringFormat ());
 				count++;
 
 				if (line.Length > charactersPerLine)
@@ -912,7 +937,7 @@ namespace RD_AAOW
 					line = line.Substring (charactersPerLine);
 
 					// Отступ для переносимых строк (вложенность)
-					if ((internalPrinterType != PrinterTypes.DefaultA4) && (internalPrinterType != PrinterTypes.ManualA4))
+					if (!IsA4)
 						line = "  " + line;
 					}
 				else
