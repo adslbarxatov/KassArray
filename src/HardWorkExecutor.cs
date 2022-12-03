@@ -8,7 +8,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Класс предоставляет интерфейс визуализации прогресса установки/удаления программы
 	/// </summary>
-	public partial class HardWorkExecutor:Form
+	public partial class HardWorkExecutor: Form
 		{
 		// Переменные
 		private bool allowClose = false;                        // Запрет выхода из формы до окончания работы
@@ -255,6 +255,7 @@ namespace RD_AAOW
 					StateLabel.TextAlign = ContentAlignment.MiddleCenter;
 
 				// Запуск
+				this.StartPosition = FormStartPosition.CenterParent;
 				this.ShowDialog ();
 				}
 			}
@@ -262,11 +263,16 @@ namespace RD_AAOW
 		// Метод запускает выполнение процесса
 		private void HardWorkExecutor_Shown (object sender, EventArgs e)
 			{
+			// Перекрытие остальных окон
 			if (alwaysOnTop)
 				{
 				this.Activate ();
 				this.TopMost = true;
 				}
+
+			// Отмена центрирования на родительское окно, если это невозможно
+			if (this.Left == 0)
+				this.CenterToScreen ();
 
 			// Запуск отрисовки
 			const int roundingSize = 20;
@@ -277,14 +283,16 @@ namespace RD_AAOW
 			gr.FillRectangle (br, 0, 0, roundingSize / 2, roundingSize / 2);
 			gr.FillRectangle (br, this.Width - roundingSize / 2, 0, roundingSize / 2, roundingSize / 2);
 			gr.FillRectangle (br, 0, this.Height - roundingSize / 2, roundingSize / 2, roundingSize / 2);
-			gr.FillRectangle (br, this.Width - roundingSize / 2, this.Height - roundingSize / 2, roundingSize / 2, roundingSize / 2);
+			gr.FillRectangle (br, this.Width - roundingSize / 2, this.Height - roundingSize / 2,
+				roundingSize / 2, roundingSize / 2);
 			br.Dispose ();
 
 			br = new SolidBrush (this.BackColor);
 			gr.FillEllipse (br, 0, 0, roundingSize, roundingSize);
 			gr.FillEllipse (br, this.Width - roundingSize - 1, 0, roundingSize, roundingSize);
 			gr.FillEllipse (br, 0, this.Height - roundingSize - 1, roundingSize, roundingSize);
-			gr.FillEllipse (br, this.Width - roundingSize - 1, this.Height - roundingSize - 1, roundingSize, roundingSize);
+			gr.FillEllipse (br, this.Width - roundingSize - 1, this.Height - roundingSize - 1,
+				roundingSize, roundingSize);
 			br.Dispose ();
 			gr.Dispose ();
 
