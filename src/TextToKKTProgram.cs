@@ -44,17 +44,22 @@ namespace RD_AAOW
 					}
 				else
 					{
-					MessageBox.Show ("Программа " + ProgramDescription.AssemblyMainName + " уже запущена",
-						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					/*MessageBox.Shw ("Программа " + ProgramDescription.AssemblyMainName + " уже запущена",
+						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
+					RDGenerics.MessageBox (RDMessageTypes.Warning,
+						"Программа " + ProgramDescription.AssemblyMainName + " уже запущена");
 					}
 
 				return;
 				}
 
 			// Отображение справки и запроса на принятие Политики
-			if (!ProgramDescription.AcceptEULA ())
+			/*if (!ProgramDescription.AcceptEULA ())
 				return;
-			ProgramDescription.ShowAbout (true);
+			ProgramDescription.ShowAbout (true);*/
+			if (!RDGenerics.AcceptEULA ())
+				return;
+			RDGenerics.ShowAbout (true);
 
 			// Запуск
 			if (args.Length > 0)

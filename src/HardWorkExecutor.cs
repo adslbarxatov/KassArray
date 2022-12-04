@@ -248,7 +248,10 @@ namespace RD_AAOW
 
 				AbortButton.Visible = AbortButton.Enabled = AllowAbort;
 				if (AbortButton.Enabled)
+					{
+					AbortButton.Text = Localization.GetDefaultButtonName (Localization.DefaultButtons.Cancel);
 					AbortButton.FlatAppearance.MouseDownBackColor = greenColor;
+					}
 
 				StateLabel.Text = Caption;
 				if (CaptionInTheCenter)

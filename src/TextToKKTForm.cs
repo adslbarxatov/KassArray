@@ -252,8 +252,9 @@ namespace RD_AAOW
 			// Контроль
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
-				MessageBox.Show ("Завершите работу с ФН, чтобы выйти из приложения",
-					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				/*MessageBox.Shw ("Завершите работу с ФН, чтобы выйти из приложения",
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
+				RDGenerics.MessageBox (RDMessageTypes.Warning, "Завершите работу с ФН, чтобы выйти из приложения");
 
 				CallFNReader ("");
 				e.Cancel = true;
@@ -317,7 +318,8 @@ namespace RD_AAOW
 		private void BHelp_Clicked (object sender, EventArgs e)
 			{
 			this.TopMost = false;
-			ProgramDescription.ShowAbout (false);
+			/*ProgramDescription.ShowAbout (false);*/
+			RDGenerics.ShowAbout (false);
 			this.TopMost = TopFlag.Checked;
 			}
 
@@ -400,10 +402,15 @@ namespace RD_AAOW
 
 			if (!result)
 				{
-				MessageBox.Show ("Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
+				/*MessageBox.Shw ("Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
 					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
 					" (раздел «Прочее», кнопка «О программе»)",
-					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);*/
+
+				RDGenerics.MessageBox (RDMessageTypes.Warning,
+					"Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
+					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
+					" (раздел «Прочее», кнопка «О программе»)");
 
 				return;
 				}
@@ -411,11 +418,16 @@ namespace RD_AAOW
 			// Контроль версии
 			if (FNReaderInstance.LibVersion != ProgramDescription.AssemblyVersion)
 				{
-				MessageBox.Show ("Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
+				/*MessageBox.Shw ("Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
 					"текущей версии программы.\n\n" +
 					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
 					" (раздел «Прочее», кнопка «О программе»)",
-					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
+				RDGenerics.MessageBox (RDMessageTypes.Warning,
+					"Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
+					"текущей версии программы.\n\n" +
+					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
+					" (раздел «Прочее», кнопка «О программе»)");
 
 				return;
 				}
@@ -437,8 +449,11 @@ namespace RD_AAOW
 				if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 					{
 					ConfigAccessor.NextDumpPath = "";
-					MessageBox.Show ("Завершите работу с ФН, чтобы открыть новый файл",
-						ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					/*MessageBox.Shw ("Завершите работу с ФН, чтобы открыть новый файл",
+						ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
+
+					RDGenerics.MessageBox (RDMessageTypes.Information,
+						"Завершите работу с ФН, чтобы открыть новый файл");
 					CallFNReader ("");
 					}
 				else
@@ -463,8 +478,11 @@ namespace RD_AAOW
 			// Контроль
 			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
 				{
-				MessageBox.Show ("Статус ФН ещё не запрашивался или содержит не все требуемые поля",
-					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				/*MessageBox.Shw ("Статус ФН ещё не запрашивался или содержит не все требуемые поля",
+					ProgramDescription.AssemblyVisibleName, MessageBoxButtons.OK, MessageBoxIcon.Information);*/
+				RDGenerics.MessageBox (RDMessageTypes.Information,
+					"Статус ФН ещё не запрашивался или содержит не все требуемые поля");
+
 				CallFNReader ("");
 				return;
 				}
