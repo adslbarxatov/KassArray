@@ -278,7 +278,8 @@ namespace RD_AAOW
 				this.CenterToScreen ();
 
 			// Запуск отрисовки
-			const int roundingSize = 20;
+			RDMessageForm.CreateBackground (this);
+			/*const int roundingSize = 20;
 			Bitmap bm = new Bitmap (this.Width, this.Height);
 			Graphics gr = Graphics.FromImage (bm);
 
@@ -299,7 +300,7 @@ namespace RD_AAOW
 			br.Dispose ();
 			gr.Dispose ();
 
-			this.BackgroundImage = bm;
+			this.BackgroundImage = bm;*/
 
 			// Запуск
 			bw.RunWorkerAsync (parameters);
