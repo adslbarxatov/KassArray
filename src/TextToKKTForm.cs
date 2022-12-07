@@ -520,7 +520,7 @@ namespace RD_AAOW
 				else
 					OtherTaxFlag.Checked = true;
 
-				if (status.IndexOf ("Режим товаров", left) >= 0)
+				if ((status.IndexOf ("Режим товаров", left) >= 0) || (status.IndexOf ("товары, ", left) >= 0))
 					GoodsFlag.Checked = true;
 				else
 					ServicesFlag.Checked = true;

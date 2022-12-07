@@ -19,12 +19,12 @@ namespace RD_AAOW
 		private object parameters;                              // Параметры инициализации потока
 		private bool alwaysOnTop = false;                       // Флаг принудительного размещения поверх всех окон
 
-		// Цветовая схема
+		/*// Цветовая схема
 		private Color backColor = Color.FromArgb (224, 224, 224);
 		private Color foreColor = Color.FromArgb (32, 32, 32);
 		private Color greenColor = Color.FromArgb (0, 160, 80);
 		private Color greyColor = Color.FromArgb (160, 160, 160);
-		private Color darkColor = Color.FromArgb (80, 80, 80);
+		private Color darkColor = Color.FromArgb (80, 80, 80);*/
 
 		/// <summary>
 		/// Длина шкалы прогресса
@@ -72,9 +72,9 @@ namespace RD_AAOW
 			{
 			// Настройка контролов
 			InitializeComponent ();
-			this.BackColor = backColor;
-			StateLabel.ForeColor = AbortButton.ForeColor = foreColor;
-			AbortButton.BackColor = backColor;
+			this.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultBackground);
+			StateLabel.ForeColor = AbortButton.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultText);
+			AbortButton.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultBackground);
 
 			// Инициализация
 			progress = new Bitmap (this.Width - 20, 30);
@@ -92,10 +92,10 @@ namespace RD_AAOW
 					};
 
 			// Подготовка дескрипторов
-			SolidBrush green = new SolidBrush (greenColor),
-				grey = new SolidBrush (greyColor),
-				back = new SolidBrush (backColor),
-				dark = new SolidBrush (darkColor);
+			SolidBrush green = new SolidBrush (RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultEmerald)),
+				grey = new SolidBrush (RDGenerics.GetInterfaceColor (RDInterfaceColors.MediumGrey)),
+				back = new SolidBrush (RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultBackground)),
+				dark = new SolidBrush (RDGenerics.GetInterfaceColor (RDInterfaceColors.DarkGrey));
 
 			frameGreenGrey = new Bitmap (10 * this.Width / 4, progress.Height);
 			frameBack = new Bitmap (10 * this.Width / 4, progress.Height);
@@ -250,7 +250,8 @@ namespace RD_AAOW
 				if (AbortButton.Enabled)
 					{
 					AbortButton.Text = Localization.GetDefaultButtonName (Localization.DefaultButtons.Cancel);
-					AbortButton.FlatAppearance.MouseDownBackColor = greenColor;
+					AbortButton.FlatAppearance.MouseDownBackColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultEmerald);
 					}
 
 				StateLabel.Text = Caption;
@@ -279,28 +280,6 @@ namespace RD_AAOW
 
 			// Запуск отрисовки
 			RDMessageForm.CreateBackground (this);
-			/*const int roundingSize = 20;
-			Bitmap bm = new Bitmap (this.Width, this.Height);
-			Graphics gr = Graphics.FromImage (bm);
-
-			SolidBrush br = new SolidBrush (this.TransparencyKey);
-			gr.FillRectangle (br, 0, 0, roundingSize / 2, roundingSize / 2);
-			gr.FillRectangle (br, this.Width - roundingSize / 2, 0, roundingSize / 2, roundingSize / 2);
-			gr.FillRectangle (br, 0, this.Height - roundingSize / 2, roundingSize / 2, roundingSize / 2);
-			gr.FillRectangle (br, this.Width - roundingSize / 2, this.Height - roundingSize / 2,
-				roundingSize / 2, roundingSize / 2);
-			br.Dispose ();
-
-			br = new SolidBrush (this.BackColor);
-			gr.FillEllipse (br, 0, 0, roundingSize, roundingSize);
-			gr.FillEllipse (br, this.Width - roundingSize - 1, 0, roundingSize, roundingSize);
-			gr.FillEllipse (br, 0, this.Height - roundingSize - 1, roundingSize, roundingSize);
-			gr.FillEllipse (br, this.Width - roundingSize - 1, this.Height - roundingSize - 1,
-				roundingSize, roundingSize);
-			br.Dispose ();
-			gr.Dispose ();
-
-			this.BackgroundImage = bm;*/
 
 			// Запуск
 			bw.RunWorkerAsync (parameters);

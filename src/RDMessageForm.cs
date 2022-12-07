@@ -72,7 +72,7 @@ namespace RD_AAOW
 	/// </summary>
 	public partial class RDMessageForm: Form
 		{
-		// Цветовая схема
+		/*// Цветовая схема
 		private Color[] colorScheme = new Color[] {
 			Color.FromArgb (224, 224, 224),		// Стандартный фон
 			Color.FromArgb (32, 32, 32),		// Стандартный текст
@@ -81,7 +81,7 @@ namespace RD_AAOW
 			Color.FromArgb (255, 255, 224),		// Предупреждение
 			Color.FromArgb (255, 224, 224),		// Ошибка
 			Color.FromArgb (224, 255, 224),		// Успех
-			};
+			};*/
 
 		// Прочее
 		private bool exitAllowed = false;
@@ -205,31 +205,58 @@ namespace RD_AAOW
 
 				if (windowType != RDMessageTypes.LanguageSelector)
 					{
-					string check = Message.Replace ("\n", "");
+					/*string check = Message.Replace ("\n", "");
 					if ((check.Length > 150) || (Message.Length - check.Length > 5))
 						{
 						Label01.Width += this.Width;
 						this.Width *= 2;
-						}
+						}*/
 
 					Label01.Height = (Label01.GetLineFromCharIndex (int.MaxValue) + 2) *
 						TextRenderer.MeasureText ("X", Label01.Font).Height;
+					if ((Message.Replace ("\n", "").Replace ("\r", "").Length > 150) &&
+						(TextRenderer.MeasureText (Message, Label01.Font).Width > Label01.Width))
+						{
+						Label01.Width += this.Width;
+						this.Width *= 2;
+						}
 					this.Height = Label01.Height + 57;
 					Button01.Top = Button02.Top = Button03.Top = this.Height - 48;
 					}
 				}
 
 			if (!string.IsNullOrWhiteSpace (ButtonOneName))
+				{
 				Button01.Text = ButtonOneName;
+				if (Button01.Text.EndsWith ("\t"))
+					{
+					Button01.TabStop = false;
+					Button01.Text = Button01.Text.Trim ();
+					}
+				}
 			else
+				{
 				Button01.Text = Localization.GetDefaultButtonName (Localization.DefaultButtons.OK);
+				}
 
 			if (!string.IsNullOrWhiteSpace (ButtonTwoName))
 				{
 				Button02.Text = ButtonTwoName;
+				if (Button02.Text.EndsWith ("\t"))
+					{
+					Button02.TabStop = false;
+					Button02.Text = Button02.Text.Trim ();
+					}
 
 				if (!string.IsNullOrWhiteSpace (ButtonThreeName))
+					{
 					Button03.Text = ButtonThreeName;
+					if (Button03.Text.EndsWith ("\t"))
+						{
+						Button03.TabStop = false;
+						Button03.Text = Button03.Text.Trim ();
+						}
+					}
 				}
 
 			switch (windowType)
@@ -237,41 +264,41 @@ namespace RD_AAOW
 				case RDMessageTypes.Information:
 				default:
 					SystemSounds.Asterisk.Play ();
-					this.BackColor = colorScheme[0];
+					this.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultBackground);
 					break;
 
 				case RDMessageTypes.LanguageSelector:
-					this.BackColor = colorScheme[0];
+					this.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultBackground);
 					break;
 
 				case RDMessageTypes.Question:
 					SystemSounds.Question.Play ();
-					this.BackColor = colorScheme[2];
+					this.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 					break;
 
 				case RDMessageTypes.Warning:
 					SystemSounds.Exclamation.Play ();
-					this.BackColor = colorScheme[3];
+					this.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
 					break;
 
 				case RDMessageTypes.Error:
 					SystemSounds.Hand.Play ();
-					this.BackColor = colorScheme[4];
+					this.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					break;
 
 				case RDMessageTypes.Success:
 					SystemSounds.Asterisk.Play ();
-					this.BackColor = colorScheme[5];
+					this.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 					break;
 				}
 
 			AlignButtons ();
-			Label01.ForeColor = colorScheme[1];
+			Label01.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultText);
 			Label01.BackColor = this.BackColor;
 
 			if (windowType == RDMessageTypes.LanguageSelector)
 				{
-				LanguagesCombo.ForeColor = colorScheme[1];
+				LanguagesCombo.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultText);
 				LanguagesCombo.BackColor = this.BackColor;
 				}
 
@@ -305,19 +332,19 @@ namespace RD_AAOW
 			// Настройка
 			//Button01.Enabled = Button01.Visible = true;
 			Button01.BackColor = this.BackColor;
-			Button01.ForeColor = colorScheme[1];
+			Button01.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultText);
 
 			if (Button01.Enabled && (Button02.Text != "-"))
 				{
 				Button02.Enabled = Button02.Visible = true;
 				Button02.BackColor = this.BackColor;
-				Button02.ForeColor = colorScheme[1];
+				Button02.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultText);
 				}
 			if (Button02.Enabled && (Button03.Text != "-"))
 				{
 				Button03.Enabled = Button03.Visible = true;
 				Button03.BackColor = this.BackColor;
-				Button03.ForeColor = colorScheme[1];
+				Button03.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.DefaultText);
 				}
 
 			// Выравнивание
