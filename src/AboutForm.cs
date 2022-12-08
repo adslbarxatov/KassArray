@@ -328,12 +328,9 @@ namespace RD_AAOW
 					// Контроль доступа к реестру
 					WindowsIdentity identity = WindowsIdentity.GetCurrent ();
 					WindowsPrincipal principal = new WindowsPrincipal (identity);
+
 					if (!principal.IsInRole (WindowsBuiltInRole.Administrator))
-						{
-						/*MessageBox.Shw (registryFail, ProgramDescription.AssemblyTitle, MessageBoxButtons.OK,
-							MessageBoxIcon.Exclamation);*/
 						RDGenerics.MessageBox (RDMessageTypes.Warning, registryFail);
-						}
 					}
 
 				// В случае невозможности загрузки Политики признак необходимости принятия до этого момента
@@ -343,8 +340,6 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				/*MessageBox.Shw (registryFail, ProgramDescription.AssemblyTitle, MessageBoxButtons.OK,
-					MessageBoxIcon.Exclamation);*/
 				RDGenerics.MessageBox (RDMessageTypes.Warning, registryFail);
 				}
 
@@ -492,19 +487,15 @@ namespace RD_AAOW
 			if (string.IsNullOrWhiteSpace (dpmv))
 				{
 				// Выбор варианта обработки
-				switch (/*MessageBox.Shw (dpModuleAbsence, ProgramDescription.AssemblyTitle,
-					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)*/
-
-					RDGenerics.MessageBox (RDMessageTypes.Question, dpModuleAbsence,
+				switch (RDGenerics.MessageBox (RDMessageTypes.Question, dpModuleAbsence,
 						Localization.GetDefaultButtonName (Localization.DefaultButtons.Yes),
-						locale[(int)al][29], Localization.GetDefaultButtonName (Localization.DefaultButtons.Cancel))
-
-					)
+						locale[(int)al][29],
+						Localization.GetDefaultButtonName (Localization.DefaultButtons.Cancel)))
 					{
-					case RDMessageButtons.ButtonThree:   //DialogResult.Cancel:
+					case RDMessageButtons.ButtonThree:
 						return;
 
-					case RDMessageButtons.ButtonTwo:  //DialogResult.No:
+					case RDMessageButtons.ButtonTwo:
 						try
 							{
 							Process.Start (RDGenerics.DPArrayUserManualLink);
@@ -517,9 +508,6 @@ namespace RD_AAOW
 				}
 			else
 				{
-				/*if (MessageBox.Shw (startDownload, ProgramDescription.AssemblyTitle,
-					MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-					return;*/
 				if (RDGenerics.MessageBox (RDMessageTypes.Question, startDownload,
 					Localization.GetDefaultButtonName (Localization.DefaultButtons.Yes),
 					Localization.GetDefaultButtonName (Localization.DefaultButtons.No)) !=
@@ -562,8 +550,6 @@ namespace RD_AAOW
 
 			if (!string.IsNullOrWhiteSpace (msg))
 				{
-				/*MessageBox.Shw (msg, ProgramDescription.AssemblyTitle, MessageBoxButtons.OK,
-					MessageBoxIcon.Exclamation);*/
 				RDGenerics.MessageBox (RDMessageTypes.Warning, msg);
 				return;
 				}
@@ -973,14 +959,11 @@ policy:
 			string fileExt = FileExtension.ToLower ().Replace (".", "");
 
 			// Контроль
-			/*if (ShowWarning && (MessageBox.Shw (locale[(int)Localization.CurrentLanguage][27],
-				ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) ==
-				DialogResult.No))
-				return false;*/
 			if (ShowWarning && (RDGenerics.MessageBox (RDMessageTypes.Warning,
 				locale[(int)Localization.CurrentLanguage][27],
 				Localization.GetDefaultButtonName (Localization.DefaultButtons.Yes),
-				Localization.GetDefaultButtonName (Localization.DefaultButtons.No)) == RDMessageButtons.ButtonTwo))
+				Localization.GetDefaultButtonName (Localization.DefaultButtons.No)) ==
+				RDMessageButtons.ButtonTwo))
 				return false;
 
 			// Выполнение
@@ -1035,14 +1018,11 @@ policy:
 			string protocol = ProtocolCode.ToLower ().Replace (".", "");
 
 			// Контроль
-			/*if (ShowWarning && (MessageBox.Shw (locale[(int)Localization.CurrentLanguage][28],
-				ProgramDescription.AssemblyTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) ==
-				DialogResult.No))
-				return false;*/
 			if (ShowWarning && (RDGenerics.MessageBox (RDMessageTypes.Warning,
 				locale[(int)Localization.CurrentLanguage][28],
 				Localization.GetDefaultButtonName (Localization.DefaultButtons.Yes),
-				Localization.GetDefaultButtonName (Localization.DefaultButtons.No)) == RDMessageButtons.ButtonTwo))
+				Localization.GetDefaultButtonName (Localization.DefaultButtons.No)) ==
+				RDMessageButtons.ButtonTwo))
 				return false;
 
 			// Выполнение
