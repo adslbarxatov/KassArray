@@ -82,8 +82,9 @@ namespace RD_AAOW
 			this.Text = ProgramDescription.AssemblyVisibleName;
 
 			// Получение настроек
-			this.Left = ca.WindowLeft;
-			this.Top = ca.WindowTop;
+			/*this.Left = ca.WindowLeft;
+			this.Top = ca.WindowTop;*/
+			RDGenerics.LoadWindowDimensions (this);
 
 			KeepAppState.Checked = ca.KeepApplicationState;
 			TopFlag.Checked = ca.TopMost;
@@ -271,8 +272,9 @@ namespace RD_AAOW
 		// Сохранение настроек приложения
 		private void SaveAppSettings ()
 			{
-			ca.WindowLeft = this.Left;
-			ca.WindowTop = this.Top;
+			/*ca.WindowLeft = this.Left;
+			ca.WindowTop = this.Top;*/
+			RDGenerics.SaveWindowDimensions (this);
 
 			ca.KeepApplicationState = KeepAppState.Checked;
 			ca.TopMost = TopFlag.Checked;
