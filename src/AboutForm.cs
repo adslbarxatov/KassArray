@@ -88,8 +88,8 @@ namespace RD_AAOW
 			"1. Эта опция НИКОГДА НЕ БУДЕТ активирована без Вашего согласия.\n" +
 			"2. Эта опция делает В ТОЧНОСТИ то, что описано здесь. Никакого сбора данных, никаких опасных " +
 			"веб-ресурсов.\n" +
-			"3. Если у Вас дорогой интернет, НЕ АКТИВИРУЙТЕ ЭТУ ОПЦИЮ. Она может занять немного трафика.\n" +
-			"4. Вы можете отключить её здесь в любое время.\n\n" +
+			"3. Вы можете отключить её здесь в любое время.\n\n" +
+			"И да: если у Вас дорогой интернет, НЕ АКТИВИРУЙТЕ ЭТУ ОПЦИЮ. Она может занять немного трафика.\n\n" +
 			"Заранее благодарим Вас за участие!"
 
 			}, new string [] {
@@ -148,14 +148,15 @@ namespace RD_AAOW
 
 			"Warning! Read this first before using this option!\n\n" +
 			"You can help us to make our community more popular. When enabled, this function will call " +
-			"random Lab’s page at the app start. It will use hidden mode, so, you shouldn’t watch any " +
+			"random Lab’s page at the app start. It will use hidden mode, so, you don’t have to look at any " +
 			"page or window. This algorithm just downloads called page and removes it to imitate the activity. " +
 			"A little cheat to help our development.\n\n" +
 			"According to ADP:\n" +
 			"1. This option WILL NEVER be activated without your agreement.\n" +
 			"2. This option do EXACTLY what described here. No data collection, no dangerous web resources.\n" +
-			"3. If your internet is expensive, DO NOT ACTIVATE THIS OPTION. It can take some traffic.\n" +
-			"4. You can disable it here anytime.\n" +
+			"3. You can disable it here anytime.\n\n" +
+			"And yes: if you have expensive internet, DO NOT ACTIVATE THIS OPTION. " +
+			"It can take away some amount of traffic.\n" +
 			"Thank you in advance for your participation!"
 			} };
 
