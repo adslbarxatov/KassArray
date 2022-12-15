@@ -44,8 +44,6 @@ namespace RD_AAOW
 					}
 				else
 					{
-					/*MessageBox.Shw ("Программа " + ProgramDescription.AssemblyMainName + " уже запущена",
-						ProgramDescription.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
 					RDGenerics.MessageBox (RDMessageTypes.Warning,
 						"Программа " + ProgramDescription.AssemblyMainName + " уже запущена");
 					}
@@ -54,9 +52,6 @@ namespace RD_AAOW
 				}
 
 			// Отображение справки и запроса на принятие Политики
-			/*if (!ProgramDescription.AcceptEULA ())
-				return;
-			ProgramDescription.ShowAbout (true);*/
 			if (!RDGenerics.AcceptEULA ())
 				return;
 			RDGenerics.ShowAbout (true);
