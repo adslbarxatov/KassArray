@@ -14,7 +14,6 @@ namespace RD_AAOW
 		private List<List<KKTError>> errors = new List<List<KKTError>> ();
 		private List<string> names = new List<string> ();
 		private char[] splitters = new char[] { ';' };
-		private int newKKTCount;
 
 		// Константы
 		/// <summary>
@@ -42,18 +41,12 @@ namespace RD_AAOW
 
 			try
 				{
-				// Чтение количества новых ККТ
-				newKKTCount = int.Parse (SR.ReadLine ());
-
 				// Чтение кодов
 				while ((str = SR.ReadLine ()) != null)
 					{
 					// Обработка строки
 					line++;
-					string[] values = str.Split (splitters);
-
-					if ((values.Length != 1) && (values.Length != 2) && (names.Count >= newKKTCount))
-						break;
+					string[] values = str.Split (splitters, StringSplitOptions.None);
 
 					switch (values.Length)
 						{
@@ -66,16 +59,13 @@ namespace RD_AAOW
 							errors[errors.Count - 1].Add (new KKTError (values[0], values[1]));
 							break;
 
-						default:
+						case 3:
 							continue;
+
+						default:
+							break;
 						}
 					}
-
-				// Верификация количества
-				if (newKKTCount < 1)
-					newKKTCount = 1;
-				if (newKKTCount > names.Count)
-					newKKTCount = names.Count;
 				}
 			catch
 				{

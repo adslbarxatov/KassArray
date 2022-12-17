@@ -92,9 +92,13 @@ namespace RD_AAOW
 			try
 				{
 				KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
-				ErrorCodesList.SelectedIndex = (int)ca.ErrorCode;
 				}
-			catch { }
+			catch
+				{
+				KKTListForErrors.SelectedIndex = 0;
+				}
+			ErrorSearchText.Text = ca.ErrorCode;
+			ErrorFindButton_Click (null, null);
 
 			FNLifeSN.Text = ca.FNSerial;
 			if (ca.GenericTaxFlag)
@@ -278,7 +282,7 @@ namespace RD_AAOW
 			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
 
 			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
-			ca.ErrorCode = (uint)ErrorCodesList.SelectedIndex;
+			ca.ErrorCode = ErrorSearchText.Text;
 
 			ca.FNSerial = FNLifeSN.Text;
 			ca.GenericTaxFlag = GenericTaxFlag.Checked;
@@ -543,20 +547,18 @@ namespace RD_AAOW
 		// Изменение текста и его кодировка
 		private void TextToConvert_TextChanged (object sender, EventArgs e)
 			{
-			ResultText.Text = "";
-
-			ErrorLabel.Visible = !Decode ();
+			ResultText.Text = kkmc.DecodeText ((uint)KKTListForCodes.SelectedIndex, TextToConvert.Text);
+			ErrorLabel.Visible = ResultText.Text.Contains (KKTCodes.EmptyCode);
 
 			TextLabel.Text = "Текст (" + TextToConvert.Text.Length + "):";
-
 			DescriptionLabel.Text = kkmc.GetKKTTypeDescription ((uint)KKTListForCodes.SelectedIndex);
 			}
 
-		// Функция трансляции строки в набор кодов
+		/*// Функция трансляции строки в набор кодов
 		private bool Decode ()
 			{
-			bool res = true;
-			char[] text = TextToConvert.Text.ToCharArray ();
+			/*bool res = true;
+			/*char[] text = TextToConvert.Text.ToCharArray ();
 
 			for (int i = 0; i < TextToConvert.Text.Length; i++)
 				{
@@ -575,10 +577,7 @@ namespace RD_AAOW
 
 				ResultText.Text += (((i + 1) % 5 != 0) ? "\t" : "\r\n");
 				}
-
-			// Означает успех/ошибку преобразования
-			return res;
-			}
+			}*/
 
 		// Выбор ККТ
 		private void KKTListForCodes_SelectedIndexChanged (object sender, EventArgs e)
@@ -599,17 +598,17 @@ namespace RD_AAOW
 		// Выбор ошибки
 		private void ErrorCodesList_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			ErrorText.Text = kkme.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)ErrorCodesList.SelectedIndex);
+			ErrorFindButton_Click (null, null);
 			}
 
-		// Выбор модели аппарата
+		/*// Выбор модели аппарата
 		private void KKTListForErrors_SelectedIndexChanged (object sender, EventArgs e)
 			{
 			// Перезаполнение списка
 			ErrorCodesList.DataSource = kkme.GetErrors ((uint)KKTListForErrors.SelectedIndex);
 			ErrorCodesList.DisplayMember = ErrorCodesList.ValueMember = "ErrorCode";
 			ErrorCodesList.SelectedIndex = 0;
-			}
+			}*/
 
 		// Поиск по тексту ошибки
 		private void ErrorFindButton_Click (object sender, EventArgs e)
@@ -621,13 +620,20 @@ namespace RD_AAOW
 			for (int i = 0; i < codes.Count; i++)
 				{
 				int j = (i + lastErrorSearchOffset) % codes.Count;
-				if (codes[j].ToLower ().Contains (text) ||
-					kkme.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)j).ToLower ().Contains (text))
+				string code = codes[j].ToLower ();
+				string res = kkme.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)j);
+
+				if (code.Contains (text) || res.ToLower ().Contains (text) ||
+					code.Contains ("?") && text.Contains (code.Replace ("?", "")))
 					{
-					lastErrorSearchOffset = ErrorCodesList.SelectedIndex = j;
+					lastErrorSearchOffset = j;
+					ErrorText.Text = codes[j] + ": " + res;
 					return;
 					}
 				}
+
+			// Код не найден
+			ErrorText.Text = "(описание ошибки не найдено)";
 			}
 
 		private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)

@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- texttokkt.huawei -->
 <!-- texttokkt.xiaomi -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="601305" android:versionName="3.4">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="texttokkt.xiaomi"
+	android:installLocation="internalOnly" android:versionCode="601306" android:versionName="3.5">
 
-	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33" />
+	<uses-sdk android:minSdkVersion="19" android:targetSdkVersion="33" />
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

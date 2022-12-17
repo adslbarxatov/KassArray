@@ -79,7 +79,7 @@ namespace RD_AAOW
 		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult, cableTypeButton,
-			errorsKKTButton, errorsCodeButton, userManualsKKTButton,
+			errorsKKTButton, /*errorsCodeButton,*/ userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton,
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
@@ -328,7 +328,7 @@ namespace RD_AAOW
 			errorsKKTButton = AndroidSupport.ApplyButtonSettings (errorsPage, "KKTButton",
 				kktTypeName, errorsFieldBackColor, ErrorsKKTButton_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ErrorCodeLabel", "Код / сообщение:", true, false);
+			/*AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ErrorCodeLabel", "Код / сообщение:", true, false);
 
 			try
 				{
@@ -340,16 +340,17 @@ namespace RD_AAOW
 				ca.ErrorCode = 0;
 				}
 			errorsCodeButton = AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorCodeButton",
-				kktTypeName, errorsFieldBackColor, ErrorsCodeButton_Clicked, true);
+				kktTypeName, errorsFieldBackColor, ErrorsCodeButton_Clicked, true);*/
 
-			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ResultTextLabel", "Расшифровка:", true, false);
+			AndroidSupport.ApplyLabelSettingsForKKT (errorsPage, "ResultTextLabel", "Суть ошибки:", true, false);
 
 			errorsResultText = AndroidSupport.ApplyResultLabelSettings (errorsPage, "ResultText",
-				kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode), errorsFieldBackColor, true);
+				""/*kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode)*/, errorsFieldBackColor, true);
 			errorsResultText.HorizontalTextAlignment = TextAlignment.Start;
 
 			errorSearchText = AndroidSupport.ApplyEditorSettings (errorsPage, "ErrorSearchText", errorsFieldBackColor,
-				Keyboard.Default, 30, "", null, true);
+				Keyboard.Default, 30, ca.ErrorCode, null, true);
+			Errors_Find (null, null);
 
 			AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorSearchButton",
 				AndroidSupport.ButtonsDefaultNames.Find, errorsFieldBackColor, Errors_Find);
@@ -917,16 +918,17 @@ namespace RD_AAOW
 
 			errorsKKTButton.Text = res;
 			ca.KKTForErrors = (uint)list.IndexOf (res);
+			Errors_Find (null, null);
 
-			List<string> list2 = kkme.GetErrorCodesList (ca.KKTForErrors);
+			/*List<string> list2 = kkme.GetErrorCodesList (ca.KKTForErrors);
 			errorsCodeButton.Text = list2[0];
 
 			ca.ErrorCode = 0;
 			errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
-			list2.Clear ();
+			list2.Clear ();*/
 			}
 
-		// Выбор кода ошибки
+		/*// Выбор кода ошибки
 		private async void ErrorsCodeButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос кода ошибки
@@ -942,7 +944,7 @@ namespace RD_AAOW
 				}
 
 			list.Clear ();
-			}
+			}*/
 
 		// Поиск по тексту ошибки
 		private int lastErrorSearchOffset = 0;
@@ -955,18 +957,26 @@ namespace RD_AAOW
 			for (int i = 0; i < codes.Count; i++)
 				{
 				int j = (i + lastErrorSearchOffset) % codes.Count;
-				if (codes[j].ToLower ().Contains (text) ||
-					kkme.GetErrorText (ca.KKTForErrors, (uint)j).ToLower ().Contains (text))
+				string code = codes[j].ToLower ();
+				string res = kkme.GetErrorText (ca.KKTForErrors, (uint)j);
+
+				if (code.Contains (text) || res.ToLower ().Contains (text) ||
+					code.Contains ("?") && text.Contains (code.Replace ("?", "")))
 					{
 					lastErrorSearchOffset = (i + lastErrorSearchOffset) % codes.Count;
+					ca.ErrorCode = errorSearchText.Text;
+					errorsResultText.Text = codes[j] + ": " + res;
 
-					errorsCodeButton.Text = codes[lastErrorSearchOffset];
+					/*errorsCodeButton.Text = codes[lastErrorSearchOffset];
 					ca.ErrorCode = (uint)lastErrorSearchOffset;
-					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);
+					errorsResultText.Text = kkme.GetErrorText (ca.KKTForErrors, ca.ErrorCode);*/
 
 					return;
 					}
 				}
+
+			// Код не найден
+			errorsResultText.Text = "(описание ошибки не найдено)";
 			}
 
 		private void Errors_Clear (object sender, EventArgs e)
@@ -981,9 +991,8 @@ namespace RD_AAOW
 		// Ввод текста для перевода в коды символов
 		private void SourceText_TextChanged (object sender, TextChangedEventArgs e)
 			{
-			kktCodesResultText.Text = "";
-			kktCodesErrorLabel.IsVisible = !Decode ();
-
+			kktCodesResultText.Text = kkmc.DecodeText (ca.KKTForCodes, codesSourceText.Text);
+			kktCodesErrorLabel.IsVisible = kktCodesResultText.Text.Contains (KKTCodes.EmptyCode);
 			kktCodesSourceTextLabel.Text = "Исходный текст (" + codesSourceText.Text.Length.ToString () + "):";
 			}
 
@@ -1007,7 +1016,7 @@ namespace RD_AAOW
 			SourceText_TextChanged (null, null);
 			}
 
-		// Функция трансляции строки в набор кодов
+		/*// Функция трансляции строки в набор кодов
 		private bool Decode ()
 			{
 			// Выполнение
@@ -1034,7 +1043,7 @@ namespace RD_AAOW
 
 			// Означает успех/ошибку преобразования
 			return res;
-			}
+			}*/
 
 		// Очистка полей
 		private void CodesClear_Clicked (object sender, EventArgs e)
