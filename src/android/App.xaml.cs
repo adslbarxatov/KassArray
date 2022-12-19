@@ -293,12 +293,12 @@ namespace RD_AAOW
 				true, false);
 
 			kktCodesErrorLabel = AndroidSupport.ApplyTipLabelSettings (kktCodesPage, "ErrorLabel",
-				"Часть введённых символов не поддерживается данной ККТ или требует специальных действий для ввода",
-				errorColor);
+				"Часть введённых символов не поддерживается данной ККТ", errorColor);
 
 			kktCodesResultText = AndroidSupport.ApplyResultLabelSettings (kktCodesPage, "ResultText", "",
 				kktCodesFieldBackColor, true);
 			kktCodesResultText.HorizontalTextAlignment = TextAlignment.Start;
+			kktCodesResultText.FontFamily = "monospace";
 
 			kktCodesHelpLabel = AndroidSupport.ApplyTipLabelSettings (kktCodesPage, "HelpLabel",
 				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);

@@ -21,6 +21,7 @@
 
 				<Label x:Name="ResultTextLabel" />
 				<Label x:Name="ErrorLabel" />
+
 				<Label x:Name="ResultText" />
 
 				<Label x:Name="HelpLabel" />

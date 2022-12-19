@@ -1,4 +1,4 @@
-﻿// Общие перечисления
+// Общие перечисления
 
 // Возможные типы фискальных документов
 enum FNDocumentTypes
@@ -129,8 +129,11 @@ enum SendAndReceiveResults
 	// Некорректная контрольная сумма ответного сообщения
 	AnswerCRCError = -24,
 
-	// Получен ответ, содержащий сообщение об ошибке
-	AnswerLogicError = -31
+	// Ошибка при формировании команды
+	RequestLogicError = -31,
+
+	// Ошибка, полученная из ФН
+	InternalFNError = -32,
 	};
 
 // Обрабатываемые TLV-теги
@@ -152,8 +155,10 @@ enum TLVTags
 
 #define PROC_AUTONOMOUSFLAG(src,dest,type)\
 		case AutonomousFlag:\
-			if (REG_CAUSE (type))\
+			if (REG_CAUSE (type)) {\
+				autonomousFlag = src;\
 				sprintf (dest, src ? "%s  - Автономный режим (без ОФД)\r\n" : "%s  - Режим передачи данных\r\n", dest);\
+				}\
 			break;
 
 	// E-mail/телефон покупателя (1008)

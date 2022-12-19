@@ -113,41 +113,45 @@ namespace RD_AAOW
 				else if (presentations[(int)KKTType] == "?2")
 					{
 					if (c >= 200)
-						resultText += ("1СК 1СК " + (c - 200).ToString () + " 1СК");
+						resultText += ("1СК~1СК~" + (c - 200).ToString ().PadLeft (3) + "~1СК");
 					else if (c >= 100)
-						resultText += ("1СК " + (c - 100).ToString ("D2") + " 1СК 1СК");
+						resultText += ("1СК~" + (c - 100).ToString ("D2").PadLeft (3) + "~1СК~1СК");
 					else
-						resultText += c.ToString ("D2");
+						resultText += c.ToString ("D2").PadLeft (3);
 					}
 				else if (presentations[(int)KKTType] == "?1")
 					{
 					if (c >= 100)
-						resultText += ("1СК " + (c - 100).ToString () + " 1СК");
+						resultText += ("1СК~" + (c - 100).ToString ().PadLeft (3) + "~1СК");
 					else
-						resultText += c.ToString ("D2");
+						resultText += c.ToString ("D2").PadLeft (3);
 					}
 				else
 					{
-					resultText += (c.ToString (presentations[(int)KKTType]));
+					resultText += c.ToString (presentations[(int)KKTType]).PadLeft (3);
 					}
-				resultText += " ";
+				resultText += "~";
 				}
 
 			// Пост-обработка
 			if (presentations[(int)KKTType] == "?2")
-				resultText = resultText.Replace ("1СК 1СК 1СК ", "");
+				resultText = resultText.Replace ("1СК~1СК~1СК~", "");
 			else if (presentations[(int)KKTType] == "?1")
-				resultText = resultText.Replace ("1СК 1СК ", "");
+				resultText = resultText.Replace ("1СК~1СК~", "");
 
 			// Сборка
 			char[] resText = resultText.ToCharArray ();
-			resultText = "";
 			int idx = 1;
+			resultText = "";
 
 			for (int i = 0; i < resText.Length; i++)
 				{
-				if (resText[i] == ' ')
+				if (resText[i] == '~')
+#if ANDROID
+					resultText += ((idx++ % 5 != 0) ? "     " : "\r\n");
+#else
 					resultText += ((idx++ % 5 != 0) ? "\t" : "\r\n");
+#endif
 				else
 					resultText += resText[i];
 				}
