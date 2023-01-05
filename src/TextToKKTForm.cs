@@ -185,6 +185,12 @@ namespace RD_AAOW
 				FNReader.Enabled = false;
 				}
 
+			ConvNumber.Text = ca.ConversionNumber;
+			ConvNumber_TextChanged (null, null);
+
+			ConvCode.Text = ca.ConversionCode;
+			ConvCode_TextChanged (null, null);
+
 			// Настройка иконки в трее
 			ni.Icon = Properties.TextToKKMResources.TextToKKTTray;
 			ni.Text = ProgramDescription.AssemblyVisibleName;
@@ -312,6 +318,9 @@ namespace RD_AAOW
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
 			ca.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;
+
+			ca.ConversionNumber = ConvNumber.Text;
+			ca.ConversionCode = ConvCode.Text;
 			}
 
 		// Отображение справки
@@ -1083,6 +1092,36 @@ namespace RD_AAOW
 
 			CableLeftDescription.Text = conn.GetCableConnectorDescription (i, false) + "\n\n" +
 				conn.GetCableConnectorDescription (i, true);
+			}
+
+		#endregion
+
+		#region Конверторы
+
+		// Ввод числа для конверсии
+		private void ConvNumber_TextChanged (object sender, EventArgs e)
+			{
+			ConvNumberResult.Text = DataConvertors.GetNumberDescription (ConvNumber.Text);
+			}
+
+		private void ConvCode_TextChanged (object sender, EventArgs e)
+			{
+			string[] res = DataConvertors.GetSymbolDescription (ConvCode.Text, 0);
+			ConvCodeSymbol.Text = res[0];
+			ConvCodeResult.Text = res[1];
+			}
+
+		private void ConvCodeAdd_Click (object sender, EventArgs e)
+			{
+			bool plus = ((Button)sender).Name == ConvCodeInc.Name;
+			string[] res = DataConvertors.GetSymbolDescription (ConvCode.Text, (short)(plus ? 1 : -1));
+			ConvCode.Text = res[2];
+			}
+
+		private void ConvCodeIncrement_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				ConvCodeAdd_Click (null, null);
 			}
 
 		#endregion

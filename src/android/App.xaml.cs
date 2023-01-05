@@ -51,7 +51,10 @@ namespace RD_AAOW
 			connectorsFieldBackColor = Color.FromHex ("#F0FFE0"),
 
 			barCodesMasterBackColor = Color.FromHex ("#FFEED4"),
-			barCodesFieldBackColor = Color.FromHex ("#E8CFB6"),
+			barCodesFieldBackColor = Color.FromHex ("#E8CFBE"),
+
+			convertorsMasterBackColor = Color.FromHex ("#FFDAED"),
+			convertorsFieldBackColor = Color.FromHex ("#FFB7DB"),
 
 			untoggledSwitchColor = Color.FromHex ("#505050"),
 			errorColor = Color.FromHex ("#FF0000"),
@@ -66,7 +69,8 @@ namespace RD_AAOW
 		#region Переменные страниц
 
 		private ContentPage headersPage, kktCodesPage, errorsPage, aboutPage, connectorsPage,
-			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage, tagsPage, barCodesPage;
+			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage, tagsPage, barCodesPage,
+			convertorsPage;
 
 		private Label kktCodesSourceTextLabel, kktCodesHelpLabel, kktCodesErrorLabel, kktCodesResultText,
 			errorsResultText, cableLeftSideText, cableRightSideText, cableLeftPinsText, cableRightPinsText,
@@ -75,27 +79,25 @@ namespace RD_AAOW
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
 			lowLevelCommandDescr, unlockLabel,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
-			barcodeDescriptionLabel, rnmTip, ofdDisabledLabel;
+			barcodeDescriptionLabel, rnmTip, ofdDisabledLabel, convNumberResultField, convCodeResultField;
 		private List<Label> operationTextLabels = new List<Label> ();
 
 		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult, cableTypeButton,
-			errorsKKTButton, /*errorsCodeButton,*/ userManualsKKTButton,
+			errorsKKTButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton,
-			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate;
+			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate, convCodeSymbolField;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
-			ofdINN, unlockField,
-			fnLifeSerial, tlvTag,
-			rnmKKTSN, rnmINN, rnmRNM,
-			barcodeField;
+			ofdINN, unlockField, fnLifeSerial, tlvTag, rnmKKTSN, rnmINN, rnmRNM,
+			barcodeField, convNumberField, convCodeField;
 
 		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise,
 			fnLifeAutonomous, fnLifeFFD12, keepAppState, allowService;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
 
-		private StackLayout userManualLayout;
+		private StackLayout userManualLayout, menuLayout;
 
 		#endregion
 
@@ -108,26 +110,6 @@ namespace RD_AAOW
 
 		private const string noBrowserError = "Веб-браузер отсутствует на этом устройстве";
 		private const string noPostError = "Почтовый агент отсутствует на этом устройстве";
-
-		// Локальный оформитель страниц приложения
-		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor,
-			uint HeaderNumber)
-			{
-			// Инициализация страницы
-			ContentPage page = AndroidSupport.ApplyPageSettings (MainPage, PageName, PageTitle, PageBackColor);
-
-			// Добавление в содержание
-			if (HeaderNumber > 0)
-				{
-				Xamarin.Forms.Button b = AndroidSupport.ApplyButtonSettings (headersPage, "Button" +
-					HeaderNumber.ToString ("D02"), PageTitle, PageBackColor, HeaderButton_Clicked, true);
-				b.Margin = b.Padding = new Thickness (1);
-				b.CommandParameter = page;
-				b.IsVisible = true;
-				}
-
-			return page;
-			}
 
 		/// <summary>
 		/// Конструктор. Точка входа приложения
@@ -159,41 +141,43 @@ namespace RD_AAOW
 
 			MainPage = new MasterPage ();
 
-			uint headerNumber = 0;
 			headersPage = ApplyPageSettings ("HeadersPage", "Функции приложения",
-				headersMasterBackColor, headerNumber++);
+				headersMasterBackColor, false);
+			menuLayout = (StackLayout)headersPage.FindByName ("MenuField");
 
 			userManualsPage = ApplyPageSettings ("UserManualsPage", "Инструкции по работе с ККТ",
-				userManualsMasterBackColor, headerNumber++);
+				userManualsMasterBackColor, true);
 			errorsPage = ApplyPageSettings ("ErrorsPage", "Коды ошибок ККТ",
-				errorsMasterBackColor, headerNumber++);
+				errorsMasterBackColor, true);
 			fnLifePage = ApplyPageSettings ("FNLifePage", "Срок жизни ФН",
-				fnLifeMasterBackColor, headerNumber++);
+				fnLifeMasterBackColor, true);
 			rnmPage = ApplyPageSettings ("RNMPage", "Заводской и регистрационный номер ККТ",
-				rnmMasterBackColor, headerNumber++);
+				rnmMasterBackColor, true);
 			ofdPage = ApplyPageSettings ("OFDPage", "Параметры ОФД",
-				ofdMasterBackColor, headerNumber++);
+				ofdMasterBackColor, true);
 
-			tagsPage = ApplyPageSettings ("TagsPage", "TLV-теги", tagsMasterBackColor, headerNumber++);
+			tagsPage = ApplyPageSettings ("TagsPage", "TLV-теги", tagsMasterBackColor, true);
 			tagsPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
 
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
-				lowLevelMasterBackColor, headerNumber++);
+				lowLevelMasterBackColor, true);
 			lowLevelPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
 
 			kktCodesPage = ApplyPageSettings ("KKTCodesPage", "Перевод текста в коды ККТ",
-				kktCodesMasterBackColor, headerNumber++);
+				kktCodesMasterBackColor, true);
 			kktCodesPage.IsEnabled = ca.AllowExtendedFunctionsLevel1;
 
 			connectorsPage = ApplyPageSettings ("ConnectorsPage", "Разъёмы",
-				connectorsMasterBackColor, headerNumber++);
+				connectorsMasterBackColor, true);
 			connectorsPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
 
 			barCodesPage = ApplyPageSettings ("BarCodesPage", "Штрих-коды",
-				barCodesMasterBackColor, headerNumber++);
+				barCodesMasterBackColor, true);
+			convertorsPage = ApplyPageSettings ("ConvertorsPage", "Конверторы",
+				convertorsMasterBackColor, true);
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
-				aboutMasterBackColor, headerNumber);
+				aboutMasterBackColor, true);
 
 			AndroidSupport.SetMainPage (MainPage);
 
@@ -298,7 +282,7 @@ namespace RD_AAOW
 			kktCodesResultText = AndroidSupport.ApplyResultLabelSettings (kktCodesPage, "ResultText", "",
 				kktCodesFieldBackColor, true);
 			kktCodesResultText.HorizontalTextAlignment = TextAlignment.Start;
-			kktCodesResultText.FontFamily = "monospace";
+			kktCodesResultText.FontFamily = AndroidSupport.MonospaceFont;
 
 			kktCodesHelpLabel = AndroidSupport.ApplyTipLabelSettings (kktCodesPage, "HelpLabel",
 				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);
@@ -753,8 +737,81 @@ namespace RD_AAOW
 
 			#endregion
 
+			#region Страница конверторов
+
+			AndroidSupport.ApplyLabelSettingsForKKT (convertorsPage, "ConvNumberLabel",
+				"Число:", true, false);
+			convNumberField = AndroidSupport.ApplyEditorSettings (convertorsPage, "ConvNumberField",
+				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionNumber, ConvNumber_TextChanged, true);
+
+			AndroidSupport.ApplyLabelSettingsForKKT (convertorsPage, "ConvNumberResultLabel",
+				"Представление:", true, false);
+			convNumberResultField = AndroidSupport.ApplyResultLabelSettings (convertorsPage, "ConvNumberResultField",
+				"", convertorsFieldBackColor, true);
+			convNumberResultField.HorizontalTextAlignment = TextAlignment.Start;
+			convNumberResultField.FontFamily = AndroidSupport.MonospaceFont;
+			ConvNumber_TextChanged (null, null);
+
+			AndroidSupport.ApplyLabelSettingsForKKT (convertorsPage, "ConvCodeLabel",
+				"Код символа или символ:", true, false);
+			convCodeField = AndroidSupport.ApplyEditorSettings (convertorsPage, "ConvCodeField",
+				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionCode, ConvCode_TextChanged, true);
+
+			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeInc", AndroidSupport.ButtonsDefaultNames.Increase,
+				convertorsFieldBackColor, ConvCodeAdd_Click);
+			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeDec", AndroidSupport.ButtonsDefaultNames.Decrease,
+				convertorsFieldBackColor, ConvCodeAdd_Click);
+
+			AndroidSupport.ApplyLabelSettingsForKKT (convertorsPage, "ConvCodeResultLabel",
+				"Символ Unicode:", true, false);
+			convCodeResultField = AndroidSupport.ApplyResultLabelSettings (convertorsPage, "ConvCodeResultField",
+				"", convertorsFieldBackColor, true);
+			convCodeResultField.HorizontalTextAlignment = TextAlignment.Start;
+			convCodeResultField.FontFamily = AndroidSupport.MonospaceFont;
+
+			convCodeSymbolField = AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeSymbolField",
+				" ", convertorsFieldBackColor, CopyCharacter_Click, true);
+			convCodeSymbolField.FontSize *= 5;
+			ConvCode_TextChanged (null, null);
+
+			#endregion
+
 			// Обязательное принятие Политики и EULA
 			AcceptPolicy ();
+			}
+
+		// Локальный оформитель страниц приложения
+		private ContentPage ApplyPageSettings (string PageName, string PageTitle, Color PageBackColor,
+			bool AddToMenu)
+			{
+			// Инициализация страницы
+			ContentPage page = AndroidSupport.ApplyPageSettings (MainPage, PageName, PageTitle, PageBackColor);
+
+			// Добавление в содержание
+			if (!AddToMenu)
+				return page;
+
+			/*Xamarin.Forms.Button b = AndroidSupport.ApplyButtonSettings (headersPage, "Button" +
+				HeaderNumber.ToString ("D02"), PageTitle, PageBackColor, HeaderButton_Clicked, true);
+			b.Margin = b.Padding = new Thickness (1);
+			b.CommandParameter = page;
+			b.IsVisible = true;*/
+
+			Xamarin.Forms.Button b = new Xamarin.Forms.Button ();
+			b.Text = PageTitle;
+			b.BackgroundColor = PageBackColor;
+			b.Clicked += HeaderButton_Clicked;
+			b.TextTransform = TextTransform.None;
+
+			b.FontAttributes = FontAttributes.None;
+			b.FontSize = 5 * AndroidSupport.MasterFontSize / 4;
+			b.TextColor = AndroidSupport.MasterTextColor;
+			b.Margin = b.Padding = new Thickness (1);
+
+			b.CommandParameter = page;
+			menuLayout.Children.Add (b);
+
+			return page;
 			}
 
 		// Контроль принятия Политики и EULA
@@ -819,7 +876,14 @@ namespace RD_AAOW
 		// Отправка значения кнопки в буфер
 		private void Field_Clicked (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (((Xamarin.Forms.Button)sender).Text);
+			SendToClipboard (((Xamarin.Forms.Button)sender).Text);
+			}
+
+		private void SendToClipboard (string Value)
+			{
+			RDGenerics.SendToClipboard (Value);
+			Toast.MakeText (Android.App.Application.Context, "Скопировано в буфер обмена",
+				ToastLength.Long).Show ();
 			}
 
 		// Выбор элемента содержания
@@ -890,6 +954,9 @@ namespace RD_AAOW
 			//ca.CableType		// -||-
 
 			ca.TLVData = tlvTag.Text;
+
+			ca.ConversionNumber = convNumberField.Text;
+			ca.ConversionCode = convCodeField.Text;
 			}
 
 		/// <summary>
@@ -1243,7 +1310,7 @@ namespace RD_AAOW
 		private string fnLifeResultDate = "";
 		private void FNLifeResultCopy (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (fnLifeResultDate);
+			SendToClipboard (fnLifeResultDate);
 			}
 
 		// Очистка полей
@@ -1387,7 +1454,7 @@ namespace RD_AAOW
 			if (list.IndexOf (res) >= 0)
 				{
 				ofdNameButton.Text = res;
-				RDGenerics.SendToClipboard (res.Replace ('«', '\"').Replace ('»', '\"'));
+				SendToClipboard (res.Replace ('«', '\"').Replace ('»', '\"'));
 
 				string s = ofd.GetOFDINNByName (ofdNameButton.Text);
 				if (s != "")
@@ -1398,7 +1465,7 @@ namespace RD_AAOW
 		// Копирование ИНН в буфер обмена
 		private void OFDINNCopy_Clicked (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (ofdINN.Text);
+			SendToClipboard (ofdINN.Text);
 			}
 
 		// Поиск по названию ОФД
@@ -1693,6 +1760,37 @@ namespace RD_AAOW
 
 			cableDescriptionText.Text = conn.GetCableConnectorDescription ((uint)idx, false) + "\n\n" +
 				conn.GetCableConnectorDescription ((uint)idx, true);
+			}
+
+		#endregion
+
+		#region Конверторы
+
+		// Ввод числа для конверсии
+		private void ConvNumber_TextChanged (object sender, EventArgs e)
+			{
+			convNumberResultField.Text = DataConvertors.GetNumberDescription (convNumberField.Text);
+			}
+
+		private void ConvCode_TextChanged (object sender, EventArgs e)
+			{
+			string[] res = DataConvertors.GetSymbolDescription (convCodeField.Text, 0);
+			convCodeSymbolField.Text = " " + res[0] + " ";
+			convCodeResultField.Text = res[1];
+			}
+
+		private void ConvCodeAdd_Click (object sender, EventArgs e)
+			{
+			bool plus = AndroidSupport.IsNameDefault (((Xamarin.Forms.Button)sender).Text,
+				AndroidSupport.ButtonsDefaultNames.Increase);
+
+			string[] res = DataConvertors.GetSymbolDescription (convCodeField.Text, (short)(plus ? 1 : -1));
+			convCodeField.Text = res[2];
+			}
+
+		private void CopyCharacter_Click (object sender, EventArgs e)
+			{
+			SendToClipboard (convCodeSymbolField.Text.Trim ());
 			}
 
 		#endregion

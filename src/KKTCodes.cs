@@ -148,7 +148,7 @@ namespace RD_AAOW
 				{
 				if (resText[i] == '~')
 #if ANDROID
-					resultText += ((idx++ % 5 != 0) ? "     " : "\r\n");
+					resultText += ((idx++ % 5 != 0) ? "    " : "\r\n");
 #else
 					resultText += ((idx++ % 5 != 0) ? "\t" : "\r\n");
 #endif

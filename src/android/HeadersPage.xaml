@@ -9,7 +9,10 @@
 		<ScrollView>
 			<StackLayout>
 
-				<Button x:Name="Button01" IsVisible="False" />
+				<StackLayout x:Name="MenuField">
+				</StackLayout>
+
+				<!--<Button x:Name="Button01" IsVisible="False" />
 				<Button x:Name="Button02" IsVisible="False" />
 				<Button x:Name="Button03" IsVisible="False" />
 				<Button x:Name="Button04" IsVisible="False" />
@@ -19,7 +22,7 @@
 				<Button x:Name="Button08" IsVisible="False" />
 				<Button x:Name="Button09" IsVisible="False" />
 				<Button x:Name="Button10" IsVisible="False" />
-				<Button x:Name="Button11" IsVisible="False" />
+				<Button x:Name="Button11" IsVisible="False" />-->
 
 				<Label />
 
