@@ -53,15 +53,9 @@ namespace RD_AAOW
 			barCodesMasterBackColor = Color.FromHex ("#FFEED4"),
 			barCodesFieldBackColor = Color.FromHex ("#E8CFBE"),
 
-			convertorsMasterBackColor = Color.FromHex ("#FFDAED"),
-			convertorsFieldBackColor = Color.FromHex ("#FFB7DB"),
+			convertorsMasterBackColor = Color.FromHex ("#FFE1EA"),
+			convertorsFieldBackColor = Color.FromHex ("#FFD3E1");
 
-			untoggledSwitchColor = Color.FromHex ("#505050"),
-			errorColor = Color.FromHex ("#FF0000"),
-			correctColor = Color.FromHex ("#008000"),
-
-			disabledFieldColor = Color.FromHex ("#808080"),
-			disabledPageColor = Color.FromHex ("#C0C0C0");
 		private const string firstStartRegKey = "HelpShownAt";
 
 		#endregion
@@ -128,13 +122,15 @@ namespace RD_AAOW
 			// Переопределение цветов для закрытых функций
 			if (!ca.AllowExtendedFunctionsLevel1)
 				{
-				kktCodesFieldBackColor = disabledFieldColor;
-				kktCodesMasterBackColor = disabledPageColor;
+				kktCodesFieldBackColor = AndroidSupport.DefaultGreyColors[2];
+				kktCodesMasterBackColor = AndroidSupport.DefaultGreyColors[3];
 				}
 			if (!ca.AllowExtendedFunctionsLevel2)
 				{
-				tagsFieldBackColor = lowLevelFieldBackColor = connectorsFieldBackColor = disabledFieldColor;
-				tagsMasterBackColor = lowLevelMasterBackColor = connectorsMasterBackColor = disabledPageColor;
+				tagsFieldBackColor = lowLevelFieldBackColor = connectorsFieldBackColor =
+					AndroidSupport.DefaultGreyColors[2];
+				tagsMasterBackColor = lowLevelMasterBackColor = connectorsMasterBackColor =
+					AndroidSupport.DefaultGreyColors[3];
 				}
 
 			#region Общая конструкция страниц приложения
@@ -230,7 +226,7 @@ namespace RD_AAOW
 				l2.HorizontalOptions = LayoutOptions.Fill;
 				l2.HorizontalTextAlignment = TextAlignment.Start;
 				l2.Margin = ut.Margin;
-				l2.TextColor = ut.TextColor;
+				l2.TextColor = AndroidSupport.MasterTextColor;
 
 				operationTextLabels.Add (l2);
 				userManualLayout.Children.Add (operationTextLabels[operationTextLabels.Count - 1]);
@@ -242,7 +238,7 @@ namespace RD_AAOW
 				AndroidSupport.ButtonsDefaultNames.Select, userManualsFieldBackColor, PrintManual_Clicked);
 
 			AndroidSupport.ApplyTipLabelSettings (userManualsPage, "HelpLabel",
-				"<...> – индикация на экране, [...] – клавиши ККТ", untoggledSwitchColor);
+				"<...> – индикация на экране, [...] – клавиши ККТ", AndroidSupport.DefaultGreyColors[1]);
 
 			UserManualsKKTButton_Clicked (null, null);
 
@@ -277,7 +273,7 @@ namespace RD_AAOW
 				true, false);
 
 			kktCodesErrorLabel = AndroidSupport.ApplyTipLabelSettings (kktCodesPage, "ErrorLabel",
-				"Часть введённых символов не поддерживается данной ККТ", errorColor);
+				"Часть введённых символов не поддерживается данной ККТ", AndroidSupport.DefaultErrorColor);
 
 			kktCodesResultText = AndroidSupport.ApplyResultLabelSettings (kktCodesPage, "ResultText", "",
 				kktCodesFieldBackColor, true);
@@ -285,7 +281,7 @@ namespace RD_AAOW
 			kktCodesResultText.FontFamily = AndroidSupport.MonospaceFont;
 
 			kktCodesHelpLabel = AndroidSupport.ApplyTipLabelSettings (kktCodesPage, "HelpLabel",
-				kkmc.GetKKTTypeDescription (ca.KKTForCodes), untoggledSwitchColor);
+				kkmc.GetKKTTypeDescription (ca.KKTForCodes), AndroidSupport.DefaultGreyColors[1]);
 
 			AndroidSupport.ApplyButtonSettings (kktCodesPage, "Clear",
 				AndroidSupport.ButtonsDefaultNames.Delete, kktCodesFieldBackColor, CodesClear_Clicked);
@@ -455,7 +451,7 @@ namespace RD_AAOW
 				FNLifeResultCopy, true);
 
 			AndroidSupport.ApplyTipLabelSettings (fnLifePage, "FNLifeHelpLabel",
-				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", untoggledSwitchColor);
+				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", AndroidSupport.DefaultGreyColors[1]);
 
 			//
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
@@ -510,7 +506,8 @@ namespace RD_AAOW
 				rnmAbout += ("<br/><br/>Первые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
 					"вручную при генерации");
 
-			rnmTip = AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout", rnmAbout, untoggledSwitchColor);
+			rnmTip = AndroidSupport.ApplyTipLabelSettings (rnmPage, "RNMAbout", rnmAbout, 
+				AndroidSupport.DefaultGreyColors[1]);
 			rnmTip.TextType = TextType.Html;
 
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
@@ -583,7 +580,7 @@ namespace RD_AAOW
 				ofdFieldBackColor, Field_Clicked, true);
 
 			AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDHelpLabel",
-				"Нажатие кнопок копирует их подписи в буфер обмена", untoggledSwitchColor);
+				"Нажатие кнопок копирует их подписи в буфер обмена", AndroidSupport.DefaultGreyColors[1]);
 
 			AndroidSupport.ApplyButtonSettings (ofdPage, "Clear",
 				AndroidSupport.ButtonsDefaultNames.Delete, ofdFieldBackColor, OFDClear_Clicked);
@@ -595,7 +592,7 @@ namespace RD_AAOW
 				AndroidSupport.ButtonsDefaultNames.Find, ofdFieldBackColor, OFD_Find);
 
 			ofdDisabledLabel = AndroidSupport.ApplyTipLabelSettings (ofdPage, "OFDDisabledLabel",
-				"Аннулирован", errorColor);
+				"Аннулирован", AndroidSupport.DefaultErrorColor);
 
 			OFDINN_TextChanged (null, null); // Протягивание значений
 
@@ -673,7 +670,7 @@ namespace RD_AAOW
 			lowLevelCommandDescr.HorizontalTextAlignment = TextAlignment.Start;
 
 			AndroidSupport.ApplyTipLabelSettings (lowLevelPage, "LowLevelHelpLabel",
-				"Нажатие кнопки копирует команду в буфер обмена", untoggledSwitchColor);
+				"Нажатие кнопки копирует команду в буфер обмена", AndroidSupport.DefaultGreyColors[1]);
 
 			commandSearchText = AndroidSupport.ApplyEditorSettings (lowLevelPage, "CommandSearchText",
 				lowLevelFieldBackColor, Keyboard.Default, 30, "", null, true);
@@ -731,7 +728,7 @@ namespace RD_AAOW
 				connectorsFieldBackColor, true);
 
 			cableDescriptionText = AndroidSupport.ApplyTipLabelSettings (connectorsPage, "CableDescription",
-				" ", untoggledSwitchColor);
+				" ", AndroidSupport.DefaultGreyColors[1]);
 
 			CableTypeButton_Clicked (null, null);
 
@@ -743,15 +740,18 @@ namespace RD_AAOW
 				"Число:", true, false);
 			convNumberField = AndroidSupport.ApplyEditorSettings (convertorsPage, "ConvNumberField",
 				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionNumber, ConvNumber_TextChanged, true);
+			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvNumberClear", AndroidSupport.ButtonsDefaultNames.Delete,
+				convertorsFieldBackColor, ConvNumberClear_Click);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (convertorsPage, "ConvNumberResultLabel",
 				"Представление:", true, false);
 			convNumberResultField = AndroidSupport.ApplyResultLabelSettings (convertorsPage, "ConvNumberResultField",
-				"", convertorsFieldBackColor, true);
+				" ", convertorsFieldBackColor, true);
 			convNumberResultField.HorizontalTextAlignment = TextAlignment.Start;
 			convNumberResultField.FontFamily = AndroidSupport.MonospaceFont;
 			ConvNumber_TextChanged (null, null);
 
+			//
 			AndroidSupport.ApplyLabelSettingsForKKT (convertorsPage, "ConvCodeLabel",
 				"Код символа или символ:", true, false);
 			convCodeField = AndroidSupport.ApplyEditorSettings (convertorsPage, "ConvCodeField",
@@ -761,6 +761,8 @@ namespace RD_AAOW
 				convertorsFieldBackColor, ConvCodeAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeDec", AndroidSupport.ButtonsDefaultNames.Decrease,
 				convertorsFieldBackColor, ConvCodeAdd_Click);
+			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeClear", AndroidSupport.ButtonsDefaultNames.Delete,
+				convertorsFieldBackColor, ConvCodeClear_Click);
 
 			AndroidSupport.ApplyLabelSettingsForKKT (convertorsPage, "ConvCodeResultLabel",
 				"Символ Unicode:", true, false);
@@ -773,6 +775,10 @@ namespace RD_AAOW
 				" ", convertorsFieldBackColor, CopyCharacter_Click, true);
 			convCodeSymbolField.FontSize *= 5;
 			ConvCode_TextChanged (null, null);
+
+			AndroidSupport.ApplyTipLabelSettings (convertorsPage, "ConvHelpLabel",
+				"Шестнадцатеричные числа следует начинать с символов “0x”. Нажатие кнопки с символом Unicode " +
+				"копирует его в буфер обмена", AndroidSupport.DefaultGreyColors[1]);
 
 			#endregion
 
@@ -1275,7 +1281,7 @@ namespace RD_AAOW
 			fnLifeResult.Text = "ФН прекратит работу ";
 			if (res.Contains ("!"))
 				{
-				fnLifeResult.TextColor = errorColor;
+				fnLifeResult.TextColor = AndroidSupport.DefaultErrorColor;
 				fnLifeResultDate = res.Substring (1);
 				fnLifeResult.Text += (fnLifeResultDate + "\n(выбранный ФН неприменим с указанными параметрами)");
 				}
@@ -1290,7 +1296,7 @@ namespace RD_AAOW
 				{
 				if (!fnlf.MarkFN)
 					{
-					fnLifeResult.TextColor = errorColor;
+					fnLifeResult.TextColor = AndroidSupport.DefaultErrorColor;
 
 					fnLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
 					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
@@ -1360,12 +1366,12 @@ namespace RD_AAOW
 				}
 			else if (KKTSupport.CheckINN (rnmINN.Text) == 0)
 				{
-				rnmINNCheckLabel.TextColor = correctColor;
+				rnmINNCheckLabel.TextColor = AndroidSupport.DefaultSuccessColor;
 				rnmINNCheckLabel.Text = "ОК";
 				}
 			else
 				{
-				rnmINNCheckLabel.TextColor = errorColor;
+				rnmINNCheckLabel.TextColor = AndroidSupport.DefaultErrorColor;
 				rnmINNCheckLabel.Text = "возможно, некорректный";
 				}
 			rnmINNCheckLabel.Text += (" (" + kkts.GetRegionName (rnmINN.Text) + ")");
@@ -1378,12 +1384,12 @@ namespace RD_AAOW
 				}
 			else if (KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10)) == rnmRNM.Text)
 				{
-				rnmRNMCheckLabel.TextColor = correctColor;
+				rnmRNMCheckLabel.TextColor = AndroidSupport.DefaultSuccessColor;
 				rnmRNMCheckLabel.Text = "OK";
 				}
 			else
 				{
-				rnmRNMCheckLabel.TextColor = errorColor;
+				rnmRNMCheckLabel.TextColor = AndroidSupport.DefaultErrorColor;
 				rnmRNMCheckLabel.Text = "некорректный";
 				}
 			}
@@ -1791,6 +1797,16 @@ namespace RD_AAOW
 		private void CopyCharacter_Click (object sender, EventArgs e)
 			{
 			SendToClipboard (convCodeSymbolField.Text.Trim ());
+			}
+
+		private void ConvNumberClear_Click (object sender, EventArgs e)
+			{
+			convNumberField.Text = "";
+			}
+
+		private void ConvCodeClear_Click (object sender, EventArgs e)
+			{
+			convCodeField.Text = "";
 			}
 
 		#endregion

@@ -41,14 +41,14 @@ namespace RD_AAOW
 			"Открытие смены",
 			"Продажа по коду товара",
 			"Продажа по карте",
-			//"Продажа по свободной цене",
 			"Продажа с количеством",
 			"Продажа с электронным чеком",
 			"Возврат",
 			"Закрытие смены" };
 		private static string[] operationTypes2 = new string[] {
 			"Коррекция даты",
-			"Коррекция времени" };
+			"Коррекция времени",
+			"Тест связи с сетью интернет" };
 		private static string[] operationTypes3 = new string[] {
 			"Автотестирование / информация о ККТ",
 			"Запрос состояния ФН",
@@ -104,13 +104,6 @@ namespace RD_AAOW
 						if ((i >= 1) || (i <= 3))
 							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&",
 								"Повторить предыдущие действия для всех позиций чека");
-
-						//if (i == 3)
-						//	{
-						//	operations[i][operations[i].Count - 1] +=
-						//	" (отдельно для каждой позиции в чеке);\r\n• Закрыть чек в зависимости от способа оплаты";
-						//	}
-
 						if (i == 5)
 							operations[i][operations[i].Count - 1] +=
 								";\r\n• Дальнейшие действия совпадают с действиями при продаже";
@@ -124,8 +117,8 @@ namespace RD_AAOW
 						if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 							operations[i][operations[i].Count - 1] = "(не предусмотрено)";
 						if (operations[i][operations[i].Count - 1].Contains ("#"))
-							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("#", "") +
-								"\r\n\r\n* Порядок действий может отличаться в разных версиях прошивок";
+							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("#",
+								"") + "\r\n\r\n* Порядок действий может отличаться в разных версиях прошивок";
 						}
 					}
 				}

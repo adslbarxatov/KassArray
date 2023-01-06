@@ -563,31 +563,6 @@ namespace RD_AAOW
 			DescriptionLabel.Text = kkmc.GetKKTTypeDescription ((uint)KKTListForCodes.SelectedIndex);
 			}
 
-		/*// Функция трансляции строки в набор кодов
-		private bool Decode ()
-			{
-			/*bool res = true;
-			/*char[] text = TextToConvert.Text.ToCharArray ();
-
-			for (int i = 0; i < TextToConvert.Text.Length; i++)
-				{
-				string s;
-				byte b = KKTSupport.CharToCP1251 (text[i]);
-
-				if ((s = kkmc.GetCode ((uint)KKTListForCodes.SelectedIndex, b)) == KKTCodes.EmptyCode)
-					{
-					ResultText.Text += "xxx";
-					res = false;
-					}
-				else
-					{
-					ResultText.Text += s;
-					}
-
-				ResultText.Text += (((i + 1) % 5 != 0) ? "\t" : "\r\n");
-				}
-			}*/
-
 		// Выбор ККТ
 		private void KKTListForCodes_SelectedIndexChanged (object sender, EventArgs e)
 			{
@@ -609,15 +584,6 @@ namespace RD_AAOW
 			{
 			ErrorFindButton_Click (null, null);
 			}
-
-		/*// Выбор модели аппарата
-		private void KKTListForErrors_SelectedIndexChanged (object sender, EventArgs e)
-			{
-			// Перезаполнение списка
-			ErrorCodesList.DataSource = kkme.GetErrors ((uint)KKTListForErrors.SelectedIndex);
-			ErrorCodesList.DisplayMember = ErrorCodesList.ValueMember = "ErrorCode";
-			ErrorCodesList.SelectedIndex = 0;
-			}*/
 
 		// Поиск по тексту ошибки
 		private void ErrorFindButton_Click (object sender, EventArgs e)
@@ -1122,6 +1088,16 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				ConvCodeAdd_Click (null, null);
+			}
+
+		private void ConvNumberClearButton_Click (object sender, EventArgs e)
+			{
+			ConvNumber.Text = "";
+			}
+
+		private void ConvCodeClearButton_Click (object sender, EventArgs e)
+			{
+			ConvCode.Text = "";
 			}
 
 		#endregion

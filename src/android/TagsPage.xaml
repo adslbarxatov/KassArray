@@ -12,8 +12,8 @@
 				<Label x:Name="TLVSearchLabel" VerticalOptions="Center" />
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="TLVSearchText" VerticalOptions="Center" />
+
 					<Button x:Name="TLVSearchButton" VerticalOptions="Center" />
-					<Label />
 					<Button x:Name="TLVClearButton" VerticalOptions="Center" />
 				</StackLayout>
 
