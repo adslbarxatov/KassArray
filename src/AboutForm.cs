@@ -211,7 +211,8 @@ namespace RD_AAOW
 
 			new string[] { "&gt;", "›" },
 			new string[] { "&lt;", "‹" },
-			new string[] { "&#39;", "’" }
+			new string[] { "&#39;", "’" },
+			new string[] { "&bull;", "•" }
 			};
 
 		/// <summary>
