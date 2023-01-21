@@ -8,14 +8,16 @@
 
 		<ScrollView>
 			<StackLayout>
+
+				<!-- Вводные -->
 				<Label x:Name="OFDNameLabel" VerticalOptions="Center"/>
 				<Button x:Name="OFDName" />
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<!--<StackLayout Orientation="Horizontal">
 					<Label x:Name="OFDINNLabel" VerticalOptions="Center" />
 					<Editor x:Name="OFDINN" VerticalOptions="Center" />
 					<Button x:Name="OFDINNCopy" VerticalOptions="Center" />
-				</StackLayout>
+				</StackLayout>-->
 
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="OFDSearchText" VerticalOptions="Center" />
@@ -23,9 +25,16 @@
 					<Button x:Name="Clear" VerticalOptions="Center" />
 				</StackLayout>
 
-				<Label />
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
 
+				<!-- Результирующие -->
 				<Label x:Name="OFDDisabledLabel" HorizontalOptions="Center" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Label x:Name="OFDINNLabel" VerticalOptions="Center" />
+					<Button x:Name="OFDINN" VerticalOptions="Center" />
+				</StackLayout>
 
 				<FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center">
 
@@ -38,7 +47,6 @@
 							<Button x:Name="OFDIP" VerticalOptions="Center" />
 							<Button x:Name="OFDPort" VerticalOptions="Center" />
 						</StackLayout>
-
 						<Label />
 					</StackLayout>
 
@@ -51,7 +59,6 @@
 							<Label x:Name="OFDSiteLabel" VerticalOptions="Center" />
 							<Button x:Name="OFDSite" />
 						</StackLayout>
-
 						<Label />
 					</StackLayout>
 
@@ -64,7 +71,6 @@
 							<Button x:Name="OFDIPM" VerticalOptions="Center" />
 							<Button x:Name="OFDPortM" VerticalOptions="Center" />
 						</StackLayout>
-
 						<Label />
 					</StackLayout>
 
@@ -77,7 +83,6 @@
 							<Button x:Name="OFDIPK" VerticalOptions="Center" />
 							<Button x:Name="OFDPortK" VerticalOptions="Center" />
 						</StackLayout>
-
 						<Label />
 					</StackLayout>
 
@@ -97,6 +102,7 @@
 				<Label x:Name="OFDHelpLabel" />
 
 				<Label />
+
 			</StackLayout>
 		</ScrollView>
 

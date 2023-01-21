@@ -23,6 +23,9 @@
 					<Button x:Name="CommandClearButton" VerticalOptions="Center" />
 				</StackLayout>
 
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 				<Label x:Name="CommandCodeLabel" />
 				<Button x:Name="CommandCodeButton" />
 

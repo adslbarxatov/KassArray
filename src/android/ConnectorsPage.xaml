@@ -12,14 +12,18 @@
 				<Label x:Name="CableLabel" />
 				<Button x:Name="CableTypeButton" />
 
-				<Label />
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
+				<Label x:Name="CableDescriptionLabel" />
 
 				<Label x:Name="CableLeftSide" HorizontalOptions="Center" />
 				<Label x:Name="CableLeftPins" HorizontalOptions="Center" />
 				<Label x:Name="CableRightPins" HorizontalOptions="Center" />
 				<Label x:Name="CableRightSide" HorizontalOptions="Center" />
 
-				<Label />
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<Label x:Name="CableDescription" HorizontalOptions="Center" />
 

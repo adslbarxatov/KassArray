@@ -24,7 +24,7 @@ namespace RD_AAOW.Droid
 		Theme = "@style/SplashTheme",
 		MainLauncher = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class MainActivity:global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+	public class MainActivity: global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 		{
 		/// <summary>
 		/// Обработчик события создания экземпляра
@@ -52,7 +52,9 @@ namespace RD_AAOW.Droid
 				StartService (mainService);
 
 			// Запрет на переход в ждущий режим
+			//if (AndroidSupport.KeepScreenOn)
 			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
+
 			LoadApplication (new App ((PrintManager)this.GetSystemService (Service.PrintService)));
 			}
 
@@ -93,7 +95,7 @@ namespace RD_AAOW.Droid
 	[Service (Name = "com.RD_AAOW.TextToKKT",
 		Label = "KassArray",
 		Exported = true)]
-	public class MainService:global::Android.App.Service
+	public class MainService: global::Android.App.Service
 		{
 		// Идентификаторы процесса
 		private Handler handler;
@@ -285,7 +287,7 @@ namespace RD_AAOW.Droid
 	[Service (Name = "com.RD_AAOW.KassArrayLink",
 		Label = "KassArrayLink",
 		Exported = true)]
-	public class NotificationLink:JobIntentService
+	public class NotificationLink: JobIntentService
 		{
 		/// <summary>
 		/// Конструктор (заглушка)
@@ -334,7 +336,7 @@ namespace RD_AAOW.Droid
 	[BroadcastReceiver (Name = "com.RD_AAOW.KassArrayBoot",
 		Label = "KassArrayBoot",
 		Exported = true)]
-	public class BootReceiver:BroadcastReceiver
+	public class BootReceiver: BroadcastReceiver
 		{
 		/// <summary>
 		/// Обработчик события наступления события окончания загрузки

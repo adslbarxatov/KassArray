@@ -8,7 +8,7 @@
 
 		<ScrollView>
 			<StackLayout>
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<StackLayout Orientation="Horizontal">
 					<Label x:Name="SNLabel" VerticalOptions="Center" />
 					<Editor x:Name="SN" VerticalOptions="Center" />
 					<Button x:Name="Find" VerticalOptions="Center" />
@@ -28,6 +28,9 @@
 					<Label x:Name="INNCheckLabel" VerticalOptions="Center" />
 				</StackLayout>
 
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 				<Label x:Name="RNMLabel" />
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="RNM" />
@@ -38,6 +41,9 @@
 					<Button x:Name="RNMGenerate" />
 					<Button x:Name="Clear" />
 				</StackLayout>
+
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<Label x:Name="RNMAbout" />
 

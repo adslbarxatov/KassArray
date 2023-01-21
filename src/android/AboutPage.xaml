@@ -10,6 +10,9 @@
 			<StackLayout>
 				<Label x:Name="AboutLabel" />
 
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Button x:Name="AppPage" HorizontalOptions="Center" />
 					<Button x:Name="ADPPage" HorizontalOptions="Center" />
@@ -17,14 +20,16 @@
 
 				<Button x:Name="ManualPage" HorizontalOptions="Center" />
 				<Button x:Name="DevPage" HorizontalOptions="Center" />
+				<Button x:Name="FNReaderPage" HorizontalOptions="Center" />
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#606060" Margin="9" />
+					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<Label x:Name="Alert" />
 				<Button x:Name="CommunityPage" HorizontalOptions="Center" />
 
-				<Button x:Name="UpdatePage" HorizontalOptions="Center" />
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<Label x:Name="UnlockLabel" IsVisible="false" />
 				<Editor x:Name="UnlockField" IsVisible="false" HorizontalOptions="CenterAndExpand" />

@@ -16,6 +16,9 @@
 				</StackLayout>
 				<Editor x:Name="BarcodeField" />
 
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 				<Label x:Name="BarcodeDescriptionLabel" />
 				<Label x:Name="BarcodeDescription" />
 

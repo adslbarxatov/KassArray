@@ -18,6 +18,9 @@
 
 				<Label x:Name="HelpLabel" />
 
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 			</StackLayout>
 		</ScrollView>
 

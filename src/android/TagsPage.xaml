@@ -10,12 +10,16 @@
 			<StackLayout>
 
 				<Label x:Name="TLVSearchLabel" VerticalOptions="Center" />
+
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="TLVSearchText" VerticalOptions="Center" />
 
 					<Button x:Name="TLVSearchButton" VerticalOptions="Center" />
 					<Button x:Name="TLVClearButton" VerticalOptions="Center" />
 				</StackLayout>
+
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<Label x:Name="TLVDescriptionLabel" />
 				<Label x:Name="TLVDescription" />
@@ -28,6 +32,9 @@
 
 				<Label x:Name="TLVObligationLabel" />
 				<Label x:Name="TLVObligation" />
+
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<Button x:Name="TLVObligationHelpLabel" />
 
