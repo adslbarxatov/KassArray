@@ -71,8 +71,72 @@ namespace RD_AAOW
 					b = " " + b;
 				}
 
-			// Завершено
-			return answer + b;
+			// Разложение на простые множители
+			answer += (b + "\r\n");
+			return answer + SplitNumberToSimpleMultipliers (n);
+			}
+
+		private static string SplitNumberToSimpleMultipliers (ulong Value)
+			{
+			// Защита
+			if (Value == 0)
+				return "Число не является натуральным";
+
+			if (Value == 1)
+				return "Число не имеет других делителей, кроме самого себя";
+
+			// Сборка списков
+			ulong i = 2;
+			ulong n = Value;
+			ulong p = 0;
+			string res = "0d ";
+			/*List<ulong> bases = new List<ulong> ();
+			List<ulong> powers = new List<ulong> ();*/
+
+			while (n != 1)
+				{
+				if (n % i == 0)
+					{
+					n /= i;
+					p++;
+					}
+				else
+					{
+					if (p != 0)
+						res += (i.ToString () + MakePower (p) + " × ");
+
+					p = 0;
+					if (i == 2)
+						i++;
+					else
+						i += 2;
+
+					if (i > 1000)
+						return "Факторизация числа превышает возможности приложения";
+					}
+				}
+			res += (i.ToString () + MakePower (p));
+
+			// Сборка представления
+			/*for (int j = 0; j < bases.Count; j++)
+				res += (bases[j].ToString () + MakePower (powers[j]) + (j < bases.Count - 1 ? " × " : ""));*/
+
+			return res;
+			}
+
+		private static string MakePower (ulong Value)
+			{
+			string res = Value.ToString ();
+			res = res.Replace ('0', '⁰');
+			res = res.Replace ('1', '¹');
+			res = res.Replace ('2', '²');
+			res = res.Replace ('3', '³');
+			res = res.Replace ('4', '⁴');
+			res = res.Replace ('5', '⁵');
+			res = res.Replace ('6', '⁶');
+			res = res.Replace ('7', '⁷');
+			res = res.Replace ('8', '⁸');
+			return res.Replace ('9', '⁹');
 			}
 
 		/// <summary>
