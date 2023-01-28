@@ -99,7 +99,6 @@ namespace RD_AAOW
 
 		private ConfigAccessor ca;
 		private KKTSupport.FNLifeFlags fnlf;
-		/*private double fontSizeMultiplier = 1.2;*/
 		private PrintManager pm;
 
 		private const string noBrowserError = "Веб-браузер отсутствует на этом устройстве";
@@ -557,7 +556,7 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDPortK", OFD.OKPPort,
 				ofdFieldBackColor, Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDEmailLabel", "E-mail ОФД:", AndroidSupport.LabelTypes.Header);
+			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDEmailLabel", "E-mail отправителя чеков:", AndroidSupport.LabelTypes.Header);
 			ofdEmailButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor,
 				Field_Clicked, true);
 

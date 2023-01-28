@@ -128,6 +128,7 @@ namespace RD_AAOW
 			OFDPortK.Text = OFD.OKPPort;
 			OFDYaDNS1.Text = OFD.YandexDNSReq;
 			OFDYaDNS2.Text = OFD.YandexDNSAlt;
+			LoadOFDParameters ();
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
 
@@ -488,10 +489,11 @@ namespace RD_AAOW
 			// Раздел параметров ОФД
 			if (((Button)sender).Name == OFDFromFNReader.Name)
 				{
-				if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+				if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) && ((right = status.IndexOf ("\n", left)) >= 0))
 					{
 					left += 9;
 					OFDINN.Text = status.Substring (left, right - left).Trim ();
+					LoadOFDParameters ();
 					}
 
 				return;
@@ -500,7 +502,7 @@ namespace RD_AAOW
 			// Раздел срока жизни ФН
 			if (((Button)sender).Name == FNFromFNReader.Name)
 				{
-				if (((left = status.LastIndexOf ("номер ФН: ")) >= 0) && ((right = status.IndexOf ("(", left)) >= 0))
+				if (((left = status.LastIndexOf ("номер ФН: ")) >= 0) && ((right = status.IndexOf ("\n", left)) >= 0))
 					{
 					left += 10;
 					FNLifeSN.Text = status.Substring (left, right - left).Trim ();
@@ -514,15 +516,15 @@ namespace RD_AAOW
 				else
 					OtherTaxFlag.Checked = true;
 
-				if ((status.IndexOf ("Режим товаров", left) >= 0) || (status.IndexOf ("товары, ", left) >= 0))
+				if ((status.IndexOf ("реализация товаров", left) >= 0))
 					GoodsFlag.Checked = true;
 				else
 					ServicesFlag.Checked = true;
 
-				AutonomousFlag.Checked = (status.IndexOf ("Автономный", left) >= 0);
+				AutonomousFlag.Checked = (status.IndexOf ("автономная", left) >= 0);
 				ExciseFlag.Checked = (status.IndexOf ("подакцизн", left) >= 0);
 				FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);
-				AgentsFlag.Checked = (status.IndexOf ("агент", left) >= 0);
+				AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);
 				// Дату и сезонный режим не запрашиваем
 
 				return;
@@ -530,7 +532,7 @@ namespace RD_AAOW
 
 			// Раздел контроля ЗН ККТ, РНМ и ИНН
 			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) &&
-				((right = status.IndexOf ("(", left)) >= 0))
+				((right = status.IndexOf ("\n", left)) >= 0))
 				{
 				left += 21;
 				RNMSerial.Text = status.Substring (left, right - left).Trim ();
@@ -822,10 +824,11 @@ namespace RD_AAOW
 			{
 			string s = ofd.GetOFDINNByName (OFDNamesList.Text);
 			OFDINN.Text = string.IsNullOrWhiteSpace (s) ? "" : s;
+			LoadOFDParameters ();
 			}
 
 		// Выбор ОФД
-		private void OFDINN_TextChanged (object sender, EventArgs e)
+		private void LoadOFDParameters ()
 			{
 			List<string> parameters = ofd.GetOFDParameters (OFDINN.Text.Contains ("0000000000") ? "" : OFDINN.Text);
 
@@ -890,7 +893,7 @@ namespace RD_AAOW
 		// Очистка полей
 		private void OFDINNClear_Click (object sender, EventArgs e)
 			{
-			OFDINN.Text = OFDSearchText.Text = "";
+			OFDSearchText.Text = "";
 			}
 
 		#endregion

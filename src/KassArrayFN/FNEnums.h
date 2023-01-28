@@ -147,7 +147,7 @@ enum TLVTags
 #define	PROC_AUTOMATICFLAG(src,dest,type)\
 		case AutomaticFlag:\
 			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s  - ККТ установлена в автомате\r\n", dest);\
+				sprintf (dest, "%s%s Р: ККТ установлена в автомате\r\n", dest, RegFlagSign);\
 			break;
 
 	// Флаг автономного режима (1002)
@@ -157,7 +157,9 @@ enum TLVTags
 		case AutonomousFlag:\
 			if (REG_CAUSE (type)) {\
 				autonomousFlag = src;\
-				sprintf (dest, src ? "%s  - Автономный режим (без ОФД)\r\n" : "%s  - Режим передачи данных\r\n", dest);\
+				sprintf (dest, src ? "%s%s Р: автономная ККТ (без ОФД)\r\n" :\
+					"%s%s Р: ККТ передаёт данные ОФД\r\n", \
+					dest, RegFlagSign);\
 				}\
 			break;
 
@@ -285,15 +287,16 @@ enum TLVTags
 #define PROC_ENCRYPTIONFLAG(src,dest,type)\
 	case EncryptionFlag:\
 		if ((REG_CAUSE (type)) && src)\
-			sprintf (dest, "%s  - Шифрование фискальных данных\r\n", dest);\
+			sprintf (dest, "%s%s Р: включено шифрование данных\r\n", dest, RegFlagSign);\
 		break;
 
 	// Признаки агента (1057)
 	AgentType = 0x0421,
 
+	/*sprintf (dest, "%s  Признаки агента: %s\r\n", dest, GetAgentFlags (src));\*/
 #define PROC_AGENTTYPE(src,dest)\
 	case AgentType:\
-		sprintf (dest, "%s  Признаки агента: %s\r\n", dest, GetAgentFlags (src));\
+		strcat (dest, GetAgentFlags (src));\
 		break;
 
 	// Название предмета расчёта (1059)
@@ -336,10 +339,11 @@ enum TLVTags
 	// Причина перерегистрации (1101)
 	RegistrationChangeCause = 0x044D,
 
+	/*sprintf (dest, "%s  Причина перерегистрации: %s\r\n", dest, GetRegistrationChangeCause (src));\*/
 #define PROC_REGISTRATIONCHANGECAUSE(src,dest,type)\
 		case RegistrationChangeCause:\
 			if (REREG_CAUSE (type))\
-				sprintf (dest, "%s  Причина перерегистрации: %s\r\n", dest, GetRegistrationChangeCause (src));\
+				strcat (dest, GetRegistrationChangeCause (src));\
 			break;
 
 	// Сумма к оплате по ставкам НДС (1102 - 1107)
@@ -356,7 +360,7 @@ enum TLVTags
 #define PROC_INTERNETFLAG(src,dest,type)\
 		case InternetFlag:\
 			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s  - Работа в сети интернет\r\n", dest);\
+				sprintf (dest, "%s%s Р: работа в сети интернет\r\n", dest, RegFlagSign);\
 			break;
 
 	// Флаг режима услуг (1109)
@@ -365,7 +369,8 @@ enum TLVTags
 #define PROC_SERVICEFLAG(src,dest,type)\
 		case ServiceFlag:\
 			if (REG_CAUSE (type))\
-				sprintf (dest, src ? "%s  - Режим услуг\r\n" : "%s  - Режим товаров\r\n", dest);\
+				sprintf (dest, src ? "%s%s Р: реализация услуг\r\n" : "%s%s Р: реализация товаров\r\n",\
+					dest, RegFlagSign);\
 			break;
 
 	// Флаг формирования БСО (1110)
@@ -374,7 +379,8 @@ enum TLVTags
 #define PROC_BLANKFLAG(src,dest,type)\
 		case BlankFlag:\
 			if (REG_CAUSE (type))\
-				sprintf (dest, src ? "%s  - Режим системы БСО\r\n": "%s  - Режим кассовых чеков\r\n", dest);\
+				sprintf (dest, src ? "%s%s Р: оформление БСО\r\n" : "%s%s Р: оформление кассовых чеков\r\n",\
+					dest, RegFlagSign);\
 			break;
 
 	// Количество документов за смену (1111)
@@ -400,7 +406,7 @@ enum TLVTags
 #define PROC_LOTTERYFLAG(src,dest,type)\
 		case LotteryFlag:\
 			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s  - Используется при проведении лотерей\r\n", dest);\
+				sprintf (dest, "%s%s Р: проведение лотерей\r\n", dest, RegFlagSign);\
 			break;
 
 	// Итоги по признакам расчёта (1129 - 1132)
@@ -499,7 +505,7 @@ enum TLVTags
 #define PROC_GAMESFLAG(src,dest,type)\
 		case GamesFlag:\
 			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s  - Используется при проведении азартных игр\r\n", dest);\
+				sprintf (dest, "%s%s Р: проведение азартных игр\r\n", dest, RegFlagSign);\
 			break;
 
 	// Счётчики итогов смены (1194)
@@ -528,18 +534,20 @@ enum TLVTags
 	// Флаги причин перерегистрации (1205)
 	ExtendedReregFlags = 0x04B5,
 
+/*sprintf (dest, "%s  Причины перерегистрации: %s\r\n", dest, GetRegistrationChangeCauseExtended (src));\*/
 #define PROC_EXTENDEDREREGFLAGS(src,dest,type)\
 		case ExtendedReregFlags:\
 			if (REREG_CAUSE (type))\
-				sprintf (dest, "%s  Причины перерегистрации: %s\r\n", dest, GetRegistrationChangeCauseExtended (src));\
+				strcat (dest, GetRegistrationChangeCauseExtended (src));\
 				break;
 
 	// Флаги предупреждений ОФД (1206)
 	OFDAttentionFlags = 0x04B6,
 
+/*sprintf (dest, "%s  Флаги предупреждений ОФД: %s\r\n", dest, GetOFDAttentionFlags (src));\*/
 #define PROC_OFDATTENTION(src,dest)\
 		case OFDAttentionFlags:\
-			sprintf (dest, "%s  Флаги предупреждений ОФД: %s\r\n", dest, GetOFDAttentionFlags (src));\
+			strcat (dest, GetOFDAttentionFlags (src));\
 			break;
 
 	// Флаг подакцизных товаров (1207)
@@ -548,7 +556,7 @@ enum TLVTags
 #define PROC_EXCISEFLAG(src,dest,type)\
 		case ExciseFlag:\
 			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s  - Используется для продажи подакцизных товаров\r\n", dest);\
+				sprintf (dest, "%s%s Р: продажа подакцизных товаров\r\n", dest, RegFlagSign);\
 			break;
 
 	// Версия формата фискальных документов (1209)
@@ -617,10 +625,11 @@ enum TLVTags
 	// Расширенные признаки регистрации (1290)
 	ExtendedRegOptions = 0x050A,
 
+/*sprintf (dest, "%s  Признаки регистрации: %s\r\n", dest, GetExtendedRegOptions (src));\*/
 #define PROC_EXTENDEDREGOPT(src,dest,type)\
 		case ExtendedRegOptions:\
 			if (REG_CAUSE (type))\
-				sprintf (dest, "%s  Признаки регистрации: %s\r\n", dest, GetExtendedRegOptions (src));\
+				strcat (dest, GetExtendedRegOptions (src));\
 			break;
 
 	// Типы кодов маркировки (1300 - 1309, 1320 - 1325)

@@ -90,8 +90,6 @@ namespace RD_AAOW
 			ulong n = Value;
 			ulong p = 0;
 			string res = "0d ";
-			/*List<ulong> bases = new List<ulong> ();
-			List<ulong> powers = new List<ulong> ();*/
 
 			while (n != 1)
 				{
@@ -115,12 +113,9 @@ namespace RD_AAOW
 						return "Факторизация числа превышает возможности приложения";
 					}
 				}
+
+			// Завершение
 			res += (i.ToString () + MakePower (p));
-
-			// Сборка представления
-			/*for (int j = 0; j < bases.Count; j++)
-				res += (bases[j].ToString () + MakePower (powers[j]) + (j < bases.Count - 1 ? " × " : ""));*/
-
 			return res;
 			}
 
