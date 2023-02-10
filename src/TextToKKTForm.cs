@@ -262,7 +262,9 @@ namespace RD_AAOW
 			// Контроль
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
+				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Warning, "Завершите работу с ФН, чтобы выйти из приложения");
+				this.TopMost = TopFlag.Checked;
 
 				CallFNReader ("");
 				e.Cancel = true;
@@ -411,10 +413,12 @@ namespace RD_AAOW
 
 			if (!result)
 				{
+				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Warning,
 					"Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
 					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
 					" (раздел «Прочее», кнопка «О программе»)");
+				this.TopMost = TopFlag.Checked;
 
 				return;
 				}
@@ -422,11 +426,13 @@ namespace RD_AAOW
 			// Контроль версии
 			if (FNReaderInstance.LibVersion != ProgramDescription.AssemblyVersion)
 				{
+				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Warning,
 					"Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
 					"текущей версии программы.\n\n" +
 					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
 					" (раздел «Прочее», кнопка «О программе»)");
+				this.TopMost = TopFlag.Checked;
 
 				return;
 				}
@@ -449,8 +455,11 @@ namespace RD_AAOW
 					{
 					ConfigAccessor.NextDumpPath = "";
 
+					this.TopMost = false;
 					RDGenerics.MessageBox (RDMessageTypes.Warning,
 						"Завершите работу с ФН, чтобы открыть новый файл");
+					this.TopMost = TopFlag.Checked;
+
 					CallFNReader ("");
 					}
 				else
@@ -475,8 +484,10 @@ namespace RD_AAOW
 			// Контроль
 			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
 				{
+				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Information,
 					"Статус ФН ещё не запрашивался или содержит не все требуемые поля");
+				this.TopMost = TopFlag.Checked;
 
 				CallFNReader ("");
 				return;
