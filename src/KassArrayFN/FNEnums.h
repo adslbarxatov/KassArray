@@ -1,4 +1,4 @@
-﻿// Общие перечисления
+// Общие перечисления
 
 // Возможные типы фискальных документов
 enum FNDocumentTypes
@@ -293,7 +293,6 @@ enum TLVTags
 	// Признаки агента (1057)
 	AgentType = 0x0421,
 
-	/*sprintf (dest, "%s  Признаки агента: %s\r\n", dest, GetAgentFlags (src));\*/
 #define PROC_AGENTTYPE(src,dest)\
 	case AgentType:\
 		strcat (dest, GetAgentFlags (src));\
@@ -339,7 +338,6 @@ enum TLVTags
 	// Причина перерегистрации (1101)
 	RegistrationChangeCause = 0x044D,
 
-	/*sprintf (dest, "%s  Причина перерегистрации: %s\r\n", dest, GetRegistrationChangeCause (src));\*/
 #define PROC_REGISTRATIONCHANGECAUSE(src,dest,type)\
 		case RegistrationChangeCause:\
 			if (REREG_CAUSE (type))\
@@ -534,7 +532,6 @@ enum TLVTags
 	// Флаги причин перерегистрации (1205)
 	ExtendedReregFlags = 0x04B5,
 
-/*sprintf (dest, "%s  Причины перерегистрации: %s\r\n", dest, GetRegistrationChangeCauseExtended (src));\*/
 #define PROC_EXTENDEDREREGFLAGS(src,dest,type)\
 		case ExtendedReregFlags:\
 			if (REREG_CAUSE (type))\
@@ -544,7 +541,6 @@ enum TLVTags
 	// Флаги предупреждений ОФД (1206)
 	OFDAttentionFlags = 0x04B6,
 
-/*sprintf (dest, "%s  Флаги предупреждений ОФД: %s\r\n", dest, GetOFDAttentionFlags (src));\*/
 #define PROC_OFDATTENTION(src,dest)\
 		case OFDAttentionFlags:\
 			strcat (dest, GetOFDAttentionFlags (src));\
@@ -625,7 +621,6 @@ enum TLVTags
 	// Расширенные признаки регистрации (1290)
 	ExtendedRegOptions = 0x050A,
 
-/*sprintf (dest, "%s  Признаки регистрации: %s\r\n", dest, GetExtendedRegOptions (src));\*/
 #define PROC_EXTENDEDREGOPT(src,dest,type)\
 		case ExtendedRegOptions:\
 			if (REG_CAUSE (type))\
