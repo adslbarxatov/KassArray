@@ -27,7 +27,7 @@ namespace RD_AAOW
 			Application.SetCompatibleTextRenderingDefault (false);
 
 			// Язык интерфейса и контроль XPR
-			if (!Localization.IsXPRClassAcceptable)
+			if (!Localization.IsXPUNClassAcceptable)
 				return;
 
 			// Проверка запуска единственной копии (особая обработка)
