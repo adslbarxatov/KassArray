@@ -17,7 +17,6 @@ namespace RD_AAOW
 		{
 		// Переменные
 		private string projectLink, updatesLink, userManualLink;
-		/*private SupportedLanguages al;*/
 		private string updatesMessage = "", updatesMessageForText = "", description = "",
 			policyLoaderCaption = "", registryFail = "", dpModuleAbsence = "",
 			startDownload = "", packageFail = "", fileWriteFail = "", versionDescription = "",
@@ -261,11 +260,11 @@ namespace RD_AAOW
 		/// <param name="Description">Описание программы и/или справочная информация</param>
 		/// <param name="StartupMode">Флаг, указывающий, что справка не должна отображаться, если
 		/// она уже была показана для данной версии приложения</param>
-		/// <returns>Возвращает 1, если справка уже отображалась для данной версии (при StartupMode == true);
-		/// Другое значение, если окно справки было отображено</returns>
-		public int ShowAbout (/*SupportedLanguages InterfaceLanguage,*/ string Description, bool StartupMode)
+		/// <returns>Возвращает:
+		/// 1, если справка уже отображалась для данной версии (при StartupMode == true);
+		/// другое значение, если окно справки было отображено</returns>
+		public int ShowAbout (string Description, bool StartupMode)
 			{
-			/*al = InterfaceLanguage;*/
 			description = Description;
 
 			return LaunchForm (StartupMode, false);
@@ -277,9 +276,8 @@ namespace RD_AAOW
 		/// <returns>Возвращает 0, если Политика принята;
 		/// 1, если Политика уже принималась ранее;
 		/// -1, если Политика отклонена</returns>
-		public int AcceptEULA (/*SupportedLanguages InterfaceLanguage*/)
+		public int AcceptEULA ()
 			{
-			/*al = InterfaceLanguage;*/
 			return LaunchForm (false, true);
 			}
 
@@ -332,7 +330,6 @@ namespace RD_AAOW
 				return 1;
 
 			// Настройка контролов
-			/*SupportedLanguages al = Localization.CurrentLanguage;*/
 			int al = (int)Localization.CurrentLanguage;
 
 			UserManualButton.Text = locale[al][0];
@@ -354,8 +351,7 @@ namespace RD_AAOW
 			startDownload = locale[al][16];
 
 			if (ToLaboratoryCombo.Items.Count < 1)
-				ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (!Localization.IsCurrentLanguageRuRu
-					/*al != SupportedLanguages.ru_ru*/));
+				ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (!Localization.IsCurrentLanguageRuRu));
 			ToLaboratoryCombo.SelectedIndex = 0;
 
 			this.Text = locale[al][AcceptMode ? 17 : 18];
@@ -446,8 +442,7 @@ namespace RD_AAOW
 		// Метод получает Политику разработки
 		private void PolicyLoader (object sender, DoWorkEventArgs e)
 			{
-			string html = GetHTML (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu
-				/*Localization.CurrentLanguage == SupportedLanguages.ru_ru*/));
+			string html = GetHTML (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu));
 			int textLeft, textRight;
 
 			if (((textLeft = html.IndexOf ("code\">")) >= 0) &&
@@ -531,8 +526,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu
-					/*Localization.CurrentLanguage == SupportedLanguages.ru_ru*/));
+				Process.Start (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu));
 				}
 			catch { }
 			}
@@ -543,8 +537,7 @@ namespace RD_AAOW
 			switch (ToLaboratoryCombo.SelectedIndex)
 				{
 				default:
-					link = RDGenerics.GetDPArrayLink (Localization.IsCurrentLanguageRuRu
-						/*al == SupportedLanguages.ru_ru*/);
+					link = RDGenerics.GetDPArrayLink (Localization.IsCurrentLanguageRuRu);
 					break;
 
 				case 1:
@@ -757,8 +750,7 @@ namespace RD_AAOW
 
 // Получение обновлений Политики (ошибки игнорируются)
 policy:
-			html = GetHTML (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu
-				/*al == SupportedLanguages.ru_ru*/));
+			html = GetHTML (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu));
 			if (((i = html.IndexOf ("<title")) >= 0) && ((j = html.IndexOf ("</title", i)) >= 0))
 				{
 				// Обрезка

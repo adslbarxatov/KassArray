@@ -312,4 +312,30 @@
 		/// </summary>
 		Maximum = 2,
 		}
+
+	/// <summary>
+	/// Доступные варианты инициализации интерфейса данных
+	/// </summary>
+	public enum DataInterfaceModes
+		{
+		/// <summary>
+		/// Не инициализирован
+		/// </summary>
+		NotInited = -1,
+
+		/// <summary>
+		/// COM-порт (физический ФН)
+		/// </summary>
+		COM = 0,
+
+		/// <summary>
+		/// Файл FSD
+		/// </summary>
+		FSD = 1,
+
+		/// <summary>
+		/// Выгрузка FNC
+		/// </summary>
+		FNC = 2
+		}
 	}
