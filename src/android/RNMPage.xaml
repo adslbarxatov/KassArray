@@ -22,29 +22,24 @@
 					<Label x:Name="RNMSupport12" HorizontalTextAlignment="Center" />
 				</StackLayout>
 
-				<Label x:Name="INNLabel" />
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Editor x:Name="INN" />
-					<Label x:Name="INNCheckLabel" VerticalOptions="Center" />
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="INNLabel" VerticalOptions="Center" />
+					<Editor x:Name="INN" VerticalOptions="Center" />
 				</StackLayout>
+				<Label x:Name="INNCheckLabel" HorizontalOptions="Center" />
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<Label x:Name="RNMLabel" />
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Editor x:Name="RNM" />
-					<Label x:Name="RNMCheckLabel" VerticalOptions="Center" />
+					<Editor x:Name="RNM" VerticalOptions="Center" />
+					<Button x:Name="RNMGenerate" VerticalOptions="Center" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
 				</StackLayout>
+				<Label x:Name="RNMCheckLabel" HorizontalOptions="Center" />
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Button x:Name="RNMGenerate" />
-					<Button x:Name="Clear" />
-				</StackLayout>
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="6" />
-
+				<Label />
 				<Label x:Name="RNMAbout" />
 
 				<Label />

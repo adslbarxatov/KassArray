@@ -12,6 +12,9 @@
 				<StackLayout Orientation="Horizontal">
 					<Label x:Name="ConvNumberLabel" VerticalOptions="Center" />
 					<Editor x:Name="ConvNumberField" VerticalOptions="Center" />
+
+					<Button x:Name="ConvNumberInc" VerticalOptions="Center" />
+					<Button x:Name="ConvNumberDec" VerticalOptions="Center" />
 					<Button x:Name="ConvNumberClear" VerticalOptions="Center" />
 				</StackLayout>
 

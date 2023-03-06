@@ -14,8 +14,8 @@
 				<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
 					<Label />
 					<Editor x:Name="FNLifeSerial" VerticalOptions="Center" />
-					<Button x:Name="Clear" VerticalOptions="Center" />
 					<Button x:Name="Find" VerticalOptions="Center" />
+					<Button x:Name="Clear" VerticalOptions="Center" />
 
 					<Label HorizontalOptions="StartAndExpand" />
 					<Switch x:Name="FNLife13" VerticalOptions="Center" />
@@ -73,6 +73,7 @@
 					WidthRequest="200" Color="#505050" Margin="6" />
 
 				<!-- Результат -->
+				<Label x:Name="FNLifeResultLabel" />
 				<Button x:Name="FNLifeResult" />
 				<Label x:Name="FNLifeHelpLabel" />
 

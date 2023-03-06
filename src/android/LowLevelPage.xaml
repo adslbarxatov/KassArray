@@ -9,14 +9,13 @@
 		<ScrollView>
 			<StackLayout>
 
-				<StackLayout Orientation="Horizontal">
-					<Label x:Name="ProtocolLabel" VerticalOptions="Center" />
-					<Button x:Name="ProtocolButton" VerticalOptions="Center" />
-				</StackLayout>
+				<Label x:Name="ProtocolLabel" />
+				<Button x:Name="ProtocolButton" />
 
 				<Label x:Name="CommandLabel" />
 				<Button x:Name="CommandButton" />
 
+				<Label x:Name="CommandSearchLabel" />
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="CommandSearchText" VerticalOptions="Center" />
 					<Button x:Name="CommandSearchButton" VerticalOptions="Center" />

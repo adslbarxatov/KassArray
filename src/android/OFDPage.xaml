@@ -10,15 +10,10 @@
 			<StackLayout>
 
 				<!-- Вводные -->
-				<Label x:Name="OFDNameLabel" VerticalOptions="Center"/>
+				<Label x:Name="OFDNameLabel" />
 				<Button x:Name="OFDName" />
 
-				<!--<StackLayout Orientation="Horizontal">
-					<Label x:Name="OFDINNLabel" VerticalOptions="Center" />
-					<Editor x:Name="OFDINN" VerticalOptions="Center" />
-					<Button x:Name="OFDINNCopy" VerticalOptions="Center" />
-				</StackLayout>-->
-
+				<Label x:Name="OFDSearchLabel" />
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="OFDSearchText" VerticalOptions="Center" />
 					<Button x:Name="OFDSearchButton" VerticalOptions="Center" />

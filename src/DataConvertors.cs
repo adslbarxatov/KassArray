@@ -36,6 +36,11 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
+		/// Возвращает максимальное число, с которым может работать конвертор в текущей версии
+		/// </summary>
+		public const uint MaxValue = 0xFFFFFFFF;
+
+		/// <summary>
 		/// Метод формирует полное описание указанного числа
 		/// </summary>
 		/// <param name="Number">Строка, представляющая число (десятичное или шестнадцатеричное)</param>
@@ -49,7 +54,7 @@ namespace RD_AAOW
 
 			// Форматирование
 			ulong n = (ulong)v;
-			if (n > 0xFFFFFFFF)
+			if (n > MaxValue)
 				return "(введённое число слишком велико)";
 
 			string answer = "0d " + n.ToString ("#,0") + "\r\n0x ";
@@ -109,7 +114,7 @@ namespace RD_AAOW
 					else
 						i += 2;
 
-					if (i > 1000)
+					if (i > 2048)
 						return "Факторизация числа превышает возможности приложения";
 					}
 				}

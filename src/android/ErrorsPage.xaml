@@ -12,6 +12,7 @@
 				<Label x:Name="SelectionLabel" />
 				<Button x:Name="KKTButton" />
 
+				<Label x:Name="SearchLabel" />
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Editor x:Name="ErrorSearchText" VerticalOptions="Center" />
 					<Button x:Name="ErrorSearchButton" VerticalOptions="Center" />

@@ -24,10 +24,10 @@
 
 				<Label x:Name="ResultTextLabel" />
 				<Label x:Name="ErrorLabel" />
-
 				<Label x:Name="ResultText" />
 
-				<Label x:Name="HelpLabel" />
+				<Label x:Name="HelpTextLabel" />
+				<Label x:Name="HelpText" />
 
 				<Label />
 
