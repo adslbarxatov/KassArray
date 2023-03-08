@@ -58,8 +58,23 @@
 					</StackLayout>
 
 					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
-						<Switch x:Name="FNLifeDeFacto" VerticalOptions="Center" />
-						<Label x:Name="FNLifeDeFactoLabel" VerticalOptions="Center" />
+						<Switch x:Name="FNLifeFFD12" VerticalOptions="Center" />
+						<Label x:Name="FNLifeFFD12Label" VerticalOptions="Center" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Switch x:Name="FNLifeGambling" VerticalOptions="Center" />
+						<Label x:Name="FNLifeGamblingLabel" VerticalOptions="Center" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Switch x:Name="FNLifePawn" VerticalOptions="Center" />
+						<Label x:Name="FNLifePawnLabel" VerticalOptions="Center" />
+					</StackLayout>
+
+					<StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+						<Switch x:Name="FNLifeMarkGoods" VerticalOptions="Center" />
+						<Label x:Name="FNLifeMarkGoodsLabel" VerticalOptions="Center" />
 					</StackLayout>
 				</FlexLayout>
 

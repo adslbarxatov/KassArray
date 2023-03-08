@@ -32,8 +32,8 @@ namespace RD_AAOW
 			rnmMasterBackColor = Color.FromHex ("#E0F0FF"),
 			rnmFieldBackColor = Color.FromHex ("#C0E0FF"),
 
-			ofdMasterBackColor = Color.FromHex ("#F0F0FF"),
-			ofdFieldBackColor = Color.FromHex ("#C8C8FF"),
+			ofdMasterBackColor = Color.FromHex ("#F4F4FF"),
+			ofdFieldBackColor = Color.FromHex ("#D0D0FF"),
 
 			tagsMasterBackColor = Color.FromHex ("#E0FFF0"),
 			tagsFieldBackColor = Color.FromHex ("#C8FFE4"),
@@ -86,8 +86,9 @@ namespace RD_AAOW
 			unlockField, fnLifeSerial, tlvTag, rnmKKTSN, rnmINN, rnmRNM,
 			barcodeField, convNumberField, convCodeField;
 
-		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents, fnLifeExcise,
-			fnLifeAutonomous, fnLifeFFD12, keepAppState, allowService;
+		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
+			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
+			keepAppState, allowService;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
 
@@ -443,7 +444,7 @@ namespace RD_AAOW
 
 			fnLifeExcise = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeExcise", false,
 				fnLifeFieldBackColor, FnLife13_Toggled, ca.ExciseFlag);
-			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeExciseLabel", "Подакцизный товар",
+			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeExciseLabel", "Подакцизные товары",
 				AndroidSupport.LabelTypes.DefaultLeft);
 
 			fnLifeAutonomous = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeAutonomous", false,
@@ -451,9 +452,24 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим",
 				AndroidSupport.LabelTypes.DefaultLeft);
 
-			fnLifeFFD12 = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeDeFacto", false,
+			fnLifeFFD12 = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeFFD12", false,
 				fnLifeFieldBackColor, FnLife13_Toggled, ca.FFD12Flag);
-			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeDeFactoLabel", "ФФД 1.2",
+			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeFFD12Label", "ФФД 1.2",
+				AndroidSupport.LabelTypes.DefaultLeft);
+
+			fnLifeGambling = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGambling", false,
+				fnLifeFieldBackColor, FnLife13_Toggled, ca.GamblingLotteryFlag);
+			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeGamblingLabel", "Азартные игры и лотереи",
+				AndroidSupport.LabelTypes.DefaultLeft);
+
+			fnLifePawn = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifePawn", false,
+				fnLifeFieldBackColor, FnLife13_Toggled, ca.PawnInsuranceFlag);
+			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifePawnLabel", "Ломбарды и страхование",
+				AndroidSupport.LabelTypes.DefaultLeft);
+
+			fnLifeMarkGoods = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeMarkGoods", false,
+				fnLifeFieldBackColor, FnLife13_Toggled, ca.MarkGoodsFlag);
+			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeMarkGoodsLabel", "Маркированные товары",
 				AndroidSupport.LabelTypes.DefaultLeft);
 
 			//
@@ -465,10 +481,11 @@ namespace RD_AAOW
 			//
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeResultLabel", "Результат:",
 				AndroidSupport.LabelTypes.HeaderLeft);
-			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "", fnLifeFieldBackColor,
-				FNLifeResultCopy, true);
+			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "",
+				fnLifeFieldBackColor, FNLifeResultCopy, true);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeHelpLabel",
-				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", AndroidSupport.LabelTypes.Tip);
+				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена",
+				AndroidSupport.LabelTypes.Tip);
 
 			//
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
@@ -965,6 +982,9 @@ namespace RD_AAOW
 			ca.ExciseFlag = fnLifeExcise.IsToggled;
 			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
 			ca.FFD12Flag = fnLifeFFD12.IsToggled;
+			ca.GamblingLotteryFlag = fnLifeGambling.IsToggled;
+			ca.PawnInsuranceFlag = fnLifePawn.IsToggled;
+			ca.MarkGoodsFlag = fnLifeMarkGoods.IsToggled;
 
 			ca.KKTSerial = rnmKKTSN.Text;
 			ca.UserINN = rnmINN.Text;
@@ -1228,24 +1248,37 @@ namespace RD_AAOW
 			fnlf.FNExactly13 = fnLifeModelLabel.Text.Contains ("(13)");
 			fnlf.GenericTax = !fnLifeGenericTax.IsToggled;
 			fnlf.Goods = !fnLifeGoods.IsToggled;
-			fnlf.SeasonOrAgents = fnLifeSeason.IsToggled || fnLifeAgents.IsToggled;
+			fnlf.Season = fnLifeSeason.IsToggled;
+			fnlf.Agents = fnLifeAgents.IsToggled;
 			fnlf.Excise = fnLifeExcise.IsToggled;
 			fnlf.Autonomous = fnLifeAutonomous.IsToggled;
 			fnlf.FFD12 = fnLifeFFD12.IsToggled;
-			fnlf.MarkFN = fnLife13.IsEnabled || fns.IsFNCompatibleWithFFD12 (fnLifeSerial.Text);    // Признак распознанного ЗН ФН
+			fnlf.GamblingAndLotteries = fnLifeGambling.IsToggled;
+			fnlf.PawnsAndInsurance = fnLifePawn.IsToggled;
+			fnlf.MarkGoods = fnLifeMarkGoods.IsToggled;
+
+			fnlf.MarkFN = fnLife13.IsEnabled || fns.IsFNCompatibleWithFFD12 (fnLifeSerial.Text);
+			// Признак распознанного ЗН ФН
 
 			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, fnlf);
 
 			fnLifeResult.Text = "ФН прекратит работу ";
-			if (res.Contains ("!"))
+			if (res.Contains (KKTSupport.FNLifeInacceptableSign))
 				{
-				fnLifeResult.TextColor = AndroidSupport.DefaultErrorColor;
+				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 				fnLifeResultDate = res.Substring (1);
 				fnLifeResult.Text += (fnLifeResultDate + "\n(выбранный ФН неприменим с указанными параметрами)");
 				}
+			else if (res.Contains (KKTSupport.FNLifeUnwelcomeSign))
+				{
+				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
+				fnLifeResultDate = res.Substring (1);
+				fnLifeResult.Text += (fnLifeResultDate +
+					"\n(не рекомендуется использовать выбранный ФН с указанными параметрами)");
+				}
 			else
 				{
-				fnLifeResult.TextColor = fnLifeStartDate.TextColor;
+				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 				fnLifeResultDate = res;
 				fnLifeResult.Text += res;
 				}

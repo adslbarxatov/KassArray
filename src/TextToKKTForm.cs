@@ -114,6 +114,9 @@ namespace RD_AAOW
 			ExciseFlag.Checked = ca.ExciseFlag;
 			AutonomousFlag.Checked = ca.AutonomousFlag;
 			FFD12Flag.Checked = ca.FFD12Flag;
+			GamblingLotteryFlag.Checked = ca.GamblingLotteryFlag;
+			PawnInsuranceFlag.Checked = ca.PawnInsuranceFlag;
+			MarkGoodsFlag.Checked = ca.MarkGoodsFlag;
 
 			RNMSerial.MaxLength = (int)kkts.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
@@ -301,6 +304,9 @@ namespace RD_AAOW
 			ca.ExciseFlag = ExciseFlag.Checked;
 			ca.AutonomousFlag = AutonomousFlag.Checked;
 			ca.FFD12Flag = FFD12Flag.Checked;
+			ca.GamblingLotteryFlag = GamblingLotteryFlag.Checked;
+			ca.PawnInsuranceFlag = PawnInsuranceFlag.Checked;
+			ca.MarkGoodsFlag = MarkGoodsFlag.Checked;
 
 			ca.KKTSerial = RNMSerial.Text;
 			ca.UserINN = RNMUserINN.Text;
@@ -536,6 +542,9 @@ namespace RD_AAOW
 				ExciseFlag.Checked = (status.IndexOf ("подакцизн", left) >= 0);
 				FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);
 				AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);
+				MarkGoodsFlag.Checked = (status.IndexOf ("маркирован", left) >= 0);
+				PawnInsuranceFlag.Checked = (status.IndexOf ("ги ломбарда", left) >= 0);
+				GamblingLotteryFlag.Checked = (status.IndexOf ("ги страхования", left) >= 0);
 				// Дату и сезонный режим не запрашиваем
 
 				return;
@@ -680,24 +689,37 @@ namespace RD_AAOW
 			fnlf.FNExactly13 = FNLifeName.Text.Contains ("(13)");
 			fnlf.GenericTax = GenericTaxFlag.Checked;
 			fnlf.Goods = GoodsFlag.Checked;
-			fnlf.SeasonOrAgents = SeasonFlag.Checked || AgentsFlag.Checked;
+			fnlf.Season = SeasonFlag.Checked;
+			fnlf.Agents = AgentsFlag.Checked;
 			fnlf.Excise = ExciseFlag.Checked;
 			fnlf.Autonomous = AutonomousFlag.Checked;
 			fnlf.FFD12 = FFD12Flag.Checked;
-			fnlf.MarkFN = FNLife13.Enabled && FNLife36.Enabled || fns.IsFNCompatibleWithFFD12 (FNLifeSN.Text);  // Корректный ЗН ФН
+			fnlf.GamblingAndLotteries = GamblingLotteryFlag.Checked;
+			fnlf.PawnsAndInsurance = PawnInsuranceFlag.Checked;
+			fnlf.MarkGoods = MarkGoodsFlag.Checked;
+
+			fnlf.MarkFN = FNLife13.Enabled && FNLife36.Enabled || fns.IsFNCompatibleWithFFD12 (FNLifeSN.Text);
+			// Корректный ЗН ФН
 
 			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, fnlf);
 
 			FNLifeResult.Text = "ФН прекратит работу ";
-			if (res.Contains ("!"))
+			if (res.StartsWith (KKTSupport.FNLifeInacceptableSign))
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 				fnLifeResult = res.Substring (1);
 				FNLifeResult.Text += (fnLifeResult + "\n(выбранный ФН неприменим с указанными параметрами)");
 				}
+			else if (res.StartsWith (KKTSupport.FNLifeUnwelcomeSign))
+				{
+				FNLifeResult.ForeColor = Color.FromArgb (255, 128, 0);
+				fnLifeResult = res.Substring (1);
+				FNLifeResult.Text += (fnLifeResult +
+					"\n(не рекомендуется использовать выбранный ФН с указанными параметрами)");
+				}
 			else
 				{
-				FNLifeResult.ForeColor = Color.FromArgb (0, 0, 0);
+				FNLifeResult.ForeColor = Color.FromArgb (0, 128, 0);
 				fnLifeResult = res;
 				FNLifeResult.Text += res;
 				}

@@ -47,9 +47,14 @@ namespace RD_AAOW
 			public bool Goods;
 
 			/// <summary>
-			/// Флаг указывает на агентскую схему или сезонный режим работы
+			/// Флаг указывает на сезонный режим работы
 			/// </summary>
-			public bool SeasonOrAgents;
+			public bool Season;
+
+			/// <summary>
+			/// Флаг указывает на агентскую схему работы
+			/// </summary>
+			public bool Agents;
 
 			/// <summary>
 			/// Флаг указывает на наличие подакцизных товаров
@@ -67,58 +72,96 @@ namespace RD_AAOW
 			public bool FFD12;
 
 			/// <summary>
-			/// Флаг маркировочного ФН
+			/// Флаг ФН с аппаратной поддержкой маркировки
 			/// </summary>
 			public bool MarkFN;
+
+			/// <summary>
+			/// Флаг торговли маркированными товарами
+			/// </summary>
+			public bool MarkGoods;
+
+			/// <summary>
+			/// Флаг азартных игр и лотерей
+			/// </summary>
+			public bool GamblingAndLotteries;
+
+			/// <summary>
+			/// Флаг ломбардной деятельности и страхования
+			/// </summary>
+			public bool PawnsAndInsurance;
 			}
+
+		/// <summary>
+		/// Признак неприменимости ФН с указанными параметрами
+		/// </summary>
+		public const string FNLifeInacceptableSign = "!";
+
+		/// <summary>
+		/// Признак нежелательности использования ФН с указанными параметрами
+		/// </summary>
+		public const string FNLifeUnwelcomeSign = "?";
 
 		/// <summary>
 		/// Метод формирует дату истечения срока эксплуатации ФН с указанными параметрами
 		/// </summary>
 		/// <param name="StartDate">Дата фискализации</param>
 		/// <param name="Flags">Параметры расчёта срока действия</param>
-		/// <returns>Возвращает строку с датой или пустую строку, если указанная модель ФН
-		/// не может быть использована с указанными режимами и параметрами</returns>
+		/// <returns>Возвращает строку с датой;
+		/// может возвращать признаки недопустимости или нежелательности применения
+		/// указанной модели с заданными параметрами</returns>
 		public static string GetFNLifeEndDate (DateTime StartDate, FNLifeFlags Flags)
 			{
 			string res = "";
 
-			// Отсечение недопустимых вариантов
-			if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||               // Нельзя игнорировать
-
-				Flags.FFD12 && !Flags.GenericTax && Flags.FN15 &&
-				!Flags.SeasonOrAgents && !Flags.Excise && !Flags.Autonomous ||
-
-				Flags.FFD12 && !Flags.MarkFN)
+			// Определение недопустимых вариантов
+			if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||   // Нельзя игнорировать
+				Flags.FFD12 && !Flags.MarkFN ||                     // Невозможные варианты
+				!Flags.Goods && (Flags.Excise || Flags.MarkGoods) ||
+				Flags.Goods && Flags.GamblingAndLotteries)
 				{
-				res = "!";
+				res = FNLifeInacceptableSign;
 				}
 
-			// Определение срока жизни
-			int length = 1110;
-
-			if (Flags.Excise && Flags.FFD12)
+			// Определение нежелательных вариантов
+			else if (/*Flags.FFD12 &&*/ !Flags.GenericTax && Flags.FN15 &&
+				!Flags.Season && !Flags.Agents && !Flags.Excise && !Flags.Autonomous)
 				{
-				length = 410;
-				}
-			else if (Flags.Autonomous)
-				{
-				if (Flags.FN15)
-					length = 410;
-				else
-					length = 560;
-				}
-			else if (!Flags.FN15 && Flags.GenericTax && Flags.Goods)
-				{
-				length = 560;   // Нововведение ФН-М 36
-				}
-			else if (Flags.FN15)
-				{
-				length = Flags.FNExactly13 ? 410 : 470;
+				res = FNLifeUnwelcomeSign;
 				}
 
 			// Результат
-			return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");
+			return res + StartDate.AddDays (GetFNLifeLength (Flags)).ToString ("dd.MM.yyyy");
+			}
+
+		private static uint GetFNLifeLength (FNLifeFlags Flags)
+			{
+			// Определение срока жизни
+			uint length = 1110u;
+
+			if ((Flags.GamblingAndLotteries || Flags.PawnsAndInsurance) && Flags.FFD12 && Flags.FN15 ||
+				Flags.Excise && Flags.FFD12)
+				{
+				length = 410u;
+				}
+			else if (Flags.Autonomous)
+				{
+				if (Flags.FN15 || Flags.FFD12 && Flags.Goods && Flags.GenericTax)
+					length = 410u;
+				else
+					length = 560u;
+				}
+			else if (!Flags.FN15 && Flags.GenericTax && (Flags.Goods ||
+				Flags.Agents && Flags.FFD12))
+				{
+				length = 560u;
+				}
+			else if (Flags.FN15)
+				{
+				length = Flags.FNExactly13 ? 410u : 470u;
+				}
+
+			return length;
 			}
 
 		// Контрольная последовательность для определения корректности ИНН

@@ -87,17 +87,17 @@ namespace RD_AAOW
 		CodeRequest = 31,
 
 		/// <summary>
-		/// Уведомление о реализации кода маркировки
+		/// Уведомление о реализации маркированного товара
 		/// </summary>
 		ReleaseRequest = 33,
 
 		/// <summary>
-		/// Ответ на запрос
+		/// Ответ на запрос о КМ
 		/// </summary>
 		CodeAnswer = 32,
 
 		/// <summary>
-		/// Квитанция на уведомление
+		/// Квитанция на уведомление о РМТ
 		/// </summary>
 		ReleaseAnswer = 34
 		}
@@ -417,7 +417,7 @@ namespace RD_AAOW
 				if (oblFFDVersions[oblIndices[Index][i]] != FFD)
 					continue;
 
-				res += "• Для ";
+				res += "Для ";
 
 				// Типы документов
 				switch (oblDocTypes[oblIndices[Index][i]])
@@ -480,11 +480,13 @@ namespace RD_AAOW
 					}
 
 				// Обязательность
-				res += " ";
+				res += ":";
 				for (int j = 0; j < 2; j++)
 					{
 					TLVTags_ObligationStates os = ((j == 0) ? oblPrintObligations[oblIndices[Index][i]] :
 						oblVirtualObligations[oblIndices[Index][i]]);
+
+					res += "\r\n• ";
 					switch (os)
 						{
 						case TLVTags_ObligationStates.Unused:
@@ -510,11 +512,11 @@ namespace RD_AAOW
 								{
 								res += " (";
 								if (cond)
-									res += ("при соблюдении прим. " + condition + " к табл. " +
+									res += ("с учётом прим. " + condition + " к табл. " +
 										oblTables[oblIndices[Index][i]]);
 
 								if (cond && parent)
-									res += " и ";
+									res += " ";
 
 								if (parent)
 									{
@@ -534,13 +536,13 @@ namespace RD_AAOW
 							break;
 						}
 
-					res += ((j == 0) ? " в печ. форме; " : " в эл. форме;\r\n");
+					res += ((j == 0) ? " в печ. форме" : " в эл. форме\r\n\r\n");
 					}
 				}
 
 			// Завершено
-			if (res.EndsWith (";\r\n"))
-				res = res.Substring (0, res.Length - 3);
+			while (res.EndsWith ("\r\n"))
+				res = res.Substring (0, res.Length - 2);
 			if (string.IsNullOrWhiteSpace (res))
 				res = "• Нет сведений об обязательности тега в данном ФФД";
 
