@@ -22,6 +22,11 @@ namespace RD_AAOW
 	public static class KKTSupport
 		{
 		/// <summary>
+		/// Ссылка на руководство к приложению
+		/// </summary>
+		public const string FNReaderLink = "https://adslbarxatov.github.io/KassArray";
+
+		/// <summary>
 		/// Структура используется для передачи списка параметров определения срока жизни ФН
 		/// </summary>
 		public struct FNLifeFlags
@@ -118,7 +123,8 @@ namespace RD_AAOW
 			if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||   // Нельзя игнорировать
 				Flags.FFD12 && !Flags.MarkFN ||                     // Невозможные варианты
 				!Flags.Goods && (Flags.Excise || Flags.MarkGoods) ||
-				Flags.Goods && Flags.GamblingAndLotteries)
+				Flags.Goods && Flags.GamblingAndLotteries ||
+				Flags.MarkGoods && !Flags.FFD12)
 				{
 				res = FNLifeInacceptableSign;
 				}

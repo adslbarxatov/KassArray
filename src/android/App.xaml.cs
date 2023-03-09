@@ -454,7 +454,7 @@ namespace RD_AAOW
 
 			fnLifeFFD12 = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeFFD12", false,
 				fnLifeFieldBackColor, FnLife13_Toggled, ca.FFD12Flag);
-			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeFFD12Label", "ФФД 1.2",
+			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeFFD12Label", "ФФД 1.1, 1.2",
 				AndroidSupport.LabelTypes.DefaultLeft);
 
 			fnLifeGambling = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGambling", false,
@@ -1499,7 +1499,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (ProgramDescription.AssemblyFNReaderLink);
+				await Launcher.OpenAsync (KKTSupport.FNReaderLink);
 				}
 			catch
 				{

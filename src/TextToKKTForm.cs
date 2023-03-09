@@ -340,7 +340,7 @@ namespace RD_AAOW
 			this.TopMost = TopFlag.Checked;
 			}
 
-		// Дополнительные функции
+		/*// Дополнительные функции
 		private void FNReaderUserManual_Click (object sender, EventArgs e)
 			{
 			try
@@ -348,7 +348,7 @@ namespace RD_AAOW
 				Process.Start (ProgramDescription.AssemblyFNReaderLink);
 				}
 			catch { }
-			}
+			}*/
 
 		// Запрос цвета, соответствующего статусу поддержки
 		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
@@ -1106,6 +1106,42 @@ namespace RD_AAOW
 			ConvNumberResult.Text = DataConvertors.GetNumberDescription (ConvNumber.Text);
 			}
 
+		private void ConvNumberAdd_Click (object sender, EventArgs e)
+			{
+			bool plus = ((Button)sender).Text.Contains ("+");
+
+			// Извлечение значения с защитой
+			uint v = 0;
+			try
+				{
+				v = uint.Parse (ConvNumber.Text);
+				}
+			catch { }
+
+			// Обновление и возврат
+			if (plus)
+				{
+				if (v < DataConvertors.MaxValue)
+					v++;
+				else
+					v = DataConvertors.MaxValue;
+				}
+			else
+				{
+				if (v > 0)
+					v--;
+				else
+					v = 0;
+				}
+
+			ConvNumber.Text = v.ToString ();
+			}
+
+		private void ConvNumberClearButton_Click (object sender, EventArgs e)
+			{
+			ConvNumber.Text = "";
+			}
+
 		private void ConvCode_TextChanged (object sender, EventArgs e)
 			{
 			string[] res = DataConvertors.GetSymbolDescription (ConvCode.Text, 0);
@@ -1120,16 +1156,11 @@ namespace RD_AAOW
 			ConvCode.Text = res[2];
 			}
 
-		private void ConvCodeIncrement_KeyDown (object sender, KeyEventArgs e)
+		/*private void ConvCodeIncrement_KeyDown (object sender, KeyEventArgs e)
 			{
 			if (e.KeyCode == Keys.Return)
 				ConvCodeAdd_Click (null, null);
-			}
-
-		private void ConvNumberClearButton_Click (object sender, EventArgs e)
-			{
-			ConvNumber.Text = "";
-			}
+			}*/
 
 		private void ConvCodeClearButton_Click (object sender, EventArgs e)
 			{
