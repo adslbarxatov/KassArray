@@ -9,9 +9,7 @@
 
 ## Описание
 
-
-Версия для Windows имеет дополнительный модуль чтения и обработки данных фискального накопителя (ФН).
-Полное руководство пользователя для модуля доступно на [отдельной странице](https://github.com/adslbarxatov/KassArray/blob/master/FN.md).
+Подробное описание проекта теперь доступно на [отдельной странице](https://adslbarxatov.github.io/KassArray)
 
 &nbsp;
 
@@ -27,13 +25,6 @@
 
 Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/KassArray/blob/master/src/KassArrayFN/FNEnums.h).
 
-#
-
-- Android-версия доступна на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT); для неё потребуется ОС Android 5.0 или новее;
-- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/latest) для Android 4.2 и новее или устройств без Play market;
-- Android-версия доступна также на платформе [AppGallery](https://url.cloud.huawei.com/kOnu2dYlNu?shareTo=qrcode).
-- Приложение также доступно в [GetApps](https://global.app.mi.com/details?id=texttokkt.xiaomi).
-
 &nbsp;
 
 
@@ -46,6 +37,17 @@
 
 - USB-VCOM-UART переходник для подключения к разъёму USB компьютера. В этом случае потребуется установить драйвера устройства;
 инструкции и ссылки для их установки предоставляются производителями таких переходников.
+
+&nbsp;
+
+
+
+## Доступные релизы приложения
+
+- Android-версия доступна на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT); для неё потребуется ОС Android 5.0 или новее;
+- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/latest) для Android 4.2 и новее или устройств без Play market;
+- Android-версия доступна также на платформе [AppGallery](https://url.cloud.huawei.com/kOnu2dYlNu?shareTo=qrcode).
+- Приложение также доступно в [GetApps](https://global.app.mi.com/details?id=texttokkt.xiaomi).
 
 &nbsp;
 
