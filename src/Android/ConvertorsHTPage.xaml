@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RD_AAOW.ConvertorsHTPage">
+
+	<StackLayout >
+		<Label x:Name="HeaderLabel" />
+
+		<ScrollView>
+			<StackLayout>
+
+				<Label x:Name="HexLabel" />
+				<Editor x:Name="HexField" />
+
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Button x:Name="HexToTextButton" VerticalOptions="Center" />
+					<Button x:Name="TextToHexButton" VerticalOptions="Center" />
+					<Button x:Name="ClearButton" VerticalOptions="Center" />
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Label x:Name="EncodingLabel" VerticalOptions="Center" />
+					<Button x:Name="EncodingButton" VerticalOptions="Center" />
+				</StackLayout>
+
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
+				<Label x:Name="TextLabel" />
+				<Editor x:Name="TextField" />
+
+				<Label />
+
+				<Label />
+
+			</StackLayout>
+		</ScrollView>
+
+	</StackLayout>
+</ContentPage>

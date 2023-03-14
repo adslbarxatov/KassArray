@@ -16,7 +16,9 @@
 	<mypages:KKTCodesPage x:Name="KKTCodesPage" />
 	<mypages:ConnectorsPage x:Name="ConnectorsPage" />
 	<mypages:BarCodesPage x:Name="BarCodesPage" />
-	<mypages:ConvertorsPage x:Name="ConvertorsPage" />
+	<mypages:ConvertorsSNPage x:Name="ConvertorsSNPage" />
+	<mypages:ConvertorsUCPage x:Name="ConvertorsUCPage" />
+	<mypages:ConvertorsHTPage x:Name="ConvertorsHTPage" />
 
 	<mypages:AboutPage x:Name="AboutPage" />
 </CarouselPage>

@@ -130,7 +130,7 @@ namespace RD_AAOW
 				}
 
 			// Определение нежелательных вариантов
-			else if (/*Flags.FFD12 &&*/ !Flags.GenericTax && Flags.FN15 &&
+			else if (!Flags.GenericTax && Flags.FN15 &&
 				!Flags.Season && !Flags.Agents && !Flags.Excise && !Flags.Autonomous)
 				{
 				res = FNLifeUnwelcomeSign;

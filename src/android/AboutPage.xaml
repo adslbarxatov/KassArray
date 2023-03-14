@@ -18,7 +18,6 @@
 				<Button x:Name="ManualPage" HorizontalOptions="Center" />
 				<Button x:Name="AppPage" HorizontalOptions="Center" />
 				<Button x:Name="ADPPage" HorizontalOptions="Center" />
-				<Button x:Name="FNReaderPage" HorizontalOptions="Center" />
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />

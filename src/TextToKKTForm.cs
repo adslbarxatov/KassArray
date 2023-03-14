@@ -13,8 +13,8 @@ namespace RD_AAOW
 	/// </summary>
 	public partial class TextToKKTForm: Form
 		{
-		// Переменные
-		private KKTCodes kkmc = null;               // Дескрипторы информационных классов
+		// Дескрипторы информационных классов
+		private KKTCodes kkmc = null;
 		private KKTErrorsList kkme = null;
 		private OFD ofd = null;
 		private LowLevel ll = null;
@@ -26,14 +26,27 @@ namespace RD_AAOW
 		private BarCodes barc = null;
 		private Connectors conn = null;
 
-		private NotifyIcon ni = new NotifyIcon ();  // Дескриптор иконки в трее
+		// Дескриптор иконки в трее
+		private NotifyIcon ni = new NotifyIcon ();
 
-		private KKTSupport.FNLifeFlags fnlf;        // Параметры вычисления срока жизни ФН
-		private string fnLifeResult = "";           // Рассчитанный срок жизни ФН
+		// Параметры вычисления срока жизни ФН
+		private KKTSupport.FNLifeFlags fnlf;
 
-		private int lastErrorSearchOffset = 0;      // Ссылки на текущие смещения в списках поиска
+		// Рассчитанный срок жизни ФН
+		private string fnLifeResult = "";
+
+		// Ссылки на текущие смещения в списках поиска
+		private int lastErrorSearchOffset = 0;
 		private int lastOFDSearchOffset = 0;
 		private int lastLowLevelSearchOffset = 0;
+
+		// Число режимов преобразования
+		private uint encodingModesCount;
+
+		// Дескрипторы библиотеки модуля работы с ФН
+		private Assembly FNReaderDLL;
+		private Type FNReaderProgram;
+		private dynamic FNReaderInstance;
 
 		#region Главный интерфейс
 
@@ -88,6 +101,7 @@ namespace RD_AAOW
 			TopFlag.Checked = ca.TopMost;
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
+			ConvertorsContainer.SelectedIndex = (int)ca.ConvertorTab;
 
 			try
 				{
@@ -167,6 +181,13 @@ namespace RD_AAOW
 			TLVFind.Text = ca.TLVData;
 			TLV_ObligationBase.Text = TLVTags.ObligationBase;
 			TLVButton_Click (null, null);
+
+			EncodingCombo.Items.AddRange (DataConvertors.AvailableEncodings);
+			encodingModesCount = (uint)EncodingCombo.Items.Count / 2;
+			EncodingCombo.SelectedIndex = (int)ca.EncodingForConvertor;
+
+			ConvertHexField.Text = ca.ConversionHex;
+			ConvertTextField.Text = ca.ConversionText;
 
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = RNMFromFNReader.Visible = LowLevelTab.Enabled = TLVTab.Enabled =
@@ -292,6 +313,7 @@ namespace RD_AAOW
 				return;
 
 			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
+			ca.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;
 
 			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
 			ca.ErrorCode = ErrorSearchText.Text;
@@ -330,6 +352,9 @@ namespace RD_AAOW
 
 			ca.ConversionNumber = ConvNumber.Text;
 			ca.ConversionCode = ConvCode.Text;
+			ca.EncodingForConvertor = (uint)EncodingCombo.SelectedIndex;
+			ca.ConversionHex = ConvertHexField.Text;
+			ca.ConversionText = ConvertTextField.Text;
 			}
 
 		// Отображение справки
@@ -339,16 +364,6 @@ namespace RD_AAOW
 			RDGenerics.ShowAbout (false);
 			this.TopMost = TopFlag.Checked;
 			}
-
-		/*// Дополнительные функции
-		private void FNReaderUserManual_Click (object sender, EventArgs e)
-			{
-			try
-				{
-				Process.Start (ProgramDescription.AssemblyFNReaderLink);
-				}
-			catch { }
-			}*/
 
 		// Запрос цвета, соответствующего статусу поддержки
 		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
@@ -389,10 +404,6 @@ namespace RD_AAOW
 			{
 			CallFNReader ("");
 			}
-
-		private Assembly FNReaderDLL;
-		private Type FNReaderProgram;
-		private dynamic FNReaderInstance;
 
 		private void CallFNReader (string DumpPath)
 			{
@@ -1100,7 +1111,7 @@ namespace RD_AAOW
 
 		#region Конверторы
 
-		// Ввод числа для конверсии
+		// Преобразование систем счисления
 		private void ConvNumber_TextChanged (object sender, EventArgs e)
 			{
 			ConvNumberResult.Text = DataConvertors.GetNumberDescription (ConvNumber.Text);
@@ -1142,6 +1153,7 @@ namespace RD_AAOW
 			ConvNumber.Text = "";
 			}
 
+		// Преобразование символов Unicode
 		private void ConvCode_TextChanged (object sender, EventArgs e)
 			{
 			string[] res = DataConvertors.GetSymbolDescription (ConvCode.Text, 0);
@@ -1156,15 +1168,32 @@ namespace RD_AAOW
 			ConvCode.Text = res[2];
 			}
 
-		/*private void ConvCodeIncrement_KeyDown (object sender, KeyEventArgs e)
-			{
-			if (e.KeyCode == Keys.Return)
-				ConvCodeAdd_Click (null, null);
-			}*/
-
 		private void ConvCodeClearButton_Click (object sender, EventArgs e)
 			{
 			ConvCode.Text = "";
+			}
+
+		// Преобразование hex-данных в текст
+		private void ConvertHexToText_Click (object sender, EventArgs e)
+			{
+			ConvertTextField.Text = DataConvertors.ConvertHexToText (ConvertHexField.Text,
+				(DataConvertors.ConvertHTModes)(EncodingCombo.SelectedIndex % encodingModesCount),
+				EncodingCombo.SelectedIndex >= encodingModesCount);
+			}
+
+		// Преобразование текста в hex-данные
+		private void ConvertTextToHex_Click (object sender, EventArgs e)
+			{
+			ConvertHexField.Text = DataConvertors.ConvertTextToHex (ConvertTextField.Text,
+				(DataConvertors.ConvertHTModes)(EncodingCombo.SelectedIndex % encodingModesCount),
+				EncodingCombo.SelectedIndex >= encodingModesCount);
+			}
+
+		// Очистка вкладки преобразования данных
+		private void ClearConvertText_Click (object sender, EventArgs e)
+			{
+			ConvertTextField.Text = "";
+			ConvertHexField.Text = "";
 			}
 
 		#endregion

@@ -64,7 +64,7 @@ namespace RD_AAOW
 
 		private ContentPage headersPage, kktCodesPage, errorsPage, aboutPage, connectorsPage,
 			ofdPage, fnLifePage, rnmPage, lowLevelPage, userManualsPage, tagsPage, barCodesPage,
-			convertorsPage;
+			convertorsSNPage, convertorsUCPage, convertorsHTPage;
 
 		private Label kktCodesSourceTextLabel, kktCodesHelpLabel, kktCodesErrorLabel, kktCodesResultText,
 			errorsResultText, cableLeftSideText, cableRightSideText, cableLeftPinsText, cableRightPinsText,
@@ -80,11 +80,12 @@ namespace RD_AAOW
 			errorsKKTButton, userManualsKKTButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdINN,
-			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate, convCodeSymbolField;
+			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate, convCodeSymbolField,
+			encodingButton;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
 			unlockField, fnLifeSerial, tlvTag, rnmKKTSN, rnmINN, rnmRNM,
-			barcodeField, convNumberField, convCodeField;
+			barcodeField, convNumberField, convCodeField, convHexField, convTextField;
 
 		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
 			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
@@ -194,7 +195,11 @@ namespace RD_AAOW
 
 			barCodesPage = ApplyPageSettings ("BarCodesPage", "Штрих-коды",
 				barCodesMasterBackColor, true);
-			convertorsPage = ApplyPageSettings ("ConvertorsPage", "Конверторы",
+			convertorsSNPage = ApplyPageSettings ("ConvertorsSNPage", "Конвертор систем счисления",
+				convertorsMasterBackColor, true);
+			convertorsUCPage = ApplyPageSettings ("ConvertorsUCPage", "Конвертор символов Unicode",
+				convertorsMasterBackColor, true);
+			convertorsHTPage = ApplyPageSettings ("ConvertorsHTPage", "Конвертор двоичных данных",
 				convertorsMasterBackColor, true);
 
 			aboutPage = ApplyPageSettings ("AboutPage", "О приложении",
@@ -302,9 +307,6 @@ namespace RD_AAOW
 			kktCodesResultText = AndroidSupport.ApplyLabelSettings (kktCodesPage, "ResultText", " ",
 				AndroidSupport.LabelTypes.FieldMonotype, kktCodesFieldBackColor);
 
-			/*kktCodesHelpLabel = AndroidSupport.ApplyLabelSettings (kktCodesPage, "HelpLabel",
-				kkmc.GetKKTTypeDescription (ca.KKTForCodes), AndroidSupport.LabelTypes.Tip);*/
-
 			AndroidSupport.ApplyLabelSettings (kktCodesPage, "HelpTextLabel", "Пояснения к вводу:",
 				AndroidSupport.LabelTypes.HeaderLeft);
 			kktCodesHelpLabel = AndroidSupport.ApplyLabelSettings (kktCodesPage, "HelpText",
@@ -375,11 +377,11 @@ namespace RD_AAOW
 				aboutFieldBackColor, ADPButton_Clicked, false);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "DevPage", "Спросить разработчика",
 				aboutFieldBackColor, DevButton_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (aboutPage, "ManualPage", "Видеоруководство пользователя",
+			AndroidSupport.ApplyButtonSettings (aboutPage, "ManualPage", "Руководство пользователя",
 				aboutFieldBackColor, ManualButton_Clicked, false);
 
-			AndroidSupport.ApplyButtonSettings (aboutPage, "FNReaderPage", "Работа с ФН",
-				aboutFieldBackColor, UpdateButton_Clicked, false);
+			/*AndroidSupport.ApplyButtonSettings (aboutPage, "FNReaderPage", "Работа с ФН",
+				aboutFieldBackColor, UpdateButton_Clicked, false);*/
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				RDGenerics.AssemblyCompany, aboutFieldBackColor, CommunityButton_Clicked, false);
 
@@ -782,52 +784,88 @@ namespace RD_AAOW
 
 			#endregion
 
-			#region Страница конверторов
+			#region Страница конвертора систем счисления
 
-			AndroidSupport.ApplyLabelSettings (convertorsPage, "ConvNumberLabel",
+			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberLabel",
 				"Число:", AndroidSupport.LabelTypes.HeaderLeft);
-			convNumberField = AndroidSupport.ApplyEditorSettings (convertorsPage, "ConvNumberField",
+			convNumberField = AndroidSupport.ApplyEditorSettings (convertorsSNPage, "ConvNumberField",
 				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionNumber, ConvNumber_TextChanged, true);
 
-			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvNumberInc",
+			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberInc",
 				AndroidSupport.ButtonsDefaultNames.Increase, convertorsFieldBackColor, ConvNumberAdd_Click);
-			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvNumberDec",
+			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberDec",
 				AndroidSupport.ButtonsDefaultNames.Decrease, convertorsFieldBackColor, ConvNumberAdd_Click);
-			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvNumberClear",
+			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberClear",
 				AndroidSupport.ButtonsDefaultNames.Delete, convertorsFieldBackColor, ConvNumberClear_Click);
 
-			AndroidSupport.ApplyLabelSettings (convertorsPage, "ConvNumberResultLabel", "Представление:",
+			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberResultLabel", "Представление:",
 				AndroidSupport.LabelTypes.HeaderLeft);
-			convNumberResultField = AndroidSupport.ApplyLabelSettings (convertorsPage, "ConvNumberResultField",
+			convNumberResultField = AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberResultField",
 				" ", AndroidSupport.LabelTypes.FieldMonotype, convertorsFieldBackColor);
 			ConvNumber_TextChanged (null, null);
 
-			//
-			AndroidSupport.ApplyLabelSettings (convertorsPage, "ConvCodeLabel",
+			const string convHelp = "Шестнадцатеричные числа следует начинать с символов “0x”";
+			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvHelpLabel", convHelp,
+				AndroidSupport.LabelTypes.Tip);
+
+			#endregion
+
+			#region Страница конвертора символов Unicode
+
+			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeLabel",
 				"Код символа\nили символ:", AndroidSupport.LabelTypes.HeaderLeft);
-			convCodeField = AndroidSupport.ApplyEditorSettings (convertorsPage, "ConvCodeField",
+			convCodeField = AndroidSupport.ApplyEditorSettings (convertorsUCPage, "ConvCodeField",
 				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionCode, ConvCode_TextChanged, true);
 
-			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeInc",
+			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeInc",
 				AndroidSupport.ButtonsDefaultNames.Increase, convertorsFieldBackColor, ConvCodeAdd_Click);
-			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeDec",
+			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeDec",
 				AndroidSupport.ButtonsDefaultNames.Decrease, convertorsFieldBackColor, ConvCodeAdd_Click);
-			AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeClear",
+			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeClear",
 				AndroidSupport.ButtonsDefaultNames.Delete, convertorsFieldBackColor, ConvCodeClear_Click);
 
-			AndroidSupport.ApplyLabelSettings (convertorsPage, "ConvCodeResultLabel", "Символ Unicode:",
+			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeResultLabel", "Символ Unicode:",
 				AndroidSupport.LabelTypes.HeaderLeft);
-			convCodeResultField = AndroidSupport.ApplyLabelSettings (convertorsPage, "ConvCodeResultField",
+			convCodeResultField = AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeResultField",
 				"", AndroidSupport.LabelTypes.FieldMonotype, convertorsFieldBackColor);
 
-			convCodeSymbolField = AndroidSupport.ApplyButtonSettings (convertorsPage, "ConvCodeSymbolField",
+			convCodeSymbolField = AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeSymbolField",
 				" ", convertorsFieldBackColor, CopyCharacter_Click, true);
 			convCodeSymbolField.FontSize *= 5;
 			ConvCode_TextChanged (null, null);
 
-			AndroidSupport.ApplyLabelSettings (convertorsPage, "ConvHelpLabel",
-				"Шестнадцатеричные числа следует начинать с символов “0x”. Нажатие кнопки с символом Unicode " +
-				"копирует его в буфер обмена", AndroidSupport.LabelTypes.Tip);
+			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvHelpLabel",
+				convHelp + ".\nНажатие кнопки с символом Unicode копирует его в буфер обмена",
+				AndroidSupport.LabelTypes.Tip);
+
+			#endregion
+
+			#region Страница конвертора двоичных данных
+
+			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "HexLabel",
+				"Данные (hex):", AndroidSupport.LabelTypes.HeaderLeft);
+			convHexField = AndroidSupport.ApplyEditorSettings (convertorsHTPage, "HexField",
+				convertorsFieldBackColor, Keyboard.Default, 500, ca.ConversionHex, null, true);
+			convHexField.HorizontalOptions = LayoutOptions.Fill;
+
+			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "HexToTextButton",
+				AndroidSupport.ButtonsDefaultNames.Down, convertorsFieldBackColor, ConvertHexToText_Click);
+			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "TextToHexButton",
+				AndroidSupport.ButtonsDefaultNames.Up, convertorsFieldBackColor, ConvertTextToHex_Click);
+			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "ClearButton",
+				AndroidSupport.ButtonsDefaultNames.Delete, convertorsFieldBackColor, ClearConvertText_Click);
+
+			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "TextLabel",
+				"Данные (текст):", AndroidSupport.LabelTypes.HeaderLeft);
+			convTextField = AndroidSupport.ApplyEditorSettings (convertorsHTPage, "TextField",
+				convertorsFieldBackColor, Keyboard.Default, 250, ca.ConversionText, null, true);
+			convTextField.HorizontalOptions = LayoutOptions.Fill;
+
+			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "EncodingLabel",
+				"Кодировка:", AndroidSupport.LabelTypes.HeaderLeft);
+			encodingButton = AndroidSupport.ApplyButtonSettings (convertorsHTPage, "EncodingButton",
+				" ", convertorsFieldBackColor, EncodingButton_Clicked, true);
+			EncodingButton_Clicked (null, null);
 
 			#endregion
 
@@ -1005,6 +1043,9 @@ namespace RD_AAOW
 
 			ca.ConversionNumber = convNumberField.Text;
 			ca.ConversionCode = convCodeField.Text;
+			ca.ConversionHex = convHexField.Text;
+			ca.ConversionText = convTextField.Text;
+			//ca.EncodingForConvertor	// -||-
 			}
 
 		/// <summary>
@@ -1494,20 +1535,6 @@ namespace RD_AAOW
 
 		#region О приложении
 
-		// Страница обновлений
-		private async void UpdateButton_Clicked (object sender, EventArgs e)
-			{
-			try
-				{
-				await Launcher.OpenAsync (KKTSupport.FNReaderLink);
-				}
-			catch
-				{
-				Toast.MakeText (Android.App.Application.Context, AndroidSupport.GetNoRequiredAppMessage (false),
-					ToastLength.Long).Show ();
-				}
-			}
-
 		// Страница проекта
 		private async void AppButton_Clicked (object sender, EventArgs e)
 			{
@@ -1541,7 +1568,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (ProgramDescription.AssemblyVideoManualLink);
+				await Launcher.OpenAsync (KKTSupport.FNReaderLink);
 				}
 			catch
 				{
@@ -1837,6 +1864,50 @@ namespace RD_AAOW
 		private void ConvCodeClear_Click (object sender, EventArgs e)
 			{
 			convCodeField.Text = "";
+			}
+
+		// Преобразование hex-данных в текст
+		private void ConvertHexToText_Click (object sender, EventArgs e)
+			{
+			convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
+				(DataConvertors.ConvertHTModes)(ca.EncodingForConvertor % DataConvertors.UniqueEncodingsCount),
+				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);
+			}
+
+		// Преобразование текста в hex-данные
+		private void ConvertTextToHex_Click (object sender, EventArgs e)
+			{
+			convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
+				(DataConvertors.ConvertHTModes)(ca.EncodingForConvertor % DataConvertors.UniqueEncodingsCount),
+				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);
+			}
+
+		// Очистка вкладки преобразования данных
+		private void ClearConvertText_Click (object sender, EventArgs e)
+			{
+			convTextField.Text = "";
+			convHexField.Text = "";
+			}
+
+		// Выбор модели ККТ
+		private async void EncodingButton_Clicked (object sender, EventArgs e)
+			{
+			int res = (int)ca.EncodingForConvertor;
+			List<string> list = new List<string> (DataConvertors.AvailableEncodings);
+
+			if (sender != null)
+				{
+				// Запрос модели ККТ
+				res = await AndroidSupport.ShowList ("Выберите кодировку:",
+					Localization.GetDefaultButtonName (Localization.DefaultButtons.Cancel), list);
+
+				// Установка модели
+				if (res < 0)
+					return;
+				}
+
+			encodingButton.Text = list[res];
+			ca.EncodingForConvertor = (uint)res;
 			}
 
 		#endregion

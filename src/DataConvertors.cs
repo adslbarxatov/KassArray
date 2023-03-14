@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -189,6 +191,196 @@ namespace RD_AAOW
 			answer[1] += ("\r\nКласс:  " + CharUnicodeInfo.GetUnicodeCategory (answer[0][0]).ToString ());
 			answer[2] = "0x" + n.ToString ("X4");
 			return answer;
+			}
+
+		/// <summary>
+		/// Доступные режимы для методов преобразования данных в hex и обратно
+		/// </summary>
+		public enum ConvertHTModes
+			{
+			/// <summary>
+			/// Кодировка UTF8
+			/// </summary>
+			UTF8 = 0,
+
+			/// <summary>
+			/// Кодировка Unicode
+			/// </summary>
+			Unicode = 1,
+
+#if !ANDROID
+
+			/// <summary>
+			/// Кодировка CP1251 (Windows)
+			/// </summary>
+			CP1251 = 2,
+
+			/// <summary>
+			/// Кодировка 866 (MS DOS)
+			/// </summary>
+			CP866 = 3,
+
+#else
+
+			/// <summary>
+			/// Кодировка ASCII
+			/// </summary>
+			ASCII = 2,
+
+#endif
+			}
+
+		/// <summary>
+		/// Возвращает доступные режимы преобразования, дублируя список режимами с поддержкой
+		/// BASE64 (список кодировок повторяется дважды)
+		/// </summary>
+		public static string[] AvailableEncodings
+			{
+			get
+				{
+				if (availableEncodings.Count == encodings.Length)
+					{
+					for (int i = 0; i < encodings.Length; i++)
+						availableEncodings.Add ("BASE64 + " + availableEncodings[i]);
+					}
+
+				return availableEncodings.ToArray ();
+				}
+			}
+		private static List<string> availableEncodings = new List<string> {
+			"UTF8",
+			"Unicode",
+#if !ANDROID
+			"CP1251 (Windows)",
+			"CP866 (MS DOS)",
+#else
+			"ASCII",
+#endif
+			};
+
+		/// <summary>
+		/// Возвращает количество уникальных доступных кодировок (без BASE64)
+		/// </summary>
+		public static uint UniqueEncodingsCount
+			{
+			get
+				{
+				return (uint)encodings.Length;
+				}
+			}
+		private static Encoding[] encodings = new Encoding[]
+			{
+			Encoding.UTF8,
+			Encoding.Unicode,
+#if !ANDROID
+			Encoding.GetEncoding (1251),
+			Encoding.GetEncoding (866),
+#else
+			Encoding.ASCII,
+#endif
+			};
+
+		private const string hexLine = "0123456789ABCDEF";
+		private const string encodingFailure = "(не удаётся преобразовать данные в выбранной кодировке)";
+
+		/// <summary>
+		/// Метод преобразует данные hex в текстовую строку в указанной кодировке
+		/// </summary>
+		/// <param name="HexData">Данные в двоичной форме или в кодировке BASE64</param>
+		/// <param name="FromBASE64">Флаг, указывающий, что исходные данные представлены в BASE64</param>
+		/// <param name="Mode">Кодировка исходных данных</param>
+		/// <returns>Исходный текст</returns>
+		public static string ConvertHexToText (string HexData, ConvertHTModes Mode, bool FromBASE64)
+			{
+			// Обычные данные
+			List<byte> bytes = new List<byte> ();
+			if (!FromBASE64)
+				{
+				List<string> numbers = new List<string> { "" };
+				string source = HexData.ToUpper ();
+				if (string.IsNullOrWhiteSpace (source))
+					return "";
+
+				// Сборка потока
+				int p = 0;
+				for (int i = 0; i < source.Length; i++)
+					{
+					if ((p % 2 == 0) && (numbers[numbers.Count - 1].Length > 0))
+						numbers.Add ("");
+
+					if (hexLine.Contains (source[i].ToString ()))
+						{
+						p++;
+						numbers[numbers.Count - 1] += source[i].ToString ();
+						}
+					}
+
+				// Контроль
+				if (numbers[numbers.Count - 1].Length != 2)
+					numbers[numbers.Count - 1] += "0";
+				if (numbers.Count < 1)
+					return "";
+
+				// Преобразование в байт-поток
+				for (int i = 0; i < numbers.Count; i++)
+					bytes.Add (byte.Parse (numbers[i], NumberStyles.HexNumber));
+				numbers.Clear ();
+				}
+
+			// Предварительное извлечение из BASE64
+			else
+				{
+				try
+					{
+					bytes.AddRange (Convert.FromBase64String (HexData));
+					}
+				catch
+					{
+					return encodingFailure;
+					}
+				}
+
+			// Сборка результата
+			try
+				{
+				return encodings[(int)Mode].GetString (bytes.ToArray ());
+				}
+			catch
+				{
+				return encodingFailure;
+				}
+			}
+
+		/// <summary>
+		/// Метод преобразует текстовые данные в двоичные данные в указанной кодировке
+		/// </summary>
+		/// <param name="TextData">Данные в текстовой форме</param>
+		/// <param name="ToBASE64">Флаг, указывающий, что конечные данные должны быть 
+		/// представлены в BASE64</param>
+		/// <param name="Mode">Кодировка конечных данных</param>
+		/// <returns>Исходный текст</returns>
+		public static string ConvertTextToHex (string TextData, ConvertHTModes Mode, bool ToBASE64)
+			{
+			// Сборка байт-массива
+			byte[] bytes;
+			try
+				{
+				bytes = encodings[(int)Mode].GetBytes (TextData);
+				}
+			catch
+				{
+				return encodingFailure;
+				}
+
+			// Сборка результата
+			if (ToBASE64)
+				return Convert.ToBase64String (bytes);
+
+			string res = "";
+			for (int i = 0; i < bytes.Length; i++)
+				res += (bytes[i].ToString ("X02") + " ");
+
+			return res;
 			}
 		}
 	}
