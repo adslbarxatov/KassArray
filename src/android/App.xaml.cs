@@ -124,6 +124,9 @@ namespace RD_AAOW
 		// Дата срока жизни ФН (в чистом виде)
 		private string fnLifeResultDate = "";
 
+		// Списки меню
+		private List<string> communities = new List<string> ();
+
 		#endregion
 
 		#region Основной функционал 
@@ -380,14 +383,8 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (aboutPage, "ManualPage", "Руководство пользователя",
 				aboutFieldBackColor, ManualButton_Clicked, false);
 
-			/*AndroidSupport.ApplyButtonSettings (aboutPage, "FNReaderPage", "Работа с ФН",
-				aboutFieldBackColor, UpdateButton_Clicked, false);*/
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
 				RDGenerics.AssemblyCompany, aboutFieldBackColor, CommunityButton_Clicked, false);
-
-			// SupportedLanguages.ru_ru
-			/*AndroidSupport.ApplyLabelSettings (aboutPage, "Alert", RDGenerics.RuAlertMessage,
-				AndroidSupport.LabelTypes.DefaultLeft);*/
 
 			if (!ca.AllowExtendedFunctionsLevel2)
 				{
@@ -1328,7 +1325,7 @@ namespace RD_AAOW
 				{
 				if (!fnlf.MarkFN)
 					{
-					fnLifeResult.TextColor = AndroidSupport.DefaultErrorColor;
+					fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 
 					fnLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
 					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
@@ -1540,7 +1537,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (RDGenerics.AssemblyGitLink + ProgramDescription.AssemblyMainName);
+				await Launcher.OpenAsync (RDGenerics.DefaultGitLink + ProgramDescription.AssemblyMainName);
 				}
 			catch
 				{
@@ -1554,7 +1551,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (RDGenerics.GetADPLink (true));
+				await Launcher.OpenAsync (RDGenerics.ADPLink);
 				}
 			catch
 				{
@@ -1568,7 +1565,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				await Launcher.OpenAsync (KKTSupport.FNReaderLink);
+				await Launcher.OpenAsync (KKTSupport.KassArrayLink);
 				}
 			catch
 				{
@@ -1580,15 +1577,15 @@ namespace RD_AAOW
 		// Страница лаборатории
 		private async void CommunityButton_Clicked (object sender, EventArgs e)
 			{
-			List<string> comm = new List<string> (RDGenerics.GetCommunitiesNames (false));
+			if (communities.Count < 1)
+				communities = new List<string> (RDGenerics.CommunitiesNames);
 
 			int res = await AndroidSupport.ShowList ("Выберите сообщество",
-				Localization.GetDefaultButtonName (Localization.DefaultButtons.Cancel), comm);
+				Localization.GetDefaultButtonName (Localization.DefaultButtons.Cancel), communities);
 			if (res < 0)
 				return;
 
-			string link = RDGenerics.GetCommunityLink (comm[res], false);
-
+			string link = RDGenerics.GetCommunityLink ((uint)res);
 			if (string.IsNullOrWhiteSpace (link))
 				return;
 
@@ -1610,7 +1607,7 @@ namespace RD_AAOW
 				{
 				EmailMessage message = new EmailMessage
 					{
-					Subject = "Wish, advice or bug in " + ProgramDescription.AssemblyTitle,
+					Subject = RDGenerics.LabMailCaption,
 					Body = "",
 					To = new List<string> () { RDGenerics.LabMailLink }
 					};

@@ -230,8 +230,8 @@ namespace RD_AAOW
 			// Получение параметров
 			userManualLink = (UserManualLink == null) ? "" : UserManualLink;
 
-			projectLink = RDGenerics.AssemblyGitLink + ProgramDescription.AssemblyMainName;
-			updatesLink = RDGenerics.AssemblyGitLink + ProgramDescription.AssemblyMainName +
+			projectLink = RDGenerics.DefaultGitLink + ProgramDescription.AssemblyMainName;
+			updatesLink = RDGenerics.DefaultGitLink + ProgramDescription.AssemblyMainName +
 				RDGenerics.GitUpdatesSublink;
 
 			// Загрузка окружения
@@ -351,7 +351,7 @@ namespace RD_AAOW
 			startDownload = locale[al][16];
 
 			if (ToLaboratoryCombo.Items.Count < 1)
-				ToLaboratoryCombo.Items.AddRange (RDGenerics.GetCommunitiesNames (!Localization.IsCurrentLanguageRuRu));
+				ToLaboratoryCombo.Items.AddRange (RDGenerics.CommunitiesNames);
 			ToLaboratoryCombo.SelectedIndex = 0;
 
 			this.Text = locale[al][AcceptMode ? 17 : 18];
@@ -442,7 +442,7 @@ namespace RD_AAOW
 		// Метод получает Политику разработки
 		private void PolicyLoader (object sender, DoWorkEventArgs e)
 			{
-			string html = GetHTML (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu));
+			string html = GetHTML (RDGenerics.ADPLink);
 			int textLeft, textRight;
 
 			if (((textLeft = html.IndexOf ("code\">")) >= 0) &&
@@ -477,7 +477,7 @@ namespace RD_AAOW
 			try
 				{
 				if (string.IsNullOrWhiteSpace (Link))
-					Process.Start (RDGenerics.AssemblyGitLink + ProgramDescription.AssemblyMainName +
+					Process.Start (RDGenerics.DefaultGitLink + ProgramDescription.AssemblyMainName +
 						RDGenerics.GitUpdatesSublink + "/latest");
 				else
 					Process.Start (Link);
@@ -526,7 +526,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu));
+				Process.Start (RDGenerics.ADPLink);
 				}
 			catch { }
 			}
@@ -537,7 +537,7 @@ namespace RD_AAOW
 			switch (ToLaboratoryCombo.SelectedIndex)
 				{
 				default:
-					link = RDGenerics.GetDPArrayLink (Localization.IsCurrentLanguageRuRu);
+					link = RDGenerics.DPArrayLink;
 					break;
 
 				case 1:
@@ -560,8 +560,8 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start (RDGenerics.LabMailLink + ("?subject=Wish, advice or bug in " +
-					ProgramDescription.AssemblyTitle).Replace (" ", "%20"));
+				Process.Start (RDGenerics.LabMailLink + ("?subject=" +
+					RDGenerics.LabMailCaption).Replace (" ", "%20"));
 				}
 			catch { }
 			}
@@ -750,7 +750,7 @@ namespace RD_AAOW
 
 // Получение обновлений Политики (ошибки игнорируются)
 policy:
-			html = GetHTML (RDGenerics.GetADPLink (Localization.IsCurrentLanguageRuRu));
+			html = GetHTML (RDGenerics.ADPLink);
 			if (((i = html.IndexOf ("<title")) >= 0) && ((j = html.IndexOf ("</title", i)) >= 0))
 				{
 				// Обрезка

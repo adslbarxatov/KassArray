@@ -24,7 +24,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Ссылка на руководство к приложению
 		/// </summary>
-		public const string FNReaderLink = "https://adslbarxatov.github.io/KassArray";
+		public const string KassArrayLink = RDGenerics.DefaultGitPageLink + "KassArray";
 
 		/// <summary>
 		/// Структура используется для передачи списка параметров определения срока жизни ФН

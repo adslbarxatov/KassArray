@@ -58,6 +58,8 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
+			if (!Localization.IsCurrentLanguageRuRu)
+				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
 			ca = new ConfigAccessor (this.Width, this.Height);
 
 			// Загрузка списка кодов и ошибок
