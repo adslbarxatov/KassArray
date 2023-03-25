@@ -498,7 +498,7 @@ namespace RD_AAOW
 			}
 
 		// Получение данных от FNReader
-		private void RNMFromFNReader_Click (object sender, EventArgs e)
+		private void GetFromFNReader_Click (object sender, EventArgs e)
 			{
 			// Контроль
 			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
@@ -552,10 +552,10 @@ namespace RD_AAOW
 					ServicesFlag.Checked = true;
 
 				AutonomousFlag.Checked = (status.IndexOf ("автономная", left) >= 0);
-				ExciseFlag.Checked = (status.IndexOf ("подакцизн", left) >= 0);
+				ExciseFlag.Checked = (status.IndexOf ("а подакцизн", left) >= 0);
 				FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);
 				AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);
-				MarkGoodsFlag.Checked = (status.IndexOf ("маркирован", left) >= 0);
+				MarkGoodsFlag.Checked = (status.IndexOf ("а маркирован", left) >= 0);
 				PawnInsuranceFlag.Checked = (status.IndexOf ("ги ломбарда", left) >= 0);
 				GamblingLotteryFlag.Checked = (status.IndexOf ("ги страхования", left) >= 0);
 				// Дату и сезонный режим не запрашиваем
