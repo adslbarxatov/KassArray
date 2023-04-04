@@ -253,6 +253,7 @@ namespace RD_AAOW
 #if !ANDROID
 			"CP1251 (Windows)",
 			"CP866 (MS DOS)",
+			"KOI8-R",
 #else
 			"ASCII",
 #endif
@@ -275,6 +276,7 @@ namespace RD_AAOW
 #if !ANDROID
 			Encoding.GetEncoding (1251),
 			Encoding.GetEncoding (866),
+			Encoding.GetEncoding (20866)
 #else
 			Encoding.ASCII,
 #endif
