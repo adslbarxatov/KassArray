@@ -27,10 +27,19 @@
 				<Button x:Name="DevPage" HorizontalOptions="Center" />
 				<Button x:Name="CommunityPage" HorizontalOptions="Center" />
 
-				<Label />
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="9" />
 
-				<Label x:Name="UnlockLabel" IsVisible="false" />
-				<Editor x:Name="UnlockField" IsVisible="false" HorizontalOptions="CenterAndExpand" />
+				<Label x:Name="GenericSettingsLabel" />
+				<Label x:Name="RestartTipLabel" />
+
+				<StackLayout Orientation="Horizontal">
+					<Label x:Name="FontSizeLabel" VerticalOptions="Center" />
+
+					<Button x:Name="FontSizeInc" VerticalOptions="Center" />
+					<Label x:Name="FontSizeField" VerticalOptions="Center" />
+					<Button x:Name="FontSizeDec" VerticalOptions="Center" />
+				</StackLayout>
 
 				<Label />
 

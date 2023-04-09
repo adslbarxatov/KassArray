@@ -276,7 +276,7 @@ namespace RD_AAOW
 #if !ANDROID
 			Encoding.GetEncoding (1251),
 			Encoding.GetEncoding (866),
-			Encoding.GetEncoding (20866)
+			Encoding.GetEncoding (20866),
 #else
 			Encoding.ASCII,
 #endif
