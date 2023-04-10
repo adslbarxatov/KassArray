@@ -48,6 +48,7 @@
     - [Запись в ФН](#section-28)
 
 - [Быстрые руководства по распространённым операциям](https://adslbarxatov.github.io/KassArray/quick)
+- [Ссылки для загрузки](https://adslbarxatov.github.io/DPArray/ru#kassarray)
 
 ---
 
