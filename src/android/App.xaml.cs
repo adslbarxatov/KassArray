@@ -1624,7 +1624,8 @@ namespace RD_AAOW
 			if (communities.Count < 1)
 				communities = new List<string> (RDGenerics.CommunitiesNames);
 
-			int res = await AndroidSupport.ShowList ("Выберите сообщество",
+			int res = await AndroidSupport.ShowList (
+				Localization.GetDefaultText (LzDefaultTextValues.Message_CommunitySelection),
 				Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), communities);
 			if (res < 0)
 				return;

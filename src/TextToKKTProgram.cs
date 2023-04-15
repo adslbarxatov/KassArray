@@ -26,7 +26,7 @@ namespace RD_AAOW
 			Application.EnableVisualStyles ();
 			Application.SetCompatibleTextRenderingDefault (false);
 
-			// Язык интерфейса и контроль XPR
+			// Язык интерфейса и контроль XPUN
 			if (!Localization.IsXPUNClassAcceptable)
 				return;
 
@@ -45,7 +45,7 @@ namespace RD_AAOW
 				else
 					{
 					RDGenerics.MessageBox (RDMessageTypes.Warning,
-						"Программа " + ProgramDescription.AssemblyMainName + " уже запущена");
+						Localization.GetDefaultText (LzDefaultTextValues.Message_AppAlreadyStarted));
 					}
 
 				return;

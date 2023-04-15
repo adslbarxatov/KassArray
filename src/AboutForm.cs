@@ -235,11 +235,7 @@ namespace RD_AAOW
 				RDGenerics.GitUpdatesSublink;
 
 			// Загрузка окружения
-			/*AboutLabel.Text = ProgramDescription.AssemblyTitle + "\n" + ProgramDescription.AssemblyDescription +
-				"\n\n" + RDGenerics.AssemblyCopyright + "\nv " + ProgramDescription.AssemblyVersion +
-				"; " + ProgramDescription.AssemblyLastUpdate;*/
 			AboutLabel.Text = RDGenerics.AppAboutLabelText;
-
 			if (AppIcon != null)
 				{
 				IconBox.BackgroundImage = AppIcon.ToBitmap ();
