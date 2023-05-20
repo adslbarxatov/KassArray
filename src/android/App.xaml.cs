@@ -71,7 +71,7 @@ namespace RD_AAOW
 			cableDescriptionText,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
-			lowLevelCommandDescr, /*unlockLabel,*/
+			lowLevelCommandDescr,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, rnmTip, ofdDisabledLabel, convNumberResultField, convCodeResultField,
 			aboutFontSizeField;
@@ -85,7 +85,7 @@ namespace RD_AAOW
 			encodingButton;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
-			/*unlockField,*/ fnLifeSerial, tlvTag, rnmKKTSN, rnmINN, rnmRNM,
+			fnLifeSerial, tlvTag, rnmKKTSN, rnmINN, rnmRNM,
 			barcodeField, convNumberField, convCodeField, convHexField, convTextField;
 
 		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
@@ -408,19 +408,6 @@ namespace RD_AAOW
 				" ", ASLabelTypes.DefaultCenter);
 
 			FontSizeButton_Clicked (null, null);
-
-			/*
-			if (!ca.AllowExtendedFunctionsLevel2)
-				{
-				unlockLabel = AndroidSupport.ApplyLabelSettings (aboutPage, "UnlockLabel", ca.LockMessage,
-					ASLabelTypes.DefaultLeft);
-				unlockLabel.IsVisible = true;
-
-				unlockField = AndroidSupport.ApplyEditorSettings (aboutPage, "UnlockField", aboutFieldBackColor,
-					Keyboard.Default, 32, "", UnlockMethod, true);
-				unlockField.IsVisible = true;
-				}
-			*/
 
 			#endregion
 
@@ -955,16 +942,6 @@ namespace RD_AAOW
 					"На этой странице находится перечень функций приложения, который позволяет перейти " +
 					"к нужному разделу. Вернуться сюда можно с помощью кнопки «Назад». Перемещение " +
 					"между разделами также доступно по свайпу влево-вправо",
-
-					/*
-	#if CHECK_EXTF
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Next));
-
-				await AndroidSupport.ShowMessage ("Часть функций скрыта от рядовых пользователей. Чтобы открыть " +
-					"расширенный функционал для специалистов, перейдите на страницу «О приложении» и ответьте " +
-					"на несколько простых вопросов. Вопросы для расширенного и полного набора опций отличаются",
-	#endif
-					*/
 
 					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
 				}
@@ -1682,25 +1659,6 @@ namespace RD_AAOW
 			aboutFontSizeField.Text = AndroidSupport.MasterFontSize.ToString ("F1");
 			aboutFontSizeField.FontSize = AndroidSupport.MasterFontSize;
 			}
-
-		/* Разблокировка расширенного функционала
-		private void UnlockMethod (object sender, TextChangedEventArgs e)
-			{
-			if (ca.TestPass (unlockField.Text))
-				{
-				unlockLabel.Text = ca.LockMessage;
-				if (!ca.AllowExtendedFunctionsLevel2)
-					{
-					unlockField.Text = "";
-					}
-				else
-					{
-					unlockField.IsEnabled = false;
-					unlockLabel.HorizontalTextAlignment = TextAlignment.Center;
-					}
-				}
-			}
-		*/
 
 		#endregion
 

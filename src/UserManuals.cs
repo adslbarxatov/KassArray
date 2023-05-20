@@ -53,7 +53,8 @@ namespace RD_AAOW
 			"Автотестирование / информация о ККТ",
 			"Запрос состояния ФН",
 			"Запрос реквизитов регистраций",
-			"Техобнуление" };
+			"Техобнуление",
+			"Закрытие архива ФН" };
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -113,6 +114,19 @@ namespace RD_AAOW
 							operations[i][operations[i].Count - 1] =
 								"• Настоятельно рекомендуется предварительно закрыть смену;\r\n" +
 								operations[i][operations[i].Count - 1];
+						if (i == 13)
+							{
+							operations[i][operations[i].Count - 1] =
+								"• Убедиться, что сохранены все необходимые настройки;\r\n" +
+								operations[i][operations[i].Count - 1];
+							}
+						if (i == 14)
+							{
+							operations[i][operations[i].Count - 1] =
+								"• Убедиться, что смена закрыта, а дата в ККТ позволяет выполнить закрытие архива;\r\n" +
+								operations[i][operations[i].Count - 1] +
+								";\r\n• Дождаться распечатки отчёта и отправки документов ОФД";
+							}
 
 						if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 							operations[i][operations[i].Count - 1] = "(не предусмотрено)";
