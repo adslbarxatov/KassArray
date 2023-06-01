@@ -135,7 +135,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Точка входа приложения
 		/// </summary>
-		public App (PrintManager PrintingManager)
+		public App (PrintManager PrintingManager, bool Huawei)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -882,7 +882,7 @@ namespace RD_AAOW
 			#endregion
 
 			// Обязательное принятие Политики и EULA
-			AcceptPolicy ();
+			AcceptPolicy (Huawei);
 			}
 
 		// Локальный оформитель страниц приложения
@@ -914,10 +914,10 @@ namespace RD_AAOW
 			}
 
 		// Контроль принятия Политики и EULA
-		private async void AcceptPolicy ()
+		private async void AcceptPolicy (bool Huawei)
 			{
-			// Контроль XPR
-			while (!Localization.IsXPUNClassAcceptable)
+			// Контроль XPUN
+			while (!Huawei && !Localization.IsXPUNClassAcceptable)
 				await AndroidSupport.ShowMessage (
 					Localization.GetDefaultText (LzDefaultTextValues.Message_XPUNE),
 					"   ");

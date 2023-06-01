@@ -52,10 +52,15 @@ namespace RD_AAOW.Droid
 				StartService (mainService);
 
 			// Запрет на переход в ждущий режим
-			//if (AndroidSupport.KeepScreenOn)
 			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
 
-			LoadApplication (new App ((PrintManager)this.GetSystemService (Service.PrintService)));
+			LoadApplication (new App ((PrintManager)this.GetSystemService (Service.PrintService),
+#if HUAWEI
+				true
+#else
+				false
+#endif
+				));
 			}
 
 		/// <summary>
