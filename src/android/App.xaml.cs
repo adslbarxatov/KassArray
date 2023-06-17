@@ -2,6 +2,7 @@
 using Android.Widget;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -126,7 +127,9 @@ namespace RD_AAOW
 		private string fnLifeResultDate = "";
 
 		// Списки меню
-		private List<string> communities = new List<string> ();
+		/*private List<string> communities = new List<string> ();*/
+		private List<string> referenceItems = new List<string> ();
+		private List<string> helpItems = new List<string> ();
 
 		#endregion
 
@@ -367,17 +370,24 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (aboutPage, "AboutLabel",
 				RDGenerics.AppAboutLabelText, ASLabelTypes.AppAbout);
 
-			AndroidSupport.ApplyLabelSettings (aboutPage, "ManualsLabel",
+			/*AndroidSupport.ApplyLabelSettings (aboutPage, "ManualsLabel",
 				Localization.GetDefaultText (LzDefaultTextValues.Control_ReferenceMaterials),
 				ASLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyLabelSettings (aboutPage, "HelpLabel",
 				Localization.GetDefaultText (LzDefaultTextValues.Control_HelpSupport),
-				ASLabelTypes.HeaderLeft);
+				ASLabelTypes.HeaderLeft);*/
+
+			AndroidSupport.ApplyButtonSettings (aboutPage, "ManualsButton",
+				Localization.GetDefaultText (LzDefaultTextValues.Control_ReferenceMaterials),
+				aboutFieldBackColor, ReferenceButton_Click, false);
+			AndroidSupport.ApplyButtonSettings (aboutPage, "HelpButton",
+				Localization.GetDefaultText (LzDefaultTextValues.Control_HelpSupport),
+				aboutFieldBackColor, HelpButton_Click, false);
 			AndroidSupport.ApplyLabelSettings (aboutPage, "GenericSettingsLabel",
 				Localization.GetDefaultText (LzDefaultTextValues.Control_GenericSettings),
 				ASLabelTypes.HeaderLeft);
 
-			AndroidSupport.ApplyButtonSettings (aboutPage, "AppPage",
+			/*AndroidSupport.ApplyButtonSettings (aboutPage, "AppPage",
 				Localization.GetDefaultText (LzDefaultTextValues.Control_ProjectWebpage),
 				aboutFieldBackColor, AppButton_Clicked, false);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "ADPPage",
@@ -391,7 +401,7 @@ namespace RD_AAOW
 				aboutFieldBackColor, ManualButton_Clicked, false);
 
 			AndroidSupport.ApplyButtonSettings (aboutPage, "CommunityPage",
-				RDGenerics.AssemblyCompany, aboutFieldBackColor, CommunityButton_Clicked, false);
+				RDGenerics.AssemblyCompany, aboutFieldBackColor, CommunityButton_Clicked, false);*/
 
 			AndroidSupport.ApplyLabelSettings (aboutPage, "RestartTipLabel",
 				Localization.GetDefaultText (LzDefaultTextValues.Message_RestartRequired),
@@ -930,7 +940,8 @@ namespace RD_AAOW
 					Localization.GetDefaultText (LzDefaultTextValues.Button_Accept),
 					Localization.GetDefaultText (LzDefaultTextValues.Button_Read)))
 					{
-					ADPButton_Clicked (null, null);
+					/*ADPButton_Clicked (null, null);*/
+					await CallHelpMaterials (2);
 					}
 
 				// Вступление
@@ -1550,6 +1561,132 @@ namespace RD_AAOW
 
 		#region О приложении
 
+		// Вызов справочных материалов
+		private async void ReferenceButton_Click (object sender, EventArgs e)
+			{
+			await CallHelpMaterials (0);
+			}
+
+		private async void HelpButton_Click (object sender, EventArgs e)
+			{
+			await CallHelpMaterials (1);
+			}
+
+		private async Task<bool> CallHelpMaterials (uint MaterialsSet)
+			{
+			// Заполнение списков
+			if (referenceItems.Count < 1)
+				{
+				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_ProjectWebpage));
+				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_UserManual));
+				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_PolicyEULA));
+				}
+
+			if (helpItems.Count < 1)
+				{
+				helpItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_AskDeveloper));
+				helpItems.AddRange (RDGenerics.CommunitiesNames);
+				}
+
+			// Выбор варианта
+			int res;
+			switch (MaterialsSet)
+				{
+				// Ссылки проекта
+				case 0:
+				default:
+					res = await AndroidSupport.ShowList (Localization.GetDefaultText (LzDefaultTextValues.Control_ReferenceMaterials),
+						Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), referenceItems);
+					break;
+
+				// Ссылки Лаборатории
+				case 1:
+					res = await AndroidSupport.ShowList (Localization.GetDefaultText (LzDefaultTextValues.Control_HelpSupport),
+						Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), helpItems);
+					break;
+
+				// Специальный вызов для Политики
+				case 2:
+					res = 2;
+					break;
+				}
+
+			if (res < 0)
+				return false;
+			else if (MaterialsSet == 1)
+				res += 10;
+
+			// Обнаружение ссылки
+			string url = "";
+			switch (res)
+				{
+				// Страница проекта
+				case 0:
+					url = RDGenerics.DefaultGitLink + ProgramDescription.AssemblyMainName;
+					break;
+
+				// Руководство
+				case 1:
+					url = KKTSupport.KassArrayLink;
+					break;
+
+				// Политика
+				case 2:
+					url = RDGenerics.ADPLink;
+					break;
+
+				case 10:
+					// Оставляем url пустым
+					break;
+
+				// Ссылки Лаборатории
+				case 11:
+				case 12:
+				case 13:
+					url = RDGenerics.GetCommunityLink ((uint)res - 11);
+					break;
+				}
+
+			// Запуск
+			if (string.IsNullOrWhiteSpace (url))
+				{
+				try
+					{
+					EmailMessage message = new EmailMessage
+						{
+						Subject = RDGenerics.LabMailCaption,
+						Body = "",
+						To = new List<string> () { RDGenerics.LabMailLink }
+						};
+					await Email.ComposeAsync (message);
+					}
+				catch
+					{
+					Toast.MakeText (Android.App.Application.Context,
+						Localization.GetDefaultText (LzDefaultTextValues.Message_EMailsNotAvailable),
+						ToastLength.Long).Show ();
+					}
+				}
+
+			else
+				{
+				try
+					{
+					await Launcher.OpenAsync (url);
+					}
+				catch
+					{
+					Toast.MakeText (Android.App.Application.Context,
+						Localization.GetDefaultText (LzDefaultTextValues.Message_BrowserNotAvailable),
+						ToastLength.Long).Show ();
+					}
+				}
+
+			// Успешно
+			return true;
+			}
+
+		/*
 		// Страница проекта
 		private async void AppButton_Clicked (object sender, EventArgs e)
 			{
@@ -1642,7 +1779,7 @@ namespace RD_AAOW
 					Localization.GetDefaultText (LzDefaultTextValues.Message_EMailsNotAvailable),
 					ToastLength.Long).Show ();
 				}
-			}
+			}*/
 
 		// Изменение размера шрифта интерфейса
 		private void FontSizeButton_Clicked (object sender, EventArgs e)
