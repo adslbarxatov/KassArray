@@ -144,9 +144,8 @@ namespace RD_AAOW
 			{
 			// Определение срока жизни
 			uint length = 1110u;
-
 			if ((Flags.GamblingAndLotteries || Flags.PawnsAndInsurance) && Flags.FFD12 && Flags.FN15 ||
-				Flags.Excise /*&& Flags.FFD12*/)	// Вроде бы все актуальные модели обрезаются до 410 на подакцизе
+				Flags.Excise && Flags.MarkFN)	// Вроде бы все актуальные модели обрезаются до 410 на подакцизе
 				{
 				length = 410u;
 				}
