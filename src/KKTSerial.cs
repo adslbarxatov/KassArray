@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -25,9 +24,9 @@ namespace RD_AAOW
 			{
 			// Получение файла заводских номеров и моделей
 #if !ANDROID
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.KKTSN);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.KKTSN);
 #else
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.KKTSN);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.KKTSN);
 #endif
 			StringReader SR = new StringReader (buf);
 
@@ -79,9 +78,9 @@ namespace RD_AAOW
 
 			// Получение файла регионов
 #if !ANDROID
-			buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.Regions);
+			buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.Regions);
 #else
-			buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.Regions);
+			buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Regions);
 #endif
 			SR = new StringReader (buf);
 

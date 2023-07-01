@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -11,15 +10,15 @@ namespace RD_AAOW
 	public class Connectors
 		{
 		// Переменные
-		private List<string> connectorsNames = new List<string> (),
-			connectorsDescriptions = new List<string> ();
-		private List<string> cablesNames = new List<string> (),
-			cablesLeftSides = new List<string> (),
-			cablesLeftPins = new List<string> (),
-			cablesRightSides = new List<string> (),
-			cablesRightPins = new List<string> ();
-		private List<uint> cablesLeftDescriptions = new List<uint> (),
-			cablesRightDescriptions = new List<uint> ();
+		private List<string> connectorsNames = new List<string> ();
+		private List<string> connectorsDescriptions = new List<string> ();
+		private List<string> cablesNames = new List<string> ();
+		private List<string> cablesLeftSides = new List<string> ();
+		private List<string> cablesLeftPins = new List<string> ();
+		private List<string> cablesRightSides = new List<string> ();
+		private List<string> cablesRightPins = new List<string> ();
+		private List<uint> cablesLeftDescriptions = new List<uint> ();
+		private List<uint> cablesRightDescriptions = new List<uint> ();
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -32,7 +31,7 @@ namespace RD_AAOW
 #else
 			byte[] s1 = Properties.Resources.Connectors;
 #endif
-			string buf = Encoding.UTF8.GetString (s1);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s1);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 

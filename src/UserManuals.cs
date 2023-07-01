@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -75,7 +74,7 @@ namespace RD_AAOW
 #else
 			byte[] s1 = Properties.Resources.UserManuals;
 #endif
-			string buf = Encoding.UTF8.GetString (s1);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s1);
 			StringReader SR = new StringReader (buf);
 			string str;
 

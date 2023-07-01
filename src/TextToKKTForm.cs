@@ -1150,6 +1150,20 @@ namespace RD_AAOW
 			ConvNumber.Text = v.ToString ();
 			}
 
+		private void ConvNumber_KeyDown (object sender, KeyEventArgs e)
+			{
+			switch (e.KeyCode)
+				{
+				case Keys.Up:
+					ConvNumberAdd_Click (ConvNumberInc, null);
+					break;
+
+				case Keys.Down:
+					ConvNumberAdd_Click (ConvNumberDec, null);
+					break;
+				}
+			}
+
 		private void ConvNumberClearButton_Click (object sender, EventArgs e)
 			{
 			ConvNumber.Text = "";
@@ -1170,6 +1184,20 @@ namespace RD_AAOW
 			ConvCode.Text = res[2];
 			}
 
+		private void ConvCode_KeyDown (object sender, KeyEventArgs e)
+			{
+			switch (e.KeyCode)
+				{
+				case Keys.Up:
+					ConvCodeAdd_Click (ConvCodeInc, null);
+					break;
+
+				case Keys.Down:
+					ConvCodeAdd_Click (ConvCodeDec, null);
+					break;
+				}
+			}
+
 		private void ConvCodeClearButton_Click (object sender, EventArgs e)
 			{
 			ConvCode.Text = "";
@@ -1179,7 +1207,7 @@ namespace RD_AAOW
 		private void ConvertHexToText_Click (object sender, EventArgs e)
 			{
 			ConvertTextField.Text = DataConvertors.ConvertHexToText (ConvertHexField.Text,
-				(DataConvertors.ConvertHTModes)(EncodingCombo.SelectedIndex % encodingModesCount),
+				(SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
 				EncodingCombo.SelectedIndex >= encodingModesCount);
 			}
 
@@ -1187,7 +1215,7 @@ namespace RD_AAOW
 		private void ConvertTextToHex_Click (object sender, EventArgs e)
 			{
 			ConvertHexField.Text = DataConvertors.ConvertTextToHex (ConvertTextField.Text,
-				(DataConvertors.ConvertHTModes)(EncodingCombo.SelectedIndex % encodingModesCount),
+				(SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
 				EncodingCombo.SelectedIndex >= encodingModesCount);
 			}
 
@@ -1199,5 +1227,6 @@ namespace RD_AAOW
 			}
 
 		#endregion
+
 		}
 	}

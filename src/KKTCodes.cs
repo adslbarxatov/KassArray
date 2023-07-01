@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -34,7 +33,7 @@ namespace RD_AAOW
 #else
 			byte[] s = Properties.Resources.KKTCodes;
 #endif
-			string[] buf = Encoding.UTF8.GetString (s).Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+			string[] buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s).Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 			// Формирование массива 
 			int line = 0;

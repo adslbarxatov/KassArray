@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -32,7 +31,7 @@ namespace RD_AAOW
 #else
 			byte[] s = Properties.Resources.Errors;
 #endif
-			string buf = Encoding.UTF8.GetString (s);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -137,7 +136,7 @@ namespace RD_AAOW
 				return errorCode;
 				}
 			}
-		string errorCode;
+		private string errorCode;
 
 		/// <summary>
 		/// Описание ошибки
@@ -149,7 +148,7 @@ namespace RD_AAOW
 				return errorText;
 				}
 			}
-		string errorText;
+		private string errorText;
 
 		/// <summary>
 		/// Конструктор. Создаёт объект-ошибку

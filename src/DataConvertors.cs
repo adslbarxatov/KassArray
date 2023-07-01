@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -161,7 +160,7 @@ namespace RD_AAOW
 			ulong n = 0;
 			if (double.IsNaN (v))
 				{
-				byte[] b = Encoding.UTF32.GetBytes (Symbol);
+				byte[] b = RDGenerics.GetEncoding (SupportedEncodings.Unicode32).GetBytes (Symbol);
 				for (int i = 0; i < 4; i++)
 					n |= (ulong)b[i] << (i * 8);
 				}
@@ -184,7 +183,7 @@ namespace RD_AAOW
 				(byte)((n >> 16) & 0xFF),
 				(byte)((n >> 24) & 0xFF)
 				};
-			answer[0] = Encoding.UTF32.GetString (ch);
+			answer[0] = RDGenerics.GetEncoding (SupportedEncodings.Unicode32).GetString (ch);
 
 			// Сборка описания
 			answer[1] = "Символ: U+" + n.ToString ("X4") + "\r\nHTML:   &#" + n.ToString () + ";";
@@ -193,6 +192,7 @@ namespace RD_AAOW
 			return answer;
 			}
 
+		/*
 		/// <summary>
 		/// Доступные режимы для методов преобразования данных в hex и обратно
 		/// </summary>
@@ -229,6 +229,7 @@ namespace RD_AAOW
 
 #endif
 			}
+		*/
 
 		/// <summary>
 		/// Возвращает доступные режимы преобразования, дублируя список режимами с поддержкой
@@ -238,9 +239,9 @@ namespace RD_AAOW
 			{
 			get
 				{
-				if (availableEncodings.Count == encodings.Length)
+				if (availableEncodings.Count == RDGenerics.EncodingsCount)
 					{
-					for (int i = 0; i < encodings.Length; i++)
+					for (int i = 0; i < RDGenerics.EncodingsCount; i++)
 						availableEncodings.Add ("BASE64 + " + availableEncodings[i]);
 					}
 
@@ -249,36 +250,14 @@ namespace RD_AAOW
 			}
 		private static List<string> availableEncodings = new List<string> {
 			"UTF8",
-			"Unicode",
+			"Unicode (16 bit)",
+			"Unicode (32 bit)",
 #if !ANDROID
 			"CP1251 (Windows)",
 			"CP866 (MS DOS)",
 			"KOI8-R",
 #else
 			"ASCII",
-#endif
-			};
-
-		/// <summary>
-		/// Возвращает количество уникальных доступных кодировок (без BASE64)
-		/// </summary>
-		public static uint UniqueEncodingsCount
-			{
-			get
-				{
-				return (uint)encodings.Length;
-				}
-			}
-		private static Encoding[] encodings = new Encoding[]
-			{
-			Encoding.UTF8,
-			Encoding.Unicode,
-#if !ANDROID
-			Encoding.GetEncoding (1251),
-			Encoding.GetEncoding (866),
-			Encoding.GetEncoding (20866),
-#else
-			Encoding.ASCII,
 #endif
 			};
 
@@ -292,7 +271,7 @@ namespace RD_AAOW
 		/// <param name="FromBASE64">Флаг, указывающий, что исходные данные представлены в BASE64</param>
 		/// <param name="Mode">Кодировка исходных данных</param>
 		/// <returns>Исходный текст</returns>
-		public static string ConvertHexToText (string HexData, ConvertHTModes Mode, bool FromBASE64)
+		public static string ConvertHexToText (string HexData, SupportedEncodings Mode, bool FromBASE64)
 			{
 			// Обычные данные
 			List<byte> bytes = new List<byte> ();
@@ -345,7 +324,7 @@ namespace RD_AAOW
 			// Сборка результата
 			try
 				{
-				return encodings[(int)Mode].GetString (bytes.ToArray ());
+				return RDGenerics.GetEncoding (Mode).GetString (bytes.ToArray ());
 				}
 			catch
 				{
@@ -361,13 +340,13 @@ namespace RD_AAOW
 		/// представлены в BASE64</param>
 		/// <param name="Mode">Кодировка конечных данных</param>
 		/// <returns>Исходный текст</returns>
-		public static string ConvertTextToHex (string TextData, ConvertHTModes Mode, bool ToBASE64)
+		public static string ConvertTextToHex (string TextData, SupportedEncodings Mode, bool ToBASE64)
 			{
 			// Сборка байт-массива
 			byte[] bytes;
 			try
 				{
-				bytes = encodings[(int)Mode].GetBytes (TextData);
+				bytes = RDGenerics.GetEncoding (Mode).GetBytes (TextData);
 				}
 			catch
 				{

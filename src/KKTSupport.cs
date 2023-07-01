@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 
 #if ANDROID
 using Android.Graphics;
@@ -145,7 +144,7 @@ namespace RD_AAOW
 			// Определение срока жизни
 			uint length = 1110u;
 			if ((Flags.GamblingAndLotteries || Flags.PawnsAndInsurance) && Flags.FFD12 && Flags.FN15 ||
-				Flags.Excise && Flags.MarkFN)	// Вроде бы все актуальные модели обрезаются до 410 на подакцизе
+				Flags.Excise && Flags.MarkFN)   // ??? Все М-модели или только запущенные под ФФД 1.2 ???
 				{
 				length = 410u;
 				}
@@ -268,7 +267,7 @@ namespace RD_AAOW
 			// Контроль
 			if ((Message == null) || (Message == ""))
 				return 0;
-			byte[] msg = Encoding.UTF8.GetBytes (Message);
+			byte[] msg = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetBytes (Message);
 
 			// Переменные
 			UInt16 crc16 = 0xFFFF;

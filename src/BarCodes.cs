@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -91,9 +90,9 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.BarCodes);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.BarCodes);
 #else
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.BarCodes);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.BarCodes);
 #endif
 			StringReader SR = new StringReader (buf);
 

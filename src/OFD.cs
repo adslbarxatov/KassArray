@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -66,9 +65,9 @@ namespace RD_AAOW
 			{
 			// Получение файла символов
 #if !ANDROID
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.OFD);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.OFD);
 #else
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.OFD);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.OFD);
 #endif
 			StringReader SR = new StringReader (buf);
 

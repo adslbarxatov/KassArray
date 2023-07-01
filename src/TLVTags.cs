@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -143,12 +142,12 @@ namespace RD_AAOW
 
 		private List<TLVTags_FFDVersions> oblFFDVersions = new List<TLVTags_FFDVersions> ();
 		private List<TLVTags_DocumentTypes> oblDocTypes = new List<TLVTags_DocumentTypes> ();
-		private List<TLVTags_ObligationStates> oblPrintObligations = new List<TLVTags_ObligationStates> (),
-			oblVirtualObligations = new List<TLVTags_ObligationStates> ();
-		private List<string> oblPrintConditions = new List<string> (),
-			oblVirtualConditions = new List<string> (),
-			oblTables = new List<string> (),
-			oblParents = new List<string> ();
+		private List<TLVTags_ObligationStates> oblPrintObligations = new List<TLVTags_ObligationStates> ();
+		private List<TLVTags_ObligationStates> oblVirtualObligations = new List<TLVTags_ObligationStates> ();
+		private List<string> oblPrintConditions = new List<string> ();
+		private List<string> oblVirtualConditions = new List<string> ();
+		private List<string> oblTables = new List<string> ();
+		private List<string> oblParents = new List<string> ();
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -157,11 +156,11 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string tlv = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.TLVTags);
-			string obl = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.Obligation);
+			string tlv = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.TLVTags);
+			string obl = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.Obligation);
 #else
-			string tlv = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.TLVTags);
-			string obl = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.Obligation);
+			string tlv = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.TLVTags);
+			string obl = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Obligation);
 #endif
 			StringReader tlvSR = new StringReader (tlv);
 			StringReader oblSR = new StringReader (obl);

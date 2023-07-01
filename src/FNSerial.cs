@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace RD_AAOW
 	{
@@ -11,8 +10,8 @@ namespace RD_AAOW
 	public class FNSerial
 		{
 		// Переменные
-		private List<string> names = new List<string> (),
-			serials = new List<string> ();
+		private List<string> names = new List<string> ();
+		private List<string> serials = new List<string> ();
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -21,9 +20,9 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.TextToKKMResources.FNSN);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.FNSN);
 #else
-			string buf = Encoding.UTF8.GetString (RD_AAOW.Properties.Resources.FNSN);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.FNSN);
 #endif
 			StringReader SR = new StringReader (buf);
 
