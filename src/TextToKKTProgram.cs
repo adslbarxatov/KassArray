@@ -44,7 +44,7 @@ namespace RD_AAOW
 					}
 				else
 					{
-					RDGenerics.MessageBox (RDMessageTypes.Warning,
+					RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
 						Localization.GetDefaultText (LzDefaultTextValues.Message_AppAlreadyStarted));
 					}
 

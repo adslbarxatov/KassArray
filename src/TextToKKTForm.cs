@@ -289,7 +289,8 @@ namespace RD_AAOW
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
 				this.TopMost = false;
-				RDGenerics.MessageBox (RDMessageTypes.Warning, "Завершите работу с ФН, чтобы выйти из приложения");
+				RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
+					"Завершите работу с ФН, чтобы выйти из приложения");
 				this.TopMost = TopFlag.Checked;
 
 				CallFNReader ("");
@@ -433,7 +434,7 @@ namespace RD_AAOW
 			if (!result)
 				{
 				this.TopMost = false;
-				RDGenerics.MessageBox (RDMessageTypes.Warning,
+				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
 					"Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
 					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
 					" (раздел «Прочее», кнопка «О программе»)");
@@ -446,7 +447,7 @@ namespace RD_AAOW
 			if (FNReaderInstance.LibVersion != ProgramDescription.AssemblyVersion)
 				{
 				this.TopMost = false;
-				RDGenerics.MessageBox (RDMessageTypes.Warning,
+				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
 					"Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
 					"текущей версии программы.\n\n" +
 					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
@@ -475,7 +476,7 @@ namespace RD_AAOW
 					ConfigAccessor.NextDumpPath = "";
 
 					this.TopMost = false;
-					RDGenerics.MessageBox (RDMessageTypes.Warning,
+					RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
 						"Завершите работу с ФН, чтобы открыть новый файл");
 					this.TopMost = TopFlag.Checked;
 
@@ -504,7 +505,7 @@ namespace RD_AAOW
 			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
 				{
 				this.TopMost = false;
-				RDGenerics.MessageBox (RDMessageTypes.Information,
+				RDGenerics.MessageBox (RDMessageTypes.Information_Center,
 					"Статус ФН ещё не запрашивался или содержит не все требуемые поля");
 				this.TopMost = TopFlag.Checked;
 
