@@ -410,6 +410,23 @@ namespace RD_AAOW
 
 		private void CallFNReader (string DumpPath)
 			{
+			// Обработка для AppXBundle
+			if (File.Exists (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderDLL))
+				try
+					{
+					File.Move (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderDLL,
+						RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL);
+					}
+				catch { }
+
+			if (File.Exists (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderSubDLL))
+				try
+					{
+					File.Move (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderSubDLL,
+						RDGenerics.AppStartupPath + ProgramDescription.FNReaderSubDLL);
+					}
+				catch { }
+
 			// Контроль
 			bool result = true;
 			if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL) ||
