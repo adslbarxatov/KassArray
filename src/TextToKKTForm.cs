@@ -99,7 +99,16 @@ namespace RD_AAOW
 			// Получение настроек
 			RDGenerics.LoadWindowDimensions (this);
 
-			KeepAppState.Checked = ca.KeepApplicationState;
+			if (!RDGenerics.IsRegistryAccessible)
+				{
+				this.Text += Localization.GetDefaultText (LzDefaultTextValues.Message_LimitedFunctionality);
+				KeepAppState.Checked = KeepAppState.Enabled = false;
+				}
+			else
+				{
+				KeepAppState.Checked = ca.KeepApplicationState;
+				}
+
 			TopFlag.Checked = ca.TopMost;
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
@@ -410,7 +419,7 @@ namespace RD_AAOW
 
 		private void CallFNReader (string DumpPath)
 			{
-			// Обработка для AppXBundle
+			/* Обработка для AppXBundle
 			if (File.Exists (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderDLL))
 				try
 					{
@@ -425,7 +434,7 @@ namespace RD_AAOW
 					File.Move (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderSubDLL,
 						RDGenerics.AppStartupPath + ProgramDescription.FNReaderSubDLL);
 					}
-				catch { }
+				catch { }*/
 
 			// Контроль
 			bool result = true;
@@ -453,7 +462,7 @@ namespace RD_AAOW
 				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
 					"Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
-					"Данный компонент можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
+					"Данный компонент можно загрузить вместе с актуальным обновлением" +
 					" (раздел «Прочее», кнопка «О программе»)");
 				this.TopMost = TopFlag.Checked;
 
