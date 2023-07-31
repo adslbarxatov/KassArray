@@ -91,7 +91,7 @@ namespace RD_AAOW
 
 		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
 			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
-			keepAppState, allowService;
+			keepAppState, allowService, extendedMode;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
 
@@ -126,6 +126,9 @@ namespace RD_AAOW
 		// Дата срока жизни ФН (в чистом виде)
 		private string fnLifeResultDate = "";
 
+		// Число режимов преобразования
+		private uint encodingModesCount;
+
 		// Списки меню
 		private List<string> referenceItems = new List<string> ();
 		private List<string> helpItems = new List<string> ();
@@ -141,8 +144,9 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
-			ca = new ConfigAccessor (0, 0);
-			um = new UserManuals (ca.ExtendedFunctions);
+			ca = new ConfigAccessor (/*0, 0*/);
+			um = new UserManuals (/*ca.ExtendedFunctions*/ca.AllowExtendedFunctionsLevel1,
+				ca.AllowExtendedFunctionsLevel2);
 			pm = PrintingManager;
 
 			if (!Localization.IsCurrentLanguageRuRu)
@@ -227,6 +231,11 @@ namespace RD_AAOW
 				"Оставить службу активной после выхода", ASLabelTypes.DefaultLeft);
 			allowService = AndroidSupport.ApplySwitchSettings (headersPage, "AllowService", false,
 				headersFieldBackColor, AllowService_Toggled, AndroidSupport.AllowServiceToStart);
+
+			AndroidSupport.ApplyLabelSettings (headersPage, "ExtendedModeLabel",
+				"Режим сервис-инженера", ASLabelTypes.DefaultLeft);
+			extendedMode = AndroidSupport.ApplySwitchSettings (headersPage, "ExtendedMode", false,
+				headersFieldBackColor, ExtendedMode_Toggled, ca.AllowExtendedMode);
 
 			try
 				{
@@ -810,8 +819,10 @@ namespace RD_AAOW
 
 			#region Страница конвертора символов Unicode
 
+			encodingModesCount = (uint)(DataConvertors.AvailableEncodings.Length / 2);
+
 			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeLabel",
-				"Код символа\nили символ:", ASLabelTypes.HeaderLeft);
+				"Код символа" + Localization.RN + "или символ:", ASLabelTypes.HeaderLeft);
 			convCodeField = AndroidSupport.ApplyEditorSettings (convertorsUCPage, "ConvCodeField",
 				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionCode, ConvCode_TextChanged, true);
 
@@ -833,7 +844,7 @@ namespace RD_AAOW
 			ConvCode_TextChanged (null, null);
 
 			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvHelpLabel",
-				convHelp + ".\nНажатие кнопки с символом Unicode копирует его в буфер обмена",
+				convHelp + "." + Localization.RN + "Нажатие кнопки с символом Unicode копирует его в буфер обмена",
 				ASLabelTypes.Tip);
 
 			#endregion
@@ -904,10 +915,6 @@ namespace RD_AAOW
 			{
 			// Контроль XPUN
 			await AndroidSupport.XPUNLoop (Huawei);
-			/*while (!Huawei && !Localization.IsXPUNClassAcceptable)
-				await AndroidSupport.ShowMessage (
-					Localization.GetDefaultText (LzDefaultTextValues.Message_XPUNE),
-					"   ");*/
 
 			// Политика
 			if (RDGenerics.GetAppSettingsValue (firstStartRegKey) == "")
@@ -924,8 +931,8 @@ namespace RD_AAOW
 				RDGenerics.SetAppSettingsValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
 				// Только после принятия
 
-				await AndroidSupport.ShowMessage ("Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!\r\n\r\n" +
-
+				await AndroidSupport.ShowMessage ("Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!" +
+					Localization.RNRN +
 					"На этой странице находится перечень функций приложения, который позволяет перейти " +
 					"к нужному разделу. Вернуться сюда можно с помощью кнопки «Назад». Перемещение " +
 					"между разделами также доступно по свайпу влево-вправо",
@@ -991,6 +998,23 @@ namespace RD_AAOW
 		private void AllowService_Toggled (object sender, ToggledEventArgs e)
 			{
 			AndroidSupport.AllowServiceToStart = allowService.IsToggled;
+			}
+
+		// Включение / выключение режима сервис-инженера
+		private async void ExtendedMode_Toggled (object sender, EventArgs e)
+			{
+			if (extendedMode.IsToggled)
+				{
+				await AndroidSupport.ShowMessage (ConfigAccessor.ExtendedModeMessage,
+					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
+				ca.AllowExtendedMode = true;
+				}
+			else
+				{
+				await AndroidSupport.ShowMessage (ConfigAccessor.NoExtendedModeMessage,
+					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
+				ca.AllowExtendedMode = false;
+				}
 			}
 
 		/// <summary>
@@ -1310,14 +1334,15 @@ namespace RD_AAOW
 				{
 				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 				fnLifeResultDate = res.Substring (1);
-				fnLifeResult.Text += (fnLifeResultDate + "\n(выбранный ФН неприменим с указанными параметрами)");
+				fnLifeResult.Text += (fnLifeResultDate + Localization.RN +
+					"(выбранный ФН неприменим с указанными параметрами)");
 				}
 			else if (res.Contains (KKTSupport.FNLifeUnwelcomeSign))
 				{
 				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
 				fnLifeResultDate = res.Substring (1);
-				fnLifeResult.Text += (fnLifeResultDate +
-					"\n(не рекомендуется использовать выбранный ФН с указанными параметрами)");
+				fnLifeResult.Text += (fnLifeResultDate + Localization.RN +
+					"(не рекомендуется использовать выбранный ФН с указанными параметрами)");
 				}
 			else
 				{
@@ -1332,7 +1357,7 @@ namespace RD_AAOW
 					{
 					fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 
-					fnLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
+					fnLifeResult.Text += (Localization.RN + "(выбранный ФН исключён из реестра ФНС)");
 					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 					}
 				else
@@ -1825,8 +1850,8 @@ namespace RD_AAOW
 			cableRightSideText.Text = "Со стороны " + conn.GetCableConnector ((uint)res, true);
 			cableRightPinsText.Text = conn.GetCableConnectorPins ((uint)res, true);
 
-			cableDescriptionText.Text = conn.GetCableConnectorDescription ((uint)res, false) + "\n\n" +
-				conn.GetCableConnectorDescription ((uint)res, true);
+			cableDescriptionText.Text = conn.GetCableConnectorDescription ((uint)res, false) +
+				Localization.RNRN + conn.GetCableConnectorDescription ((uint)res, true);
 			}
 
 		#endregion
@@ -1907,17 +1932,23 @@ namespace RD_AAOW
 		// Преобразование hex-данных в текст
 		private void ConvertHexToText_Click (object sender, EventArgs e)
 			{
-			convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
+			/*convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
 				(DataConvertors.ConvertHTModes)(ca.EncodingForConvertor % DataConvertors.UniqueEncodingsCount),
-				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);
+				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);*/
+			convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
+				(SupportedEncodings)(ca.EncodingForConvertor % encodingModesCount),
+				ca.EncodingForConvertor >= encodingModesCount);
 			}
 
 		// Преобразование текста в hex-данные
 		private void ConvertTextToHex_Click (object sender, EventArgs e)
 			{
-			convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
+			/*convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
 				(DataConvertors.ConvertHTModes)(ca.EncodingForConvertor % DataConvertors.UniqueEncodingsCount),
-				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);
+				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);*/
+			convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
+				(SupportedEncodings)(ca.EncodingForConvertor % encodingModesCount),
+				ca.EncodingForConvertor >= encodingModesCount);
 			}
 
 		// Очистка вкладки преобразования данных

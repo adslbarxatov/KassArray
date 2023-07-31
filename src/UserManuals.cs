@@ -58,14 +58,15 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
-		/// <param name="AllowExtended">Битовое поле разрешает отображение расширенных инструкций</param>
-		public UserManuals (byte AllowExtended)
+		/// <param name="Level1">Разрешение на отображение расширенных инструкций первого уровня</param>
+		/// <param name="Level2">Разрешение на отображение расширенных инструкций второго уровня</param>
+		public UserManuals (bool Level1, bool Level2)
 			{
 			// Формирование списка
 			availableOperations.AddRange (operationTypes1);
-			if ((AllowExtended & 0x1) != 0)
+			if (/*(AllowExtended & 0x1) != 0*/ Level1)
 				availableOperations.AddRange (operationTypes2);
-			if ((AllowExtended & 0x2) != 0)
+			if (/*(AllowExtended & 0x2) != 0*/ Level2)
 				availableOperations.AddRange (operationTypes3);
 
 			// Получение файлов
@@ -99,39 +100,41 @@ namespace RD_AAOW
 						if (i == 3)
 							SR.ReadLine ();
 
-						operations[i].Add ("• " + SR.ReadLine ().Replace ("|", "\r\n• "));
+						operations[i].Add ("• " + SR.ReadLine ().Replace ("|", Localization.RN + "• "));
 
 						if ((i >= 1) || (i <= 3))
 							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&",
 								"Повторить предыдущие действия для всех позиций чека");
 						if (i == 5)
 							operations[i][operations[i].Count - 1] +=
-								";\r\n• Дальнейшие действия совпадают с действиями при продаже";
+								";" + Localization.RN + "• Дальнейшие действия совпадают с действиями при продаже";
 						if (i == 6)
-							operations[i][operations[i].Count - 1] += ";\r\n• Дождаться снятия отчёта";
+							operations[i][operations[i].Count - 1] += ";" + Localization.RN +
+								"• Дождаться снятия отчёта";
 						if ((i == 7) || (i == 8))
 							operations[i][operations[i].Count - 1] =
-								"• Настоятельно рекомендуется предварительно закрыть смену;\r\n" +
+								"• Настоятельно рекомендуется предварительно закрыть смену;" + Localization.RN +
 								operations[i][operations[i].Count - 1];
 						if (i == 13)
 							{
 							operations[i][operations[i].Count - 1] =
-								"• Убедиться, что сохранены все необходимые настройки;\r\n" +
+								"• Убедиться, что сохранены все необходимые настройки;" + Localization.RN +
 								operations[i][operations[i].Count - 1];
 							}
 						if (i == 14)
 							{
 							operations[i][operations[i].Count - 1] =
-								"• Убедиться, что смена закрыта, а дата в ККТ позволяет выполнить закрытие архива;\r\n" +
-								operations[i][operations[i].Count - 1] +
-								";\r\n• Дождаться распечатки отчёта и отправки документов ОФД";
+								"• Убедиться, что смена закрыта, а дата в ККТ позволяет выполнить закрытие архива;" +
+								Localization.RN + operations[i][operations[i].Count - 1] +
+								";" + Localization.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
 							}
 
 						if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 							operations[i][operations[i].Count - 1] = "(не предусмотрено)";
 						if (operations[i][operations[i].Count - 1].Contains ("#"))
-							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("#",
-								"") + "\r\n\r\n* Порядок действий может отличаться в разных версиях прошивок";
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("#", "") + Localization.RNRN +
+								"* Порядок действий может отличаться в разных версиях прошивок";
 						}
 					}
 				}

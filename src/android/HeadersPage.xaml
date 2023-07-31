@@ -27,6 +27,11 @@
 					<Label x:Name="KeepAppStateLabel" />
 				</StackLayout>
 
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Switch x:Name="ExtendedMode" />
+					<Label x:Name="ExtendedModeLabel" />
+				</StackLayout>
+
 				<Label />
 
 			</StackLayout>

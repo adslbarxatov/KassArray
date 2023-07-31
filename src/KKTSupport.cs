@@ -2,15 +2,15 @@
 using System.IO;
 
 #if ANDROID
-using Android.Graphics;
-using Android.OS;
-using Android.Print;
-using Android.Print.Pdf;
-using Android.Runtime;
+	using Android.Graphics;
+	using Android.OS;
+	using Android.Print;
+	using Android.Print.Pdf;
+	using Android.Runtime;
 #else
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
+	using System.Drawing;
+	using System.Drawing.Printing;
+	using System.Windows.Forms;
 #endif
 
 namespace RD_AAOW
@@ -1017,7 +1017,7 @@ namespace RD_AAOW
 
 			string tmp = "(<> – индикация на дисплее, [] – кнопки клавиатуры)";
 			tmp = tmp.PadLeft ((ManualA4CharPerLine - tmp.Length) / 2 + tmp.Length);
-			text += ("\n" + tmp);
+			text += (Localization.RN + tmp);
 
 			string[] operations = Manuals.OperationTypes;
 			uint operationsCount = ForCashier ? UserManuals.OperationsForCashiers :
@@ -1025,7 +1025,7 @@ namespace RD_AAOW
 
 			for (int i = 0; i < operationsCount; i++)
 				{
-				text += ((i != 0 ? "\n" : "") + "\n\n" + operations[i] + "\n\n");
+				text += ((i != 0 ? Localization.RN : "") + Localization.RNRN + operations[i] + Localization.RNRN);
 				text += Manuals.GetManual (ManualNumber, (uint)i);
 				}
 

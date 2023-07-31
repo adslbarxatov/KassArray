@@ -222,7 +222,7 @@ namespace RD_AAOW
 						if (int.Parse (tlvValues[0]) > possibleValues.Count)
 							possibleValues.Add ("");
 
-						possibleValues[possibleValues.Count - 1] += (tlvValues[1] + "\r\n");
+						possibleValues[possibleValues.Count - 1] += (tlvValues[1] + Localization.RN);
 						}
 
 					// Пропуски
@@ -291,16 +291,16 @@ namespace RD_AAOW
 				lastValuesSet = "";
 			else
 				lastValuesSet = possibleValues[links[i]];
-			if (lastValuesSet.EndsWith ("\r\n"))
+			if (lastValuesSet.EndsWith (Localization.RN))
 				lastValuesSet = lastValuesSet.Substring (0, lastValuesSet.Length - 2);
 
 #if ANDROID
 			lastObligation = "<b>Для ФФД 1.05:</b><br/><i>" +
-				BuildObligation (i, TLVTags_FFDVersions.FFD_105).Replace ("\r\n", "<br/>") +
+				BuildObligation (i, TLVTags_FFDVersions.FFD_105).Replace (Localization.RN, "<br/>") +
 				"</i><br/><br/><b>Для ФФД 1.1:</b><br/><i>" +
-				BuildObligation (i, TLVTags_FFDVersions.FFD_110).Replace ("\r\n", "<br/>") +
+				BuildObligation (i, TLVTags_FFDVersions.FFD_110).Replace (Localization.RN, "<br/>") +
 				"</i><br/><br/><b>Для ФФД 1.2:</b><br/><i>" +
-				BuildObligation (i, TLVTags_FFDVersions.FFD_120).Replace ("\r\n", "<br/>") + "</i>";
+				BuildObligation (i, TLVTags_FFDVersions.FFD_120).Replace (Localization.RN, "<br/>") + "</i>";
 #else
 			lastObligation = BuildObligation (i, FFD);
 #endif
@@ -485,7 +485,7 @@ namespace RD_AAOW
 					TLVTags_ObligationStates os = ((j == 0) ? oblPrintObligations[oblIndices[Index][i]] :
 						oblVirtualObligations[oblIndices[Index][i]]);
 
-					res += "\r\n• ";
+					res += Localization.RN + "• ";
 					switch (os)
 						{
 						case TLVTags_ObligationStates.Unused:
@@ -535,12 +535,12 @@ namespace RD_AAOW
 							break;
 						}
 
-					res += ((j == 0) ? " в печ. форме" : " в эл. форме\r\n\r\n");
+					res += ((j == 0) ? " в печ. форме" : " в эл. форме" + Localization.RNRN);
 					}
 				}
 
 			// Завершено
-			while (res.EndsWith ("\r\n"))
+			while (res.EndsWith (Localization.RN))
 				res = res.Substring (0, res.Length - 2);
 			if (string.IsNullOrWhiteSpace (res))
 				res = "• Нет сведений об обязательности тега в данном ФФД";

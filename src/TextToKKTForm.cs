@@ -60,14 +60,15 @@ namespace RD_AAOW
 			InitializeComponent ();
 			if (!Localization.IsCurrentLanguageRuRu)
 				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
-			ca = new ConfigAccessor (this.Width, this.Height);
+			ca = new ConfigAccessor (/*this.Width, this.Height*/);
 
 			// Загрузка списка кодов и ошибок
 			kkmc = new KKTCodes ();
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
 			ll = new LowLevel ();
-			um = new UserManuals (ca.ExtendedFunctions);
+			um = new UserManuals (/*ca.ExtendedFunctions*/ca.AllowExtendedFunctionsLevel1,
+				ca.AllowExtendedFunctionsLevel2);
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
 			tlvt = new TLVTags ();
@@ -207,17 +208,18 @@ namespace RD_AAOW
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
-				"жёлтый – планируется; синий – нет сведений\n(на момент релиза этой версии приложения)";
+				"жёлтый – планируется; синий – нет сведений" + Localization.RN +
+				"(на момент релиза этой версии приложения)";
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
-				RNMTip.Text += ("\n\nПервые 10 цифр РН являются порядковым номером ККТ в реестре и могут быть указаны " +
-					"вручную при генерации");
+				RNMTip.Text += (Localization.RNRN + "Первые 10 цифр РН являются порядковым номером ККТ в реестре " +
+					"и могут быть указаны вручную при генерации");
 				}
 			else
 				{
 				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
-				UnlockField.Visible = UnlockLabel.Visible = true;
-				UnlockLabel.Text = ca.LockMessage;
+				/*UnlockField.Visible = UnlockLabel.Visible = true;
+				UnlockLabel.Text = ca.LockMessage;*/
 				FNReader.Enabled = false;
 				}
 
@@ -247,6 +249,24 @@ namespace RD_AAOW
 			// Запуск файла дампа, если представлен
 			if (ca.AllowExtendedFunctionsLevel2 && (DumpFileForFNReader != ""))
 				CallFNReader (DumpFileForFNReader);
+
+			ExtendedMode.Checked = ca.AllowExtendedMode;
+			ExtendedMode.CheckedChanged += ExtendedMode_CheckedChanged;
+			}
+
+		// Включение / выключение режима сервис-инженера
+		private void ExtendedMode_CheckedChanged (object sender, EventArgs e)
+			{
+			if (ExtendedMode.Checked)
+				{
+				RDGenerics.MessageBox (RDMessageTypes.Error_Left, ConfigAccessor.ExtendedModeMessage);
+				ca.AllowExtendedMode = true;
+				}
+			else
+				{
+				RDGenerics.MessageBox (RDMessageTypes.Question_Left, ConfigAccessor.NoExtendedModeMessage);
+				ca.AllowExtendedMode = false;
+				}
 			}
 
 		// Добавление в автозапуск
@@ -393,7 +413,7 @@ namespace RD_AAOW
 			return Color.FromArgb (200, 200, 255);
 			}
 
-		// Разблокировка функционала
+		/* Разблокировка функционала
 		private void UnlockField_TextChanged (object sender, EventArgs e)
 			{
 			if (ca.TestPass (UnlockField.Text))
@@ -410,6 +430,7 @@ namespace RD_AAOW
 					}
 				}
 			}
+		*/
 
 		// Вызов библиотеки FNReader
 		private void FNReader_Click (object sender, EventArgs e)
@@ -461,9 +482,9 @@ namespace RD_AAOW
 				{
 				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
-					"Модуль чтения и обработки данных ФН отсутствует на ПК.\n\n" +
-					"Данный компонент можно загрузить вместе с актуальным обновлением" +
-					" (раздел «Прочее», кнопка «О программе»)");
+					"Модуль чтения и обработки данных ФН отсутствует на ПК." + Localization.RNRN +
+					"Данный компонент можно загрузить вместе с актуальным обновлением " +
+					"(раздел «Прочее», кнопка «О программе»)");
 				this.TopMost = TopFlag.Checked;
 
 				return;
@@ -475,9 +496,9 @@ namespace RD_AAOW
 				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
 					"Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
-					"текущей версии программы.\n\n" +
-					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении»" +
-					" (раздел «Прочее», кнопка «О программе»)");
+					"текущей версии программы." + Localization.RNRN +
+					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении» " +
+					"(раздел «Прочее», кнопка «О программе»)");
 				this.TopMost = TopFlag.Checked;
 
 				return;
@@ -748,14 +769,15 @@ namespace RD_AAOW
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult + "\n(выбранный ФН неприменим с указанными параметрами)");
+				FNLifeResult.Text += (fnLifeResult + Localization.RN +
+					"(выбранный ФН неприменим с указанными параметрами)");
 				}
 			else if (res.StartsWith (KKTSupport.FNLifeUnwelcomeSign))
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 128, 0);
 				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult +
-					"\n(не рекомендуется использовать выбранный ФН с указанными параметрами)");
+				FNLifeResult.Text += (fnLifeResult + Localization.RN +
+					"(не рекомендуется использовать выбранный ФН с указанными параметрами)");
 				}
 			else
 				{
@@ -770,7 +792,7 @@ namespace RD_AAOW
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
-					FNLifeResult.Text += ("\n(выбранный ФН исключён из реестра ФНС)");
+					FNLifeResult.Text += (Localization.RN + "(выбранный ФН исключён из реестра ФНС)");
 					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 					}
 				else
@@ -920,7 +942,7 @@ namespace RD_AAOW
 			// Обработка аннулированных ОФД
 			OFDDisabledLabel.Enabled = OFDDisabledLabel.Visible = !string.IsNullOrWhiteSpace (parameters[10]);
 			if (OFDDisabledLabel.Enabled)
-				OFDDisabledLabel.Text = parameters[10] + "\n";
+				OFDDisabledLabel.Text = parameters[10] + Localization.RN;
 			}
 
 		// Копирование в буфер обмена
@@ -1058,7 +1080,7 @@ namespace RD_AAOW
 				TLVType.Text = tlvt.LastType;
 
 				if (!string.IsNullOrWhiteSpace (tlvt.LastValuesSet))
-					TLVValues.Text = tlvt.LastValuesSet + "\r\n\r\n";
+					TLVValues.Text = tlvt.LastValuesSet + Localization.RNRN;
 				else
 					TLVValues.Text = "";
 				TLVValues.Text += tlvt.LastObligation;
@@ -1132,7 +1154,7 @@ namespace RD_AAOW
 			CableRightSide.Text = "Со стороны " + conn.GetCableConnector (i, true);
 			CableRightPins.Text = conn.GetCableConnectorPins (i, true);
 
-			CableLeftDescription.Text = conn.GetCableConnectorDescription (i, false) + "\n\n" +
+			CableLeftDescription.Text = conn.GetCableConnectorDescription (i, false) + Localization.RNRN +
 				conn.GetCableConnectorDescription (i, true);
 			}
 
@@ -1254,6 +1276,5 @@ namespace RD_AAOW
 			}
 
 		#endregion
-
 		}
 	}

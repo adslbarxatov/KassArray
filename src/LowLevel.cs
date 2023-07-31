@@ -55,7 +55,7 @@ namespace RD_AAOW
 						{
 						names[names.Count - 1].Add (values[0]);
 						commands[commands.Count - 1].Add (values[1]);
-						descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", "\r\n"));
+						descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", Localization.RN));
 						}
 					}
 				}

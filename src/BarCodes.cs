@@ -250,10 +250,10 @@ namespace RD_AAOW
 			string data = BarcodeData.Replace ("\x1D", ""); // Сброс суффиксов DataMatrix
 			SupportedBarcodesTypes type = GetBarcodeType (data);
 
-			string res = "Длина данных (без спецсимволов): " + data.Length.ToString () + "\r\n";
+			string res = "Длина данных (без спецсимволов): " + data.Length.ToString () + Localization.RN;
 			if (type == SupportedBarcodesTypes.Unsupported)
 				return res + "Штрих-код неполный, некорректный или не поддерживается";
-			res += "Тип штрих-кода: " + GetBarcodeTypeName (type) + "\r\n";
+			res += "Тип штрих-кода: " + GetBarcodeTypeName (type) + Localization.RN;
 
 			// Разбор
 			switch (type)
@@ -264,23 +264,23 @@ namespace RD_AAOW
 					break;
 
 				case SupportedBarcodesTypes.DataMatrixCigarettes:
-					res += ("\r\n" + ParseCigarettesDataMatrix (data));
+					res += (Localization.RN + ParseCigarettesDataMatrix (data));
 					break;
 
 				case SupportedBarcodesTypes.DataMatrixCigarettesBlocks:
-					res += ("\r\n" + ParseCigarettesBlocksDataMatrix (data));
+					res += (Localization.RN + ParseCigarettesBlocksDataMatrix (data));
 					break;
 
 				case SupportedBarcodesTypes.DataMatrixMedicines:
-					res += ("\r\n" + ParseMedicinesDataMatrix (data));
+					res += (Localization.RN + ParseMedicinesDataMatrix (data));
 					break;
 
 				case SupportedBarcodesTypes.DataMatrixShoes:
-					res += ("\r\n" + ParseShoesDataMatrix (data));
+					res += (Localization.RN + ParseShoesDataMatrix (data));
 					break;
 
 				case SupportedBarcodesTypes.DataMatrixMilk:
-					res += ("\r\n" + ParseMilkDataMatrix (data));
+					res += (Localization.RN + ParseMilkDataMatrix (data));
 					break;
 				}
 
@@ -296,16 +296,16 @@ namespace RD_AAOW
 			{
 			string res = "GTIN: " + BarcodeData.Substring (0, 14) + ", ";
 			if (!CheckEAN (BarcodeData.Substring (1, 13), true))
-				res += "EAN-13 некорректен;\r\n";
+				res += "EAN-13 некорректен;" + Localization.RN;
 			else if (BarcodeData.StartsWith ("000000"))
-				res += (GetEANUsage (BarcodeData.Substring (6, 8)) + "\r\n");
+				res += (GetEANUsage (BarcodeData.Substring (6, 8)) + Localization.RN);
 			else
-				res += (GetEANUsage (BarcodeData.Substring (1, 13)) + "\r\n");
+				res += (GetEANUsage (BarcodeData.Substring (1, 13)) + Localization.RN);
 			res += ("Серийный номер упаковки: " + BarcodeData.Substring (14, 7) + " (" +
-				DecodeDMLine (BarcodeData.Substring (14, 7), false) + ")\r\n\r\n");
+				DecodeDMLine (BarcodeData.Substring (14, 7), false) + ")" + Localization.RNRN);
 
 			res += ("Максимальная розничная цена: " +
-				DecodeDMLine (BarcodeData.Substring (21, 4), true) + "\r\n");
+				DecodeDMLine (BarcodeData.Substring (21, 4), true) + Localization.RN);
 			res += ("Код проверки: " + BarcodeData.Substring (25, 4) + " (" +
 				DecodeDMLine (BarcodeData.Substring (25, 4), false) + ")");
 
@@ -326,14 +326,14 @@ namespace RD_AAOW
 
 			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
 			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
-				res += "EAN-13 некорректен\r\n";
+				res += "EAN-13 некорректен" + Localization.RN;
 			else
-				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
-			res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + "\r\n\r\n");
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + Localization.RN);
+			res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + Localization.RNRN);
 
-			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + "\r\n");
-			res += ("Код проверки:\r\n" + BarcodeData.Substring (39, 44) + "\r\n(\r\n" +
-				 ConvertFromBASE64 (BarcodeData.Substring (39, 44)) + "\r\n)");
+			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + Localization.RN);
+			res += ("Код проверки:" + Localization.RN + BarcodeData.Substring (39, 44) + Localization.RN + "(" +
+				 Localization.RN + ConvertFromBASE64 (BarcodeData.Substring (39, 44)) + Localization.RN + ")");
 
 			return res;
 			}
@@ -352,10 +352,10 @@ namespace RD_AAOW
 
 			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
 			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
-				res += "EAN-13 некорректен\r\n";
+				res += "EAN-13 некорректен" + Localization.RN;
 			else
-				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
-			res += ("Серийный номер: " + BarcodeData.Substring (18, 7) + "\r\n\r\n");
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + Localization.RN);
+			res += ("Серийный номер: " + BarcodeData.Substring (18, 7) + Localization.RNRN);
 
 			string price = "(не читается)";
 			try
@@ -363,7 +363,7 @@ namespace RD_AAOW
 				price = (ulong.Parse (BarcodeData.Substring (29, 6)) / 100.0).ToString ("F02") + " р.";
 				}
 			catch { }
-			res += ("Максимальная розничная цена: " + price + "\r\n");
+			res += ("Максимальная розничная цена: " + price + Localization.RN);
 			res += ("Код проверки: " + BarcodeData.Substring (37, 4) + " (" +
 				DecodeDMLine (BarcodeData.Substring (37, 4), false) + ")");
 
@@ -383,15 +383,15 @@ namespace RD_AAOW
 
 			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
 			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
-				res += "EAN-13 некорректен;\r\n";
+				res += "EAN-13 некорректен;" + Localization.RN;
 			else
-				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + Localization.RN);
 			res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + " (" +
-				DecodeDMLine (BarcodeData.Substring (18, 13), false) + ")\r\n\r\n");
+				DecodeDMLine (BarcodeData.Substring (18, 13), false) + ")" + Localization.RNRN);
 
-			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + "\r\n");
-			res += ("Код проверки:\r\n" + BarcodeData.Substring (39, 88) + "\r\n(\r\n" +
-				 ConvertFromBASE64 (BarcodeData.Substring (39, 88)) + "\r\n)");
+			res += ("Номер кода проверки: " + BarcodeData.Substring (33, 4) + Localization.RN);
+			res += ("Код проверки:" + Localization.RN + BarcodeData.Substring (39, 88) + Localization.RN + "(" +
+				 Localization.RN + ConvertFromBASE64 (BarcodeData.Substring (39, 88)) + Localization.RN + ")");
 
 			return res;
 			}
@@ -421,14 +421,14 @@ namespace RD_AAOW
 
 			string res = "GTIN: " + BarcodeData.Substring (2, 14) + ", ";
 			if (!CheckEAN (BarcodeData.Substring (3, 13), true))
-				res += "EAN-13 некорректен\r\n";
+				res += "EAN-13 некорректен" + Localization.RN;
 			else
-				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + "\r\n");
+				res += (GetEANUsage (BarcodeData.Substring (3, 13)) + Localization.RN);
 
 			int offset = 41;
 			if (BarcodeData.Length != 30)
 				{
-				res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + "\r\n\r\n");
+				res += ("Серийный номер: " + BarcodeData.Substring (18, 13) + Localization.RNRN);
 
 				res += ("Срок годности: до ");
 				if (BarcodeData.Substring (31, 2) == "17")
@@ -446,12 +446,12 @@ namespace RD_AAOW
 				}
 			else
 				{
-				res += ("Серийный номер: " + BarcodeData.Substring (18, 6) + "\r\n");
+				res += ("Серийный номер: " + BarcodeData.Substring (18, 6) + Localization.RN);
 
 				offset = 26;
 				}
 
-			res += ("\r\nКод проверки: " + BarcodeData.Substring (offset, 4) + " (" +
+			res += (Localization.RN + "Код проверки: " + BarcodeData.Substring (offset, 4) + " (" +
 				DecodeDMLine (BarcodeData.Substring (offset, 4), false) + ")");
 
 			return res;

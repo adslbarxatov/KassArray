@@ -28,7 +28,7 @@ namespace RD_AAOW
 				{
 				try
 					{
-					v = ulong.Parse (res, NumberStyles.HexNumber);
+					v = ulong.Parse (res, RDGenerics.HexNumberStyle);
 					}
 				catch { }
 				}
@@ -58,9 +58,9 @@ namespace RD_AAOW
 			if (n > MaxValue)
 				return "(введённое число слишком велико)";
 
-			string answer = "0d " + n.ToString ("#,0") + "\r\n0x ";
+			string answer = "0d " + n.ToString ("#,0") + Localization.RN + "0x ";
 			answer += ((n & 0xFFFF0000) >> 16).ToString ("X4") + " ";
-			answer += (n & 0xFFFF).ToString ("X4") + "\r\n0b";
+			answer += (n & 0xFFFF).ToString ("X4") + Localization.RN + "0b";
 
 			string b = "";
 			for (int i = 1; i <= 32; i++)
@@ -69,7 +69,7 @@ namespace RD_AAOW
 
 #if ANDROID
 				if (i == 16)
-					b = "\r\n   " + b;
+					b = Localization.RN + "   " + b;
 				else if (i % 4 == 0)
 #else
 				if (i % 4 == 0)
@@ -78,7 +78,7 @@ namespace RD_AAOW
 				}
 
 			// Разложение на простые множители
-			answer += (b + "\r\n");
+			answer += (b + Localization.RN);
 			return answer + SplitNumberToSimpleMultipliers (n);
 			}
 
@@ -186,50 +186,11 @@ namespace RD_AAOW
 			answer[0] = RDGenerics.GetEncoding (SupportedEncodings.Unicode32).GetString (ch);
 
 			// Сборка описания
-			answer[1] = "Символ: U+" + n.ToString ("X4") + "\r\nHTML:   &#" + n.ToString () + ";";
-			answer[1] += ("\r\nКласс:  " + CharUnicodeInfo.GetUnicodeCategory (answer[0][0]).ToString ());
+			answer[1] = "Символ: U+" + n.ToString ("X4") + Localization.RN + "HTML:   &#" + n.ToString () + ";";
+			answer[1] += (Localization.RN + "Класс:  " + CharUnicodeInfo.GetUnicodeCategory (answer[0][0]).ToString ());
 			answer[2] = "0x" + n.ToString ("X4");
 			return answer;
 			}
-
-		/*
-		/// <summary>
-		/// Доступные режимы для методов преобразования данных в hex и обратно
-		/// </summary>
-		public enum ConvertHTModes
-			{
-			/// <summary>
-			/// Кодировка UTF8
-			/// </summary>
-			UTF8 = 0,
-
-			/// <summary>
-			/// Кодировка Unicode
-			/// </summary>
-			Unicode = 1,
-
-#if !ANDROID
-
-			/// <summary>
-			/// Кодировка CP1251 (Windows)
-			/// </summary>
-			CP1251 = 2,
-
-			/// <summary>
-			/// Кодировка 866 (MS DOS)
-			/// </summary>
-			CP866 = 3,
-
-#else
-
-			/// <summary>
-			/// Кодировка ASCII
-			/// </summary>
-			ASCII = 2,
-
-#endif
-			}
-		*/
 
 		/// <summary>
 		/// Возвращает доступные режимы преобразования, дублируя список режимами с поддержкой
@@ -304,7 +265,7 @@ namespace RD_AAOW
 
 				// Преобразование в байт-поток
 				for (int i = 0; i < numbers.Count; i++)
-					bytes.Add (byte.Parse (numbers[i], NumberStyles.HexNumber));
+					bytes.Add (byte.Parse (numbers[i], RDGenerics.HexNumberStyle));
 				numbers.Clear ();
 				}
 
