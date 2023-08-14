@@ -413,25 +413,6 @@ namespace RD_AAOW
 			return Color.FromArgb (200, 200, 255);
 			}
 
-		/* Разблокировка функционала
-		private void UnlockField_TextChanged (object sender, EventArgs e)
-			{
-			if (ca.TestPass (UnlockField.Text))
-				{
-				UnlockLabel.Text = ca.LockMessage;
-				if (!ca.AllowExtendedFunctionsLevel2)
-					{
-					UnlockField.Text = "";
-					}
-				else
-					{
-					UnlockField.Enabled = false;
-					UnlockLabel.TextAlign = ContentAlignment.MiddleCenter;
-					}
-				}
-			}
-		*/
-
 		// Вызов библиотеки FNReader
 		private void FNReader_Click (object sender, EventArgs e)
 			{
@@ -440,23 +421,6 @@ namespace RD_AAOW
 
 		private void CallFNReader (string DumpPath)
 			{
-			/* Обработка для AppXBundle
-			if (File.Exists (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderDLL))
-				try
-					{
-					File.Move (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderDLL,
-						RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL);
-					}
-				catch { }
-
-			if (File.Exists (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderSubDLL))
-				try
-					{
-					File.Move (RDGenerics.AppStartupPath + "..\\" + ProgramDescription.FNReaderSubDLL,
-						RDGenerics.AppStartupPath + ProgramDescription.FNReaderSubDLL);
-					}
-				catch { }*/
-
 			// Контроль
 			bool result = true;
 			if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL) ||
@@ -482,9 +446,12 @@ namespace RD_AAOW
 				{
 				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
-					"Модуль чтения и обработки данных ФН отсутствует на ПК." + Localization.RNRN +
-					"Данный компонент можно загрузить вместе с актуальным обновлением " +
-					"(раздел «Прочее», кнопка «О программе»)");
+					"Модуль чтения и обработки данных ФН не определяется на ПК." + Localization.RNRN +
+					"• Если данный компонент ранее не загружался, его можно получить вместе с актуальным обновлением " +
+					"(раздел «Прочее», кнопка «О программе»)." + Localization.RN +
+					"• Если компонент загружен и находится в одной директории с приложением, попробуйте вручную " +
+					"разблокировать все три его файла (свойства, кнопка «Разблокировать»), после чего " +
+					"запустите приложение снова");
 				this.TopMost = TopFlag.Checked;
 
 				return;

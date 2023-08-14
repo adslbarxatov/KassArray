@@ -20,10 +20,12 @@ namespace RD_AAOW
 	/// </summary>
 	public static class KKTSupport
 		{
+		/*
 		/// <summary>
 		/// Ссылка на руководство к приложению
 		/// </summary>
 		public const string KassArrayLink = RDGenerics.DefaultGitPageLink + "KassArray";
+		*/
 
 		/// <summary>
 		/// Структура используется для передачи списка параметров определения срока жизни ФН

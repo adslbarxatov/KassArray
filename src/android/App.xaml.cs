@@ -1,5 +1,4 @@
 ﻿using Android.Print;
-using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -144,8 +143,8 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
-			ca = new ConfigAccessor (/*0, 0*/);
-			um = new UserManuals (/*ca.ExtendedFunctions*/ca.AllowExtendedFunctionsLevel1,
+			ca = new ConfigAccessor ();
+			um = new UserManuals (ca.AllowExtendedFunctionsLevel1,
 				ca.AllowExtendedFunctionsLevel2);
 			pm = PrintingManager;
 
@@ -974,8 +973,9 @@ namespace RD_AAOW
 		private void SendToClipboard (string Value)
 			{
 			RDGenerics.SendToClipboard (Value);
-			Toast.MakeText (Android.App.Application.Context, "Скопировано в буфер обмена",
-				ToastLength.Long).Show ();
+			/*To ast.MakeText (Android.App.Application.Context, "Скопировано в буфер обмена",
+				ToastLength.Long).Show ();*/
+			AndroidSupport.ShowBalloon ("Скопировано в буфер обмена", true);
 			}
 
 		// Выбор элемента содержания
@@ -1580,6 +1580,7 @@ namespace RD_AAOW
 				{
 				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_ProjectWebpage));
 				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_UserManual));
+				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_UserVideomanual));
 				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_PolicyEULA));
 				}
 
@@ -1628,11 +1629,16 @@ namespace RD_AAOW
 
 				// Руководство
 				case 1:
-					url = KKTSupport.KassArrayLink;
+					url = RDGenerics.AssemblyGitPageLink;
+					break;
+
+				// Видеоруководство
+				case 2:
+					url = ProgramDescription.AssemblyReferenceMaterials[0];
 					break;
 
 				// Политика
-				case 2:
+				case 3:
 					url = RDGenerics.ADPLink;
 					break;
 
@@ -1663,9 +1669,11 @@ namespace RD_AAOW
 					}
 				catch
 					{
-					Toast.MakeText (Android.App.Application.Context,
+					/*To ast.MakeText (Android.App.Application.Context,
 						Localization.GetDefaultText (LzDefaultTextValues.Message_EMailsNotAvailable),
-						ToastLength.Long).Show ();
+						ToastLength.Long).Show ();*/
+					AndroidSupport.ShowBalloon (Localization.GetDefaultText
+						(LzDefaultTextValues.Message_EMailsNotAvailable), true);
 					}
 				}
 
@@ -1677,9 +1685,11 @@ namespace RD_AAOW
 					}
 				catch
 					{
-					Toast.MakeText (Android.App.Application.Context,
+					/*To ast.MakeText (Android.App.Application.Context,
 						Localization.GetDefaultText (LzDefaultTextValues.Message_BrowserNotAvailable),
-						ToastLength.Long).Show ();
+						ToastLength.Long).Show ();*/
+					AndroidSupport.ShowBalloon (Localization.GetDefaultText
+						(LzDefaultTextValues.Message_BrowserNotAvailable), true);
 					}
 				}
 
@@ -1789,9 +1799,11 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				Toast.MakeText (Android.App.Application.Context,
+				/*To ast.MakeText (Android.App.Application.Context,
 					Localization.GetDefaultText (LzDefaultTextValues.Message_BrowserNotAvailable),
-					ToastLength.Long).Show ();
+					ToastLength.Long).Show ();*/
+				AndroidSupport.ShowBalloon (Localization.GetDefaultText
+					(LzDefaultTextValues.Message_BrowserNotAvailable), true);
 				}
 			}
 
@@ -1932,9 +1944,6 @@ namespace RD_AAOW
 		// Преобразование hex-данных в текст
 		private void ConvertHexToText_Click (object sender, EventArgs e)
 			{
-			/*convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
-				(DataConvertors.ConvertHTModes)(ca.EncodingForConvertor % DataConvertors.UniqueEncodingsCount),
-				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);*/
 			convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
 				(SupportedEncodings)(ca.EncodingForConvertor % encodingModesCount),
 				ca.EncodingForConvertor >= encodingModesCount);
@@ -1943,9 +1952,6 @@ namespace RD_AAOW
 		// Преобразование текста в hex-данные
 		private void ConvertTextToHex_Click (object sender, EventArgs e)
 			{
-			/*convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
-				(DataConvertors.ConvertHTModes)(ca.EncodingForConvertor % DataConvertors.UniqueEncodingsCount),
-				ca.EncodingForConvertor >= DataConvertors.UniqueEncodingsCount);*/
 			convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
 				(SupportedEncodings)(ca.EncodingForConvertor % encodingModesCount),
 				ca.EncodingForConvertor >= encodingModesCount);

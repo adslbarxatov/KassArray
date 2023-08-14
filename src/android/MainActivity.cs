@@ -4,8 +4,8 @@ using Android.Content.PM;
 using Android.Graphics;
 using Android.OS;
 using Android.Print;
-using Android.Support.V4.App;
 using Android.Views;
+using AndroidX.Core.App;
 using System;
 
 #if DEBUG
