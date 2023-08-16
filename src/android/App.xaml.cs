@@ -1634,7 +1634,7 @@ namespace RD_AAOW
 
 				// Видеоруководство
 				case 2:
-					url = ProgramDescription.AssemblyReferenceMaterials[0];
+					url = RDGenerics.StaticYTLink + ProgramDescription.AssemblyReferenceMaterials[0];
 					break;
 
 				// Политика
