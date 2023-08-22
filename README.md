@@ -2,14 +2,8 @@
 > PCC: 001253F410A1E422
 
 
-Инструмент сервис-инженера контрольно-кассовой техники (54-ФЗ)
-
-
-#
-
-## Описание
-
-Подробное описание приложения теперь доступно на [отдельной странице](https://adslbarxatov.github.io/KassArray)
+Инструмент сервис-инженера контрольно-кассовой техники (54-ФЗ).
+Подробное описание приложения доступно на [отдельной странице](https://adslbarxatov.github.io/KassArray)
 
 &nbsp;
 
@@ -17,24 +11,14 @@
 
 ## Требования
 
-- Windows 7 или новее;
-- [Microsoft .NET Framework 4.8](https://go.microsoft.com/fwlink/?linkid=2088631);
+- Windows 7 или новее.
+- [Microsoft .NET Framework 4.8](https://go.microsoft.com/fwlink/?linkid=2088631).
 - [Microsoft Visual C++ 2015 – 2022 redistributable](https://aka.ms/vs/17/release/vc_redist.x86.exe) *(для модуля работы с ФН)*.
+- Android-версия потребует ОС Android 5.0 или новее.
 
 Язык интерфейса: ru_ru.
 
 Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/KassArray/blob/master/src/KassArrayFN/FNEnums.h).
-
-&nbsp;
-
-
-
-## Доступные релизы приложения
-
-- Android-версия доступна на [Google play](https://play.google.com/store/apps/details?id=com.RD_AAOW.TextToKKT); для неё потребуется ОС Android 5.0 или новее;
-- Android-версия доступна в [специальном релизе](https://github.com/adslbarxatov/TextToKKT/releases/latest) для Android 4.2 и новее или устройств без Play market;
-- Android-версия доступна также на платформе [AppGallery](https://url.cloud.huawei.com/kOnu2dYlNu?shareTo=qrcode).
-- Приложение также доступно в [GetApps](https://global.app.mi.com/details?id=texttokkt.xiaomi).
 
 &nbsp;
 
