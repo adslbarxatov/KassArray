@@ -1,7 +1,6 @@
 ﻿using Android.Print;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -128,9 +127,9 @@ namespace RD_AAOW
 		// Число режимов преобразования
 		private uint encodingModesCount;
 
-		// Списки меню
+		/* Списки меню
 		private List<string> referenceItems = new List<string> ();
-		private List<string> helpItems = new List<string> ();
+		private List<string> helpItems = new List<string> ();*/
 
 		#endregion
 
@@ -918,13 +917,14 @@ namespace RD_AAOW
 			// Политика
 			if (RDGenerics.GetAppSettingsValue (firstStartRegKey) == "")
 				{
-				while (!await AndroidSupport.ShowMessage
+				/*while (!await AndroidSupport.ShowMessage
 					(Localization.GetDefaultText (LzDefaultTextValues.Message_PolicyAcception),
 					Localization.GetDefaultText (LzDefaultTextValues.Button_Accept),
 					Localization.GetDefaultText (LzDefaultTextValues.Button_Read)))
 					{
 					await CallHelpMaterials (2);
-					}
+					}*/
+				await AndroidSupport.PolicyLoop ();
 
 				// Вступление
 				RDGenerics.SetAppSettingsValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
@@ -1565,15 +1565,15 @@ namespace RD_AAOW
 		// Вызов справочных материалов
 		private async void ReferenceButton_Click (object sender, EventArgs e)
 			{
-			await CallHelpMaterials (0);
+			await AndroidSupport.CallHelpMaterials (0);
 			}
 
 		private async void HelpButton_Click (object sender, EventArgs e)
 			{
-			await CallHelpMaterials (1);
+			await AndroidSupport.CallHelpMaterials (1);
 			}
 
-		private async Task<bool> CallHelpMaterials (uint MaterialsSet)
+		/*private async Task<bool> CallHelpMaterials (uint MaterialsSet)
 			{
 			// Заполнение списков
 			if (referenceItems.Count < 1)
@@ -1669,9 +1669,6 @@ namespace RD_AAOW
 					}
 				catch
 					{
-					/*To ast.MakeText (Android.App.Application.Context,
-						Localization.GetDefaultText (LzDefaultTextValues.Message_EMailsNotAvailable),
-						ToastLength.Long).Show ();*/
 					AndroidSupport.ShowBalloon (Localization.GetDefaultText
 						(LzDefaultTextValues.Message_EMailsNotAvailable), true);
 					}
@@ -1685,9 +1682,6 @@ namespace RD_AAOW
 					}
 				catch
 					{
-					/*To ast.MakeText (Android.App.Application.Context,
-						Localization.GetDefaultText (LzDefaultTextValues.Message_BrowserNotAvailable),
-						ToastLength.Long).Show ();*/
 					AndroidSupport.ShowBalloon (Localization.GetDefaultText
 						(LzDefaultTextValues.Message_BrowserNotAvailable), true);
 					}
@@ -1695,7 +1689,7 @@ namespace RD_AAOW
 
 			// Успешно
 			return true;
-			}
+			}*/
 
 		// Изменение размера шрифта интерфейса
 		private void FontSizeButton_Clicked (object sender, EventArgs e)

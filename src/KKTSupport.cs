@@ -20,13 +20,6 @@ namespace RD_AAOW
 	/// </summary>
 	public static class KKTSupport
 		{
-		/*
-		/// <summary>
-		/// Ссылка на руководство к приложению
-		/// </summary>
-		public const string KassArrayLink = RDGenerics.DefaultGitPageLink + "KassArray";
-		*/
-
 		/// <summary>
 		/// Структура используется для передачи списка параметров определения срока жизни ФН
 		/// </summary>
@@ -836,8 +829,9 @@ namespace RD_AAOW
 
 				// Расчёт примерной длины страницы (A4 или менее)
 				string chk = txt.Replace ("\n", "");
-				pageLength = 14 * (txt.Length - chk.Length + 2);    // +1 - линия отреза
-																	// ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
+				pageLength = 14 * (txt.Length - chk.Length + 2);
+				// +1 - линия отреза
+				// ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
 
 				if (pageLength > 1170)  // ~300000 / 254, А4
 					pageLength = 1170;
