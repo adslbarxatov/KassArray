@@ -52,8 +52,14 @@ namespace RD_AAOW
 			barCodesMasterBackColor = Color.FromHex ("#FFF4E2"),
 			barCodesFieldBackColor = Color.FromHex ("#E8D9CF"),
 
-			convertorsMasterBackColor = Color.FromHex ("#FFE1EA"),
-			convertorsFieldBackColor = Color.FromHex ("#FFD3E1");
+			convertors1MasterBackColor = Color.FromHex ("#E1FFF1"),
+			convertors1FieldBackColor = Color.FromHex ("#D7F4E7"),
+
+			convertors2MasterBackColor = Color.FromHex ("#E5FFF5"),
+			convertors2FieldBackColor = Color.FromHex ("#DBF4EB"),
+
+			convertors3MasterBackColor = Color.FromHex ("#E9FFF9"),
+			convertors3FieldBackColor = Color.FromHex ("#DFF4EF");
 
 		private const string firstStartRegKey = "HelpShownAt";
 
@@ -75,6 +81,8 @@ namespace RD_AAOW
 			barcodeDescriptionLabel, rnmTip, ofdDisabledLabel, convNumberResultField, convCodeResultField,
 			aboutFontSizeField;
 		private List<Label> operationTextLabels = new List<Label> ();
+		private List<Xamarin.Forms.Button> operationTextButtons = new List<Xamarin.Forms.Button> ();
+		private const string operationButtonSignature = " (скрыто)";
 
 		private Xamarin.Forms.Button kktCodesKKTButton, fnLifeResult, cableTypeButton,
 			errorsKKTButton, userManualsKKTButton,
@@ -127,10 +135,6 @@ namespace RD_AAOW
 		// Число режимов преобразования
 		private uint encodingModesCount;
 
-		/* Списки меню
-		private List<string> referenceItems = new List<string> ();
-		private List<string> helpItems = new List<string> ();*/
-
 		#endregion
 
 		#region Основной функционал 
@@ -143,8 +147,7 @@ namespace RD_AAOW
 			// Инициализация
 			InitializeComponent ();
 			ca = new ConfigAccessor ();
-			um = new UserManuals (ca.AllowExtendedFunctionsLevel1,
-				ca.AllowExtendedFunctionsLevel2);
+			um = new UserManuals (/*ca.AllowExtendedFunctionsLevel1, ca.AllowExtendedFunctionsLevel2*/);
 			pm = PrintingManager;
 
 			if (!Localization.IsCurrentLanguageRuRu)
@@ -204,11 +207,11 @@ namespace RD_AAOW
 			barCodesPage = ApplyPageSettings ("BarCodesPage", "Штрих-коды",
 				barCodesMasterBackColor, true);
 			convertorsSNPage = ApplyPageSettings ("ConvertorsSNPage", "Конвертор систем счисления",
-				convertorsMasterBackColor, true);
+				convertors1MasterBackColor, true);
 			convertorsUCPage = ApplyPageSettings ("ConvertorsUCPage", "Конвертор символов Unicode",
-				convertorsMasterBackColor, true);
+				convertors2MasterBackColor, true);
 			convertorsHTPage = ApplyPageSettings ("ConvertorsHTPage", "Конвертор двоичных данных",
-				convertorsMasterBackColor, true);
+				convertors3MasterBackColor, true);
 
 			aboutPage = ApplyPageSettings ("AboutPage",
 				Localization.GetDefaultText (LzDefaultTextValues.Control_AppAbout),
@@ -248,29 +251,37 @@ namespace RD_AAOW
 			Label ut = AndroidSupport.ApplyLabelSettings (userManualsPage, "SelectionLabel", "Модель ККТ:",
 				ASLabelTypes.HeaderLeft);
 			userManualLayout = (StackLayout)userManualsPage.FindByName ("UserManualLayout");
+			int operationsCount = ca.AllowExtendedFunctionsLevel1 ? UserManuals.OperationTypes2.Length :
+				UserManuals.OperationsForCashiers2.Length;
 
-			for (int i = 0; i < um.OperationTypes.Length; i++)
+			for (int i = 0; i < operationsCount; i++)
 				{
-				Label lh = new Label ();
-				lh.FontAttributes = FontAttributes.Bold;
-				lh.FontSize = ut.FontSize;
-				lh.HorizontalOptions = LayoutOptions.Start;
-				lh.IsVisible = true;
-				lh.Margin = ut.Margin;
-				lh.Text = um.OperationTypes[i];
-				lh.TextColor = ut.TextColor;
+				Xamarin.Forms.Button bh = new Xamarin.Forms.Button ();
+				bh.BackgroundColor = userManualsMasterBackColor;
+				bh.Clicked += OperationTextButton_Clicked;
+				bh.FontAttributes = FontAttributes.Bold;
+				bh.FontSize = ut.FontSize;
+				bh.HorizontalOptions = LayoutOptions.Center;
+				bh.IsVisible = true;
+				bh.Margin = ut.Margin;
+				bh.Padding = bh.Margin = new Thickness (0);
+				bh.Text = UserManuals.OperationTypes2[i] + (ca.GetUserManualSectionState ((byte)i) ?
+					"" : operationButtonSignature);
+				bh.TextColor = ut.TextColor;
 
 				Label lt = new Label ();
 				lt.BackgroundColor = userManualsFieldBackColor;
-				lt.Text = "   ";
 				lt.FontAttributes = FontAttributes.None;
 				lt.FontSize = ut.FontSize;
 				lt.HorizontalOptions = LayoutOptions.Fill;
 				lt.HorizontalTextAlignment = TextAlignment.Start;
+				lt.IsVisible = ca.GetUserManualSectionState ((byte)i);
 				lt.Margin = lt.Padding = ut.Margin;
+				lt.Text = "   ";
 				lt.TextColor = AndroidSupport.MasterTextColor;
 
-				userManualLayout.Children.Add (lh);
+				operationTextButtons.Add (bh);
+				userManualLayout.Children.Add (operationTextButtons[operationTextButtons.Count - 1]);
 				operationTextLabels.Add (lt);
 				userManualLayout.Children.Add (operationTextLabels[operationTextLabels.Count - 1]);
 				}
@@ -281,7 +292,10 @@ namespace RD_AAOW
 				ASButtonDefaultTypes.Select, userManualsFieldBackColor, PrintManual_Clicked);
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "HelpLabel",
-				"<...> – индикация на экране, [...] – клавиши ККТ", ASLabelTypes.Tip);
+				"<...> – индикация на экране, [...] – клавиши ККТ." + Localization.RN +
+				"Нажатие на заголовки разделов позволяет добавить или скрыть их в видимой и печатной " +
+				"версиях этой инструкции",
+				ASLabelTypes.Tip);
 
 			UserManualsKKTButton_Clicked (null, null);
 
@@ -794,19 +808,19 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberLabel",
 				"Число:", ASLabelTypes.HeaderLeft);
 			convNumberField = AndroidSupport.ApplyEditorSettings (convertorsSNPage, "ConvNumberField",
-				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionNumber, ConvNumber_TextChanged, true);
+				convertors1FieldBackColor, Keyboard.Default, 10, ca.ConversionNumber, ConvNumber_TextChanged, true);
 
 			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberInc",
-				ASButtonDefaultTypes.Increase, convertorsFieldBackColor, ConvNumberAdd_Click);
+				ASButtonDefaultTypes.Increase, convertors1FieldBackColor, ConvNumberAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberDec",
-				ASButtonDefaultTypes.Decrease, convertorsFieldBackColor, ConvNumberAdd_Click);
+				ASButtonDefaultTypes.Decrease, convertors1FieldBackColor, ConvNumberAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberClear",
-				ASButtonDefaultTypes.Delete, convertorsFieldBackColor, ConvNumberClear_Click);
+				ASButtonDefaultTypes.Delete, convertors1FieldBackColor, ConvNumberClear_Click);
 
 			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberResultLabel", "Представление:",
 				ASLabelTypes.HeaderLeft);
 			convNumberResultField = AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberResultField",
-				" ", ASLabelTypes.FieldMonotype, convertorsFieldBackColor);
+				" ", ASLabelTypes.FieldMonotype, convertors1FieldBackColor);
 			ConvNumber_TextChanged (null, null);
 
 			const string convHelp = "Шестнадцатеричные числа следует начинать с символов “0x”";
@@ -822,22 +836,22 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeLabel",
 				"Код символа" + Localization.RN + "или символ:", ASLabelTypes.HeaderLeft);
 			convCodeField = AndroidSupport.ApplyEditorSettings (convertorsUCPage, "ConvCodeField",
-				convertorsFieldBackColor, Keyboard.Default, 10, ca.ConversionCode, ConvCode_TextChanged, true);
+				convertors2FieldBackColor, Keyboard.Default, 10, ca.ConversionCode, ConvCode_TextChanged, true);
 
 			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeInc",
-				ASButtonDefaultTypes.Increase, convertorsFieldBackColor, ConvCodeAdd_Click);
+				ASButtonDefaultTypes.Increase, convertors2FieldBackColor, ConvCodeAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeDec",
-				ASButtonDefaultTypes.Decrease, convertorsFieldBackColor, ConvCodeAdd_Click);
+				ASButtonDefaultTypes.Decrease, convertors2FieldBackColor, ConvCodeAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeClear",
-				ASButtonDefaultTypes.Delete, convertorsFieldBackColor, ConvCodeClear_Click);
+				ASButtonDefaultTypes.Delete, convertors2FieldBackColor, ConvCodeClear_Click);
 
 			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeResultLabel", "Символ Unicode:",
 				ASLabelTypes.HeaderLeft);
 			convCodeResultField = AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeResultField",
-				"", ASLabelTypes.FieldMonotype, convertorsFieldBackColor);
+				"", ASLabelTypes.FieldMonotype, convertors2FieldBackColor);
 
 			convCodeSymbolField = AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeSymbolField",
-				" ", convertorsFieldBackColor, CopyCharacter_Click, true);
+				" ", convertors2FieldBackColor, CopyCharacter_Click, true);
 			convCodeSymbolField.FontSize *= 5;
 			ConvCode_TextChanged (null, null);
 
@@ -852,26 +866,26 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "HexLabel",
 				"Данные (hex):", ASLabelTypes.HeaderLeft);
 			convHexField = AndroidSupport.ApplyEditorSettings (convertorsHTPage, "HexField",
-				convertorsFieldBackColor, Keyboard.Default, 500, ca.ConversionHex, null, true);
+				convertors3FieldBackColor, Keyboard.Default, 500, ca.ConversionHex, null, true);
 			convHexField.HorizontalOptions = LayoutOptions.Fill;
 
 			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "HexToTextButton",
-				ASButtonDefaultTypes.Down, convertorsFieldBackColor, ConvertHexToText_Click);
+				ASButtonDefaultTypes.Down, convertors3FieldBackColor, ConvertHexToText_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "TextToHexButton",
-				ASButtonDefaultTypes.Up, convertorsFieldBackColor, ConvertTextToHex_Click);
+				ASButtonDefaultTypes.Up, convertors3FieldBackColor, ConvertTextToHex_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "ClearButton",
-				ASButtonDefaultTypes.Delete, convertorsFieldBackColor, ClearConvertText_Click);
+				ASButtonDefaultTypes.Delete, convertors3FieldBackColor, ClearConvertText_Click);
 
 			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "TextLabel",
 				"Данные (текст):", ASLabelTypes.HeaderLeft);
 			convTextField = AndroidSupport.ApplyEditorSettings (convertorsHTPage, "TextField",
-				convertorsFieldBackColor, Keyboard.Default, 250, ca.ConversionText, null, true);
+				convertors3FieldBackColor, Keyboard.Default, 250, ca.ConversionText, null, true);
 			convTextField.HorizontalOptions = LayoutOptions.Fill;
 
 			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "EncodingLabel",
 				"Кодировка:", ASLabelTypes.HeaderLeft);
 			encodingButton = AndroidSupport.ApplyButtonSettings (convertorsHTPage, "EncodingButton",
-				" ", convertorsFieldBackColor, EncodingButton_Clicked, true);
+				" ", convertors3FieldBackColor, EncodingButton_Clicked, true);
 			EncodingButton_Clicked (null, null);
 
 			#endregion
@@ -917,13 +931,6 @@ namespace RD_AAOW
 			// Политика
 			if (RDGenerics.GetAppSettingsValue (firstStartRegKey) == "")
 				{
-				/*while (!await AndroidSupport.ShowMessage
-					(Localization.GetDefaultText (LzDefaultTextValues.Message_PolicyAcception),
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Accept),
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Read)))
-					{
-					await CallHelpMaterials (2);
-					}*/
 				await AndroidSupport.PolicyLoop ();
 
 				// Вступление
@@ -973,8 +980,6 @@ namespace RD_AAOW
 		private void SendToClipboard (string Value)
 			{
 			RDGenerics.SendToClipboard (Value);
-			/*To ast.MakeText (Android.App.Application.Context, "Скопировано в буфер обмена",
-				ToastLength.Long).Show ();*/
 			AndroidSupport.ShowBalloon ("Скопировано в буфер обмена", true);
 			}
 
@@ -1565,131 +1570,13 @@ namespace RD_AAOW
 		// Вызов справочных материалов
 		private async void ReferenceButton_Click (object sender, EventArgs e)
 			{
-			await AndroidSupport.CallHelpMaterials (0);
+			await AndroidSupport.CallHelpMaterials (HelpMaterialsSets.ReferenceMaterials);
 			}
 
 		private async void HelpButton_Click (object sender, EventArgs e)
 			{
-			await AndroidSupport.CallHelpMaterials (1);
+			await AndroidSupport.CallHelpMaterials (HelpMaterialsSets.HelpAndSupport);
 			}
-
-		/*private async Task<bool> CallHelpMaterials (uint MaterialsSet)
-			{
-			// Заполнение списков
-			if (referenceItems.Count < 1)
-				{
-				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_ProjectWebpage));
-				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_UserManual));
-				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_UserVideomanual));
-				referenceItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_PolicyEULA));
-				}
-
-			if (helpItems.Count < 1)
-				{
-				helpItems.Add (Localization.GetDefaultText (LzDefaultTextValues.Control_AskDeveloper));
-				helpItems.AddRange (RDGenerics.CommunitiesNames);
-				}
-
-			// Выбор варианта
-			int res;
-			switch (MaterialsSet)
-				{
-				// Ссылки проекта
-				case 0:
-				default:
-					res = await AndroidSupport.ShowList (Localization.GetDefaultText (LzDefaultTextValues.Control_ReferenceMaterials),
-						Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), referenceItems);
-					break;
-
-				// Ссылки Лаборатории
-				case 1:
-					res = await AndroidSupport.ShowList (Localization.GetDefaultText (LzDefaultTextValues.Control_HelpSupport),
-						Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), helpItems);
-					break;
-
-				// Специальный вызов для Политики
-				case 2:
-					res = 2;
-					break;
-				}
-
-			if (res < 0)
-				return false;
-			else if (MaterialsSet == 1)
-				res += 10;
-
-			// Обнаружение ссылки
-			string url = "";
-			switch (res)
-				{
-				// Страница проекта
-				case 0:
-					url = RDGenerics.DefaultGitLink + ProgramDescription.AssemblyMainName;
-					break;
-
-				// Руководство
-				case 1:
-					url = RDGenerics.AssemblyGitPageLink;
-					break;
-
-				// Видеоруководство
-				case 2:
-					url = RDGenerics.StaticYTLink + ProgramDescription.AssemblyReferenceMaterials[0];
-					break;
-
-				// Политика
-				case 3:
-					url = RDGenerics.ADPLink;
-					break;
-
-				case 10:
-					// Оставляем url пустым
-					break;
-
-				// Ссылки Лаборатории
-				case 11:
-				case 12:
-				case 13:
-					url = RDGenerics.GetCommunityLink ((uint)res - 11);
-					break;
-				}
-
-			// Запуск
-			if (string.IsNullOrWhiteSpace (url))
-				{
-				try
-					{
-					EmailMessage message = new EmailMessage
-						{
-						Subject = RDGenerics.LabMailCaption,
-						Body = "",
-						To = new List<string> () { RDGenerics.LabMailLink }
-						};
-					await Email.ComposeAsync (message);
-					}
-				catch
-					{
-					AndroidSupport.ShowBalloon (Localization.GetDefaultText
-						(LzDefaultTextValues.Message_EMailsNotAvailable), true);
-					}
-				}
-
-			else
-				{
-				try
-					{
-					await Launcher.OpenAsync (url);
-					}
-				catch
-					{
-					AndroidSupport.ShowBalloon (Localization.GetDefaultText
-						(LzDefaultTextValues.Message_BrowserNotAvailable), true);
-					}
-				}
-
-			// Успешно
-			return true;
-			}*/
 
 		// Изменение размера шрифта интерфейса
 		private void FontSizeButton_Clicked (object sender, EventArgs e)
@@ -1715,7 +1602,7 @@ namespace RD_AAOW
 		private async void UserManualsKKTButton_Clicked (object sender, EventArgs e)
 			{
 			int res = (int)ca.KKTForManuals;
-			List<string> list = um.GetKKTList ();
+			List<string> list = new List<string> (um.GetKKTList ());
 
 			if (sender != null)
 				{
@@ -1732,7 +1619,14 @@ namespace RD_AAOW
 			ca.KKTForManuals = (uint)res;
 
 			for (int i = 0; i < operationTextLabels.Count; i++)
-				operationTextLabels[i].Text = um.GetManual ((uint)res, (uint)i);
+				{
+				bool state = ca.GetUserManualSectionState ((byte)i);
+
+				operationTextButtons[i].Text = UserManuals.OperationTypes2[i] + (state ?
+					"" : operationButtonSignature);
+				operationTextLabels[i].Text = um.GetManual2 ((uint)res, (uint)i);
+				operationTextLabels[i].IsVisible = state;
+				}
 			}
 
 		// Печать руководства пользователя
@@ -1752,8 +1646,19 @@ namespace RD_AAOW
 				}
 
 			// Печать
-			string text = KKTSupport.BuildUserManual (um, ca.KKTForManuals, res == 0);
+			string text = KKTSupport.BuildUserManual (um, ca.KKTForManuals, ca, res == 0);
 			KKTSupport.PrintManual (text, pm, res == 0);
+			}
+
+		// Смена состояния кнопки
+		private void OperationTextButton_Clicked (object sender, EventArgs e)
+			{
+			byte idx = (byte)operationTextButtons.IndexOf ((Xamarin.Forms.Button)sender);
+			bool state = !!operationTextButtons[idx].Text.Contains (operationButtonSignature);
+
+			ca.SetUserManualSectionState (idx, state);
+			operationTextButtons[idx].Text = UserManuals.OperationTypes2[idx] + (state ? "" : operationButtonSignature);
+			operationTextLabels[idx].IsVisible = state;
 			}
 
 		#endregion
@@ -1793,9 +1698,6 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				/*To ast.MakeText (Android.App.Application.Context,
-					Localization.GetDefaultText (LzDefaultTextValues.Message_BrowserNotAvailable),
-					ToastLength.Long).Show ();*/
 				AndroidSupport.ShowBalloon (Localization.GetDefaultText
 					(LzDefaultTextValues.Message_BrowserNotAvailable), true);
 				}

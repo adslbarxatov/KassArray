@@ -1004,8 +1004,10 @@ namespace RD_AAOW
 		/// <param name="Manuals">Активный экземпляр оператора руководств ККТ</param>
 		/// <param name="ManualNumber">Номер руководства</param>
 		/// <param name="ForCashier">Флаг указывает на сокращённый вариант руководства (для кассира)</param>
+		/// <param name="CA">Объект-оператор настроек пользователя</param>
 		/// <returns>Возвращает инструкцию пользователя</returns>
-		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, bool ForCashier)
+		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, ConfigAccessor CA,
+			bool ForCashier)
 			{
 			string text = "Инструкция к ККТ " + Manuals.GetKKTList ()[(int)ManualNumber] +
 				" (" + (ForCashier ? "для кассиров" : "полная") + ")";
@@ -1015,14 +1017,17 @@ namespace RD_AAOW
 			tmp = tmp.PadLeft ((ManualA4CharPerLine - tmp.Length) / 2 + tmp.Length);
 			text += (Localization.RN + tmp);
 
-			string[] operations = Manuals.OperationTypes;
-			uint operationsCount = ForCashier ? UserManuals.OperationsForCashiers :
+			string[] operations = UserManuals.OperationTypes2;
+			uint operationsCount = ForCashier ? (uint)UserManuals.OperationsForCashiers2.Length :
 				(uint)operations.Length;
 
 			for (int i = 0; i < operationsCount; i++)
 				{
+				if (!CA.GetUserManualSectionState ((byte)i))
+					continue;
+
 				text += ((i != 0 ? Localization.RN : "") + Localization.RNRN + operations[i] + Localization.RNRN);
-				text += Manuals.GetManual (ManualNumber, (uint)i);
+				text += Manuals.GetManual2 (ManualNumber, (uint)i);
 				}
 
 			return text;

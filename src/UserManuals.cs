@@ -16,58 +16,66 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает список операций, для которых доступны инструкции
 		/// </summary>
-		public string[] OperationTypes
+		public static string[] OperationTypes2
 			{
 			get
 				{
-				return availableOperations.ToArray ();
+				return operationTypes;
+				/*availableOperations.ToArray ();*/
 				}
 			}
-		private List<string> availableOperations = new List<string> ();
+		/*private List<string> availableOperations = new List<string> ();*/
 
 		/// <summary>
-		/// Возвращает количество операций, допустимых для кассира (неспециалиста)
+		/// Возвращает список операций, допустимых для кассира (неспециалиста)
 		/// </summary>
-		public static uint OperationsForCashiers
+		public static string[] OperationsForCashiers2
 			{
 			get
 				{
-				return (uint)operationTypes1.Length;
+				return new string[] {
+					operationTypes[0],
+					operationTypes[1],
+					operationTypes[2],
+					operationTypes[3],
+					operationTypes[4],
+					operationTypes[5],
+					operationTypes[6],
+					operationTypes[7],
+					};
 				}
 			}
 
-		private static string[] operationTypes1 = new string[] {
+		private static string[] operationTypes = new string[] {
 			"Открытие смены",
 			"Продажа за наличные",
 			"Продажа по карте",
+			"Продажа по штрих-коду",	// 0x???7
 			"Продажа с количеством",
 			"Продажа с электронным чеком",
 			"Возврат",
-			"Закрытие смены" };
-		private static string[] operationTypes2 = new string[] {
+			"Закрытие смены",	// 7, 0x??D?
 			"Коррекция даты",
 			"Коррекция времени",
-			"Тест связи с сетью интернет" };
-		private static string[] operationTypes3 = new string[] {
-			"Автотестирование / информация о ККТ",
+			"Тест связи с сетью интернет",
+			"Автотест / информация о ККТ",
 			"Запрос состояния ФН",
 			"Запрос реквизитов регистраций",
 			"Техобнуление",
-			"Закрытие архива ФН" };
+			"Закрытие архива ФН",	// 15
+			};
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
-		/// <param name="Level1">Разрешение на отображение расширенных инструкций первого уровня</param>
-		/// <param name="Level2">Разрешение на отображение расширенных инструкций второго уровня</param>
-		public UserManuals (bool Level1, bool Level2)
+		public UserManuals ()
 			{
-			// Формирование списка
+			/* Формирование списка
 			availableOperations.AddRange (operationTypes1);
-			if (/*(AllowExtended & 0x1) != 0*/ Level1)
+			if (Level1)
 				availableOperations.AddRange (operationTypes2);
-			if (/*(AllowExtended & 0x2) != 0*/ Level2)
-				availableOperations.AddRange (operationTypes3);
+			if (Level2)
+				availableOperations.AddRange (operationTypes3);*/
 
 			// Получение файлов
 #if !ANDROID
@@ -80,67 +88,64 @@ namespace RD_AAOW
 			string str;
 
 			// Формирование массива 
-			while (operations.Count < (operationTypes1.Length + operationTypes2.Length + operationTypes3.Length))
+			while (operations.Count < operationTypes.Length)
 				operations.Add (new List<string> ());
 
-			try
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
+				if (str == "")
+					continue;
+
+				names.Add (str);
+
+				// Загрузка файла целиком (требует структура)
+				for (int i = 0; i < operations.Count; i++)
 					{
-					if (str == "")
-						continue;
+					/* Оплата по свободной цене более не актуальна – пропуск
+					if (i == 3)
+						SR.ReadLine ();*/
 
-					names.Add (str);
+					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", Localization.RN + "• "));
 
-					// Загрузка файла целиком (требует структура)
-					for (int i = 0; i < operations.Count; i++)
+					if ((i >= 1) && (i < 3))
+						operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&",
+							"Повторить предыдущие действия для всех позиций чека");
+					if ((i >= 3) && (i <= 4))
+						operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&",
+							"Повторить предыдущие действия для всех позиций чека;" + Localization.RN +
+							"• Закрыть чек согласно способу оплаты");
+					if (i == 6)
+						operations[i][operations[i].Count - 1] +=
+							";" + Localization.RN + "• Дальнейшие действия совпадают с действиями при продаже";
+					if (i == 7)
+						operations[i][operations[i].Count - 1] += ";" + Localization.RN +
+							"• Дождаться снятия отчёта";
+					if ((i >= 8) && (i <= 9))
+						operations[i][operations[i].Count - 1] =
+							"• Настоятельно рекомендуется предварительно закрыть смену;" + Localization.RN +
+							operations[i][operations[i].Count - 1];
+					if (i == 14)
 						{
-						// Оплата по свободной цене более не актуальна – пропуск
-						if (i == 3)
-							SR.ReadLine ();
-
-						operations[i].Add ("• " + SR.ReadLine ().Replace ("|", Localization.RN + "• "));
-
-						if ((i >= 1) || (i <= 3))
-							operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&",
-								"Повторить предыдущие действия для всех позиций чека");
-						if (i == 5)
-							operations[i][operations[i].Count - 1] +=
-								";" + Localization.RN + "• Дальнейшие действия совпадают с действиями при продаже";
-						if (i == 6)
-							operations[i][operations[i].Count - 1] += ";" + Localization.RN +
-								"• Дождаться снятия отчёта";
-						if ((i == 7) || (i == 8))
-							operations[i][operations[i].Count - 1] =
-								"• Настоятельно рекомендуется предварительно закрыть смену;" + Localization.RN +
-								operations[i][operations[i].Count - 1];
-						if (i == 13)
-							{
-							operations[i][operations[i].Count - 1] =
-								"• Убедиться, что сохранены все необходимые настройки;" + Localization.RN +
-								operations[i][operations[i].Count - 1];
-							}
-						if (i == 14)
-							{
-							operations[i][operations[i].Count - 1] =
-								"• Убедиться, что смена закрыта, а дата в ККТ позволяет выполнить закрытие архива;" +
-								Localization.RN + operations[i][operations[i].Count - 1] +
-								";" + Localization.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
-							}
-
-						if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
-							operations[i][operations[i].Count - 1] = "(не предусмотрено)";
-						if (operations[i][operations[i].Count - 1].Contains ("#"))
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("#", "") + Localization.RNRN +
-								"* Порядок действий может отличаться в разных версиях прошивок";
+						operations[i][operations[i].Count - 1] =
+							"• Убедиться, что сохранены все необходимые настройки;" + Localization.RN +
+							operations[i][operations[i].Count - 1];
 						}
+					if (i == 15)
+						{
+						operations[i][operations[i].Count - 1] =
+							"• Убедиться, что смена закрыта, а дата в ККТ позволяет выполнить закрытие архива;" +
+							Localization.RN + operations[i][operations[i].Count - 1] +
+							";" + Localization.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
+						}
+
+					if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
+						operations[i][operations[i].Count - 1] = "(не предусмотрено)";
+					if (operations[i][operations[i].Count - 1].Contains ("#"))
+						operations[i][operations[i].Count - 1] =
+							operations[i][operations[i].Count - 1].Replace ("#", "") + Localization.RNRN +
+							"* Порядок действий может отличаться в разных версиях прошивок";
 					}
-				}
-			catch
-				{
-				throw new Exception ("User manuals data reading failure, point 1");
 				}
 
 			// Первая часть завершена
@@ -150,9 +155,9 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод возвращает список ККТ, для которых доступны инструкции
 		/// </summary>
-		public List<string> GetKKTList ()
+		public string[] GetKKTList ()
 			{
-			return new List<string> (names);
+			return names.ToArray ();
 			}
 
 		/// <summary>
@@ -160,12 +165,12 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="KKTType">Тип ККТ</param>
 		/// <param name="ManualType">Операция</param>
-		public string GetManual (uint KKTType, uint ManualType)
+		public string GetManual2 (uint KKTType, uint ManualType)
 			{
 			if (KKTType >= names.Count)
 				return "";
 
-			if (ManualType < availableOperations.Count)
+			if (ManualType < operationTypes.Length)
 				return operations[(int)ManualType][(int)KKTType];
 
 			return names[(int)KKTType];

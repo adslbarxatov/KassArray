@@ -60,15 +60,15 @@ namespace RD_AAOW
 			InitializeComponent ();
 			if (!Localization.IsCurrentLanguageRuRu)
 				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
-			ca = new ConfigAccessor (/*this.Width, this.Height*/);
+			ca = new ConfigAccessor ();
 
 			// Загрузка списка кодов и ошибок
 			kkmc = new KKTCodes ();
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
 			ll = new LowLevel ();
-			um = new UserManuals (/*ca.ExtendedFunctions*/ca.AllowExtendedFunctionsLevel1,
-				ca.AllowExtendedFunctionsLevel2);
+			um = new UserManuals (/*ca.AllowExtendedFunctionsLevel1,
+				ca.AllowExtendedFunctionsLevel2*/);
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
 			tlvt = new TLVTags ();
@@ -168,9 +168,14 @@ namespace RD_AAOW
 			catch { }
 			TextToConvert.Text = ca.CodesText;
 
-			KKTListForManuals.Items.AddRange (um.GetKKTList ().ToArray ());
+			KKTListForManuals.Items.AddRange (um.GetKKTList ());
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
-			OperationsListForManuals.Items.AddRange (um.OperationTypes);
+
+			if (ca.AllowExtendedFunctionsLevel1)
+				OperationsListForManuals.Items.AddRange (UserManuals.OperationTypes2);
+			else
+				OperationsListForManuals.Items.AddRange (UserManuals.OperationsForCashiers2);
+
 			try
 				{
 				OperationsListForManuals.SelectedIndex = (int)ca.OperationForManuals;
@@ -218,8 +223,6 @@ namespace RD_AAOW
 			else
 				{
 				RNMLabel.Text = "Укажите регистрационный номер для проверки:";
-				/*UnlockField.Visible = UnlockLabel.Visible = true;
-				UnlockLabel.Text = ca.LockMessage;*/
 				FNReader.Enabled = false;
 				}
 
@@ -1012,19 +1015,28 @@ namespace RD_AAOW
 		// Выбор модели аппарата
 		private void KKTListForManuals_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			UMOperationText.Text = um.GetManual ((uint)KKTListForManuals.SelectedIndex,
-				(uint)OperationsListForManuals.SelectedIndex);
+			byte idx = (byte)OperationsListForManuals.SelectedIndex;
+
+			AddToPrint.Checked = ca.GetUserManualSectionState (idx);
+			UMOperationText.Text = um.GetManual2 ((uint)KKTListForManuals.SelectedIndex,
+				/*(uint)OperationsListForManuals.SelectedIndex*/ idx);
 			}
 
 		// Печать инструкции
 		private void PrintUserManual_Click (object sender, EventArgs e)
 			{
 			// Сборка задания на печать
-			string text = KKTSupport.BuildUserManual (um, (uint)KKTListForManuals.SelectedIndex,
+			string text = KKTSupport.BuildUserManual (um, (uint)KKTListForManuals.SelectedIndex, ca,
 				((Button)sender).Name.Contains ("Cashier"));
 
 			// Печать
 			KKTSupport.PrintText (text, PrinterTypes.ManualA4);
+			}
+
+		// Выбор компонентов инструкции
+		private void AddToPrint_CheckedChanged (object sender, EventArgs e)
+			{
+			ca.SetUserManualSectionState ((byte)OperationsListForManuals.SelectedIndex, AddToPrint.Checked);
 			}
 
 		#endregion
