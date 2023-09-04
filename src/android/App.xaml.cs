@@ -147,7 +147,7 @@ namespace RD_AAOW
 			// Инициализация
 			InitializeComponent ();
 			ca = new ConfigAccessor ();
-			um = new UserManuals (/*ca.AllowExtendedFunctionsLevel1, ca.AllowExtendedFunctionsLevel2*/);
+			um = new UserManuals ();
 			pm = PrintingManager;
 
 			if (!Localization.IsCurrentLanguageRuRu)

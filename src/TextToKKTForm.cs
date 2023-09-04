@@ -67,8 +67,7 @@ namespace RD_AAOW
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
 			ll = new LowLevel ();
-			um = new UserManuals (/*ca.AllowExtendedFunctionsLevel1,
-				ca.AllowExtendedFunctionsLevel2*/);
+			um = new UserManuals ();
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
 			tlvt = new TLVTags ();
@@ -1018,8 +1017,7 @@ namespace RD_AAOW
 			byte idx = (byte)OperationsListForManuals.SelectedIndex;
 
 			AddToPrint.Checked = ca.GetUserManualSectionState (idx);
-			UMOperationText.Text = um.GetManual2 ((uint)KKTListForManuals.SelectedIndex,
-				/*(uint)OperationsListForManuals.SelectedIndex*/ idx);
+			UMOperationText.Text = um.GetManual2 ((uint)KKTListForManuals.SelectedIndex, idx);
 			}
 
 		// Печать инструкции

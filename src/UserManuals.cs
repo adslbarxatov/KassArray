@@ -21,10 +21,8 @@ namespace RD_AAOW
 			get
 				{
 				return operationTypes;
-				/*availableOperations.ToArray ();*/
 				}
 			}
-		/*private List<string> availableOperations = new List<string> ();*/
 
 		/// <summary>
 		/// Возвращает список операций, допустимых для кассира (неспециалиста)
@@ -70,13 +68,6 @@ namespace RD_AAOW
 		/// </summary>
 		public UserManuals ()
 			{
-			/* Формирование списка
-			availableOperations.AddRange (operationTypes1);
-			if (Level1)
-				availableOperations.AddRange (operationTypes2);
-			if (Level2)
-				availableOperations.AddRange (operationTypes3);*/
-
 			// Получение файлов
 #if !ANDROID
 			byte[] s1 = Properties.TextToKKMResources.UserManuals;
@@ -102,10 +93,6 @@ namespace RD_AAOW
 				// Загрузка файла целиком (требует структура)
 				for (int i = 0; i < operations.Count; i++)
 					{
-					/* Оплата по свободной цене более не актуальна – пропуск
-					if (i == 3)
-						SR.ReadLine ();*/
-
 					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", Localization.RN + "• "));
 
 					if ((i >= 1) && (i < 3))
