@@ -1,0 +1,145 @@
+﻿namespace RD_AAOW
+	{
+	/// <summary>
+	/// Класс объединяет все подклассы справочников и помощников приложения
+	/// </summary>
+	public class KnowledgeBase
+		{
+		/// <summary>
+		/// Возвращает преобразователь текста в коды символов ККТ
+		/// </summary>
+		public KKTCodes CodeTables
+			{
+			get
+				{
+				return kktc;
+				}
+			}
+		private KKTCodes kktc;
+
+		/// <summary>
+		/// Возвращает справочник ошибок ККТ
+		/// </summary>
+		public KKTErrorsList Errors
+			{
+			get
+				{
+				return kkte;
+				}
+			}
+		private KKTErrorsList kkte;
+
+		/// <summary>
+		/// Возвращает справочник ОФД
+		/// </summary>
+		public OFD Ofd
+			{
+			get
+				{
+				return ofd;
+				}
+			}
+		private OFD ofd;
+
+		/// <summary>
+		/// Возвращает справочник команд нижнего уровня
+		/// </summary>
+		public LowLevel LLCommands
+			{
+			get
+				{
+				return ll;
+				}
+			}
+		private LowLevel ll;
+
+		/// <summary>
+		/// Возвращает оператор руководств пользователя ККТ
+		/// </summary>
+		public UserManuals UserGuides
+			{
+			get
+				{
+				return um;
+				}
+			}
+		private UserManuals um;
+
+		/// <summary>
+		/// Возвращает оператор заводских номеров ККТ
+		/// </summary>
+		public KKTSerial KKTNumbers
+			{
+			get
+				{
+				return kkts;
+				}
+			}
+		private KKTSerial kkts;
+
+		/// <summary>
+		/// Возвращает оператор заводских номеров ФН
+		/// </summary>
+		public FNSerial FNNumbers
+			{
+			get
+				{
+				return fns;
+				}
+			}
+		private FNSerial fns;
+
+		/// <summary>
+		/// Возвращает справочник TLV-тегов
+		/// </summary>
+		public TLVTags Tags
+			{
+			get
+				{
+				return tlvt;
+				}
+			}
+		private TLVTags tlvt;
+
+		/// <summary>
+		/// Возвращает оператор штрих-кодов
+		/// </summary>
+		public BarCodes Barcodes
+			{
+			get
+				{
+				return barc;
+				}
+			}
+		private BarCodes barc;
+
+		/// <summary>
+		/// Возвращает справочник разъёмов ККТ и торгового оборудования
+		/// </summary>
+		public Connectors Plugs
+			{
+			get
+				{
+				return conn;
+				}
+			}
+		private Connectors conn;
+
+		/// <summary>
+		/// Конструктор. Инициализирует базу знаний
+		/// </summary>
+		public KnowledgeBase ()
+			{
+			kktc = new KKTCodes ();
+			kkte = new KKTErrorsList ();
+			ofd = new OFD ();
+			ll = new LowLevel ();
+			um = new UserManuals ();
+			kkts = new KKTSerial ();
+			fns = new FNSerial ();
+			tlvt = new TLVTags ();
+			barc = new BarCodes ();
+			conn = new Connectors ();
+			}
+		}
+	}

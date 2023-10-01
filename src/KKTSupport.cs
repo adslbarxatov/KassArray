@@ -1027,7 +1027,7 @@ namespace RD_AAOW
 					continue;
 
 				text += ((i != 0 ? Localization.RN : "") + Localization.RNRN + operations[i] + Localization.RNRN);
-				text += Manuals.GetManual2 (ManualNumber, (uint)i);
+				text += Manuals.GetManual (ManualNumber, (uint)i);
 				}
 
 			return text;

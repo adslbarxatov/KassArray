@@ -1062,7 +1062,7 @@ namespace RD_AAOW
 			byte idx = (byte)OperationsListForManuals.SelectedIndex;
 
 			AddToPrint.Checked = ca.GetUserManualSectionState (idx);
-			UMOperationText.Text = kb.UserGuides.GetManual2 ((uint)KKTListForManuals.SelectedIndex, idx);
+			UMOperationText.Text = kb.UserGuides.GetManual ((uint)KKTListForManuals.SelectedIndex, idx);
 			}
 
 		// Печать инструкции

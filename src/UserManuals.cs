@@ -152,7 +152,7 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="KKTType">Тип ККТ</param>
 		/// <param name="ManualType">Операция</param>
-		public string GetManual2 (uint KKTType, uint ManualType)
+		public string GetManual (uint KKTType, uint ManualType)
 			{
 			if (KKTType >= names.Count)
 				return "";
