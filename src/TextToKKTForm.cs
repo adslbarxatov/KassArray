@@ -14,17 +14,18 @@ namespace RD_AAOW
 	public partial class TextToKKTForm: Form
 		{
 		// Дескрипторы информационных классов
-		private KKTCodes kkmc = null;
+		/*private KKTCodes kkmc = null;
 		private KKTErrorsList kkme = null;
 		private OFD ofd = null;
 		private LowLevel ll = null;
-		private UserManuals um = null;
+		private UserManuals um = null;*/
 		private ConfigAccessor ca = null;
-		private KKTSerial kkts = null;
+		/*private KKTSerial kkts = null;
 		private FNSerial fns = null;
 		private TLVTags tlvt = null;
 		private BarCodes barc = null;
-		private Connectors conn = null;
+		private Connectors conn = null;*/
+		private KnowledgeBase kb;
 
 		// Дескриптор иконки в трее
 		private NotifyIcon ni = new NotifyIcon ();
@@ -48,6 +49,12 @@ namespace RD_AAOW
 		private Type FNReaderProgram;
 		private dynamic FNReaderInstance;
 
+		/// <summary>
+		/// Ключ командной строки, используемый при автозапуске для скрытия главного окна приложения
+		/// </summary>
+		public const string HideWindowKey = "-h";
+		private bool hideWindow = false;
+
 		#region Главный интерфейс
 
 		/// <summary>
@@ -62,7 +69,7 @@ namespace RD_AAOW
 				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
 			ca = new ConfigAccessor ();
 
-			// Загрузка списка кодов и ошибок
+			/* Загрузка списка кодов и ошибок
 			kkmc = new KKTCodes ();
 			kkme = new KKTErrorsList ();
 			ofd = new OFD ();
@@ -72,26 +79,29 @@ namespace RD_AAOW
 			fns = new FNSerial ();
 			tlvt = new TLVTags ();
 			barc = new BarCodes ();
-			conn = new Connectors ();
+			conn = new Connectors ();*/
+			kb = new KnowledgeBase ();
+
+			hideWindow = (DumpFileForFNReader == HideWindowKey);
 
 			// Настройка контролов
-			KKTListForCodes.Items.AddRange (kkmc.GetKKTTypeNames ().ToArray ());
+			KKTListForCodes.Items.AddRange (kb.CodeTables.GetKKTTypeNames ().ToArray ());
 			KKTListForCodes.SelectedIndex = 0;
 
-			KKTListForErrors.Items.AddRange (kkme.GetKKTTypeNames ().ToArray ());
+			KKTListForErrors.Items.AddRange (kb.Errors.GetKKTTypeNames ().ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
 
-			LowLevelProtocol.Items.AddRange (ll.GetProtocolsNames ().ToArray ());
+			LowLevelProtocol.Items.AddRange (kb.LLCommands.GetProtocolsNames ().ToArray ());
 			LowLevelProtocol.SelectedIndex = (int)ca.LowLevelProtocol;
 			LowLevelProtocol_CheckedChanged (null, null);
 
 			FNLifeStartDate.Value = DateTime.Now;
 
 			OFDNamesList.Items.Add ("Неизвестный ОФД");
-			OFDNamesList.Items.AddRange (ofd.GetOFDNames ().ToArray ());
+			OFDNamesList.Items.AddRange (kb.Ofd.GetOFDNames ().ToArray ());
 			OFDNamesList.SelectedIndex = 0;
 
-			CableType.Items.AddRange (conn.GetCablesNames ().ToArray ());
+			CableType.Items.AddRange (kb.Plugs.GetCablesNames ().ToArray ());
 			CableType.SelectedIndex = 0;
 
 			this.Text = ProgramDescription.AssemblyVisibleName;
@@ -143,7 +153,7 @@ namespace RD_AAOW
 			PawnInsuranceFlag.Checked = ca.PawnInsuranceFlag;
 			MarkGoodsFlag.Checked = ca.MarkGoodsFlag;
 
-			RNMSerial.MaxLength = (int)kkts.MaxSerialNumberLength;
+			RNMSerial.MaxLength = (int)kb.KKTNumbers.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
 			RNMUserINN.Text = ca.UserINN;
 			RNMValue.Text = ca.RNMKKT;
@@ -166,8 +176,9 @@ namespace RD_AAOW
 				}
 			catch { }
 			TextToConvert.Text = ca.CodesText;
+			TextToConvert.Items.AddRange (ca.CodesOftenTexts);
 
-			KKTListForManuals.Items.AddRange (um.GetKKTList ());
+			KKTListForManuals.Items.AddRange (kb.UserGuides.GetKKTList ());
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
 
 			if (ca.AllowExtendedFunctionsLevel1)
@@ -245,15 +256,21 @@ namespace RD_AAOW
 			ni.MouseDown += ReturnWindow;
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
-			if (!File.Exists (RDGenerics.AutorunLinkPath))
-				ni.ContextMenu.MenuItems.Add (new MenuItem ("Добавить в &автозапуск", AddToStartup));
+			/*if (!File.Exists (RDGenerics.AutorunLinkPath))
+				ni.ContextMenu.MenuItems.Add (new MenuItem ("Добавить в &автозапуск", AddToStartup));*/
 
 			// Запуск файла дампа, если представлен
-			if (ca.AllowExtendedFunctionsLevel2 && (DumpFileForFNReader != ""))
+			if (ca.AllowExtendedFunctionsLevel2 && (DumpFileForFNReader != "") && !hideWindow)
 				CallFNReader (DumpFileForFNReader);
 
 			ExtendedMode.Checked = ca.AllowExtendedMode;
 			ExtendedMode.CheckedChanged += ExtendedMode_CheckedChanged;
+			}
+
+		private void TextToKKTForm_Shown (object sender, EventArgs e)
+			{
+			if (hideWindow)
+				this.Hide ();
 			}
 
 		// Включение / выключение режима сервис-инженера
@@ -271,7 +288,7 @@ namespace RD_AAOW
 				}
 			}
 
-		// Добавление в автозапуск
+		/* Добавление в автозапуск
 		private void AddToStartup (object sender, EventArgs e)
 			{
 			// Попытка создания
@@ -279,7 +296,7 @@ namespace RD_AAOW
 
 			// Контроль
 			ni.ContextMenu.MenuItems[ni.ContextMenu.MenuItems.Count - 1].Enabled = !File.Exists (RDGenerics.AutorunLinkPath);
-			}
+			}*/
 
 		// Возврат окна приложения
 		private void ReturnWindow (object sender, MouseEventArgs e)
@@ -375,6 +392,11 @@ namespace RD_AAOW
 
 			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			ca.CodesText = TextToConvert.Text;
+
+			List<string> cots = new List<string> ();
+			foreach (object o in TextToConvert.Items)
+				cots.Add (o.ToString ());
+			ca.CodesOftenTexts = cots.ToArray ();
 
 			ca.BarcodeData = BarcodeData.Text;
 			ca.CableType = (uint)CableType.SelectedIndex;
@@ -475,8 +497,8 @@ namespace RD_AAOW
 
 			// Проверки прошли успешно, запуск
 			if (FNReaderDLL != null)
-				FNReaderInstance.FNReaderEx (DumpPath, fns.GetFNNameDelegate, kkts.GetKKTModelDelegate,
-					ofd.GetOFDByINNDelegate, ofd.GetOFDDataDelegate);
+				FNReaderInstance.FNReaderEx (DumpPath, kb.FNNumbers.GetFNNameDelegate,
+					kb.KKTNumbers.GetKKTModelDelegate, kb.Ofd.GetOFDByINNDelegate, kb.Ofd.GetOFDDataDelegate);
 			}
 
 		/// <summary>
@@ -608,11 +630,14 @@ namespace RD_AAOW
 		// Изменение текста и его кодировка
 		private void TextToConvert_TextChanged (object sender, EventArgs e)
 			{
-			ResultText.Text = kkmc.DecodeText ((uint)KKTListForCodes.SelectedIndex, TextToConvert.Text);
+			ResultText.Text = kb.CodeTables.DecodeText ((uint)KKTListForCodes.SelectedIndex, TextToConvert.Text);
 			ErrorLabel.Visible = ResultText.Text.Contains (KKTCodes.EmptyCode);
 
-			TextLabel.Text = "Текст (" + TextToConvert.Text.Length + "):";
-			DescriptionLabel.Text = kkmc.GetKKTTypeDescription ((uint)KKTListForCodes.SelectedIndex);
+			LengthLabel.Text = "Длина: " + TextToConvert.Text.Length;
+			DescriptionLabel.Text = kb.CodeTables.GetKKTTypeDescription ((uint)KKTListForCodes.SelectedIndex);
+
+			TextToConvertCenter.Enabled = (TextToConvert.Text.Length > 0) &&
+				(TextToConvert.Text.Length <= kb.CodeTables.GetKKTStringLength ((uint)KKTListForCodes.SelectedIndex));
 			}
 
 		// Выбор ККТ
@@ -625,6 +650,25 @@ namespace RD_AAOW
 		private void TextToConvertClear_Click (object sender, EventArgs e)
 			{
 			TextToConvert.Text = "";
+			}
+
+		// Запоминание текста из поля ввода
+		private void TextToConvertRemember_Click (object sender, EventArgs e)
+			{
+			TextToConvert.Items.Add (TextToConvert.Text);
+			}
+
+		// Центрирование текста на поле ввода ККТ
+		private void TextToConvertCenter_Click (object sender, EventArgs e)
+			{
+			string text = TextToConvert.Text.Trim ();
+			uint total = kb.CodeTables.GetKKTStringLength ((uint)KKTListForCodes.SelectedIndex);
+
+			if (text.Length % 2 != 0)
+				if (text.Contains (" "))
+					text = text.Insert (text.IndexOf (' '), " ");
+
+			TextToConvert.Text = text.PadLeft ((int)(total + text.Length) / 2, ' ');
 			}
 
 		#endregion
@@ -640,7 +684,7 @@ namespace RD_AAOW
 		// Поиск по тексту ошибки
 		private void ErrorFindButton_Click (object sender, EventArgs e)
 			{
-			List<string> codes = kkme.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
+			List<string> codes = kb.Errors.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
 			string text = ErrorSearchText.Text.ToLower ();
 
 			lastErrorSearchOffset++;
@@ -648,7 +692,7 @@ namespace RD_AAOW
 				{
 				int j = (i + lastErrorSearchOffset) % codes.Count;
 				string code = codes[j].ToLower ();
-				string res = kkme.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)j);
+				string res = kb.Errors.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)j);
 
 				if (code.Contains (text) || res.ToLower ().Contains (text) ||
 					code.Contains ("?") && text.Contains (code.Replace ("?", "")))
@@ -683,7 +727,7 @@ namespace RD_AAOW
 			{
 			// Получение описания
 			if (FNLifeSN.Text != "")
-				FNLifeName.Text = fns.GetFNName (FNLifeSN.Text);
+				FNLifeName.Text = kb.FNNumbers.GetFNName (FNLifeSN.Text);
 			else
 				FNLifeName.Text = "(введите ЗН ФН)";
 
@@ -728,7 +772,7 @@ namespace RD_AAOW
 			fnlf.PawnsAndInsurance = PawnInsuranceFlag.Checked;
 			fnlf.MarkGoods = MarkGoodsFlag.Checked;
 
-			fnlf.MarkFN = FNLife13.Enabled && FNLife36.Enabled || fns.IsFNCompatibleWithFFD12 (FNLifeSN.Text);
+			fnlf.MarkFN = FNLife13.Enabled && FNLife36.Enabled || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text);
 			// Корректный ЗН ФН
 
 			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, fnlf);
@@ -790,7 +834,7 @@ namespace RD_AAOW
 		// Поиск сигнатуры ЗН ФН по части названия
 		private void FNFindSN_Click (object sender, EventArgs e)
 			{
-			string sig = fns.FindSignatureByName (FNLifeSN.Text);
+			string sig = kb.FNNumbers.FindSignatureByName (FNLifeSN.Text);
 			if (sig != "")
 				FNLifeSN.Text = sig;
 			}
@@ -811,9 +855,9 @@ namespace RD_AAOW
 			// Заводской номер ККТ
 			if (RNMSerial.Text != "")
 				{
-				RNMSerialResult.Text = kkts.GetKKTModel (RNMSerial.Text);
+				RNMSerialResult.Text = kb.KKTNumbers.GetKKTModel (RNMSerial.Text);
 
-				KKTSerial.FFDSupportStatuses[] statuses = kkts.GetFFDSupportStatus (RNMSerial.Text);
+				KKTSerial.FFDSupportStatuses[] statuses = kb.KKTNumbers.GetFFDSupportStatus (RNMSerial.Text);
 				RNMSupport105.BackColor = StatusToColor (statuses[0]);
 				RNMSupport11.BackColor = StatusToColor (statuses[1]);
 				RNMSupport12.BackColor = StatusToColor (statuses[2]);
@@ -834,7 +878,7 @@ namespace RD_AAOW
 				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
 			else
 				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);   // Не ошибка
-			RegionLabel.Text = kkts.GetRegionName (RNMUserINN.Text);
+			RegionLabel.Text = kb.KKTNumbers.GetRegionName (RNMUserINN.Text);
 
 			// РН
 			if (RNMValue.Text.Length < 10)
@@ -868,7 +912,7 @@ namespace RD_AAOW
 		// Поиск сигнатуры ЗН ККТ по части названия
 		private void RNMSerialFind_Click (object sender, EventArgs e)
 			{
-			string sig = kkts.FindSignatureByName (RNMSerial.Text);
+			string sig = kb.KKTNumbers.FindSignatureByName (RNMSerial.Text);
 			if (sig != "")
 				RNMSerial.Text = sig;
 			}
@@ -886,7 +930,7 @@ namespace RD_AAOW
 		// Выбор имени ОФД
 		private void OFDNamesList_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			string s = ofd.GetOFDINNByName (OFDNamesList.Text);
+			string s = kb.Ofd.GetOFDINNByName (OFDNamesList.Text);
 			OFDINN.Text = string.IsNullOrWhiteSpace (s) ? "" : s;
 			LoadOFDParameters ();
 			}
@@ -894,7 +938,7 @@ namespace RD_AAOW
 		// Выбор ОФД
 		private void LoadOFDParameters ()
 			{
-			List<string> parameters = ofd.GetOFDParameters (OFDINN.Text.Contains ("0000000000") ? "" : OFDINN.Text);
+			List<string> parameters = kb.Ofd.GetOFDParameters (OFDINN.Text.Contains ("0000000000") ? "" : OFDINN.Text);
 
 			OFDNamesList.Text = parameters[1];
 
@@ -933,8 +977,8 @@ namespace RD_AAOW
 		// Поиск по названию ОФД
 		private void OFDFindButton_Click (object sender, EventArgs e)
 			{
-			List<string> codes = ofd.GetOFDNames ();
-			codes.AddRange (ofd.GetOFDINNs ());
+			List<string> codes = kb.Ofd.GetOFDNames ();
+			codes.AddRange (kb.Ofd.GetOFDINNs ());
 
 			string text = OFDSearchText.Text.ToLower ();
 
@@ -968,30 +1012,31 @@ namespace RD_AAOW
 		private void LowLevelProtocol_CheckedChanged (object sender, EventArgs e)
 			{
 			LowLevelCommand.Items.Clear ();
-			LowLevelCommand.Items.AddRange (ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
+			LowLevelCommand.Items.AddRange (kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
 			LowLevelCommand.SelectedIndex = 0;
 			}
 
 		// Выбор команды
 		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			LowLevelCommandCode.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+			LowLevelCommandCode.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
 				(uint)LowLevelCommand.SelectedIndex, false);
-			LowLevelCommandDescr.Text = ll.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+			LowLevelCommandDescr.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
 				(uint)LowLevelCommand.SelectedIndex, true);
 			}
 
 		// Поиск по тексту ошибки
 		private void LowLevelFindButton_Click (object sender, EventArgs e)
 			{
-			List<string> codes = ll.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
+			List<string> codes = kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
 			string text = LowLevelSearchText.Text.ToLower ();
 
 			lastLowLevelSearchOffset++;
 			for (int i = 0; i < codes.Count; i++)
 				if (codes[(i + lastLowLevelSearchOffset) % codes.Count].ToLower ().Contains (text))
 					{
-					lastLowLevelSearchOffset = LowLevelCommand.SelectedIndex = (i + lastLowLevelSearchOffset) % codes.Count;
+					lastLowLevelSearchOffset = LowLevelCommand.SelectedIndex =
+						(i + lastLowLevelSearchOffset) % codes.Count;
 					return;
 					}
 			}
@@ -1017,14 +1062,14 @@ namespace RD_AAOW
 			byte idx = (byte)OperationsListForManuals.SelectedIndex;
 
 			AddToPrint.Checked = ca.GetUserManualSectionState (idx);
-			UMOperationText.Text = um.GetManual2 ((uint)KKTListForManuals.SelectedIndex, idx);
+			UMOperationText.Text = kb.UserGuides.GetManual2 ((uint)KKTListForManuals.SelectedIndex, idx);
 			}
 
 		// Печать инструкции
 		private void PrintUserManual_Click (object sender, EventArgs e)
 			{
 			// Сборка задания на печать
-			string text = KKTSupport.BuildUserManual (um, (uint)KKTListForManuals.SelectedIndex, ca,
+			string text = KKTSupport.BuildUserManual (kb.UserGuides, (uint)KKTListForManuals.SelectedIndex, ca,
 				((Button)sender).Name.Contains ("Cashier"));
 
 			// Печать
@@ -1051,16 +1096,16 @@ namespace RD_AAOW
 		// Поиск TLV-тега
 		private void TLVButton_Click (object sender, EventArgs e)
 			{
-			if (tlvt.FindTag (TLVFind.Text, (TLVTags_FFDVersions)(TLV_FFDCombo.SelectedIndex + 2)))
+			if (kb.Tags.FindTag (TLVFind.Text, (TLVTags_FFDVersions)(TLV_FFDCombo.SelectedIndex + 2)))
 				{
-				TLVDescription.Text = tlvt.LastDescription;
-				TLVType.Text = tlvt.LastType;
+				TLVDescription.Text = kb.Tags.LastDescription;
+				TLVType.Text = kb.Tags.LastType;
 
-				if (!string.IsNullOrWhiteSpace (tlvt.LastValuesSet))
-					TLVValues.Text = tlvt.LastValuesSet + Localization.RNRN;
+				if (!string.IsNullOrWhiteSpace (kb.Tags.LastValuesSet))
+					TLVValues.Text = kb.Tags.LastValuesSet + Localization.RNRN;
 				else
 					TLVValues.Text = "";
-				TLVValues.Text += tlvt.LastObligation;
+				TLVValues.Text += kb.Tags.LastObligation;
 				}
 			else
 				{
@@ -1108,7 +1153,7 @@ namespace RD_AAOW
 				BarcodeData.SelectionStart = BarcodeData.Text.Length;
 				}
 
-			BarcodeDescription.Text = barc.GetBarcodeDescription (BarcodeData.Text);
+			BarcodeDescription.Text = kb.Barcodes.GetBarcodeDescription (BarcodeData.Text);
 			}
 
 		private void BarcodeClear_Click (object sender, EventArgs e)
@@ -1125,14 +1170,14 @@ namespace RD_AAOW
 			{
 			uint i = (uint)CableType.SelectedIndex;
 
-			CableLeftSide.Text = "Со стороны " + conn.GetCableConnector (i, false);
-			CableLeftPins.Text = conn.GetCableConnectorPins (i, false);
+			CableLeftSide.Text = "Со стороны " + kb.Plugs.GetCableConnector (i, false);
+			CableLeftPins.Text = kb.Plugs.GetCableConnectorPins (i, false);
 
-			CableRightSide.Text = "Со стороны " + conn.GetCableConnector (i, true);
-			CableRightPins.Text = conn.GetCableConnectorPins (i, true);
+			CableRightSide.Text = "Со стороны " + kb.Plugs.GetCableConnector (i, true);
+			CableRightPins.Text = kb.Plugs.GetCableConnectorPins (i, true);
 
-			CableLeftDescription.Text = conn.GetCableConnectorDescription (i, false) + Localization.RNRN +
-				conn.GetCableConnectorDescription (i, true);
+			CableLeftDescription.Text = kb.Plugs.GetCableConnectorDescription (i, false) + Localization.RNRN +
+				kb.Plugs.GetCableConnectorDescription (i, true);
 			}
 
 		#endregion

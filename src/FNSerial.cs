@@ -5,7 +5,7 @@ using System.IO;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс обеспечивает доступ к наименованиям моделей ФН
+	/// Класс предоставляет сведения о моделях ФН
 	/// </summary>
 	public class FNSerial
 		{

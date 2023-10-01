@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс обеспечивает доступ к кодам символов ККТ
+	/// Класс обеспечивает преобразование текста в коды символов ККТ
 	/// </summary>
 	public class KKTCodes
 		{
@@ -171,13 +171,26 @@ namespace RD_AAOW
 		/// Метод возвращает пояснение к способу ввода текста в ККТ по её типу
 		/// </summary>
 		/// <param name="KKTType">Модель ККТ</param>
-		/// <returns>Возвращает пояснение или пустую строку, если входные параметры некорректны</returns>
+		/// <returns>Пояснение или пустую строку, если входные параметры некорректны</returns>
 		public string GetKKTTypeDescription (uint KKTType)
 			{
 			if ((int)KKTType < names.Count)
 				return descriptions[(int)KKTType];
 
 			return "";
+			}
+
+		/// <summary>
+		/// Метод возвращает длину вводимой строки указанной ККТ
+		/// </summary>
+		/// <param name="KKTType">Модель ККТ</param>
+		/// <returns>Длина строки в символах</returns>
+		public uint GetKKTStringLength (uint KKTType)
+			{
+			if ((int)KKTType < names.Count)
+				return uint.Parse (descriptions[(int)KKTType].Substring (0, 2));
+
+			return 0;
 			}
 		}
 	}

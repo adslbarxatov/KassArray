@@ -5,7 +5,7 @@ using System.IO;
 namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс обеспечивает доступ к наименованиям моделей ККТ
+	/// Класс предоставляет сведения о моделях ККТ
 	/// </summary>
 	public class KKTSerial
 		{
