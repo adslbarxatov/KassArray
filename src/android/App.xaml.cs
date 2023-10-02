@@ -1,4 +1,5 @@
 ﻿using Android.Print;
+using Java.Util;
 using System;
 using System.Collections.Generic;
 using Xamarin.Essentials;
@@ -22,7 +23,7 @@ namespace RD_AAOW
 			userManualsMasterBackColor = Color.FromHex ("#F4E8FF"),
 			userManualsFieldBackColor = Color.FromHex ("#ECD8FF"),
 
-			errorsMasterBackColor = Color.FromHex ("#FFF0F0"),
+			errorsMasterBackColor = Color.FromHex ("#FFEEEE"),
 			errorsFieldBackColor = Color.FromHex ("#FFD0D0"),
 
 			fnLifeMasterBackColor = Color.FromHex ("#FFF0E0"),
@@ -350,9 +351,9 @@ namespace RD_AAOW
 				kktCodesFieldBackColor);
 
 			AndroidSupport.ApplyButtonSettings (kktCodesPage, "ClearText",
-				"Очистить", kktCodesFieldBackColor, CodesClear_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (kktCodesPage, "ClipboardText",
-				"Из буфера обмена", kktCodesFieldBackColor, CodesLineGet_Clicked, false);
+				ASButtonDefaultTypes.Delete, kktCodesFieldBackColor, CodesClear_Clicked);
+			AndroidSupport.ApplyButtonSettings (kktCodesPage, "SelectSavedText",
+				ASButtonDefaultTypes.Select, kktCodesFieldBackColor, CodesLineGet_Clicked);
 
 			kktCodesLengthLabel = AndroidSupport.ApplyLabelSettings (kktCodesPage, "LengthLabel",
 				"Длина:", ASLabelTypes.HeaderLeft);
@@ -1081,6 +1082,7 @@ namespace RD_AAOW
 
 			//ca.KKTForCodes	// -||-
 			ca.CodesText = codesSourceText.Text;
+			ca.CodesOftenTexts = kktCodesOftenTexts.ToArray ();
 
 			ca.BarcodeData = barcodeField.Text;
 			//ca.CableType		// -||-
@@ -1199,7 +1201,18 @@ namespace RD_AAOW
 		// Получение из буфера
 		private async void CodesLineGet_Clicked (object sender, EventArgs e)
 			{
-			codesSourceText.Text = await RDGenerics.GetFromClipboard ();
+			List<string> items = new List<string> (kktCodesOftenTexts);
+			items.Add ("[из буфера обмена]");
+
+			int res = await AndroidSupport.ShowList ("Доступные варианты:",
+				Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), items);
+			if (res < 0)
+				return;
+
+			if (res < kktCodesOftenTexts.Count)
+				codesSourceText.Text = kktCodesOftenTexts[res];
+			else
+				codesSourceText.Text = await RDGenerics.GetFromClipboard ();
 			}
 
 		// Запоминание текста из поля ввода
