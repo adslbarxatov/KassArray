@@ -8,89 +8,115 @@ using System.IO;
 	using Android.Print.Pdf;
 	using Android.Runtime;
 #else
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
+	using System.Drawing;
+	using System.Drawing.Printing;
+	using System.Windows.Forms;
 #endif
 
 namespace RD_AAOW
 	{
 	/// <summary>
+	/// Список параметров для определения срока жизни ФН
+	/// </summary>
+	public enum FNLifeFlags
+		{
+		/// <summary>
+		/// Флаг указывает на выбор ФН на 13/15 месяцев вместо 36
+		/// </summary>
+		FN15 = 0x0001,
+
+		/// <summary>
+		/// Флаг указывает на выбор ФН на 13 месяцев вместо 15
+		/// </summary>
+		FNExactly13 = 0x0002,
+
+		/// <summary>
+		/// Флаг указыввает на применение ОСН
+		/// </summary>
+		GenericTax = 0x0010,
+
+		/// <summary>
+		/// Флаг указывает на режим товаров вместо услуг
+		/// </summary>
+		Goods = 0x0020,
+
+		/// <summary>
+		/// Флаг указывает на сезонный режим работы
+		/// </summary>
+		Season = 0x0040,
+
+		/// <summary>
+		/// Флаг указывает на агентскую схему работы
+		/// </summary>
+		Agents = 0x0080,
+
+		/// <summary>
+		/// Флаг указывает на наличие подакцизных товаров
+		/// </summary>
+		Excise = 0x0100,
+
+		/// <summary>
+		/// Флаг указывает на работу без передачи данных
+		/// </summary>
+		Autonomous = 0x0200,
+
+		/// <summary>
+		/// Флаг ФФД 1.2
+		/// </summary>
+		FFD12 = 0x0400,
+
+		/// <summary>
+		/// Флаг ФН с аппаратной поддержкой маркировки
+		/// </summary>
+		MarkFN = 0x0800,
+
+		/// <summary>
+		/// Флаг торговли маркированными товарами
+		/// </summary>
+		MarkGoods = 0x1000,
+
+		/// <summary>
+		/// Флаг азартных игр и лотерей
+		/// </summary>
+		GamblingAndLotteries = 0x2000,
+
+		/// <summary>
+		/// Флаг ломбардной деятельности и страхования
+		/// </summary>
+		PawnsAndInsurance = 0x4000,
+		}
+
+	/// <summary>
+	/// Доступные настроечные флаги для руководств пользователя
+	/// </summary>
+	public enum UserManualsFlags
+		{
+		/// <summary>
+		/// Кассиры работают с паролями
+		/// </summary>
+		CashiersHavePasswords = 0x01,
+
+		/// <summary>
+		/// В чеках может быть более одной позиции
+		/// </summary>
+		MoreThanOneItemPerDocument = 0x02,
+
+		/// <summary>
+		/// База товаров содержит цены
+		/// </summary>
+		ProductBaseContainsPrices = 0x04,
+
+		/// <summary>
+		/// Руководство для кассира
+		/// </summary>
+		GuideForCashier = 0x80,
+		}
+
+	/// <summary>
 	/// Класс описывает вспомогательные методы
 	/// </summary>
 	public static class KKTSupport
 		{
-		/// <summary>
-		/// Структура используется для передачи списка параметров определения срока жизни ФН
-		/// </summary>
-		public struct FNLifeFlags
-			{
-			/// <summary>
-			/// Флаг указывает на выбор ФН на 13/15 месяцев вместо 36
-			/// </summary>
-			public bool FN15;
-
-			/// <summary>
-			/// Флаг указывает на выбор ФН на 13 месяцев вместо 15
-			/// </summary>
-			public bool FNExactly13;
-
-			/// <summary>
-			/// Флаг указыввает на применение ОСН
-			/// </summary>
-			public bool GenericTax;
-
-			/// <summary>
-			/// Флаг указывает на режим товаров вместо услуг
-			/// </summary>
-			public bool Goods;
-
-			/// <summary>
-			/// Флаг указывает на сезонный режим работы
-			/// </summary>
-			public bool Season;
-
-			/// <summary>
-			/// Флаг указывает на агентскую схему работы
-			/// </summary>
-			public bool Agents;
-
-			/// <summary>
-			/// Флаг указывает на наличие подакцизных товаров
-			/// </summary>
-			public bool Excise;
-
-			/// <summary>
-			/// Флаг указывает на работу без передачи данных
-			/// </summary>
-			public bool Autonomous;
-
-			/// <summary>
-			/// Флаг ФФД 1.2
-			/// </summary>
-			public bool FFD12;
-
-			/// <summary>
-			/// Флаг ФН с аппаратной поддержкой маркировки
-			/// </summary>
-			public bool MarkFN;
-
-			/// <summary>
-			/// Флаг торговли маркированными товарами
-			/// </summary>
-			public bool MarkGoods;
-
-			/// <summary>
-			/// Флаг азартных игр и лотерей
-			/// </summary>
-			public bool GamblingAndLotteries;
-
-			/// <summary>
-			/// Флаг ломбардной деятельности и страхования
-			/// </summary>
-			public bool PawnsAndInsurance;
-			}
-
 		/// <summary>
 		/// Признак неприменимости ФН с указанными параметрами
 		/// </summary>
@@ -114,18 +140,35 @@ namespace RD_AAOW
 			string res = "";
 
 			// Определение недопустимых вариантов
-			if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||   // Нельзя игнорировать
+			/*if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||   // Нельзя игнорировать
 				Flags.FFD12 && !Flags.MarkFN ||                     // Невозможные варианты
 				!Flags.Goods && (Flags.Excise || Flags.MarkGoods) ||
 				Flags.Goods && Flags.GamblingAndLotteries ||
-				Flags.MarkGoods && !Flags.FFD12)
+				Flags.MarkGoods && !Flags.FFD12)*/
+
+			// Нельзя игнорировать
+			if (IsSet (Flags, FNLifeFlags.GenericTax) && !IsSet (Flags, FNLifeFlags.FN15) &&
+				IsSet (Flags, FNLifeFlags.Goods) ||
+
+				// Невозможные варианты
+				IsSet (Flags, FNLifeFlags.FFD12) && !IsSet (Flags, FNLifeFlags.MarkFN) ||
+
+				!IsSet (Flags, FNLifeFlags.Goods) && (IsSet (Flags, FNLifeFlags.Excise) ||
+				IsSet (Flags, FNLifeFlags.MarkGoods)) ||
+
+				IsSet (Flags, FNLifeFlags.Goods) && IsSet (Flags, FNLifeFlags.GamblingAndLotteries) ||
+
+				IsSet (Flags, FNLifeFlags.MarkGoods) && !IsSet (Flags, FNLifeFlags.FFD12))
 				{
 				res = FNLifeInacceptableSign;
 				}
 
 			// Определение нежелательных вариантов
-			else if (!Flags.GenericTax && Flags.FN15 &&
-				!Flags.Season && !Flags.Agents && !Flags.Excise && !Flags.Autonomous)
+			/*else if (!Flags.GenericTax && Flags.FN15 &&
+				!Flags.Season && !Flags.Agents && !Flags.Excise && !Flags.Autonomous)*/
+			else if (!IsSet (Flags, FNLifeFlags.GenericTax) && IsSet (Flags, FNLifeFlags.FN15) &&
+				!IsSet (Flags, FNLifeFlags.Season) && !IsSet (Flags, FNLifeFlags.Agents) &&
+				!IsSet (Flags, FNLifeFlags.Excise) && !IsSet (Flags, FNLifeFlags.Autonomous))
 				{
 				res = FNLifeUnwelcomeSign;
 				}
@@ -138,26 +181,40 @@ namespace RD_AAOW
 			{
 			// Определение срока жизни
 			uint length = 1110u;
-			if ((Flags.GamblingAndLotteries || Flags.PawnsAndInsurance) && Flags.FFD12 && Flags.FN15 ||
-				Flags.Excise && Flags.MarkFN)   // ??? Все М-модели или только запущенные под ФФД 1.2 ???
+
+			/*if ((Flags.GamblingAndLotteries || Flags.PawnsAndInsurance) && Flags.FFD12 && Flags.FN15 ||
+				Flags.Excise && Flags.MarkFN)   // ??? Все М-модели или только запущенные под ФФД 1.2 ???*/
+			if ((IsSet (Flags, FNLifeFlags.GamblingAndLotteries) || IsSet (Flags, FNLifeFlags.PawnsAndInsurance)) &&
+				IsSet (Flags, FNLifeFlags.FFD12) && IsSet (Flags, FNLifeFlags.FN15) ||
+				IsSet (Flags, FNLifeFlags.Excise) && IsSet (Flags, FNLifeFlags.MarkFN))
 				{
 				length = 410u;
 				}
-			else if (Flags.Autonomous)
+
+			/*	else if (Flags.Autonomous)
+				if (Flags.FN15 || Flags.FFD12 && Flags.Goods && Flags.GenericTax)*/
+
+			else if (IsSet (Flags, FNLifeFlags.Autonomous))
 				{
-				if (Flags.FN15 || Flags.FFD12 && Flags.Goods && Flags.GenericTax)
+				if (IsSet (Flags, FNLifeFlags.FN15) || IsSet (Flags, FNLifeFlags.FFD12) &&
+					IsSet (Flags, FNLifeFlags.Goods) && IsSet (Flags, FNLifeFlags.GenericTax))
 					length = 410u;
 				else
 					length = 560u;
 				}
-			else if (!Flags.FN15 && Flags.GenericTax && (Flags.Goods ||
-				Flags.Agents && Flags.FFD12))
+
+			/*	else if (!Flags.FN15 && Flags.GenericTax && (Flags.Goods ||
+				Flags.Agents && Flags.FFD12))*/
+			else if (!IsSet (Flags, FNLifeFlags.FN15) && IsSet (Flags, FNLifeFlags.GenericTax) &&
+				(IsSet (Flags, FNLifeFlags.Goods) || IsSet (Flags, FNLifeFlags.Agents) &&
+				IsSet (Flags, FNLifeFlags.FFD12)))
 				{
 				length = 560u;
 				}
-			else if (Flags.FN15)
+
+			else if (IsSet (Flags, FNLifeFlags.FN15))
 				{
-				length = Flags.FNExactly13 ? 410u : 470u;
+				length = IsSet (Flags, FNLifeFlags.FNExactly13) ? 410u : 470u;
 				}
 
 			return length;
@@ -1035,6 +1092,58 @@ namespace RD_AAOW
 			}
 
 #endif
+
+		/// <summary>
+		/// Метод проверяет указанный флаг на установку
+		/// </summary>
+		/// <param name="FlagsSet">Регистр флагов</param>
+		/// <param name="Flag">Значение, требующее проверки</param>
+		/// <returns>Возвращает true, если флаг установлен</returns>
+		public static bool IsSet (FNLifeFlags FlagsSet, FNLifeFlags Flag)
+			{
+			return (FlagsSet & Flag) != 0;
+			}
+
+		/// <summary>
+		/// Метод проверяет указанный флаг на установку
+		/// </summary>
+		/// <param name="FlagsSet">Регистр флагов</param>
+		/// <param name="Flag">Значение, требующее проверки</param>
+		/// <returns>Возвращает true, если флаг установлен</returns>
+		public static bool IsSet (UserManualsFlags FlagsSet, UserManualsFlags Flag)
+			{
+			return (FlagsSet & Flag) != 0;
+			}
+
+		/// <summary>
+		/// Метод устанавливает указанный флаг в регистре в заданное значение
+		/// </summary>
+		/// <param name="FlagsSet">Регистр флагов</param>
+		/// <param name="Flag">Значение, требующее установки</param>
+		/// <param name="Value">Новое значение</param>
+		/// <returns>Возвращает обновлённый регистр флагов</returns>
+		public static FNLifeFlags SetFlag (FNLifeFlags FlagsSet, FNLifeFlags Flag, bool Value)
+			{
+			if (Value)
+				return FlagsSet | Flag;
+
+			return FlagsSet & ~Flag;
+			}
+
+		/// <summary>
+		/// Метод устанавливает указанный флаг в регистре в заданное значение
+		/// </summary>
+		/// <param name="FlagsSet">Регистр флагов</param>
+		/// <param name="Flag">Значение, требующее установки</param>
+		/// <param name="Value">Новое значение</param>
+		/// <returns>Возвращает обновлённый регистр флагов</returns>
+		public static UserManualsFlags SetFlag (UserManualsFlags FlagsSet, UserManualsFlags Flag, bool Value)
+			{
+			if (Value)
+				return FlagsSet | Flag;
+
+			return FlagsSet & ~Flag;
+			}
 		}
 
 #if ANDROID

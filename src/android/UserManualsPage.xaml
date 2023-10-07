@@ -16,6 +16,23 @@
 					<Button x:Name="PrintButton" VerticalOptions="Center" />
 				</StackLayout>
 
+				<FlexLayout Direction="Row" Wrap="Wrap">
+					<StackLayout Orientation="Horizontal">
+						<Switch x:Name="OneItemSwitch" VerticalOptions="Center" />
+						<Label x:Name="OneItemLabel" VerticalOptions="Center" />
+					</StackLayout>
+
+					<StackLayout Orientation="Horizontal">
+						<Switch x:Name="PricesSwitch" VerticalOptions="Center" />
+						<Label x:Name="PricesLabel" VerticalOptions="Center" />
+					</StackLayout>
+
+					<StackLayout Orientation="Horizontal">
+						<Switch x:Name="PasswordsSwitch" VerticalOptions="Center" />
+						<Label x:Name="PasswordsLabel" VerticalOptions="Center" />
+					</StackLayout>
+				</FlexLayout>
+
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
 

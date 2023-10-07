@@ -20,8 +20,8 @@ namespace RD_AAOW
 		// Дескриптор иконки в трее
 		private NotifyIcon ni = new NotifyIcon ();
 
-		// Параметры вычисления срока жизни ФН
-		private KKTSupport.FNLifeFlags fnlf;
+		/* Параметры вычисления срока жизни ФН
+		private FNLifeFlags fnlf;*/
 
 		// Рассчитанный срок жизни ФН
 		private string fnLifeResult = "";
@@ -114,7 +114,9 @@ namespace RD_AAOW
 			ErrorFindButton_Click (null, null);
 
 			FNLifeSN.Text = ca.FNSerial;
-			if (ca.GenericTaxFlag)
+			FNLifeEvFlags = ca.FNLifeEvFlags;
+
+			/*if (ca.GenericTaxFlag)
 				GenericTaxFlag.Checked = true;
 			else
 				OtherTaxFlag.Checked = true;
@@ -129,7 +131,7 @@ namespace RD_AAOW
 			FFD12Flag.Checked = ca.FFD12Flag;
 			GamblingLotteryFlag.Checked = ca.GamblingLotteryFlag;
 			PawnInsuranceFlag.Checked = ca.PawnInsuranceFlag;
-			MarkGoodsFlag.Checked = ca.MarkGoodsFlag;
+			MarkGoodsFlag.Checked = ca.MarkGoodsFlag;*/
 
 			RNMSerial.MaxLength = (int)kb.KKTNumbers.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
@@ -158,6 +160,7 @@ namespace RD_AAOW
 
 			KKTListForManuals.Items.AddRange (kb.UserGuides.GetKKTList ());
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
+			UserManualFlags = ca.UserManualFlags;
 
 			if (ca.AllowExtendedFunctionsLevel1)
 				OperationsListForManuals.Items.AddRange (UserManuals.OperationTypes);
@@ -335,7 +338,8 @@ namespace RD_AAOW
 			ca.ErrorCode = ErrorSearchText.Text;
 
 			ca.FNSerial = FNLifeSN.Text;
-			ca.GenericTaxFlag = GenericTaxFlag.Checked;
+			ca.FNLifeEvFlags = FNLifeEvFlags;
+			/*ca.GenericTaxFlag = GenericTaxFlag.Checked;
 			ca.GoodsFlag = GoodsFlag.Checked;
 			ca.SeasonFlag = SeasonFlag.Checked;
 			ca.AgentsFlag = AgentsFlag.Checked;
@@ -344,7 +348,7 @@ namespace RD_AAOW
 			ca.FFD12Flag = FFD12Flag.Checked;
 			ca.GamblingLotteryFlag = GamblingLotteryFlag.Checked;
 			ca.PawnInsuranceFlag = PawnInsuranceFlag.Checked;
-			ca.MarkGoodsFlag = MarkGoodsFlag.Checked;
+			ca.MarkGoodsFlag = MarkGoodsFlag.Checked;*/
 
 			ca.KKTSerial = RNMSerial.Text;
 			ca.UserINN = RNMUserINN.Text;
@@ -369,6 +373,7 @@ namespace RD_AAOW
 
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
+			ca.UserManualFlags = UserManualFlags;
 			ca.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;
 
 			ca.ConversionNumber = ConvNumber.Text;
@@ -724,7 +729,7 @@ namespace RD_AAOW
 		// Изменение параметров, влияющих на срок жизни ФН
 		private void FNLifeStartDate_ValueChanged (object sender, EventArgs e)
 			{
-			fnlf.FN15 = FNLife13.Checked;
+			/*fnlf.FN15 = FNLife13.Checked;
 			fnlf.FNExactly13 = FNLifeName.Text.Contains ("(13)");
 			fnlf.GenericTax = GenericTaxFlag.Checked;
 			fnlf.Goods = GoodsFlag.Checked;
@@ -738,9 +743,9 @@ namespace RD_AAOW
 			fnlf.MarkGoods = MarkGoodsFlag.Checked;
 
 			fnlf.MarkFN = FNLife13.Enabled && FNLife36.Enabled || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text);
-			// Корректный ЗН ФН
+			// Корректный ЗН ФН*/
 
-			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, fnlf);
+			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLifeEvFlags);
 
 			FNLifeResult.Text = "ФН прекратит работу ";
 			if (res.StartsWith (KKTSupport.FNLifeInacceptableSign))
@@ -766,7 +771,7 @@ namespace RD_AAOW
 
 			if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН
 				{
-				if (!fnlf.MarkFN)
+				if (!KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
@@ -808,6 +813,53 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				FNFindSN_Click (null, null);
+			}
+
+		/// <summary>
+		/// Возвращает или задаёт состав флагов для расчёта срока жизни ФН
+		/// </summary>
+		private FNLifeFlags FNLifeEvFlags
+			{
+			get
+				{
+				FNLifeFlags flags = KKTSupport.SetFlag (0, FNLifeFlags.FN15, FNLife13.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13, FNLifeName.Text.Contains ("(13)"));
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.GenericTax, GenericTaxFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Goods, GoodsFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Season, SeasonFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Agents, AgentsFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Excise, ExciseFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Autonomous, AutonomousFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FFD12, FFD12Flag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.GamblingAndLotteries, GamblingLotteryFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.PawnsAndInsurance, PawnInsuranceFlag.Checked);
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkGoods, MarkGoodsFlag.Checked);
+
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkFN,
+					FNLife13.Enabled && FNLife36.Enabled || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text));
+				// Признак распознанного ЗН ФН
+
+				return flags;
+				}
+			set
+				{
+				FNLife13.Checked = KKTSupport.IsSet (value, FNLifeFlags.FN15);
+				FNLife36.Checked = !FNLife13.Checked;
+				// .Exactly13 – вспомогательный нехранимый флаг
+				GenericTaxFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.GenericTax);
+				OtherTaxFlag.Checked = !GenericTaxFlag.Checked;
+				GoodsFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Goods);
+				ServicesFlag.Checked = !GoodsFlag.Checked;
+				SeasonFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Season);
+				AgentsFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Agents);
+				ExciseFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Excise);
+				AutonomousFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Autonomous);
+				FFD12Flag.Checked = KKTSupport.IsSet (value, FNLifeFlags.FFD12);
+				GamblingLotteryFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.GamblingAndLotteries);
+				PawnInsuranceFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.PawnsAndInsurance);
+				MarkGoodsFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.MarkGoods);
+				// .MarkFN – вспомогательный нехранимый флаг
+				}
 			}
 
 		#endregion
@@ -1053,21 +1105,29 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Возвращает состав флагов для руководства пользователя
+		/// Возвращает или задаёт состав флагов для руководства пользователя
 		/// </summary>
 		private UserManualsFlags UserManualFlags
 			{
 			get
 				{
-				UserManualsFlags flags = 0;
-				if (MoreThanOneItemPerDocument.Checked)
-					flags |= UserManualsFlags.MoreThanOneItemPerDocument;
-				if (ProductBaseContainsPrices.Checked)
-					flags |= UserManualsFlags.ProductBaseContainsPrices;
-				if (CashiersHavePasswords.Checked)
-					flags |= UserManualsFlags.CashiersHavePasswords;
+				UserManualsFlags flags = KKTSupport.SetFlag (0, UserManualsFlags.MoreThanOneItemPerDocument,
+					MoreThanOneItemPerDocument.Checked);
+				flags = KKTSupport.SetFlag (flags, UserManualsFlags.ProductBaseContainsPrices,
+					ProductBaseContainsPrices.Checked);
+				flags = KKTSupport.SetFlag (flags, UserManualsFlags.CashiersHavePasswords,
+					CashiersHavePasswords.Checked);
 
 				return flags;
+				}
+			set
+				{
+				MoreThanOneItemPerDocument.Checked = KKTSupport.IsSet (value,
+					UserManualsFlags.MoreThanOneItemPerDocument);
+				ProductBaseContainsPrices.Checked = KKTSupport.IsSet (value,
+					UserManualsFlags.ProductBaseContainsPrices);
+				CashiersHavePasswords.Checked = KKTSupport.IsSet (value,
+					UserManualsFlags.CashiersHavePasswords);
 				}
 			}
 

@@ -207,7 +207,8 @@ namespace RD_AAOW
 			string text = operations[(int)ManualType][(int)KKTType];
 			if ((ManualType >= 1) && (ManualType <= 4))
 				{
-				if ((Flags & UserManualsFlags.MoreThanOneItemPerDocument) != 0)
+				/*if ((Flags & UserManualsFlags.MoreThanOneItemPerDocument) != 0)*/
+				if (KKTSupport.IsSet (Flags, UserManualsFlags.MoreThanOneItemPerDocument))
 					{
 					text = text.Replace ("#1", "↑ (повторить предыдущие действия для всех товаров / услуг в чеке);"
 						+ Localization.RN);
@@ -217,7 +218,8 @@ namespace RD_AAOW
 					text = text.Replace ("#1", "");
 					}
 
-				if ((Flags & UserManualsFlags.ProductBaseContainsPrices) != 0)
+				/*if ((Flags & UserManualsFlags.ProductBaseContainsPrices) != 0)*/
+				if (KKTSupport.IsSet (Flags, UserManualsFlags.ProductBaseContainsPrices))
 					{
 					int left = text.IndexOf ("#3");
 					if (left >= 0)
@@ -233,7 +235,8 @@ namespace RD_AAOW
 					}
 				}
 
-			if ((Flags & UserManualsFlags.CashiersHavePasswords) != 0)
+			/*if ((Flags & UserManualsFlags.CashiersHavePasswords) != 0)*/
+			if (KKTSupport.IsSet (Flags, UserManualsFlags.CashiersHavePasswords))
 				{
 				text = text.Replace ("#4", "ввести пароль кассира, если он задан, ");
 				text = text.Replace ("#5", "Ввести пароль кассира в случае запроса;" + Localization.RN + "• ");
@@ -245,31 +248,5 @@ namespace RD_AAOW
 
 			return text;
 			}
-		}
-
-	/// <summary>
-	/// Доступные настроечные флаги для руководств пользователя
-	/// </summary>
-	public enum UserManualsFlags
-		{
-		/// <summary>
-		/// Кассиры работают с паролями
-		/// </summary>
-		CashiersHavePasswords = 0x01,
-
-		/// <summary>
-		/// В чеках может быть более одной позиции
-		/// </summary>
-		MoreThanOneItemPerDocument = 0x02,
-
-		/// <summary>
-		/// База товаров содержит цены
-		/// </summary>
-		ProductBaseContainsPrices = 0x04,
-
-		/// <summary>
-		/// Руководство для кассира
-		/// </summary>
-		GuideForCashier = 0x80,
 		}
 	}
