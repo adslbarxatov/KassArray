@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace RD_AAOW
@@ -16,7 +15,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает список операций, для которых доступны инструкции
 		/// </summary>
-		public static string[] OperationTypes2
+		public static string[] OperationTypes
 			{
 			get
 				{
@@ -27,7 +26,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает список операций, допустимых для кассира (неспециалиста)
 		/// </summary>
-		public static string[] OperationsForCashiers2
+		public static string[] OperationsForCashiers
 			{
 			get
 				{
@@ -95,43 +94,87 @@ namespace RD_AAOW
 					{
 					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", Localization.RN + "• "));
 
-					if ((i >= 1) && (i < 3))
-						operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&",
-							"Повторить предыдущие действия для всех позиций чека");
-					if ((i >= 3) && (i <= 4))
-						operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&",
-							"Повторить предыдущие действия для всех позиций чека;" + Localization.RN +
-							"• Закрыть чек согласно способу оплаты");
-					if (i == 6)
-						operations[i][operations[i].Count - 1] +=
-							";" + Localization.RN + "• Дальнейшие действия совпадают с действиями при продаже";
-					if (i == 7)
-						operations[i][operations[i].Count - 1] += ";" + Localization.RN +
-							"• Дождаться снятия отчёта";
-					if ((i >= 8) && (i <= 9))
-						operations[i][operations[i].Count - 1] =
-							"• Настоятельно рекомендуется предварительно закрыть смену;" + Localization.RN +
-							operations[i][operations[i].Count - 1];
-					if (i == 14)
+					switch (i)
 						{
-						operations[i][operations[i].Count - 1] =
-							"• Убедиться, что сохранены все необходимые настройки;" + Localization.RN +
-							operations[i][operations[i].Count - 1];
-						}
-					if (i == 15)
-						{
-						operations[i][operations[i].Count - 1] =
-							"• Убедиться, что смена закрыта, а дата в ККТ позволяет выполнить закрытие архива;" +
-							Localization.RN + operations[i][operations[i].Count - 1] +
-							";" + Localization.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
+						case 1:
+						case 2:
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("• &1", "#1• ");
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("&2",
+								"Ввести код товара / услуги");
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("&02",
+								"ввести код товара / услуги");
+							break;
+
+						case 3:
+						case 4:
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("• &1",
+								"#1• Закрыть чек согласно способу оплаты");
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("&2",
+								"Ввести код товара / услуги");
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("&02",
+								"ввести код товара / услуги");
+							operations[i][operations[i].Count - 1] =
+								operations[i][operations[i].Count - 1].Replace ("&3",
+								"Отсканировать штрих-код товара");
+							break;
+
+						case 6:
+							operations[i][operations[i].Count - 1] +=
+								";" + Localization.RN + "• Дальнейшие действия совпадают с действиями при продаже";
+							break;
+
+						case 7:
+							operations[i][operations[i].Count - 1] += ";" + Localization.RN + "• Дождаться снятия отчёта";
+							break;
+
+						case 8:
+						case 9:
+							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
+								operations[i][operations[i].Count - 1] =
+									"! Необходимо предварительно закрыть смену;" + Localization.RN +
+									operations[i][operations[i].Count - 1];
+							break;
+
+						case 14:
+							operations[i][operations[i].Count - 1] =
+								"! Необходимо убедиться, что сохранены все важные настройки;" + Localization.RN +
+								operations[i][operations[i].Count - 1];
+							break;
+
+						case 15:
+							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
+								operations[i][operations[i].Count - 1] =
+									"! Необходимо убедиться, что смена закрыта, а дата в ККТ позволяет закрыть архив;" +
+									Localization.RN + operations[i][operations[i].Count - 1] +
+									";" + Localization.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
+							break;
 						}
 
+					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&4",
+						"несколько раз до отображения");
+					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("• &5",
+						"! (выполняется от имени");
+					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&[",
+						"Нажать [");
+					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&0[",
+						"нажать [");
+					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&7",
+						"#4");
+					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&8",
+						"#5");
+
+					if (operations[i][operations[i].Count - 1].Contains ("&6"))
+						operations[i][operations[i].Count - 1] =
+						operations[i][operations[i].Count - 1].Replace ("&6", "") +
+							Localization.RNRN + "* Порядок действий может отличаться в разных версиях прошивок";
 					if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 						operations[i][operations[i].Count - 1] = "(не предусмотрено)";
-					if (operations[i][operations[i].Count - 1].Contains ("#"))
-						operations[i][operations[i].Count - 1] =
-							operations[i][operations[i].Count - 1].Replace ("#", "") + Localization.RNRN +
-							"* Порядок действий может отличаться в разных версиях прошивок";
 					}
 				}
 
@@ -152,15 +195,81 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="KKTType">Тип ККТ</param>
 		/// <param name="ManualType">Операция</param>
-		public string GetManual (uint KKTType, uint ManualType)
+		/// <param name="Flags">Флаги, определающие состав руководства</param>
+		public string GetManual (uint KKTType, uint ManualType, UserManualsFlags Flags)
 			{
 			if (KKTType >= names.Count)
 				return "";
 
-			if (ManualType < operationTypes.Length)
-				return operations[(int)ManualType][(int)KKTType];
+			if (ManualType >= operationTypes.Length)
+				return names[(int)KKTType];
 
-			return names[(int)KKTType];
+			string text = operations[(int)ManualType][(int)KKTType];
+			if ((ManualType >= 1) && (ManualType <= 4))
+				{
+				if ((Flags & UserManualsFlags.MoreThanOneItemPerDocument) != 0)
+					{
+					text = text.Replace ("#1", "↑ (повторить предыдущие действия для всех товаров / услуг в чеке);"
+						+ Localization.RN);
+					}
+				else
+					{
+					text = text.Replace ("#1", "");
+					}
+
+				if ((Flags & UserManualsFlags.ProductBaseContainsPrices) != 0)
+					{
+					int left = text.IndexOf ("#3");
+					if (left >= 0)
+						{
+						int right = text.IndexOf (Localization.RN, left);
+						if (right >= 0)
+							text = text.Substring (0, left - 2) + text.Substring (right + Localization.RN.Length);
+						}
+					}
+				else
+					{
+					text = text.Replace ("#3", "");
+					}
+				}
+
+			if ((Flags & UserManualsFlags.CashiersHavePasswords) != 0)
+				{
+				text = text.Replace ("#4", "ввести пароль кассира, если он задан, ");
+				text = text.Replace ("#5", "Ввести пароль кассира в случае запроса;" + Localization.RN + "• ");
+				}
+			else
+				{
+				text = text.Replace ("#4", "").Replace ("#5", "");
+				}
+
+			return text;
 			}
+		}
+
+	/// <summary>
+	/// Доступные настроечные флаги для руководств пользователя
+	/// </summary>
+	public enum UserManualsFlags
+		{
+		/// <summary>
+		/// Кассиры работают с паролями
+		/// </summary>
+		CashiersHavePasswords = 0x01,
+
+		/// <summary>
+		/// В чеках может быть более одной позиции
+		/// </summary>
+		MoreThanOneItemPerDocument = 0x02,
+
+		/// <summary>
+		/// База товаров содержит цены
+		/// </summary>
+		ProductBaseContainsPrices = 0x04,
+
+		/// <summary>
+		/// Руководство для кассира
+		/// </summary>
+		GuideForCashier = 0x80,
 		}
 	}

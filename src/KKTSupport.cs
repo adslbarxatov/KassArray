@@ -8,9 +8,9 @@ using System.IO;
 	using Android.Print.Pdf;
 	using Android.Runtime;
 #else
-	using System.Drawing;
-	using System.Drawing.Printing;
-	using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Windows.Forms;
 #endif
 
 namespace RD_AAOW
@@ -918,7 +918,7 @@ namespace RD_AAOW
 					printFont = new Font ("Consolas", 9, FontStyle.Bold);
 					charactersPerLine = ManualA4CharPerLine;
 					leftMargin = topMargin = 70;
-					linesPerPage = ev.MarginBounds.Height / printFont.GetHeight (ev.Graphics);
+					linesPerPage = ev.MarginBounds.Height / printFont.GetHeight (ev.Graphics) + 1;
 					break;
 
 				case PrinterTypes.Receipt80mm:
@@ -1003,22 +1003,23 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="Manuals">Активный экземпляр оператора руководств ККТ</param>
 		/// <param name="ManualNumber">Номер руководства</param>
-		/// <param name="ForCashier">Флаг указывает на сокращённый вариант руководства (для кассира)</param>
+		/// <param name="Flags">Флаги формирования руководства</param>
 		/// <param name="CA">Объект-оператор настроек пользователя</param>
 		/// <returns>Возвращает инструкцию пользователя</returns>
 		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, ConfigAccessor CA,
-			bool ForCashier)
+			UserManualsFlags Flags)
 			{
+			bool forCashier = (Flags & UserManualsFlags.GuideForCashier) != 0;
 			string text = "Инструкция к ККТ " + Manuals.GetKKTList ()[(int)ManualNumber] +
-				" (" + (ForCashier ? "для кассиров" : "полная") + ")";
+				" (" + (forCashier ? "для кассиров" : "полная") + ")";
 			text = text.PadLeft ((ManualA4CharPerLine - text.Length) / 2 + text.Length);
 
 			string tmp = "(<> – индикация на дисплее, [] – кнопки клавиатуры)";
 			tmp = tmp.PadLeft ((ManualA4CharPerLine - tmp.Length) / 2 + tmp.Length);
 			text += (Localization.RN + tmp);
 
-			string[] operations = UserManuals.OperationTypes2;
-			uint operationsCount = ForCashier ? (uint)UserManuals.OperationsForCashiers2.Length :
+			string[] operations = UserManuals.OperationTypes;
+			uint operationsCount = forCashier ? (uint)UserManuals.OperationsForCashiers.Length :
 				(uint)operations.Length;
 
 			for (int i = 0; i < operationsCount; i++)
@@ -1027,7 +1028,7 @@ namespace RD_AAOW
 					continue;
 
 				text += ((i != 0 ? Localization.RN : "") + Localization.RNRN + operations[i] + Localization.RNRN);
-				text += Manuals.GetManual (ManualNumber, (uint)i);
+				text += Manuals.GetManual (ManualNumber, (uint)i, Flags);
 				}
 
 			return text;

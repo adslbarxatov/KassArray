@@ -14,17 +14,7 @@ namespace RD_AAOW
 	public partial class TextToKKTForm: Form
 		{
 		// Дескрипторы информационных классов
-		/*private KKTCodes kkmc = null;
-		private KKTErrorsList kkme = null;
-		private OFD ofd = null;
-		private LowLevel ll = null;
-		private UserManuals um = null;*/
 		private ConfigAccessor ca = null;
-		/*private KKTSerial kkts = null;
-		private FNSerial fns = null;
-		private TLVTags tlvt = null;
-		private BarCodes barc = null;
-		private Connectors conn = null;*/
 		private KnowledgeBase kb;
 
 		// Дескриптор иконки в трее
@@ -67,21 +57,9 @@ namespace RD_AAOW
 			InitializeComponent ();
 			if (!Localization.IsCurrentLanguageRuRu)
 				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
+
 			ca = new ConfigAccessor ();
-
-			/* Загрузка списка кодов и ошибок
-			kkmc = new KKTCodes ();
-			kkme = new KKTErrorsList ();
-			ofd = new OFD ();
-			ll = new LowLevel ();
-			um = new UserManuals ();
-			kkts = new KKTSerial ();
-			fns = new FNSerial ();
-			tlvt = new TLVTags ();
-			barc = new BarCodes ();
-			conn = new Connectors ();*/
 			kb = new KnowledgeBase ();
-
 			hideWindow = (DumpFileForFNReader == HideWindowKey);
 
 			// Настройка контролов
@@ -182,9 +160,9 @@ namespace RD_AAOW
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
 
 			if (ca.AllowExtendedFunctionsLevel1)
-				OperationsListForManuals.Items.AddRange (UserManuals.OperationTypes2);
+				OperationsListForManuals.Items.AddRange (UserManuals.OperationTypes);
 			else
-				OperationsListForManuals.Items.AddRange (UserManuals.OperationsForCashiers2);
+				OperationsListForManuals.Items.AddRange (UserManuals.OperationsForCashiers);
 
 			try
 				{
@@ -256,9 +234,6 @@ namespace RD_AAOW
 			ni.MouseDown += ReturnWindow;
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
-			/*if (!File.Exists (RDGenerics.AutorunLinkPath))
-				ni.ContextMenu.MenuItems.Add (new MenuItem ("Добавить в &автозапуск", AddToStartup));*/
-
 			// Запуск файла дампа, если представлен
 			if (ca.AllowExtendedFunctionsLevel2 && (DumpFileForFNReader != "") && !hideWindow)
 				CallFNReader (DumpFileForFNReader);
@@ -287,16 +262,6 @@ namespace RD_AAOW
 				ca.AllowExtendedMode = false;
 				}
 			}
-
-		/* Добавление в автозапуск
-		private void AddToStartup (object sender, EventArgs e)
-			{
-			// Попытка создания
-			WindowsShortcut.CreateStartupShortcut (Application.ExecutablePath, ProgramDescription.AssemblyMainName, "");
-
-			// Контроль
-			ni.ContextMenu.MenuItems[ni.ContextMenu.MenuItems.Count - 1].Enabled = !File.Exists (RDGenerics.AutorunLinkPath);
-			}*/
 
 		// Возврат окна приложения
 		private void ReturnWindow (object sender, MouseEventArgs e)
@@ -1062,15 +1027,20 @@ namespace RD_AAOW
 			byte idx = (byte)OperationsListForManuals.SelectedIndex;
 
 			AddToPrint.Checked = ca.GetUserManualSectionState (idx);
-			UMOperationText.Text = kb.UserGuides.GetManual ((uint)KKTListForManuals.SelectedIndex, idx);
+			UMOperationText.Text = kb.UserGuides.GetManual ((uint)KKTListForManuals.SelectedIndex, idx,
+				UserManualFlags);
 			}
 
 		// Печать инструкции
 		private void PrintUserManual_Click (object sender, EventArgs e)
 			{
 			// Сборка задания на печать
-			string text = KKTSupport.BuildUserManual (kb.UserGuides, (uint)KKTListForManuals.SelectedIndex, ca,
-				((Button)sender).Name.Contains ("Cashier"));
+			UserManualsFlags flags = UserManualFlags;
+			if (((Button)sender).Name.Contains ("Cashier"))
+				flags |= UserManualsFlags.GuideForCashier;
+
+			string text = KKTSupport.BuildUserManual (kb.UserGuides, (uint)KKTListForManuals.SelectedIndex,
+				ca, flags);
 
 			// Печать
 			KKTSupport.PrintText (text, PrinterTypes.ManualA4);
@@ -1080,6 +1050,25 @@ namespace RD_AAOW
 		private void AddToPrint_CheckedChanged (object sender, EventArgs e)
 			{
 			ca.SetUserManualSectionState ((byte)OperationsListForManuals.SelectedIndex, AddToPrint.Checked);
+			}
+
+		/// <summary>
+		/// Возвращает состав флагов для руководства пользователя
+		/// </summary>
+		private UserManualsFlags UserManualFlags
+			{
+			get
+				{
+				UserManualsFlags flags = 0;
+				if (MoreThanOneItemPerDocument.Checked)
+					flags |= UserManualsFlags.MoreThanOneItemPerDocument;
+				if (ProductBaseContainsPrices.Checked)
+					flags |= UserManualsFlags.ProductBaseContainsPrices;
+				if (CashiersHavePasswords.Checked)
+					flags |= UserManualsFlags.CashiersHavePasswords;
+
+				return flags;
+				}
 			}
 
 		#endregion
