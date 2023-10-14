@@ -111,7 +111,6 @@ namespace RD_AAOW
 
 		// Опорные классы
 		private ConfigAccessor ca;
-		/*private FNLifeFlags fnlf;*/
 		private PrintManager pm;
 		private KnowledgeBase kb;
 
@@ -463,52 +462,52 @@ namespace RD_AAOW
 				ASLabelTypes.HeaderLeft);
 
 			fnLifeGenericTax = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGenericTax", true,
-				fnLifeFieldBackColor, null, false/*FnLife13_Toggled, !ca.GenericTaxFlag*/);
+				fnLifeFieldBackColor, null, false);
 			fnLifeGenericTaxLabel = AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeGenericTaxLabel",
 				"", ASLabelTypes.DefaultLeft);
 
 			fnLifeGoods = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGoods", true,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, !ca.GoodsFlag*/);
+				fnLifeFieldBackColor, null, false);
 			fnLifeGoodsLabel = AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeGoodsLabel",
 				"", ASLabelTypes.DefaultLeft);
 
 			fnLifeSeason = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeSeason", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.SeasonFlag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeSeasonLabel", "Сезонная торговля",
 				ASLabelTypes.DefaultLeft);
 
 			fnLifeAgents = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeAgents", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.AgentsFlag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeAgentsLabel", "Платёжный (суб)агент",
 				ASLabelTypes.DefaultLeft);
 
 			fnLifeExcise = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeExcise", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.ExciseFlag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeExciseLabel", "Подакцизные товары",
 				ASLabelTypes.DefaultLeft);
 
 			fnLifeAutonomous = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeAutonomous", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.AutonomousFlag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим",
 				ASLabelTypes.DefaultLeft);
 
 			fnLifeFFD12 = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeFFD12", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.FFD12Flag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeFFD12Label", "ФФД 1.1, 1.2",
 				ASLabelTypes.DefaultLeft);
 
 			fnLifeGambling = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGambling", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.GamblingLotteryFlag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeGamblingLabel", "Азартные игры и лотереи",
 				ASLabelTypes.DefaultLeft);
 
 			fnLifePawn = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifePawn", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.PawnInsuranceFlag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifePawnLabel", "Ломбарды и страхование",
 				ASLabelTypes.DefaultLeft);
 
 			fnLifeMarkGoods = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeMarkGoods", false,
-				fnLifeFieldBackColor, null, false /*FnLife13_Toggled, ca.MarkGoodsFlag*/);
+				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeMarkGoodsLabel", "Маркированные товары",
 				ASLabelTypes.DefaultLeft);
 
@@ -1078,16 +1077,6 @@ namespace RD_AAOW
 			// ca.ErrorCode		// -||-
 
 			ca.FNSerial = fnLifeSerial.Text;
-			/*ca.GenericTaxFlag = !fnLifeGenericTax.IsToggled;
-			ca.GoodsFlag = !fnLifeGoods.IsToggled;
-			ca.SeasonFlag = fnLifeSeason.IsToggled;
-			ca.AgentsFlag = fnLifeAgents.IsToggled;
-			ca.ExciseFlag = fnLifeExcise.IsToggled;
-			ca.AutonomousFlag = fnLifeAutonomous.IsToggled;
-			ca.FFD12Flag = fnLifeFFD12.IsToggled;
-			ca.GamblingLotteryFlag = fnLifeGambling.IsToggled;
-			ca.PawnInsuranceFlag = fnLifePawn.IsToggled;
-			ca.MarkGoodsFlag = fnLifeMarkGoods.IsToggled;*/
 			ca.FNLifeEvFlags = FNLifeEvFlags;
 
 			ca.KKTSerial = rnmKKTSN.Text;
@@ -1387,23 +1376,7 @@ namespace RD_AAOW
 				fnLifeGoodsLabel.Text = "товары";
 
 			// Расчёт срока
-			/*fnlf.FN15 = !fnLife13.IsToggled;
-			fnlf.FNExactly13 = fnLifeModelLabel.Text.Contains ("(13)");
-			fnlf.GenericTax = !fnLifeGenericTax.IsToggled;
-			fnlf.Goods = !fnLifeGoods.IsToggled;
-			fnlf.Season = fnLifeSeason.IsToggled;
-			fnlf.Agents = fnLifeAgents.IsToggled;
-			fnlf.Excise = fnLifeExcise.IsToggled;
-			fnlf.Autonomous = fnLifeAutonomous.IsToggled;
-			fnlf.FFD12 = fnLifeFFD12.IsToggled;
-			fnlf.GamblingAndLotteries = fnLifeGambling.IsToggled;
-			fnlf.PawnsAndInsurance = fnLifePawn.IsToggled;
-			fnlf.MarkGoods = fnLifeMarkGoods.IsToggled;
-
-			fnlf.MarkFN = fnLife13.IsEnabled || kb.FNNumbers.IsFNCompatibleWithFFD12 (fnLifeSerial.Text);
-			// Признак распознанного ЗН ФН*/
-
-			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, FNLifeEvFlags /*fnlf*/);
+			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, FNLifeEvFlags);
 
 			fnLifeResult.Text = "ФН прекратит работу ";
 			if (res.Contains (KKTSupport.FNLifeInacceptableSign))
@@ -1429,7 +1402,7 @@ namespace RD_AAOW
 
 			if (!fnLife13.IsEnabled) // Признак корректно заданного ЗН ФН
 				{
-				if (!/*fnlf.MarkFN*/ KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))
+				if (!KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))
 					{
 					fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 
@@ -1793,13 +1766,6 @@ namespace RD_AAOW
 			{
 			get
 				{
-				/*UserManualsFlags flags = 0;
-				if (moreThanOneItemPerDocument.IsToggled)
-					flags |= UserManualsFlags.MoreThanOneItemPerDocument;
-				if (productBaseContainsPrices.IsToggled)
-					flags |= UserManualsFlags.ProductBaseContainsPrices;
-				if (cashiersHavePasswords.IsToggled)
-					flags |= UserManualsFlags.CashiersHavePasswords;*/
 				UserManualsFlags flags = KKTSupport.SetFlag (0, UserManualsFlags.MoreThanOneItemPerDocument,
 					moreThanOneItemPerDocument.IsToggled);
 				flags = KKTSupport.SetFlag (flags, UserManualsFlags.ProductBaseContainsPrices,
@@ -1811,9 +1777,6 @@ namespace RD_AAOW
 				}
 			set
 				{
-				/*moreThanOneItemPerDocument.IsToggled = (value & UserManualsFlags.MoreThanOneItemPerDocument) != 0;
-				productBaseContainsPrices.IsToggled = (value & UserManualsFlags.ProductBaseContainsPrices) != 0;
-				cashiersHavePasswords.IsToggled = (value & UserManualsFlags.CashiersHavePasswords) != 0;*/
 				moreThanOneItemPerDocument.IsToggled = KKTSupport.IsSet (value,
 					UserManualsFlags.MoreThanOneItemPerDocument);
 				productBaseContainsPrices.IsToggled = KKTSupport.IsSet (value,
