@@ -207,7 +207,6 @@ namespace RD_AAOW
 			string text = operations[(int)ManualType][(int)KKTType];
 			if ((ManualType >= 1) && (ManualType <= 4))
 				{
-				/*if ((Flags & UserManualsFlags.MoreThanOneItemPerDocument) != 0)*/
 				if (KKTSupport.IsSet (Flags, UserManualsFlags.MoreThanOneItemPerDocument))
 					{
 					text = text.Replace ("#1", "↑ (повторить предыдущие действия для всех товаров / услуг в чеке);"
@@ -218,7 +217,6 @@ namespace RD_AAOW
 					text = text.Replace ("#1", "");
 					}
 
-				/*if ((Flags & UserManualsFlags.ProductBaseContainsPrices) != 0)*/
 				if (KKTSupport.IsSet (Flags, UserManualsFlags.ProductBaseContainsPrices))
 					{
 					int left = text.IndexOf ("#3");
@@ -235,7 +233,6 @@ namespace RD_AAOW
 					}
 				}
 
-			/*if ((Flags & UserManualsFlags.CashiersHavePasswords) != 0)*/
 			if (KKTSupport.IsSet (Flags, UserManualsFlags.CashiersHavePasswords))
 				{
 				text = text.Replace ("#4", "ввести пароль кассира, если он задан, ");

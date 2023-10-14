@@ -137,14 +137,8 @@ namespace RD_AAOW
 		/// указанной модели с заданными параметрами</returns>
 		public static string GetFNLifeEndDate (DateTime StartDate, FNLifeFlags Flags)
 			{
-			string res = "";
-
 			// Определение недопустимых вариантов
-			/*if (Flags.GenericTax && !Flags.FN15 && Flags.Goods ||   // Нельзя игнорировать
-				Flags.FFD12 && !Flags.MarkFN ||                     // Невозможные варианты
-				!Flags.Goods && (Flags.Excise || Flags.MarkGoods) ||
-				Flags.Goods && Flags.GamblingAndLotteries ||
-				Flags.MarkGoods && !Flags.FFD12)*/
+			string res = "";
 
 			// Нельзя игнорировать
 			if (IsSet (Flags, FNLifeFlags.GenericTax) && !IsSet (Flags, FNLifeFlags.FN15) &&
@@ -164,8 +158,6 @@ namespace RD_AAOW
 				}
 
 			// Определение нежелательных вариантов
-			/*else if (!Flags.GenericTax && Flags.FN15 &&
-				!Flags.Season && !Flags.Agents && !Flags.Excise && !Flags.Autonomous)*/
 			else if (!IsSet (Flags, FNLifeFlags.GenericTax) && IsSet (Flags, FNLifeFlags.FN15) &&
 				!IsSet (Flags, FNLifeFlags.Season) && !IsSet (Flags, FNLifeFlags.Agents) &&
 				!IsSet (Flags, FNLifeFlags.Excise) && !IsSet (Flags, FNLifeFlags.Autonomous))
@@ -182,17 +174,12 @@ namespace RD_AAOW
 			// Определение срока жизни
 			uint length = 1110u;
 
-			/*if ((Flags.GamblingAndLotteries || Flags.PawnsAndInsurance) && Flags.FFD12 && Flags.FN15 ||
-				Flags.Excise && Flags.MarkFN)   // ??? Все М-модели или только запущенные под ФФД 1.2 ???*/
 			if ((IsSet (Flags, FNLifeFlags.GamblingAndLotteries) || IsSet (Flags, FNLifeFlags.PawnsAndInsurance)) &&
 				IsSet (Flags, FNLifeFlags.FFD12) && IsSet (Flags, FNLifeFlags.FN15) ||
-				IsSet (Flags, FNLifeFlags.Excise) && IsSet (Flags, FNLifeFlags.MarkFN))
+				IsSet (Flags, FNLifeFlags.Excise) && IsSet (Flags, FNLifeFlags.FFD12))
 				{
 				length = 410u;
 				}
-
-			/*	else if (Flags.Autonomous)
-				if (Flags.FN15 || Flags.FFD12 && Flags.Goods && Flags.GenericTax)*/
 
 			else if (IsSet (Flags, FNLifeFlags.Autonomous))
 				{
@@ -203,8 +190,6 @@ namespace RD_AAOW
 					length = 560u;
 				}
 
-			/*	else if (!Flags.FN15 && Flags.GenericTax && (Flags.Goods ||
-				Flags.Agents && Flags.FFD12))*/
 			else if (!IsSet (Flags, FNLifeFlags.FN15) && IsSet (Flags, FNLifeFlags.GenericTax) &&
 				(IsSet (Flags, FNLifeFlags.Goods) || IsSet (Flags, FNLifeFlags.Agents) &&
 				IsSet (Flags, FNLifeFlags.FFD12)))

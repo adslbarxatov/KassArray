@@ -20,9 +20,6 @@ namespace RD_AAOW
 		// Дескриптор иконки в трее
 		private NotifyIcon ni = new NotifyIcon ();
 
-		/* Параметры вычисления срока жизни ФН
-		private FNLifeFlags fnlf;*/
-
 		// Рассчитанный срок жизни ФН
 		private string fnLifeResult = "";
 
@@ -115,23 +112,6 @@ namespace RD_AAOW
 
 			FNLifeSN.Text = ca.FNSerial;
 			FNLifeEvFlags = ca.FNLifeEvFlags;
-
-			/*if (ca.GenericTaxFlag)
-				GenericTaxFlag.Checked = true;
-			else
-				OtherTaxFlag.Checked = true;
-			if (ca.GoodsFlag)
-				GoodsFlag.Checked = true;
-			else
-				ServicesFlag.Checked = true;
-			SeasonFlag.Checked = ca.SeasonFlag;
-			AgentsFlag.Checked = ca.AgentsFlag;
-			ExciseFlag.Checked = ca.ExciseFlag;
-			AutonomousFlag.Checked = ca.AutonomousFlag;
-			FFD12Flag.Checked = ca.FFD12Flag;
-			GamblingLotteryFlag.Checked = ca.GamblingLotteryFlag;
-			PawnInsuranceFlag.Checked = ca.PawnInsuranceFlag;
-			MarkGoodsFlag.Checked = ca.MarkGoodsFlag;*/
 
 			RNMSerial.MaxLength = (int)kb.KKTNumbers.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
@@ -339,16 +319,6 @@ namespace RD_AAOW
 
 			ca.FNSerial = FNLifeSN.Text;
 			ca.FNLifeEvFlags = FNLifeEvFlags;
-			/*ca.GenericTaxFlag = GenericTaxFlag.Checked;
-			ca.GoodsFlag = GoodsFlag.Checked;
-			ca.SeasonFlag = SeasonFlag.Checked;
-			ca.AgentsFlag = AgentsFlag.Checked;
-			ca.ExciseFlag = ExciseFlag.Checked;
-			ca.AutonomousFlag = AutonomousFlag.Checked;
-			ca.FFD12Flag = FFD12Flag.Checked;
-			ca.GamblingLotteryFlag = GamblingLotteryFlag.Checked;
-			ca.PawnInsuranceFlag = PawnInsuranceFlag.Checked;
-			ca.MarkGoodsFlag = MarkGoodsFlag.Checked;*/
 
 			ca.KKTSerial = RNMSerial.Text;
 			ca.UserINN = RNMUserINN.Text;
@@ -729,22 +699,6 @@ namespace RD_AAOW
 		// Изменение параметров, влияющих на срок жизни ФН
 		private void FNLifeStartDate_ValueChanged (object sender, EventArgs e)
 			{
-			/*fnlf.FN15 = FNLife13.Checked;
-			fnlf.FNExactly13 = FNLifeName.Text.Contains ("(13)");
-			fnlf.GenericTax = GenericTaxFlag.Checked;
-			fnlf.Goods = GoodsFlag.Checked;
-			fnlf.Season = SeasonFlag.Checked;
-			fnlf.Agents = AgentsFlag.Checked;
-			fnlf.Excise = ExciseFlag.Checked;
-			fnlf.Autonomous = AutonomousFlag.Checked;
-			fnlf.FFD12 = FFD12Flag.Checked;
-			fnlf.GamblingAndLotteries = GamblingLotteryFlag.Checked;
-			fnlf.PawnsAndInsurance = PawnInsuranceFlag.Checked;
-			fnlf.MarkGoods = MarkGoodsFlag.Checked;
-
-			fnlf.MarkFN = FNLife13.Enabled && FNLife36.Enabled || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text);
-			// Корректный ЗН ФН*/
-
 			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLifeEvFlags);
 
 			FNLifeResult.Text = "ФН прекратит работу ";
