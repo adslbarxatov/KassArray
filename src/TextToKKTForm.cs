@@ -666,30 +666,41 @@ namespace RD_AAOW
 		private void FNLifeSN_TextChanged (object sender, EventArgs e)
 			{
 			// Получение описания
-			if (FNLifeSN.Text != "")
+			if (!string.IsNullOrWhiteSpace (FNLifeSN.Text))
 				FNLifeName.Text = kb.FNNumbers.GetFNName (FNLifeSN.Text);
 			else
 				FNLifeName.Text = "(введите ЗН ФН)";
 
 			// Определение длины ключа
-			if (FNLifeName.Text.Contains ("(13)") || FNLifeName.Text.Contains ("(15)"))
+			/*if (FNLifeName.Text.Contains ("(13)") || FNLifeName.Text.Contains ("(15)"))*/
+			if (!kb.FNNumbers.IsFNKnown (FNLifeSN.Text))
 				{
-				FNLife36.Enabled = false;
-				FNLife13.Checked = true;
+				FNLife36.Enabled = FNLife13.Enabled = true;
 				}
 			else
 				{
-				FNLife36.Enabled = true;
-				}
+				if (kb.FNNumbers.IsNotFor36Months (FNLifeSN.Text))
+					{
+					FNLife13.Enabled = true;
+					FNLife13.Checked = true;
+					FNLife36.Enabled = false;
+					}
+				/*else
+					{
+					FNLife36.Enabled = true;
+					}
 
-			if (FNLifeName.Text.Contains ("(36)"))
-				{
-				FNLife13.Enabled = false;
-				FNLife36.Checked = true;
-				}
-			else
-				{
-				FNLife13.Enabled = true;
+				if (FNLifeName.Text.Contains ("(36)"))*/
+				else
+					{
+					FNLife36.Enabled = true;
+					FNLife36.Checked = true;
+					FNLife13.Enabled = false;
+					}
+				/*else
+					{
+					FNLife13.Enabled = true;
+					}*/
 				}
 
 			// Принудительное изменение
@@ -723,9 +734,11 @@ namespace RD_AAOW
 				FNLifeResult.Text += res;
 				}
 
-			if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН
+			/*if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН*/
+			if (kb.FNNumbers.IsFNKnown (FNLifeSN.Text))
 				{
-				if (!KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))
+				/*if (!KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))*/
+				if (!kb.FNNumbers.IsFNAllowed (FNLifeSN.Text))
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
@@ -777,7 +790,8 @@ namespace RD_AAOW
 			get
 				{
 				FNLifeFlags flags = KKTSupport.SetFlag (0, FNLifeFlags.FN15, FNLife13.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13, FNLifeName.Text.Contains ("(13)"));
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13, /*FNLifeName.Text.Contains ("(13)")*/
+					kb.FNNumbers.IsFNExactly13 (FNLifeSN.Text));
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.GenericTax, GenericTaxFlag.Checked);
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Goods, GoodsFlag.Checked);
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Season, SeasonFlag.Checked);
@@ -790,7 +804,8 @@ namespace RD_AAOW
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkGoods, MarkGoodsFlag.Checked);
 
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkFN,
-					FNLife13.Enabled && FNLife36.Enabled || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text));
+					/*FNLife13.Enabled && FNLife36.Enabled*/ !kb.FNNumbers.IsFNKnown (FNLifeSN.Text) ||
+					kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text));
 				// Признак распознанного ЗН ФН
 
 				return flags;

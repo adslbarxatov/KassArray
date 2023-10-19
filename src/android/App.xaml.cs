@@ -1326,13 +1326,14 @@ namespace RD_AAOW
 		private void FNLifeSerial_TextChanged (object sender, TextChangedEventArgs e)
 			{
 			// Получение описания
-			if (fnLifeSerial.Text != "")
+			/*if (fnLifeSerial.Text != "")*/
+			if (!string.IsNullOrWhiteSpace (fnLifeSerial.Text))
 				fnLifeModelLabel.Text = kb.FNNumbers.GetFNName (fnLifeSerial.Text);
 			else
 				fnLifeModelLabel.Text = "(введите ЗН ФН)";
 
 			// Определение длины ключа
-			if (fnLifeModelLabel.Text.Contains ("(13)") || fnLifeModelLabel.Text.Contains ("(15)"))
+			/*if (fnLifeModelLabel.Text.Contains ("(13)") || fnLifeModelLabel.Text.Contains ("(15)"))
 				{
 				fnLife13.IsToggled = false;
 				fnLife13.IsVisible = fnLife13.IsEnabled = false;
@@ -1345,7 +1346,9 @@ namespace RD_AAOW
 			else
 				{
 				fnLife13.IsVisible = fnLife13.IsEnabled = true;
-				}
+				}*/
+			fnLife13.IsToggled = !kb.FNNumbers.IsNotFor36Months (fnLifeSerial.Text);
+			fnLife13.IsVisible = !kb.FNNumbers.IsFNKnown (fnLifeSerial.Text);
 
 			// Принудительное изменение
 			FnLife13_Toggled (null, null);
@@ -1383,15 +1386,13 @@ namespace RD_AAOW
 				{
 				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 				fnLifeResultDate = res.Substring (1);
-				fnLifeResult.Text += (fnLifeResultDate + Localization.RN +
-					"(выбранный ФН неприменим с указанными параметрами)");
+				fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotAcceptableMessage);
 				}
 			else if (res.Contains (KKTSupport.FNLifeUnwelcomeSign))
 				{
 				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
 				fnLifeResultDate = res.Substring (1);
-				fnLifeResult.Text += (fnLifeResultDate + Localization.RN +
-					"(не рекомендуется использовать выбранный ФН с указанными параметрами)");
+				fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotRecommendedMessage);
 				}
 			else
 				{
@@ -1400,13 +1401,15 @@ namespace RD_AAOW
 				fnLifeResult.Text += res;
 				}
 
-			if (!fnLife13.IsEnabled) // Признак корректно заданного ЗН ФН
+			/*if (!fnLife13.IsEnabled) // Признак корректно заданного ЗН ФН*/
+			if (kb.FNNumbers.IsFNKnown (fnLifeSerial.Text))
 				{
-				if (!KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))
+				/*if (!KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))*/
+				if (!kb.FNNumbers.IsFNAllowed (fnLifeSerial.Text))
 					{
 					fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 
-					fnLifeResult.Text += (Localization.RN + "(выбранный ФН исключён из реестра ФНС)");
+					fnLifeResult.Text += FNSerial.FNIsNotAllowedMessage;
 					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 					}
 				else
@@ -1448,7 +1451,9 @@ namespace RD_AAOW
 			get
 				{
 				FNLifeFlags flags = KKTSupport.SetFlag (0, FNLifeFlags.FN15, !fnLife13.IsToggled);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13, fnLifeModelLabel.Text.Contains ("(13)"));
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13,
+					/*fnLifeModelLabel.Text.Contains ("(13)")*/
+					kb.FNNumbers.IsFNExactly13 (fnLifeSerial.Text));
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.GenericTax, !fnLifeGenericTax.IsToggled);
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Goods, !fnLifeGoods.IsToggled);
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Season, fnLifeSeason.IsToggled);
@@ -1461,8 +1466,8 @@ namespace RD_AAOW
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkGoods, fnLifeMarkGoods.IsToggled);
 
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkFN,
-					fnLife13.IsEnabled || kb.FNNumbers.IsFNCompatibleWithFFD12 (fnLifeSerial.Text));
-				// Признак распознанного ЗН ФН
+					/*fnLife13.IsEnabled*/ !kb.FNNumbers.IsFNKnown (fnLifeSerial.Text) ||
+					kb.FNNumbers.IsFNCompatibleWithFFD12 (fnLifeSerial.Text));
 
 				return flags;
 				}

@@ -12,6 +12,33 @@ namespace RD_AAOW
 		// Переменные
 		private List<string> names = new List<string> ();
 		private List<string> serials = new List<string> ();
+		private List<FNSerialFlags> flags = new List<FNSerialFlags> ();
+
+		/// <summary>
+		/// Флаги-описатели моделей ФН
+		/// </summary>
+		private enum FNSerialFlags
+			{
+			/// <summary>
+			/// ФН-1.1 и выше (включает замещение 13-месячных 15-месячными)
+			/// </summary>
+			FN11 = 0x01,
+
+			/// <summary>
+			/// ФН на 36 месяцев
+			/// </summary>
+			FN36 = 0x02,
+
+			/// <summary>
+			/// ФН-М (неполные 1.2)
+			/// </summary>
+			FNM = 0x04,
+
+			/// <summary>
+			/// ФН-1.2 (полные 1.2)
+			/// </summary>
+			FN12 = 0x08,
+			}
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -38,11 +65,12 @@ namespace RD_AAOW
 					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 					// Имя протокола
-					if (values.Length != 2)
+					if (values.Length != 3)
 						continue;
 
 					names.Add (values[1]);
 					serials.Add (values[0]);
+					flags.Add ((FNSerialFlags)uint.Parse (values[2], RDGenerics.HexNumberStyle));
 					}
 				}
 			catch
@@ -63,7 +91,26 @@ namespace RD_AAOW
 			{
 			for (int i = 0; i < names.Count; i++)
 				if (FNSerialNumber.StartsWith (serials[i]))
-					return names[i];
+					{
+					string res = names[i];
+					/*if ((flags[i] & FNSerialFlags.FN12) != 0)
+						res += ", 1.2";
+					else if ((flags[i] & FNSerialFlags.FNM) != 0)
+						res += ", 1.1М";
+					else if ((flags[i] & FNSerialFlags.FN11) != 0)
+						res += ", 1.1";
+					else
+						res += ", 1.0";*/
+
+					if ((flags[i] & FNSerialFlags.FN36) != 0)
+						res += ", 36";
+					else if ((flags[i] & FNSerialFlags.FN11) != 0)
+						res += ", 15";
+					else
+						res += ", 13";
+
+					return res + " месяцев";
+					}
 
 			return "неизвестная модель ФН";
 			}
@@ -80,13 +127,85 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
+		/// Возвращает флаг, указывающий, что указанный номер позволяет определить модель ФН
+		/// </summary>
+		/// <param name="FNSerialNumber">Заводской номер ФН</param>
+		public bool IsFNKnown (string FNSerialNumber)
+			{
+			/*for (int i = 0; i < names.Count; i++)
+				if (FNSerialNumber.StartsWith (serials[i]))
+					return true;
+
+			return false;*/
+			return GetFNIndex (FNSerialNumber) >= 0;
+			}
+
+		private int GetFNIndex (string SN)
+			{
+			for (int i = 0; i < names.Count; i++)
+				if (SN.StartsWith (serials[i]))
+					return i;
+
+			return -1;
+			}
+
+		/// <summary>
 		/// Возвращает флаг, указывающий на поддержку ФФД 1.2 моделью ФН, соответствующей указанному ЗН
 		/// </summary>
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNCompatibleWithFFD12 (string FNSerialNumber)
 			{
-			string name = GetFNName (FNSerialNumber);
-			return name.Contains ("1М") || name.Contains ("2М");
+			/*string name = GetFNName (FNSerialNumber);
+			return name.Contains ("1М") || name.Contains ("2М");*/
+			/*for (int i = 0; i < names.Count; i++)
+				if (FNSerialNumber.StartsWith (serials[i]))
+					return (flags[i] | FNSerialFlags.FNM | FNSerialFlags.FN12) != 0;
+			return false;*/
+
+			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM | FNSerialFlags.FN12) > 0;
+			}
+
+		// Проверяет флаги ФН. Возвращает +1 при установленном флаге, –1 при снятом флаге,
+		// 0 при отсутствии ФН в базе
+		private int CheckFNState (string SN, FNSerialFlags Flags)
+			{
+			/*for (int i = 0; i < names.Count; i++)
+				if (SN.StartsWith (serials[i]))
+					return ((flags[i] & Flags) != 0) ? 1 : -1;*/
+			int i = GetFNIndex (SN);
+			if (i < 0)
+				return 0;
+
+			return ((flags[i] & Flags) != 0) ? 1 : -1;
+			}
+
+		/// <summary>
+		/// Возвращает флаг, указывающий, что ФН не рассчитан на 36 месяцев
+		/// </summary>
+		/// <param name="FNSerialNumber">Заводской номер ФН</param>
+		public bool IsNotFor36Months (string FNSerialNumber)
+			{
+			return CheckFNState (FNSerialNumber, FNSerialFlags.FN36) <= 0;
+			}
+
+		/// <summary>
+		/// Возвращает флаг, указывающий, что ФН находится в реестре ФНС
+		/// </summary>
+		/// <param name="FNSerialNumber">Заводской номер ФН</param>
+		public bool IsFNAllowed (string FNSerialNumber)
+			{
+			// Условный признак
+			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM) > 0;
+			}
+
+		/// <summary>
+		/// Возвращает флаг, указывающий, что ФН является 13-месячным, а не 15-месячным
+		/// </summary>
+		/// <param name="FNSerialNumber">Заводской номер ФН</param>
+		public bool IsFNExactly13 (string FNSerialNumber)
+			{
+			// Неизвестные ФН считать 15-месячными
+			return CheckFNState (FNSerialNumber, FNSerialFlags.FN11) < 0;
 			}
 
 		/// <summary>
