@@ -672,7 +672,6 @@ namespace RD_AAOW
 				FNLifeName.Text = "(введите ЗН ФН)";
 
 			// Определение длины ключа
-			/*if (FNLifeName.Text.Contains ("(13)") || FNLifeName.Text.Contains ("(15)"))*/
 			if (!kb.FNNumbers.IsFNKnown (FNLifeSN.Text))
 				{
 				FNLife36.Enabled = FNLife13.Enabled = true;
@@ -685,22 +684,12 @@ namespace RD_AAOW
 					FNLife13.Checked = true;
 					FNLife36.Enabled = false;
 					}
-				/*else
-					{
-					FNLife36.Enabled = true;
-					}
-
-				if (FNLifeName.Text.Contains ("(36)"))*/
 				else
 					{
 					FNLife36.Enabled = true;
 					FNLife36.Checked = true;
 					FNLife13.Enabled = false;
 					}
-				/*else
-					{
-					FNLife13.Enabled = true;
-					}*/
 				}
 
 			// Принудительное изменение
@@ -717,15 +706,13 @@ namespace RD_AAOW
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult + Localization.RN +
-					"(выбранный ФН неприменим с указанными параметрами)");
+				FNLifeResult.Text += (fnLifeResult + FNSerial.FNIsNotAcceptableMessage);
 				}
 			else if (res.StartsWith (KKTSupport.FNLifeUnwelcomeSign))
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 128, 0);
 				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult + Localization.RN +
-					"(не рекомендуется использовать выбранный ФН с указанными параметрами)");
+				FNLifeResult.Text += (fnLifeResult + FNSerial.FNIsNotRecommendedMessage);
 				}
 			else
 				{
@@ -734,15 +721,13 @@ namespace RD_AAOW
 				FNLifeResult.Text += res;
 				}
 
-			/*if (!(FNLife13.Enabled && FNLife36.Enabled)) // Признак корректно заданного ЗН ФН*/
 			if (kb.FNNumbers.IsFNKnown (FNLifeSN.Text))
 				{
-				/*if (!KKTSupport.IsSet (FNLifeEvFlags, FNLifeFlags.MarkFN))*/
 				if (!kb.FNNumbers.IsFNAllowed (FNLifeSN.Text))
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
-					FNLifeResult.Text += (Localization.RN + "(выбранный ФН исключён из реестра ФНС)");
+					FNLifeResult.Text += FNSerial.FNIsNotAllowedMessage;
 					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
 					}
 				else
@@ -790,7 +775,7 @@ namespace RD_AAOW
 			get
 				{
 				FNLifeFlags flags = KKTSupport.SetFlag (0, FNLifeFlags.FN15, FNLife13.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13, /*FNLifeName.Text.Contains ("(13)")*/
+				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13,
 					kb.FNNumbers.IsFNExactly13 (FNLifeSN.Text));
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.GenericTax, GenericTaxFlag.Checked);
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Goods, GoodsFlag.Checked);
@@ -804,8 +789,7 @@ namespace RD_AAOW
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkGoods, MarkGoodsFlag.Checked);
 
 				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkFN,
-					/*FNLife13.Enabled && FNLife36.Enabled*/ !kb.FNNumbers.IsFNKnown (FNLifeSN.Text) ||
-					kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text));
+					!kb.FNNumbers.IsFNKnown (FNLifeSN.Text) || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text));
 				// Признак распознанного ЗН ФН
 
 				return flags;

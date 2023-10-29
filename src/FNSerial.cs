@@ -93,15 +93,6 @@ namespace RD_AAOW
 				if (FNSerialNumber.StartsWith (serials[i]))
 					{
 					string res = names[i];
-					/*if ((flags[i] & FNSerialFlags.FN12) != 0)
-						res += ", 1.2";
-					else if ((flags[i] & FNSerialFlags.FNM) != 0)
-						res += ", 1.1М";
-					else if ((flags[i] & FNSerialFlags.FN11) != 0)
-						res += ", 1.1";
-					else
-						res += ", 1.0";*/
-
 					if ((flags[i] & FNSerialFlags.FN36) != 0)
 						res += ", 36";
 					else if ((flags[i] & FNSerialFlags.FN11) != 0)
@@ -132,11 +123,6 @@ namespace RD_AAOW
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNKnown (string FNSerialNumber)
 			{
-			/*for (int i = 0; i < names.Count; i++)
-				if (FNSerialNumber.StartsWith (serials[i]))
-					return true;
-
-			return false;*/
 			return GetFNIndex (FNSerialNumber) >= 0;
 			}
 
@@ -155,13 +141,6 @@ namespace RD_AAOW
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNCompatibleWithFFD12 (string FNSerialNumber)
 			{
-			/*string name = GetFNName (FNSerialNumber);
-			return name.Contains ("1М") || name.Contains ("2М");*/
-			/*for (int i = 0; i < names.Count; i++)
-				if (FNSerialNumber.StartsWith (serials[i]))
-					return (flags[i] | FNSerialFlags.FNM | FNSerialFlags.FN12) != 0;
-			return false;*/
-
 			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM | FNSerialFlags.FN12) > 0;
 			}
 
@@ -169,9 +148,6 @@ namespace RD_AAOW
 		// 0 при отсутствии ФН в базе
 		private int CheckFNState (string SN, FNSerialFlags Flags)
 			{
-			/*for (int i = 0; i < names.Count; i++)
-				if (SN.StartsWith (serials[i]))
-					return ((flags[i] & Flags) != 0) ? 1 : -1;*/
 			int i = GetFNIndex (SN);
 			if (i < 0)
 				return 0;
@@ -232,5 +208,22 @@ namespace RD_AAOW
 			// Возврат
 			return serials[i];
 			}
+
+		/// <summary>
+		/// Возвращает сообщение об исключении ФН из реестра ФНС
+		/// </summary>
+		public const string FNIsNotAllowedMessage = Localization.RN + "(выбранный ФН исключён из реестра ФНС)";
+
+		/// <summary>
+		/// Возвращает сообщение о том, что указанный ФН не рекомендуется использовать при указаных параметрах
+		/// </summary>
+		public const string FNIsNotRecommendedMessage = Localization.RN +
+			"(не рекомендуется использовать выбранный ФН с указанными параметрами)";
+
+		/// <summary>
+		/// Возвращает сообщение о том, что указанный ФН неприменим при указаных параметрах
+		/// </summary>
+		public const string FNIsNotAcceptableMessage = Localization.RN +
+			"(выбранный ФН неприменим с указанными параметрами)";
 		}
 	}
