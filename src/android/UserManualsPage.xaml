@@ -11,10 +11,8 @@
 
 				<Label x:Name="SelectionLabel" />
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Button x:Name="KKTButton" VerticalOptions="Center" />
-					<Button x:Name="PrintButton" VerticalOptions="Center" />
-				</StackLayout>
+				<Button x:Name="KKTButton" HorizontalOptions="Center" />
+				<Button x:Name="PrintButton" HorizontalOptions="Center" />
 
 				<FlexLayout Direction="Row" Wrap="Wrap">
 					<StackLayout Orientation="Horizontal">
