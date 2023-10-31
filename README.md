@@ -18,8 +18,6 @@
 
 Язык интерфейса: ru_ru.
 
-Список поддерживаемых TLV-тегов можно посмотреть [здесь](https://github.com/adslbarxatov/KassArray/blob/master/src/KassArrayFN/FNEnums.h).
-
 &nbsp;
 
 
