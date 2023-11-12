@@ -284,7 +284,8 @@ namespace RD_AAOW
 			userManualsPrintButton = AndroidSupport.ApplyButtonSettings (userManualsPage, "PrintButton",
 				"В файл / на печать", userManualsFieldBackColor, PrintManual_Clicked, false);
 			userManualsPrintButton.FontSize -= 2.0;
-			userManualsPrintButton.Padding = new Thickness (0);
+			userManualsPrintButton.Margin = new Thickness (0);
+			userManualsPrintButton.HeightRequest -= 5.0;
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "HelpLabel",
 				"<...> – индикация на экране, [...] – клавиши ККТ." + Localization.RN +
@@ -436,6 +437,10 @@ namespace RD_AAOW
 				ASButtonDefaultTypes.Decrease, aboutFieldBackColor, FontSizeButton_Clicked);
 			aboutFontSizeField = AndroidSupport.ApplyLabelSettings (aboutPage, "FontSizeField",
 				" ", ASLabelTypes.DefaultCenter);
+
+			AndroidSupport.ApplyLabelSettings (aboutPage, "HelpTextLabel",
+				RDGenerics.GetEncoding (SupportedEncodings.UTF8).
+				GetString (RD_AAOW.Properties.Resources.KassArray_ru_ru_dph), ASLabelTypes.SmallLeft);
 
 			FontSizeButton_Clicked (null, null);
 
