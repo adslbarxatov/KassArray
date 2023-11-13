@@ -107,6 +107,11 @@ namespace RD_AAOW
 		ProductBaseContainsPrices = 0x04,
 
 		/// <summary>
+		/// База товаров содержит услуги
+		/// </summary>
+		ProductBaseContainsServices = 0x08,
+
+		/// <summary>
 		/// Руководство для кассира
 		/// </summary>
 		GuideForCashier = 0x80,

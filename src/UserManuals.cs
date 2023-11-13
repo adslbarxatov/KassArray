@@ -102,10 +102,10 @@ namespace RD_AAOW
 								operations[i][operations[i].Count - 1].Replace ("• &1", "#1• ");
 							operations[i][operations[i].Count - 1] =
 								operations[i][operations[i].Count - 1].Replace ("&2",
-								"Ввести код товара / услуги");
+								"Ввести код #6");
 							operations[i][operations[i].Count - 1] =
 								operations[i][operations[i].Count - 1].Replace ("&02",
-								"ввести код товара / услуги");
+								"ввести код #6");
 							break;
 
 						case 3:
@@ -115,10 +115,10 @@ namespace RD_AAOW
 								"#1• Закрыть чек согласно способу оплаты");
 							operations[i][operations[i].Count - 1] =
 								operations[i][operations[i].Count - 1].Replace ("&2",
-								"Ввести код товара / услуги");
+								"Ввести код #6");
 							operations[i][operations[i].Count - 1] =
 								operations[i][operations[i].Count - 1].Replace ("&02",
-								"ввести код товара / услуги");
+								"ввести код #6");
 							operations[i][operations[i].Count - 1] =
 								operations[i][operations[i].Count - 1].Replace ("&3",
 								"Отсканировать штрих-код товара");
@@ -205,12 +205,14 @@ namespace RD_AAOW
 				return names[(int)KKTType];
 
 			string text = operations[(int)ManualType][(int)KKTType];
+			bool goods = !KKTSupport.IsSet (Flags, UserManualsFlags.ProductBaseContainsServices);
 			if ((ManualType >= 1) && (ManualType <= 4))
 				{
 				if (KKTSupport.IsSet (Flags, UserManualsFlags.MoreThanOneItemPerDocument))
 					{
-					text = text.Replace ("#1", "↑ (повторить предыдущие действия для всех товаров / услуг в чеке);"
-						+ Localization.RN);
+					text = text.Replace ("#1", "↑ (повторить предыдущие действия для всех " +
+						(goods ? "товаров" : "услуг") +
+						" в чеке);" + Localization.RN);
 					}
 				else
 					{
@@ -231,6 +233,8 @@ namespace RD_AAOW
 					{
 					text = text.Replace ("#3", "");
 					}
+
+				text = text.Replace ("#6", goods ? "товара" : "услуги");
 				}
 
 			if (KKTSupport.IsSet (Flags, UserManualsFlags.CashiersHavePasswords))

@@ -99,7 +99,7 @@ namespace RD_AAOW
 		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
 			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
 			keepAppState, allowService, extendedMode,
-			moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords;
+			moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords, baseContainsServices;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
 
@@ -285,7 +285,8 @@ namespace RD_AAOW
 				"В файл / на печать", userManualsFieldBackColor, PrintManual_Clicked, false);
 			userManualsPrintButton.FontSize -= 2.0;
 			userManualsPrintButton.Margin = new Thickness (0);
-			userManualsPrintButton.HeightRequest -= 5.0;
+			userManualsPrintButton.Padding = new Thickness (3, 0);
+			userManualsPrintButton.HeightRequest = userManualsPrintButton.FontSize * 2.0;
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "HelpLabel",
 				"<...> – индикация на экране, [...] – клавиши ККТ." + Localization.RN +
@@ -308,10 +309,16 @@ namespace RD_AAOW
 			cashiersHavePasswords = AndroidSupport.ApplySwitchSettings (userManualsPage, "PasswordsSwitch",
 				false, userManualsFieldBackColor, null, false);
 
+			AndroidSupport.ApplyLabelSettings (userManualsPage, "ServicesLabel", "В базе ККТ содержатся услуги",
+				ASLabelTypes.DefaultLeft);
+			baseContainsServices = AndroidSupport.ApplySwitchSettings (userManualsPage, "ServicesSwitch",
+				false, userManualsFieldBackColor, null, false);
+
 			UserManualFlags = ca.UserManualFlags;
 			moreThanOneItemPerDocument.Toggled += UserManualsFlags_Clicked;
 			productBaseContainsPrices.Toggled += UserManualsFlags_Clicked;
 			cashiersHavePasswords.Toggled += UserManualsFlags_Clicked;
+			baseContainsServices.Toggled += UserManualsFlags_Clicked;
 
 			UserManualsKKTButton_Clicked (null, null);
 
@@ -986,13 +993,14 @@ namespace RD_AAOW
 					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
 				}
 
-			// Шрифт интерфейса
+			/* Шрифт интерфейса
 			if (AndroidSupport.AllowFontSizeTip)
 				{
 				await AndroidSupport.ShowMessage (
 					Localization.GetDefaultText (LzDefaultTextValues.Message_FontSizeAvailable),
 					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
 				}
+			*/
 			}
 
 		// Запрос цвета, соответствующего статусу поддержки
@@ -1766,6 +1774,8 @@ namespace RD_AAOW
 					productBaseContainsPrices.IsToggled);
 				flags = KKTSupport.SetFlag (flags, UserManualsFlags.CashiersHavePasswords,
 					cashiersHavePasswords.IsToggled);
+				flags = KKTSupport.SetFlag (flags, UserManualsFlags.ProductBaseContainsServices,
+					baseContainsServices.IsToggled);
 
 				return flags;
 				}
@@ -1777,6 +1787,8 @@ namespace RD_AAOW
 					UserManualsFlags.ProductBaseContainsPrices);
 				cashiersHavePasswords.IsToggled = KKTSupport.IsSet (value,
 					UserManualsFlags.CashiersHavePasswords);
+				baseContainsServices.IsToggled = KKTSupport.IsSet (value,
+					UserManualsFlags.ProductBaseContainsServices);
 				}
 			}
 

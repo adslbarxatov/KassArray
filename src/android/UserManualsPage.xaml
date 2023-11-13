@@ -29,6 +29,11 @@
 						<Switch x:Name="PasswordsSwitch" VerticalOptions="Center" />
 						<Label x:Name="PasswordsLabel" VerticalOptions="Center" />
 					</StackLayout>
+
+					<StackLayout Orientation="Horizontal">
+						<Switch x:Name="ServicesSwitch" VerticalOptions="Center" />
+						<Label x:Name="ServicesLabel" VerticalOptions="Center" />
+					</StackLayout>
 				</FlexLayout>
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 

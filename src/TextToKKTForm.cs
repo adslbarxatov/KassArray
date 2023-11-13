@@ -1070,6 +1070,8 @@ namespace RD_AAOW
 					ProductBaseContainsPrices.Checked);
 				flags = KKTSupport.SetFlag (flags, UserManualsFlags.CashiersHavePasswords,
 					CashiersHavePasswords.Checked);
+				flags = KKTSupport.SetFlag (flags, UserManualsFlags.ProductBaseContainsServices,
+					BaseContainsServices.Checked);
 
 				return flags;
 				}
@@ -1081,6 +1083,8 @@ namespace RD_AAOW
 					UserManualsFlags.ProductBaseContainsPrices);
 				CashiersHavePasswords.Checked = KKTSupport.IsSet (value,
 					UserManualsFlags.CashiersHavePasswords);
+				BaseContainsServices.Checked = KKTSupport.IsSet (value,
+					UserManualsFlags.ProductBaseContainsServices);
 				}
 			}
 
