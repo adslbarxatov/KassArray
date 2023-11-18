@@ -20,6 +20,8 @@
 					<Button x:Name="Clear" VerticalOptions="Center" />
 				</StackLayout>
 
+				<Label x:Name="OFDHelpLabel" />
+
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
 
@@ -93,8 +95,6 @@
 					<Button x:Name="OFDYaDNS1" />
 					<Button x:Name="OFDYaDNS2" />
 				</StackLayout>
-
-				<Label x:Name="OFDHelpLabel" />
 
 				<Label />
 

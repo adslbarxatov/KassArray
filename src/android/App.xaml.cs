@@ -599,18 +599,19 @@ namespace RD_AAOW
 				ASButtonDefaultTypes.Create, rnmFieldBackColor, RNMGenerate_Clicked);
 			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsLevel2;
 
-			string rnmAbout = "Индикатор ФФД: " +
+			rnmTip = AndroidSupport.ApplyLabelSettings (rnmPage, "SNAbout",
+				"Индикатор ФФД: " +
 				"<b><font color=\"#FF4040\">красный</font></b> – поддержка не планируется; " +
 				"<b><font color=\"#00C000\">зелёный</font></b> – поддерживается; " +
 				"<b><font color=\"#FFFF00\">жёлтый</font></b> – планируется; " +
-				"<b><font color=\"#6060FF\">синий</font></b> – нет сведений (на момент релиза этой версии приложения)";
-			if (ca.AllowExtendedFunctionsLevel2)
-				rnmAbout += ("<br/><br/>Первые 10 цифр РН являются порядковым номером ККТ в реестре и " +
-					"могут быть указаны вручную при генерации");
-
-			rnmTip = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMAbout", rnmAbout,
+				"<b><font color=\"#6060FF\">синий</font></b> – нет сведений (на момент релиза этой версии приложения)",
 				ASLabelTypes.Tip);
 			rnmTip.TextType = TextType.Html;
+
+			if (ca.AllowExtendedFunctionsLevel2)
+				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMAbout",
+					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
+					"РНМ их можно указать вручную – остальные будут достроены программой", ASLabelTypes.Tip);
 
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
 				ASButtonDefaultTypes.Delete, rnmFieldBackColor, RNMClear_Clicked);

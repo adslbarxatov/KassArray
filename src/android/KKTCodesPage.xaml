@@ -12,12 +12,15 @@
 				<Label x:Name="SelectionLabel" />
 				<Button x:Name="KKTButton" />
 
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 				<StackLayout Orientation="Horizontal">
 					<Label x:Name="SourceTextLabel" VerticalOptions="Center" />
 					<Button x:Name="SelectSavedText" VerticalOptions="Center" />
 					<Button x:Name="ClearText" VerticalOptions="Center" />
 				</StackLayout>
-				
+
 				<Editor x:Name="SourceText" />
 
 				<StackLayout Orientation="Horizontal">

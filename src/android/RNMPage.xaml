@@ -22,10 +22,16 @@
 					<Label x:Name="RNMSupport12" HorizontalTextAlignment="Center" />
 				</StackLayout>
 
+				<Label x:Name="SNAbout" />
+
+				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 				<StackLayout Orientation="Horizontal">
 					<Label x:Name="INNLabel" VerticalOptions="Center" />
 					<Editor x:Name="INN" VerticalOptions="Center" />
 				</StackLayout>
+
 				<Label x:Name="INNCheckLabel" HorizontalOptions="Center" />
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 

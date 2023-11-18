@@ -95,6 +95,8 @@ namespace RD_AAOW
 				}
 
 			TopFlag.Checked = ca.TopMost;
+			FNReader.Visible = FNFromFNReader.Visible = OFDFromFNReader.Visible =
+				RNMFromFNReader.Visible = !RDGenerics.StartedFromMSStore && ca.AllowExtendedFunctionsLevel2;
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
 			ConvertorsContainer.SelectedIndex = (int)ca.ConvertorTab;
@@ -178,8 +180,8 @@ namespace RD_AAOW
 			ConvertTextField.Text = ca.ConversionText;
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = RNMFromFNReader.Visible = LowLevelTab.Enabled = TLVTab.Enabled =
-				ConnectorsTab.Enabled = OFDFromFNReader.Visible = PrintFullUserManual.Visible =
+			RNMGenerate.Visible = /*RNMFromFN Reader.Visible =*/ LowLevelTab.Enabled = TLVTab.Enabled =
+				ConnectorsTab.Enabled = /*OFDFromFN Reader.Visible =*/ PrintFullUserManual.Visible =
 				ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
@@ -188,8 +190,9 @@ namespace RD_AAOW
 				"(на момент релиза этой версии приложения)";
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
-				RNMTip.Text += (Localization.RNRN + "Первые 10 цифр РН являются порядковым номером ККТ в реестре " +
-					"и могут быть указаны вручную при генерации");
+				RNMTip.Text += (Localization.RNRN +
+					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
+					"РНМ их можно указать вручную – остальные будут достроены программой");
 				}
 			else
 				{
@@ -494,72 +497,76 @@ namespace RD_AAOW
 			// Разбор
 			string status = FNReaderInstance.FNStatus;
 			int left, right;
+			string buttonName = ((Button)sender).Name;
 
 			// Раздел параметров ОФД
-			if (((Button)sender).Name == OFDFromFNReader.Name)
+			switch (buttonName)
 				{
-				if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) && ((right = status.IndexOf ("\n", left)) >= 0))
-					{
-					left += 9;
-					OFDINN.Text = status.Substring (left, right - left).Trim ();
-					LoadOFDParameters ();
-					}
+				case "OFDFromFNReader":
+					if (((left = status.LastIndexOf ("ИНН ОФД: ")) >= 0) &&
+						((right = status.IndexOf ("\n", left)) >= 0))
+						{
+						left += 9;
+						OFDINN.Text = status.Substring (left, right - left).Trim ();
+						LoadOFDParameters ();
+						}
 
-				return;
-				}
+					break;
 
-			// Раздел срока жизни ФН
-			if (((Button)sender).Name == FNFromFNReader.Name)
-				{
-				if (((left = status.LastIndexOf ("номер ФН: ")) >= 0) && ((right = status.IndexOf ("\n", left)) >= 0))
-					{
-					left += 10;
-					FNLifeSN.Text = status.Substring (left, right - left).Trim ();
-					}
+				// Раздел срока жизни ФН
+				case "FNFromFNReader":
+					if (((left = status.LastIndexOf ("номер ФН: ")) >= 0) &&
+						((right = status.IndexOf ("\n", left)) >= 0))
+						{
+						left += 10;
+						FNLifeSN.Text = status.Substring (left, right - left).Trim ();
+						}
 
-				if ((left = status.LastIndexOf ("Регистрация")) < 0)
-					return;
+					if ((left = status.LastIndexOf ("Регистрация")) < 0)
+						return;
 
-				if (status.IndexOf ("обложение: ОСН", left) >= 0)
-					GenericTaxFlag.Checked = true;
-				else
-					OtherTaxFlag.Checked = true;
+					if (status.IndexOf ("обложение: ОСН", left) >= 0)
+						GenericTaxFlag.Checked = true;
+					else
+						OtherTaxFlag.Checked = true;
 
-				if ((status.IndexOf ("реализация товаров", left) >= 0))
-					GoodsFlag.Checked = true;
-				else
-					ServicesFlag.Checked = true;
+					if ((status.IndexOf ("реализация товаров", left) >= 0))
+						GoodsFlag.Checked = true;
+					else
+						ServicesFlag.Checked = true;
 
-				AutonomousFlag.Checked = (status.IndexOf ("автономная", left) >= 0);
-				ExciseFlag.Checked = (status.IndexOf ("а подакцизн", left) >= 0);
-				FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);
-				AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);
-				MarkGoodsFlag.Checked = (status.IndexOf ("а маркирован", left) >= 0);
-				PawnInsuranceFlag.Checked = (status.IndexOf ("ги ломбарда", left) >= 0);
-				GamblingLotteryFlag.Checked = (status.IndexOf ("ги страхования", left) >= 0);
-				// Дату и сезонный режим не запрашиваем
+					AutonomousFlag.Checked = (status.IndexOf ("автономная", left) >= 0);
+					ExciseFlag.Checked = (status.IndexOf ("а подакцизн", left) >= 0);
+					FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);
+					AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);
+					MarkGoodsFlag.Checked = (status.IndexOf ("а маркирован", left) >= 0);
+					PawnInsuranceFlag.Checked = (status.IndexOf ("ги ломбарда", left) >= 0);
+					GamblingLotteryFlag.Checked = (status.IndexOf ("ги страхования", left) >= 0);
+					// Дату и сезонный режим не запрашиваем
 
-				return;
-				}
+					break;
 
-			// Раздел контроля ЗН ККТ, РНМ и ИНН
-			if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) &&
-				((right = status.IndexOf ("\n", left)) >= 0))
-				{
-				left += 21;
-				RNMSerial.Text = status.Substring (left, right - left).Trim ();
-				}
-			if (((left = status.LastIndexOf ("Регистрационный номер ККТ: ")) >= 0) &&
-				((right = status.IndexOf ("\n", left)) >= 0))
-				{
-				left += 27;
-				RNMValue.Text = status.Substring (left, right - left).Trim ();
-				}
-			if (((left = status.LastIndexOf ("ИНН пользователя: ")) >= 0) &&
-				((right = status.IndexOf ("\n", left)) >= 0))
-				{
-				left += 18;
-				RNMUserINN.Text = status.Substring (left, right - left).Trim ();
+				// Раздел контроля ЗН ККТ, РНМ и ИНН
+				case "RNMFromFNReader":
+					if (((left = status.LastIndexOf ("Заводской номер ККТ: ")) >= 0) &&
+						((right = status.IndexOf ("\n", left)) >= 0))
+						{
+						left += 21;
+						RNMSerial.Text = status.Substring (left, right - left).Trim ();
+						}
+					if (((left = status.LastIndexOf ("Регистрационный номер ККТ: ")) >= 0) &&
+						((right = status.IndexOf ("\n", left)) >= 0))
+						{
+						left += 27;
+						RNMValue.Text = status.Substring (left, right - left).Trim ();
+						}
+					if (((left = status.LastIndexOf ("ИНН пользователя: ")) >= 0) &&
+						((right = status.IndexOf ("\n", left)) >= 0))
+						{
+						left += 18;
+						RNMUserINN.Text = status.Substring (left, right - left).Trim ();
+						}
+					break;
 				}
 			}
 
