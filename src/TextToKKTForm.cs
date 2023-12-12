@@ -214,7 +214,7 @@ namespace RD_AAOW
 			ni.ContextMenu = new ContextMenu ();
 
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("Работа с &ФН", FNReader_Click));
-			ni.ContextMenu.MenuItems[0].Enabled = FNReader.Enabled;
+			ni.ContextMenu.MenuItems[0].Enabled = FNReader.Enabled && FNReader.Visible;
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("В&ыход", CloseService));
 
 			ni.MouseDown += ReturnWindow;
