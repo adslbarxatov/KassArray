@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace RD_AAOW
@@ -10,11 +8,11 @@ namespace RD_AAOW
 	/// </summary>
 	public static class TextToKKTProgram
 		{
-		// Дополнительные методы
+		/* Дополнительные методы
 		[DllImport ("user32.dll")]
 		private static extern IntPtr FindWindow (string lpClassName, String lpWindowName);
 		[DllImport ("user32.dll")]
-		private static extern int SendMessage (IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
+		private static extern int SendMessage (IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);*/
 
 		/// <summary>
 		/// Главная точка входа для приложения
@@ -30,7 +28,11 @@ namespace RD_AAOW
 			if (!Localization.IsXPUNClassAcceptable)
 				return;
 
-			// Проверка запуска единственной копии (особая обработка)
+			// Проверка запуска единственной копии
+			if (!RDGenerics.IsAppInstanceUnique (true))
+				return;
+
+			/* Проверка запуска единственной копии (особая обработка)
 			bool result;
 			Mutex instance = new Mutex (true, ProgramDescription.AssemblyTitle, out result);
 			if (!result)
@@ -49,7 +51,17 @@ namespace RD_AAOW
 					}
 
 				return;
-				}
+				}*/
+
+			/*if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[0]))
+				{
+				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
+					"Библиотека " + ProgramDescription.KassArrayDLLs[0] + " отсутствует " +
+					"на этом ПК. Попробуйте заново развернуть продукт, после чего повторите попытку");
+				return;
+				}*/
+			if (!RDGenerics.CheckLibraries (new string[] { ProgramDescription.KassArrayDLLs[0] }, true))
+				return;
 
 			// Отображение справки и запроса на принятие Политики
 			if (!RDGenerics.AcceptEULA ())

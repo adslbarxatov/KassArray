@@ -69,7 +69,7 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			byte[] s1 = Properties.TextToKKMResources.UserManuals;
+			byte[] s1 = Properties.KassArrayDB.UserManuals;
 #else
 			byte[] s1 = Properties.Resources.UserManuals;
 #endif

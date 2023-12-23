@@ -90,7 +90,7 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.BarCodes);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.BarCodes);
 #else
 			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.BarCodes);
 #endif

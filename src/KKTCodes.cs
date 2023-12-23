@@ -29,7 +29,7 @@ namespace RD_AAOW
 			{
 			// Получение файла символов
 #if !ANDROID
-			byte[] s = Properties.TextToKKMResources.KKTCodes;
+			byte[] s = Properties.KassArrayDB.KKTCodes;
 #else
 			byte[] s = Properties.Resources.KKTCodes;
 #endif

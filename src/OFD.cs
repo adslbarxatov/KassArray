@@ -65,7 +65,7 @@ namespace RD_AAOW
 			{
 			// Получение файла символов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.OFD);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.OFD);
 #else
 			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.OFD);
 #endif
@@ -136,8 +136,8 @@ namespace RD_AAOW
 			return new List<string> (names);
 			}
 
-		/// <summary>
-		/// Возвращает делегат для параметров ОФД
+		/*// <summary>
+		/// Возвращает параметры ОФД в необработанном виде
 		/// </summary>
 		public Func<List<string>> GetOFDDataDelegate
 			{
@@ -145,9 +145,12 @@ namespace RD_AAOW
 				{
 				return GetOFDData;
 				}
-			}
+			}*/
 
-		private List<string> GetOFDData ()
+		/// <summary>
+		/// Метод возвращает данные ОФД в необработанном виде
+		/// </summary>
+		public List<string> GetOFDData ()
 			{
 			List<string> res = new List<string> ();
 
@@ -192,7 +195,7 @@ namespace RD_AAOW
 				};
 			}
 
-		/// <summary>
+		/*// <summary>
 		/// Возвращает делегат для метода GetOFDNameByINN
 		/// </summary>
 		public Func<string, uint, string> GetOFDByINNDelegate
@@ -201,9 +204,14 @@ namespace RD_AAOW
 				{
 				return GetOFDByINN;
 				}
-			}
+			}*/
 
-		private string GetOFDByINN (string INN, uint Parameter)
+		/// <summary>
+		/// Метод возвращает параметры ОФД по его ИНН
+		/// </summary>
+		/// <param name="INN">ИНН ОФД</param>
+		/// <param name="Parameter">Номер параметра ОФД</param>
+		public string GetOFDByINN (string INN, uint Parameter)
 			{
 			List<string> values = GetOFDParameters (INN);
 			if (Parameter >= values.Count)

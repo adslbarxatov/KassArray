@@ -47,7 +47,7 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.FNSN);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.FNSN);
 #else
 			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.FNSN);
 #endif
@@ -106,7 +106,7 @@ namespace RD_AAOW
 			return "неизвестная модель ФН";
 			}
 
-		/// <summary>
+		/*// <summary>
 		/// Возвращает делегат для метода GetFNName
 		/// </summary>
 		public Func<string, string> GetFNNameDelegate
@@ -115,7 +115,7 @@ namespace RD_AAOW
 				{
 				return GetFNName;
 				}
-			}
+			}*/
 
 		/// <summary>
 		/// Возвращает флаг, указывающий, что указанный номер позволяет определить модель ФН

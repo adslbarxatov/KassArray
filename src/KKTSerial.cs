@@ -24,7 +24,7 @@ namespace RD_AAOW
 			{
 			// Получение файла заводских номеров и моделей
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.KKTSN);
+			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.KKTSN);
 #else
 			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.KKTSN);
 #endif
@@ -78,7 +78,7 @@ namespace RD_AAOW
 
 			// Получение файла регионов
 #if !ANDROID
-			buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.Regions);
+			buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.Regions);
 #else
 			buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Regions);
 #endif
@@ -143,7 +143,7 @@ namespace RD_AAOW
 			return names[i];
 			}
 
-		/// <summary>
+		/*// <summary>
 		/// Возвращает делегат для метода GetKKTModel
 		/// </summary>
 		public Func<string, string> GetKKTModelDelegate
@@ -152,7 +152,7 @@ namespace RD_AAOW
 				{
 				return GetKKTModel;
 				}
-			}
+			}*/
 
 		// Поиск ККТ по фрагментам ЗН
 		private int FindKKT (string KKTSerialNumber)

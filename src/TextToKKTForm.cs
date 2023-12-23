@@ -1,9 +1,10 @@
-﻿using System;
+﻿extern alias KassArrayDB;
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 
 namespace RD_AAOW
@@ -15,7 +16,7 @@ namespace RD_AAOW
 		{
 		// Дескрипторы информационных классов
 		private ConfigAccessor ca = null;
-		private KnowledgeBase kb;
+		private KassArrayDB::RD_AAOW.KnowledgeBase kb;
 
 		// Дескриптор иконки в трее
 		private NotifyIcon ni = new NotifyIcon ();
@@ -31,24 +32,25 @@ namespace RD_AAOW
 		// Число режимов преобразования
 		private uint encodingModesCount;
 
-		// Дескрипторы библиотеки модуля работы с ФН
+		/* Дескрипторы библиотеки модуля работы с ФН
 		private Assembly FNReaderDLL;
 		private Type FNReaderProgram;
-		private dynamic FNReaderInstance;
+		private dynamic FNReaderInstance;*/
 
 		/// <summary>
 		/// Ключ командной строки, используемый при автозапуске для скрытия главного окна приложения
 		/// </summary>
 		public const string HideWindowKey = "-h";
 		private bool hideWindow = false;
+		private bool closeWindow = false;
 
 		#region Главный интерфейс
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
-		/// <param name="DumpFileForFNReader">Путь к файлу дампа для FNReader</param>
-		public TextToKKTForm (string DumpFileForFNReader)
+		/// <param name="Flags">Флаги запуска приложения</param>
+		public TextToKKTForm (string Flags)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -56,8 +58,17 @@ namespace RD_AAOW
 				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
 
 			ca = new ConfigAccessor ();
-			kb = new KnowledgeBase ();
-			hideWindow = (DumpFileForFNReader == HideWindowKey);
+			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
+			hideWindow = (Flags == HideWindowKey);
+
+			if (KassArrayDB::ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
+				{
+				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
+					Localization.GetIncompatibleVersionsMessage (ProgramDescription.KassArrayDLLs[0]));
+
+				closeWindow = true;
+				return;
+				}
 
 			// Настройка контролов
 			KKTListForCodes.Items.AddRange (kb.CodeTables.GetKKTTypeNames ().ToArray ());
@@ -113,7 +124,7 @@ namespace RD_AAOW
 			ErrorFindButton_Click (null, null);
 
 			FNLifeSN.Text = ca.FNSerial;
-			FNLifeEvFlags = ca.FNLifeEvFlags;
+			FNLifeEvFlags = (KassArrayDB::RD_AAOW.FNLifeFlags)ca.FNLifeEvFlags;
 
 			RNMSerial.MaxLength = (int)kb.KKTNumbers.MaxSerialNumberLength;
 			RNMSerial.Text = ca.KKTSerial;
@@ -122,12 +133,12 @@ namespace RD_AAOW
 			RNMSerial_TextChanged (null, null); // Для протяжки пустых полей
 
 			OFDINN.Text = ca.OFDINN;
-			OFDNalogSite.Text = OFD.FNSSite;
-			OFDDNSNameK.Text = OFD.OKPSite;
-			OFDIPK.Text = OFD.OKPIP;
-			OFDPortK.Text = OFD.OKPPort;
-			OFDYaDNS1.Text = OFD.YandexDNSReq;
-			OFDYaDNS2.Text = OFD.YandexDNSAlt;
+			OFDNalogSite.Text = KassArrayDB::RD_AAOW.OFD.FNSSite;
+			OFDDNSNameK.Text = KassArrayDB::RD_AAOW.OFD.OKPSite;
+			OFDIPK.Text = KassArrayDB::RD_AAOW.OFD.OKPIP;
+			OFDPortK.Text = KassArrayDB::RD_AAOW.OFD.OKPPort;
+			OFDYaDNS1.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSReq;
+			OFDYaDNS2.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSAlt;
 			LoadOFDParameters ();
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
@@ -142,12 +153,12 @@ namespace RD_AAOW
 
 			KKTListForManuals.Items.AddRange (kb.UserGuides.GetKKTList ());
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
-			UserManualFlags = ca.UserManualFlags;
+			UserManualFlags = (KassArrayDB::RD_AAOW.UserManualsFlags)ca.UserManualFlags;
 
 			if (ca.AllowExtendedFunctionsLevel1)
-				OperationsListForManuals.Items.AddRange (UserManuals.OperationTypes);
+				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationTypes);
 			else
-				OperationsListForManuals.Items.AddRange (UserManuals.OperationsForCashiers);
+				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationsForCashiers);
 
 			try
 				{
@@ -158,7 +169,7 @@ namespace RD_AAOW
 				OperationsListForManuals.SelectedIndex = 0;
 				}
 
-			BarcodeData.MaxLength = (int)BarCodes.MaxSupportedDataLength;
+			BarcodeData.MaxLength = (int)KassArrayDB::RD_AAOW.BarCodes.MaxSupportedDataLength;
 			BarcodeData.Text = ca.BarcodeData;
 
 			CableType.SelectedIndex = (int)ca.CableType;
@@ -169,10 +180,10 @@ namespace RD_AAOW
 			TLV_FFDCombo.SelectedIndex = (int)ca.FFDForTLV;
 
 			TLVFind.Text = ca.TLVData;
-			TLV_ObligationBase.Text = TLVTags.ObligationBase;
+			TLV_ObligationBase.Text = KassArrayDB::RD_AAOW.TLVTags.ObligationBase;
 			TLVButton_Click (null, null);
 
-			EncodingCombo.Items.AddRange (DataConvertors.AvailableEncodings);
+			EncodingCombo.Items.AddRange (KassArrayDB::RD_AAOW.DataConvertors.AvailableEncodings);
 			encodingModesCount = (uint)EncodingCombo.Items.Count / 2;
 			EncodingCombo.SelectedIndex = (int)ca.EncodingForConvertor;
 
@@ -180,9 +191,8 @@ namespace RD_AAOW
 			ConvertTextField.Text = ca.ConversionText;
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = /*RNMFromFN Reader.Visible =*/ LowLevelTab.Enabled = TLVTab.Enabled =
-				ConnectorsTab.Enabled = /*OFDFromFN Reader.Visible =*/ PrintFullUserManual.Visible =
-				ca.AllowExtendedFunctionsLevel2;
+			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled =
+				PrintFullUserManual.Visible = ca.AllowExtendedFunctionsLevel2;
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
@@ -214,15 +224,15 @@ namespace RD_AAOW
 			ni.ContextMenu = new ContextMenu ();
 
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("Работа с &ФН", FNReader_Click));
-			ni.ContextMenu.MenuItems[0].Enabled = FNReader.Enabled && FNReader.Visible;
+			ni.ContextMenu.MenuItems[0].Enabled = !RDGenerics.StartedFromMSStore && ca.AllowExtendedFunctionsLevel2;
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("В&ыход", CloseService));
 
 			ni.MouseDown += ReturnWindow;
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
-			// Запуск файла дампа, если представлен
+			/* Запуск файла дампа, если представлен
 			if (ca.AllowExtendedFunctionsLevel2 && (DumpFileForFNReader != "") && !hideWindow)
-				CallFNReader (DumpFileForFNReader);
+				CallFNReader (DumpFileForFNReader);*/
 
 			ExtendedMode.Checked = ca.AllowExtendedMode;
 			ExtendedMode.CheckedChanged += ExtendedMode_CheckedChanged;
@@ -232,6 +242,8 @@ namespace RD_AAOW
 			{
 			if (hideWindow)
 				this.Hide ();
+			if (closeWindow)
+				this.Close ();
 			}
 
 		// Включение / выключение режима сервис-инженера
@@ -284,7 +296,7 @@ namespace RD_AAOW
 
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
-			// Контроль
+			/* Контроль
 			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
 				{
 				this.TopMost = false;
@@ -295,7 +307,10 @@ namespace RD_AAOW
 				CallFNReader ("");
 				e.Cancel = true;
 				return;
-				}
+				}*/
+
+			if (closeWindow)
+				return;
 
 			// Сохранение параметров
 			SaveAppSettings ();
@@ -321,7 +336,7 @@ namespace RD_AAOW
 			ca.ErrorCode = ErrorSearchText.Text;
 
 			ca.FNSerial = FNLifeSN.Text;
-			ca.FNLifeEvFlags = FNLifeEvFlags;
+			ca.FNLifeEvFlags = (uint)FNLifeEvFlags;
 
 			ca.KKTSerial = RNMSerial.Text;
 			ca.UserINN = RNMUserINN.Text;
@@ -346,7 +361,7 @@ namespace RD_AAOW
 
 			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
-			ca.UserManualFlags = UserManualFlags;
+			ca.UserManualFlags = (uint)UserManualFlags;
 			ca.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;
 
 			ca.ConversionNumber = ConvNumber.Text;
@@ -365,15 +380,15 @@ namespace RD_AAOW
 			}
 
 		// Запрос цвета, соответствующего статусу поддержки
-		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
+		private Color StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses Status)
 			{
-			if (Status == KKTSerial.FFDSupportStatuses.Planned)
+			if (Status == KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Planned)
 				return Color.FromArgb (255, 255, 200);
 
-			if (Status == KKTSerial.FFDSupportStatuses.Supported)
+			if (Status == KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported)
 				return Color.FromArgb (200, 255, 200);
 
-			if (Status == KKTSerial.FFDSupportStatuses.Unsupported)
+			if (Status == KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported)
 				return Color.FromArgb (255, 200, 200);
 
 			// Остальные
@@ -383,12 +398,13 @@ namespace RD_AAOW
 		// Вызов библиотеки FNReader
 		private void FNReader_Click (object sender, EventArgs e)
 			{
-			CallFNReader ("");
+			CallFNReader ();
 			}
 
-		private void CallFNReader (string DumpPath)
+		private void CallFNReader (/*string DumpPath*/)
 			{
-			// Контроль
+			RDGenerics.RunURL (ProgramDescription.KassArrayDLLs[1]);
+			/* Контроль
 			bool result = true;
 			if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL) ||
 				!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderSubDLL))
@@ -441,9 +457,10 @@ namespace RD_AAOW
 			// Проверки прошли успешно, запуск
 			if (FNReaderDLL != null)
 				FNReaderInstance.FNReaderEx (DumpPath, kb.FNNumbers.GetFNNameDelegate,
-					kb.KKTNumbers.GetKKTModelDelegate, kb.Ofd.GetOFDByINNDelegate, kb.Ofd.GetOFDDataDelegate);
+					kb.KKTNumbers.GetKKTModelDelegate, kb.Ofd.GetOFDByINNDelegate, kb.Ofd.GetOFDDataDelegate);*/
 			}
 
+		/*
 		/// <summary>
 		/// Ручная обработка сообщения для окна по спецкоду
 		/// </summary>
@@ -471,7 +488,7 @@ namespace RD_AAOW
 				}
 
 			base.WndProc (ref m);
-			}
+			}*/
 
 		// Переключение состояния "поверх всех окон"
 		private void TopFlag_CheckedChanged (object sender, EventArgs e)
@@ -483,19 +500,28 @@ namespace RD_AAOW
 		private void GetFromFNReader_Click (object sender, EventArgs e)
 			{
 			// Контроль
-			if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))
+			/*if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))*/
+			string status = "";
+			try
+				{
+				status = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.StatusFilePath,
+					RDGenerics.GetEncoding (SupportedEncodings.UTF8));
+				}
+			catch { }
+
+			if (string.IsNullOrWhiteSpace (status))
 				{
 				this.TopMost = false;
 				RDGenerics.MessageBox (RDMessageTypes.Information_Center,
 					"Статус ФН ещё не запрашивался или содержит не все требуемые поля");
 				this.TopMost = TopFlag.Checked;
 
-				CallFNReader ("");
+				/*CallFNReader ("");*/
 				return;
 				}
 
 			// Разбор
-			string status = FNReaderInstance.FNStatus;
+			/*string status = FNReaderInstance.FNStatus;*/
 			int left, right;
 			string buttonName = ((Button)sender).Name;
 
@@ -578,7 +604,7 @@ namespace RD_AAOW
 		private void TextToConvert_TextChanged (object sender, EventArgs e)
 			{
 			ResultText.Text = kb.CodeTables.DecodeText ((uint)KKTListForCodes.SelectedIndex, TextToConvert.Text);
-			ErrorLabel.Visible = ResultText.Text.Contains (KKTCodes.EmptyCode);
+			ErrorLabel.Visible = ResultText.Text.Contains (KassArrayDB::RD_AAOW.KKTCodes.EmptyCode);
 
 			LengthLabel.Text = "Длина: " + TextToConvert.Text.Length;
 			DescriptionLabel.Text = kb.CodeTables.GetKKTTypeDescription ((uint)KKTListForCodes.SelectedIndex);
@@ -706,20 +732,20 @@ namespace RD_AAOW
 		// Изменение параметров, влияющих на срок жизни ФН
 		private void FNLifeStartDate_ValueChanged (object sender, EventArgs e)
 			{
-			string res = KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLifeEvFlags);
+			string res = KassArrayDB::RD_AAOW.KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLifeEvFlags);
 
 			FNLifeResult.Text = "ФН прекратит работу ";
-			if (res.StartsWith (KKTSupport.FNLifeInacceptableSign))
+			if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeInacceptableSign))
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult + FNSerial.FNIsNotAcceptableMessage);
+				FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage);
 				}
-			else if (res.StartsWith (KKTSupport.FNLifeUnwelcomeSign))
+			else if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeUnwelcomeSign))
 				{
 				FNLifeResult.ForeColor = Color.FromArgb (255, 128, 0);
 				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult + FNSerial.FNIsNotRecommendedMessage);
+				FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage);
 				}
 			else
 				{
@@ -734,17 +760,17 @@ namespace RD_AAOW
 					{
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
-					FNLifeResult.Text += FNSerial.FNIsNotAllowedMessage;
-					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+					FNLifeResult.Text += KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage;
+					FNLifeName.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported);
 					}
 				else
 					{
-					FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+					FNLifeName.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);
 					}
 				}
 			else
 				{
-				FNLifeName.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				FNLifeName.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
 				}
 			}
 
@@ -777,25 +803,37 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает или задаёт состав флагов для расчёта срока жизни ФН
 		/// </summary>
-		private FNLifeFlags FNLifeEvFlags
+		private KassArrayDB::RD_AAOW.FNLifeFlags FNLifeEvFlags
 			{
 			get
 				{
-				FNLifeFlags flags = KKTSupport.SetFlag (0, FNLifeFlags.FN15, FNLife13.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FNExactly13,
-					kb.FNNumbers.IsFNExactly13 (FNLifeSN.Text));
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.GenericTax, GenericTaxFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Goods, GoodsFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Season, SeasonFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Agents, AgentsFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Excise, ExciseFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.Autonomous, AutonomousFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.FFD12, FFD12Flag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.GamblingAndLotteries, GamblingLotteryFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.PawnsAndInsurance, PawnInsuranceFlag.Checked);
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkGoods, MarkGoodsFlag.Checked);
+				KassArrayDB::RD_AAOW.FNLifeFlags flags =
+					KassArrayDB::RD_AAOW.KKTSupport.SetFlag (0, KassArrayDB::RD_AAOW.FNLifeFlags.FN15, FNLife13.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.FNExactly13, kb.FNNumbers.IsFNExactly13 (FNLifeSN.Text));
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.GenericTax, GenericTaxFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Goods, GoodsFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Season, SeasonFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Agents, AgentsFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Excise, ExciseFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Autonomous, AutonomousFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.FFD12, FFD12Flag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.GamblingAndLotteries, GamblingLotteryFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.PawnsAndInsurance, PawnInsuranceFlag.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.MarkGoods, MarkGoodsFlag.Checked);
 
-				flags = KKTSupport.SetFlag (flags, FNLifeFlags.MarkFN,
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.FNLifeFlags.MarkFN,
 					!kb.FNNumbers.IsFNKnown (FNLifeSN.Text) || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text));
 				// Признак распознанного ЗН ФН
 
@@ -803,21 +841,32 @@ namespace RD_AAOW
 				}
 			set
 				{
-				FNLife13.Checked = KKTSupport.IsSet (value, FNLifeFlags.FN15);
+				FNLife13.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.FN15);
 				FNLife36.Checked = !FNLife13.Checked;
 				// .Exactly13 – вспомогательный нехранимый флаг
-				GenericTaxFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.GenericTax);
+				GenericTaxFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.GenericTax);
 				OtherTaxFlag.Checked = !GenericTaxFlag.Checked;
-				GoodsFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Goods);
+				GoodsFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Goods);
 				ServicesFlag.Checked = !GoodsFlag.Checked;
-				SeasonFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Season);
-				AgentsFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Agents);
-				ExciseFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Excise);
-				AutonomousFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.Autonomous);
-				FFD12Flag.Checked = KKTSupport.IsSet (value, FNLifeFlags.FFD12);
-				GamblingLotteryFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.GamblingAndLotteries);
-				PawnInsuranceFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.PawnsAndInsurance);
-				MarkGoodsFlag.Checked = KKTSupport.IsSet (value, FNLifeFlags.MarkGoods);
+				SeasonFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Season);
+				AgentsFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Agents);
+				ExciseFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Excise);
+				AutonomousFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.Autonomous);
+				FFD12Flag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.FFD12);
+				GamblingLotteryFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.GamblingAndLotteries);
+				PawnInsuranceFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.PawnsAndInsurance);
+				MarkGoodsFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.FNLifeFlags.MarkGoods);
 				// .MarkFN – вспомогательный нехранимый флаг
 				}
 			}
@@ -834,7 +883,8 @@ namespace RD_AAOW
 				{
 				RNMSerialResult.Text = kb.KKTNumbers.GetKKTModel (RNMSerial.Text);
 
-				KKTSerial.FFDSupportStatuses[] statuses = kb.KKTNumbers.GetFFDSupportStatus (RNMSerial.Text);
+				KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses[] statuses =
+					kb.KKTNumbers.GetFFDSupportStatus (RNMSerial.Text);
 				RNMSupport105.BackColor = StatusToColor (statuses[0]);
 				RNMSupport11.BackColor = StatusToColor (statuses[1]);
 				RNMSupport12.BackColor = StatusToColor (statuses[2]);
@@ -843,39 +893,44 @@ namespace RD_AAOW
 				{
 				RNMSerialResult.Text = "(введите ЗН ККТ)";
 				RNMSupport105.BackColor = RNMSupport11.BackColor = RNMSupport12.BackColor =
-					StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+					StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
 				}
 
 			// ИНН пользователя
 			RegionLabel.Text = "";
-			int checkINN = KKTSupport.CheckINN (RNMUserINN.Text);
+			int checkINN = KassArrayDB::RD_AAOW.KKTSupport.CheckINN (RNMUserINN.Text);
 			if (checkINN < 0)
-				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				RNMUserINN.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
 			else if (checkINN == 0)
-				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+				RNMUserINN.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);
 			else
-				RNMUserINN.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);   // Не ошибка
+				RNMUserINN.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Planned);
+			// Не ошибка
+
 			RegionLabel.Text = kb.KKTNumbers.GetRegionName (RNMUserINN.Text);
 
 			// РН
 			if (RNMValue.Text.Length < 10)
-				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
-			else if (KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text,
+				RNMValue.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
+			else if (KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text,
 				RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
-				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+				RNMValue.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);
 			else
-				RNMValue.BackColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+				RNMValue.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported);
 			}
 
 		// Генерация регистрационного номера
 		private void RNMGenerate_Click (object sender, EventArgs e)
 			{
 			if (RNMValue.Text.Length < 1)
-				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, "0");
+				RNMValue.Text = KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (RNMUserINN.Text,
+					RNMSerial.Text, "0");
 			else if (RNMValue.Text.Length < 10)
-				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text);
+				RNMValue.Text = KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (RNMUserINN.Text,
+					RNMSerial.Text, RNMValue.Text);
 			else
-				RNMValue.Text = KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text, RNMValue.Text.Substring (0, 10));
+				RNMValue.Text = KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (RNMUserINN.Text,
+					RNMSerial.Text, RNMValue.Text.Substring (0, 10));
 			}
 
 		// Очистка полей
@@ -1047,15 +1102,15 @@ namespace RD_AAOW
 		private void PrintUserManual_Click (object sender, EventArgs e)
 			{
 			// Сборка задания на печать
-			UserManualsFlags flags = UserManualFlags;
+			KassArrayDB::RD_AAOW.UserManualsFlags flags = UserManualFlags;
 			if (((Button)sender).Name.Contains ("Cashier"))
-				flags |= UserManualsFlags.GuideForCashier;
+				flags |= KassArrayDB::RD_AAOW.UserManualsFlags.GuideForCashier;
 
-			string text = KKTSupport.BuildUserManual (kb.UserGuides, (uint)KKTListForManuals.SelectedIndex,
-				ca, flags);
+			string text = KassArrayDB::RD_AAOW.KKTSupport.BuildUserManual (kb.UserGuides,
+				(uint)KKTListForManuals.SelectedIndex, ca.UserManualSections, flags);
 
 			// Печать
-			KKTSupport.PrintText (text, PrinterTypes.ManualA4);
+			KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4);
 			}
 
 		// Выбор компонентов инструкции
@@ -1067,31 +1122,35 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает или задаёт состав флагов для руководства пользователя
 		/// </summary>
-		private UserManualsFlags UserManualFlags
+		private KassArrayDB::RD_AAOW.UserManualsFlags UserManualFlags
 			{
 			get
 				{
-				UserManualsFlags flags = KKTSupport.SetFlag (0, UserManualsFlags.MoreThanOneItemPerDocument,
+				KassArrayDB::RD_AAOW.UserManualsFlags flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (0,
+					KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument,
 					MoreThanOneItemPerDocument.Checked);
-				flags = KKTSupport.SetFlag (flags, UserManualsFlags.ProductBaseContainsPrices,
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices,
 					ProductBaseContainsPrices.Checked);
-				flags = KKTSupport.SetFlag (flags, UserManualsFlags.CashiersHavePasswords,
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords,
 					CashiersHavePasswords.Checked);
-				flags = KKTSupport.SetFlag (flags, UserManualsFlags.ProductBaseContainsServices,
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices,
 					BaseContainsServices.Checked);
 
 				return flags;
 				}
 			set
 				{
-				MoreThanOneItemPerDocument.Checked = KKTSupport.IsSet (value,
-					UserManualsFlags.MoreThanOneItemPerDocument);
-				ProductBaseContainsPrices.Checked = KKTSupport.IsSet (value,
-					UserManualsFlags.ProductBaseContainsPrices);
-				CashiersHavePasswords.Checked = KKTSupport.IsSet (value,
-					UserManualsFlags.CashiersHavePasswords);
-				BaseContainsServices.Checked = KKTSupport.IsSet (value,
-					UserManualsFlags.ProductBaseContainsServices);
+				MoreThanOneItemPerDocument.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument);
+				ProductBaseContainsPrices.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices);
+				CashiersHavePasswords.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords);
+				BaseContainsServices.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices);
 				}
 			}
 
@@ -1109,7 +1168,8 @@ namespace RD_AAOW
 		// Поиск TLV-тега
 		private void TLVButton_Click (object sender, EventArgs e)
 			{
-			if (kb.Tags.FindTag (TLVFind.Text, (TLVTags_FFDVersions)(TLV_FFDCombo.SelectedIndex + 2)))
+			if (kb.Tags.FindTag (TLVFind.Text,
+				(KassArrayDB::RD_AAOW.TLVTags_FFDVersions)(TLV_FFDCombo.SelectedIndex + 2)))
 				{
 				TLVDescription.Text = kb.Tags.LastDescription;
 				TLVType.Text = kb.Tags.LastType;
@@ -1147,7 +1207,7 @@ namespace RD_AAOW
 			{
 			try
 				{
-				Process.Start (TLVTags.ObligationBaseLink);
+				Process.Start (KassArrayDB::RD_AAOW.TLVTags.ObligationBaseLink);
 				}
 			catch { }
 			}
@@ -1159,7 +1219,7 @@ namespace RD_AAOW
 		// Ввод штрих-кода
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
-			string s = BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
+			string s = KassArrayDB::RD_AAOW.BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
 			if (s != BarcodeData.Text)
 				{
 				BarcodeData.Text = s;
@@ -1200,7 +1260,7 @@ namespace RD_AAOW
 		// Преобразование систем счисления
 		private void ConvNumber_TextChanged (object sender, EventArgs e)
 			{
-			ConvNumberResult.Text = DataConvertors.GetNumberDescription (ConvNumber.Text);
+			ConvNumberResult.Text = KassArrayDB::RD_AAOW.DataConvertors.GetNumberDescription (ConvNumber.Text);
 			}
 
 		private void ConvNumberAdd_Click (object sender, EventArgs e)
@@ -1218,10 +1278,10 @@ namespace RD_AAOW
 			// Обновление и возврат
 			if (plus)
 				{
-				if (v < DataConvertors.MaxValue)
+				if (v < KassArrayDB::RD_AAOW.DataConvertors.MaxValue)
 					v++;
 				else
-					v = DataConvertors.MaxValue;
+					v = KassArrayDB::RD_AAOW.DataConvertors.MaxValue;
 				}
 			else
 				{
@@ -1256,7 +1316,7 @@ namespace RD_AAOW
 		// Преобразование символов Unicode
 		private void ConvCode_TextChanged (object sender, EventArgs e)
 			{
-			string[] res = DataConvertors.GetSymbolDescription (ConvCode.Text, 0);
+			string[] res = KassArrayDB::RD_AAOW.DataConvertors.GetSymbolDescription (ConvCode.Text, 0);
 			ConvCodeSymbol.Text = res[0];
 			ConvCodeResult.Text = res[1];
 			}
@@ -1264,7 +1324,8 @@ namespace RD_AAOW
 		private void ConvCodeAdd_Click (object sender, EventArgs e)
 			{
 			bool plus = ((Button)sender).Name == ConvCodeInc.Name;
-			string[] res = DataConvertors.GetSymbolDescription (ConvCode.Text, (short)(plus ? 1 : -1));
+			string[] res = KassArrayDB::RD_AAOW.DataConvertors.GetSymbolDescription (ConvCode.Text,
+				(short)(plus ? 1 : -1));
 			ConvCode.Text = res[2];
 			}
 
@@ -1290,16 +1351,16 @@ namespace RD_AAOW
 		// Преобразование hex-данных в текст
 		private void ConvertHexToText_Click (object sender, EventArgs e)
 			{
-			ConvertTextField.Text = DataConvertors.ConvertHexToText (ConvertHexField.Text,
-				(SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
+			ConvertTextField.Text = KassArrayDB::RD_AAOW.DataConvertors.ConvertHexToText (ConvertHexField.Text,
+				(KassArrayDB::RD_AAOW.SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
 				EncodingCombo.SelectedIndex >= encodingModesCount);
 			}
 
 		// Преобразование текста в hex-данные
 		private void ConvertTextToHex_Click (object sender, EventArgs e)
 			{
-			ConvertHexField.Text = DataConvertors.ConvertTextToHex (ConvertTextField.Text,
-				(SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
+			ConvertHexField.Text = KassArrayDB::RD_AAOW.DataConvertors.ConvertTextToHex (ConvertTextField.Text,
+				(KassArrayDB::RD_AAOW.SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
 				EncodingCombo.SelectedIndex >= encodingModesCount);
 			}
 

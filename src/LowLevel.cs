@@ -22,7 +22,7 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			byte[] s1 = Properties.TextToKKMResources.LowLevel;
+			byte[] s1 = Properties.KassArrayDB.LowLevel;
 #else
 			byte[] s1 = Properties.Resources.LowLevel;
 #endif

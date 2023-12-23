@@ -8,9 +8,9 @@ using System.IO;
 	using Android.Print.Pdf;
 	using Android.Runtime;
 #else
-	using System.Drawing;
-	using System.Drawing.Printing;
-	using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Windows.Forms;
 #endif
 
 namespace RD_AAOW
@@ -1051,9 +1051,9 @@ namespace RD_AAOW
 		/// <param name="Manuals">Активный экземпляр оператора руководств ККТ</param>
 		/// <param name="ManualNumber">Номер руководства</param>
 		/// <param name="Flags">Флаги формирования руководства</param>
-		/// <param name="CA">Объект-оператор настроек пользователя</param>
+		/// <param name="Sections">Список разрешённых секций руководства пользователя</param>
 		/// <returns>Возвращает инструкцию пользователя</returns>
-		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, ConfigAccessor CA,
+		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, ulong Sections,
 			UserManualsFlags Flags)
 			{
 			bool forCashier = (Flags & UserManualsFlags.GuideForCashier) != 0;
@@ -1071,7 +1071,7 @@ namespace RD_AAOW
 
 			for (int i = 0; i < operationsCount; i++)
 				{
-				if (!CA.GetUserManualSectionState ((byte)i))
+				if ((Sections & (1ul << i)) == 0)
 					continue;
 
 				text += ((i != 0 ? Localization.RN : "") + Localization.RNRN + operations[i] + Localization.RNRN);
@@ -1134,6 +1134,15 @@ namespace RD_AAOW
 
 			return FlagsSet & ~Flag;
 			}
+
+#if !ANDROID
+
+		/// <summary>
+		/// Возвращает путь к файлу статуса ФН
+		/// </summary>
+		public static string StatusFilePath = RDGenerics.AppStartupPath + "KassArrayStatus.dat";
+
+#endif
 		}
 
 #if ANDROID

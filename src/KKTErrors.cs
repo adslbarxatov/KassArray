@@ -27,7 +27,7 @@ namespace RD_AAOW
 			{
 			// Получение файла ошибок
 #if !ANDROID
-			byte[] s = Properties.TextToKKMResources.Errors;
+			byte[] s = Properties.KassArrayDB.Errors;
 #else
 			byte[] s = Properties.Resources.Errors;
 #endif

@@ -27,7 +27,7 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			byte[] s1 = Properties.TextToKKMResources.Connectors;
+			byte[] s1 = Properties.KassArrayDB.Connectors;
 #else
 			byte[] s1 = Properties.Resources.Connectors;
 #endif

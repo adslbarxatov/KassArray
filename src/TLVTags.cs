@@ -156,8 +156,8 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string tlv = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.TLVTags);
-			string obl = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.TextToKKMResources.Obligation);
+			string tlv = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.TLVTags);
+			string obl = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.Obligation);
 #else
 			string tlv = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.TLVTags);
 			string obl = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Obligation);
