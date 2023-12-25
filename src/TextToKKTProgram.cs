@@ -60,7 +60,8 @@ namespace RD_AAOW
 					"на этом ПК. Попробуйте заново развернуть продукт, после чего повторите попытку");
 				return;
 				}*/
-			if (!RDGenerics.CheckLibraries (new string[] { ProgramDescription.KassArrayDLLs[0] }, true))
+			if (!RDGenerics.StartedFromMSStore &&
+				!RDGenerics.CheckLibraries (new string[] { ProgramDescription.KassArrayDLLs[0] }, true))
 				return;
 
 			// Отображение справки и запроса на принятие Политики

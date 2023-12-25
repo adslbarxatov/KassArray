@@ -32,11 +32,6 @@ namespace RD_AAOW
 		// Число режимов преобразования
 		private uint encodingModesCount;
 
-		/* Дескрипторы библиотеки модуля работы с ФН
-		private Assembly FNReaderDLL;
-		private Type FNReaderProgram;
-		private dynamic FNReaderInstance;*/
-
 		/// <summary>
 		/// Ключ командной строки, используемый при автозапуске для скрытия главного окна приложения
 		/// </summary>
@@ -401,94 +396,14 @@ namespace RD_AAOW
 			CallFNReader ();
 			}
 
-		private void CallFNReader (/*string DumpPath*/)
+		private void CallFNReader ()
 			{
-			RDGenerics.RunURL (ProgramDescription.KassArrayDLLs[1]);
-			/* Контроль
-			bool result = true;
-			if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL) ||
-				!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.FNReaderSubDLL))
-				result = false;
-
-			if (result && (FNReaderDLL == null))
-				{
-				try
-					{
-					FNReaderDLL = Assembly.LoadFile (RDGenerics.AppStartupPath + ProgramDescription.FNReaderDLL);
-
-					FNReaderProgram = FNReaderDLL.GetType ("RD_AAOW.Program");
-					FNReaderInstance = Activator.CreateInstance (FNReaderProgram);
-					}
-				catch
-					{
-					result = false;
-					}
-				}
-
-			if (!result)
-				{
-				this.TopMost = false;
-				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
-					"Модуль чтения и обработки данных ФН не определяется на ПК." + Localization.RNRN +
-					"• Если данный компонент ранее не загружался, его можно получить вместе с актуальным обновлением " +
-					"(раздел «Прочее», кнопка «О программе»)." + Localization.RN +
-					"• Если компонент загружен и находится в одной директории с приложением, попробуйте вручную " +
-					"разблокировать все три его файла (свойства, кнопка «Разблокировать»), после чего " +
-					"запустите приложение снова");
-				this.TopMost = TopFlag.Checked;
-
+			if (!RDGenerics.KillAllProcesses (
+				Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), true, false))
 				return;
-				}
 
-			// Контроль версии
-			if (FNReaderInstance.LibVersion != ProgramDescription.AssemblyVersion)
-				{
-				this.TopMost = false;
-				RDGenerics.MessageBox (RDMessageTypes.Warning_Left,
-					"Версия библиотеки «" + ProgramDescription.FNReaderDLL + "» не подходит для " +
-					"текущей версии программы." + Localization.RNRN +
-					"Корректную версию можно загрузить с актуальным обновлением из интерфейса «О приложении» " +
-					"(раздел «Прочее», кнопка «О программе»)");
-				this.TopMost = TopFlag.Checked;
-
-				return;
-				}
-
-			// Проверки прошли успешно, запуск
-			if (FNReaderDLL != null)
-				FNReaderInstance.FNReaderEx (DumpPath, kb.FNNumbers.GetFNNameDelegate,
-					kb.KKTNumbers.GetKKTModelDelegate, kb.Ofd.GetOFDByINNDelegate, kb.Ofd.GetOFDDataDelegate);*/
+			RDGenerics.RunURL (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]);
 			}
-
-		/*
-		/// <summary>
-		/// Ручная обработка сообщения для окна по спецкоду
-		/// </summary>
-		protected override void WndProc (ref Message m)
-			{
-			if ((m.Msg == ConfigAccessor.NextDumpPathMsg) && (ConfigAccessor.NextDumpPath != ""))
-				{
-				// Делается для защиты от непредвиденных сбросов состояния приложения
-				if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
-					{
-					ConfigAccessor.NextDumpPath = "";
-
-					this.TopMost = false;
-					RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
-						"Завершите работу с ФН, чтобы открыть новый файл");
-					this.TopMost = TopFlag.Checked;
-
-					CallFNReader ("");
-					}
-				else
-					{
-					CallFNReader (ConfigAccessor.NextDumpPath);
-					ConfigAccessor.NextDumpPath = "";
-					}
-				}
-
-			base.WndProc (ref m);
-			}*/
 
 		// Переключение состояния "поверх всех окон"
 		private void TopFlag_CheckedChanged (object sender, EventArgs e)
