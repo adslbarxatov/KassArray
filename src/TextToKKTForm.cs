@@ -225,10 +225,7 @@ namespace RD_AAOW
 			ni.MouseDown += ReturnWindow;
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
-			/* Запуск файла дампа, если представлен
-			if (ca.AllowExtendedFunctionsLevel2 && (DumpFileForFNReader != "") && !hideWindow)
-				CallFNReader (DumpFileForFNReader);*/
-
+			// Настройка расширенного режима
 			ExtendedMode.Checked = ca.AllowExtendedMode;
 			ExtendedMode.CheckedChanged += ExtendedMode_CheckedChanged;
 			}
@@ -291,19 +288,7 @@ namespace RD_AAOW
 
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
-			/* Контроль
-			if ((FNReaderInstance != null) && FNReaderInstance.IsActive)
-				{
-				this.TopMost = false;
-				RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
-					"Завершите работу с ФН, чтобы выйти из приложения");
-				this.TopMost = TopFlag.Checked;
-
-				CallFNReader ("");
-				e.Cancel = true;
-				return;
-				}*/
-
+			// Контроль
 			if (closeWindow)
 				return;
 
@@ -398,8 +383,13 @@ namespace RD_AAOW
 
 		private void CallFNReader ()
 			{
-			if (!RDGenerics.KillAllProcesses (
-				Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), true, false))
+			// Контроль на завершение предыдущих процессов
+			this.TopMost = false;
+			bool res = RDGenerics.KillAllProcesses (
+				Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), true, false);
+			this.TopMost = TopFlag.Checked;
+
+			if (!res)
 				return;
 
 			RDGenerics.RunURL (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]);
