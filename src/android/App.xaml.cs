@@ -226,6 +226,12 @@ namespace RD_AAOW
 			allowService = AndroidSupport.ApplySwitchSettings (headersPage, "AllowService", false,
 				headersFieldBackColor, AllowService_Toggled, AndroidSupport.AllowServiceToStart);
 
+			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
+				AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceTip",
+					"Если закреплённое оповещение " + ProgramDescription.AssemblyMainName + 
+					" отсутствует в верхней части экрана, эта опция потребует перезапуска приложения",
+					ASLabelTypes.DefaultLeft);
+
 			AndroidSupport.ApplyLabelSettings (headersPage, "ExtendedModeLabel",
 				"Режим сервис-инженера", ASLabelTypes.DefaultLeft);
 			extendedMode = AndroidSupport.ApplySwitchSettings (headersPage, "ExtendedMode", false,
@@ -314,7 +320,7 @@ namespace RD_AAOW
 			baseContainsServices = AndroidSupport.ApplySwitchSettings (userManualsPage, "ServicesSwitch",
 				false, userManualsFieldBackColor, null, false);
 
-			UserManualFlags = ca.UserManualFlags;
+			UserManualFlags = (UserManualsFlags)ca.UserManualFlags;
 			moreThanOneItemPerDocument.Toggled += UserManualsFlags_Clicked;
 			productBaseContainsPrices.Toggled += UserManualsFlags_Clicked;
 			cashiersHavePasswords.Toggled += UserManualsFlags_Clicked;
@@ -547,7 +553,7 @@ namespace RD_AAOW
 				ASButtonDefaultTypes.Find, fnLifeFieldBackColor, FNLifeFind_Clicked);
 
 			// Применение всех названий
-			FNLifeEvFlags = ca.FNLifeEvFlags;
+			FNLifeEvFlags = (FNLifeFlags)ca.FNLifeEvFlags;
 			fnLifeGenericTax.Toggled += FnLife13_Toggled;
 			fnLifeGoods.Toggled += FnLife13_Toggled;
 			fnLifeSeason.Toggled += FnLife13_Toggled;
@@ -686,12 +692,12 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", OFD.FNSSite,
 				ofdFieldBackColor, Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDYaDNSLabel", "Яндекс DNS:",
+			/*AndroidSupport.ApplyLabelSettings (ofdPage, "OFDYaDNSLabel", "Яндекс DNS:",
 				ASLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDYaDNS1", OFD.YandexDNSReq,
 				ofdFieldBackColor, Field_Clicked, true);
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDYaDNS2", OFD.YandexDNSAlt,
-				ofdFieldBackColor, Field_Clicked, true);
+				ofdFieldBackColor, Field_Clicked, true);*/
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена", ASLabelTypes.Tip);
@@ -1093,7 +1099,7 @@ namespace RD_AAOW
 			// ca.ErrorCode		// -||-
 
 			ca.FNSerial = fnLifeSerial.Text;
-			ca.FNLifeEvFlags = FNLifeEvFlags;
+			ca.FNLifeEvFlags = (uint)FNLifeEvFlags;
 
 			ca.KKTSerial = rnmKKTSN.Text;
 			ca.UserINN = rnmINN.Text;
@@ -1119,7 +1125,7 @@ namespace RD_AAOW
 			ca.ConversionText = convTextField.Text;
 			//ca.EncodingForConvertor	// -||-
 
-			ca.UserManualFlags = UserManualFlags;
+			ca.UserManualFlags = (uint)UserManualFlags;
 			}
 
 		/// <summary>
@@ -1746,7 +1752,8 @@ namespace RD_AAOW
 			if (res == 0)
 				flags |= UserManualsFlags.GuideForCashier;
 
-			string text = KKTSupport.BuildUserManual (kb.UserGuides, ca.KKTForManuals, ca, flags);
+			string text = KKTSupport.BuildUserManual (kb.UserGuides, ca.KKTForManuals,
+				ca.UserManualSections, flags);
 			KKTSupport.PrintManual (text, pm, res == 0);
 			}
 
@@ -1910,30 +1917,31 @@ namespace RD_AAOW
 				ASButtonDefaultTypes.Increase);
 
 			// Извлечение значения с защитой
-			uint v = 0;
+			/*uint v = 0;
 			try
 				{
 				v = uint.Parse (convNumberField.Text);
 				}
-			catch { }
+			catch { }*/
+			double res = DataConvertors.GetNumber (convNumberField.Text);
 
 			// Обновление и возврат
 			if (plus)
 				{
-				if (v < DataConvertors.MaxValue)
-					v++;
+				if (res < DataConvertors.MaxValue)
+					res += 1.0;
 				else
-					v = DataConvertors.MaxValue;
+					res = DataConvertors.MaxValue;
 				}
 			else
 				{
-				if (v > 0)
-					v--;
+				if (res > 0.0)
+					res -= 1.0;
 				else
-					v = 0;
+					res = 0.0;
 				}
 
-			convNumberField.Text = v.ToString ();
+			convNumberField.Text = ((uint)res).ToString ();
 			}
 
 		private void ConvCode_TextChanged (object sender, EventArgs e)

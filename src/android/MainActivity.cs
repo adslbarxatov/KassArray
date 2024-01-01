@@ -85,6 +85,15 @@ namespace RD_AAOW.Droid
 			Intent mainService = new Intent (this, typeof (MainService));
 			AndroidSupport.StopRequested = false;
 
+			// Нет смысла запускать сервис, если он не был закрыт приложением.
+			// Также функция недоступна в Android 12 и новее
+			if (AndroidSupport.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)
+				{
+				base.OnResume ();
+				return;
+				}
+
+			// Повторный запуск службы
 			if (AndroidSupport.IsForegroundAvailable)
 				StartForegroundService (mainService);
 			else
@@ -98,6 +107,7 @@ namespace RD_AAOW.Droid
 	/// Класс описывает фоновую службу приложения
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKT",
+		ForegroundServiceType = ForegroundService.TypeDataSync,
 		Label = "KassArray",
 		Exported = true)]
 	public class MainService: global::Android.App.Service
@@ -186,6 +196,11 @@ namespace RD_AAOW.Droid
 			// Инициализация сообщений
 			notBuilder.SetCategory ("msg");     // Категория "сообщение"
 			notBuilder.SetColor (0x80FFC0);     // Оттенок заголовков оповещений
+			notBuilder.SetOngoing (true);       // Android 13 и новее: не позволяет закрыть оповещение вручную
+
+			// Android 12 и новее: требует немедленного отображения оповещения
+			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
+				notBuilder.SetForegroundServiceBehavior (0x01);
 
 			string launchMessage = "Нажмите, чтобы вернуться в основное приложение";
 			notBuilder.SetContentText (launchMessage);
@@ -199,9 +214,8 @@ namespace RD_AAOW.Droid
 
 			notBuilder.SetSmallIcon (Resource.Drawable.ic_not);
 			if (AndroidSupport.IsLargeIconRequired)
-				{
-				notBuilder.SetLargeIcon (BitmapFactory.DecodeResource (this.Resources, Resource.Drawable.ic_not_large));
-				}
+				notBuilder.SetLargeIcon (BitmapFactory.DecodeResource (this.Resources,
+					Resource.Drawable.ic_not_large));
 
 			notBuilder.SetVisibility ((int)NotificationVisibility.Public);
 
@@ -210,12 +224,13 @@ namespace RD_AAOW.Droid
 
 			// Прикрепление ссылки для перехода в основное приложение
 			masterIntent = new Intent (this, typeof (NotificationLink));
-			masterPendingIntent = PendingIntent.GetService (this, 0, masterIntent, PendingIntentFlags.Immutable);   // Android S+ req
+			masterPendingIntent = PendingIntent.GetService (this, 0, masterIntent, PendingIntentFlags.Immutable);
+		
 			notBuilder.SetContentIntent (masterPendingIntent);
 
-			// Стартовое сообщение
+			// Стартовое сообщение (с применением типа согласно рекомендациям для Android S)
 			Android.App.Notification notification = notBuilder.Build ();
-			StartForeground (notServiceID, notification);
+			StartForeground (notServiceID, notification, ForegroundService.TypeDataSync);
 
 			// Перенастройка для основного режима
 			if (!AndroidSupport.IsForegroundAvailable)

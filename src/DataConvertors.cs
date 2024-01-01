@@ -9,7 +9,12 @@ namespace RD_AAOW
 	/// </summary>
 	public static class DataConvertors
 		{
-		private static double GetNumber (string Value)
+		/// <summary>
+		/// Метод получает число из строки, учитывая возможный шестнадцатеричный префикс
+		/// </summary>
+		/// <param name="Value">Строка, содержащая десятичное или шестнадцатеричное число</param>
+		/// <returns></returns>
+		public static double GetNumber (string Value)
 			{
 			// Прямое преобразование
 			double v = double.NaN;

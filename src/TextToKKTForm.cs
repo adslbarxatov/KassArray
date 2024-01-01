@@ -132,8 +132,8 @@ namespace RD_AAOW
 			OFDDNSNameK.Text = KassArrayDB::RD_AAOW.OFD.OKPSite;
 			OFDIPK.Text = KassArrayDB::RD_AAOW.OFD.OKPIP;
 			OFDPortK.Text = KassArrayDB::RD_AAOW.OFD.OKPPort;
-			OFDYaDNS1.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSReq;
-			OFDYaDNS2.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSAlt;
+			/*OFDYaDNS1.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSReq;
+			OFDYaDNS2.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSAlt;*/
 			LoadOFDParameters ();
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
@@ -1173,30 +1173,31 @@ namespace RD_AAOW
 			bool plus = ((Button)sender).Text.Contains ("+");
 
 			// Извлечение значения с защитой
-			uint v = 0;
+			/*uint v = 0;
 			try
 				{
 				v = uint.Parse (ConvNumber.Text);
 				}
-			catch { }
+			catch { }*/
+			double res = KassArrayDB::RD_AAOW.DataConvertors.GetNumber (ConvNumber.Text);
 
 			// Обновление и возврат
 			if (plus)
 				{
-				if (v < KassArrayDB::RD_AAOW.DataConvertors.MaxValue)
-					v++;
+				if (res < KassArrayDB::RD_AAOW.DataConvertors.MaxValue)
+					res += 1.0;
 				else
-					v = KassArrayDB::RD_AAOW.DataConvertors.MaxValue;
+					res = KassArrayDB::RD_AAOW.DataConvertors.MaxValue;
 				}
 			else
 				{
-				if (v > 0)
-					v--;
+				if (res > 0.0)
+					res -= 1.0;
 				else
-					v = 0;
+					res = 0.0;
 				}
 
-			ConvNumber.Text = v.ToString ();
+			ConvNumber.Text = ((uint)res).ToString ();
 			}
 
 		private void ConvNumber_KeyDown (object sender, KeyEventArgs e)

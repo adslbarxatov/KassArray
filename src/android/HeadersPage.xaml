@@ -22,6 +22,8 @@
 					<Label x:Name="AllowServiceLabel" />
 				</StackLayout>
 
+				<Label x:Name="AllowServiceTip" />
+
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 					<Switch x:Name="KeepAppState" />
 					<Label x:Name="KeepAppStateLabel" />
