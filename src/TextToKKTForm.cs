@@ -132,8 +132,6 @@ namespace RD_AAOW
 			OFDDNSNameK.Text = KassArrayDB::RD_AAOW.OFD.OKPSite;
 			OFDIPK.Text = KassArrayDB::RD_AAOW.OFD.OKPIP;
 			OFDPortK.Text = KassArrayDB::RD_AAOW.OFD.OKPPort;
-			/*OFDYaDNS1.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSReq;
-			OFDYaDNS2.Text = KassArrayDB::RD_AAOW.OFD.YandexDNSAlt;*/
 			LoadOFDParameters ();
 
 			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
@@ -166,6 +164,7 @@ namespace RD_AAOW
 
 			BarcodeData.MaxLength = (int)KassArrayDB::RD_AAOW.BarCodes.MaxSupportedDataLength;
 			BarcodeData.Text = ca.BarcodeData;
+			BarcodesConvertToEN_Click (null, null);
 
 			CableType.SelectedIndex = (int)ca.CableType;
 
@@ -405,7 +404,6 @@ namespace RD_AAOW
 		private void GetFromFNReader_Click (object sender, EventArgs e)
 			{
 			// Контроль
-			/*if ((FNReaderInstance == null) || string.IsNullOrEmpty (FNReaderInstance.FNStatus))*/
 			string status = "";
 			try
 				{
@@ -421,12 +419,10 @@ namespace RD_AAOW
 					"Статус ФН ещё не запрашивался или содержит не все требуемые поля");
 				this.TopMost = TopFlag.Checked;
 
-				/*CallFNReader ("");*/
 				return;
 				}
 
 			// Разбор
-			/*string status = FNReaderInstance.FNStatus;*/
 			int left, right;
 			string buttonName = ((Button)sender).Name;
 
@@ -1121,7 +1117,20 @@ namespace RD_AAOW
 
 		#region Штрих-коды
 
-		// Ввод штрих-кода
+		// Преобразование из русской раскладки
+		private void BarcodesConvertToEN_Click (object sender, EventArgs e)
+			{
+			BarcodeData.Text = KassArrayDB::RD_AAOW.BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
+			BarcodeDescription.Text = kb.Barcodes.GetBarcodeDescription (BarcodeData.Text);
+			}
+
+		private void BarcodeData_KeyUp (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				BarcodesConvertToEN_Click (sender, null);
+			}
+
+		/* Ввод штрих-кода
 		private void BarcodeData_TextChanged (object sender, EventArgs e)
 			{
 			string s = KassArrayDB::RD_AAOW.BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
@@ -1132,11 +1141,13 @@ namespace RD_AAOW
 				}
 
 			BarcodeDescription.Text = kb.Barcodes.GetBarcodeDescription (BarcodeData.Text);
-			}
+			}*/
 
+		// Сброс текста
 		private void BarcodeClear_Click (object sender, EventArgs e)
 			{
 			BarcodeData.Text = "";
+			BarcodesConvertToEN_Click (sender, null);
 			}
 
 		#endregion
@@ -1170,15 +1181,8 @@ namespace RD_AAOW
 
 		private void ConvNumberAdd_Click (object sender, EventArgs e)
 			{
-			bool plus = ((Button)sender).Text.Contains ("+");
-
 			// Извлечение значения с защитой
-			/*uint v = 0;
-			try
-				{
-				v = uint.Parse (ConvNumber.Text);
-				}
-			catch { }*/
+			bool plus = ((Button)sender).Text.Contains ("+");
 			double res = KassArrayDB::RD_AAOW.DataConvertors.GetNumber (ConvNumber.Text);
 
 			// Обновление и возврат

@@ -86,7 +86,7 @@ namespace RD_AAOW.Droid
 			AndroidSupport.StopRequested = false;
 
 			// Нет смысла запускать сервис, если он не был закрыт приложением.
-			// Также функция недоступна в Android 12 и новее
+			// Также функция запуска foreground из свёрнутого состояния недоступна в Android 12 и новее
 			if (AndroidSupport.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)
 				{
 				base.OnResume ();

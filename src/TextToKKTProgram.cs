@@ -8,12 +8,6 @@ namespace RD_AAOW
 	/// </summary>
 	public static class TextToKKTProgram
 		{
-		/* Дополнительные методы
-		[DllImport ("user32.dll")]
-		private static extern IntPtr FindWindow (string lpClassName, String lpWindowName);
-		[DllImport ("user32.dll")]
-		private static extern int SendMessage (IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);*/
-
 		/// <summary>
 		/// Главная точка входа для приложения
 		/// </summary>
@@ -32,34 +26,6 @@ namespace RD_AAOW
 			if (!RDGenerics.IsAppInstanceUnique (true))
 				return;
 
-			/* Проверка запуска единственной копии (особая обработка)
-			bool result;
-			Mutex instance = new Mutex (true, ProgramDescription.AssemblyTitle, out result);
-			if (!result)
-				{
-				// Сохранение пути к вызываемому файлу и инициирование его обработки в уже запущенном приложении
-				if (args.Length > 0)
-					{
-					ConfigAccessor.NextDumpPath = args[0];
-					IntPtr ptr = FindWindow (null, ProgramDescription.AssemblyVisibleName);
-					SendMessage (ptr, ConfigAccessor.NextDumpPathMsg, IntPtr.Zero, IntPtr.Zero);
-					}
-				else
-					{
-					RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
-						Localization.GetDefaultText (LzDefaultTextValues.Message_AppAlreadyStarted));
-					}
-
-				return;
-				}*/
-
-			/*if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[0]))
-				{
-				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
-					"Библиотека " + ProgramDescription.KassArrayDLLs[0] + " отсутствует " +
-					"на этом ПК. Попробуйте заново развернуть продукт, после чего повторите попытку");
-				return;
-				}*/
 			if (!RDGenerics.StartedFromMSStore &&
 				!RDGenerics.CheckLibraries (new string[] { ProgramDescription.KassArrayDLLs[0] }, true))
 				return;

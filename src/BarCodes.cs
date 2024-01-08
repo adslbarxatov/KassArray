@@ -510,11 +510,13 @@ namespace RD_AAOW
 			{
 			// Контроль состава штрих-кода
 			if (string.IsNullOrWhiteSpace (Data))
-				return Data;
+				return "";
 
-			byte[] data = new byte[Data.Length];
-			for (int i = 0; i < Data.Length; i++)
-				data[i] = KKTSupport.CharToCP1251 (Data[i]);
+			string line = Data.Replace ("\r", "").Replace ("\n", "").Replace ("\t", "").Replace ("\x1D",
+				"").Trim ();
+			byte[] data = new byte[line.Length];
+			for (int i = 0; i < line.Length; i++)
+				data[i] = KKTSupport.CharToCP1251 (line[i]);
 
 			bool needsDecoding = false;
 			for (int i = 0; i < data.Length; i++)
@@ -524,7 +526,7 @@ namespace RD_AAOW
 					break;
 					}
 			if (!needsDecoding)
-				return Data;
+				return line;
 
 			// Рекодировка
 			string result = "";
