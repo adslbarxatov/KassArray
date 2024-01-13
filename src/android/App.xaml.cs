@@ -143,8 +143,8 @@ namespace RD_AAOW
 			pm = PrintingManager;
 			kb = new KnowledgeBase ();
 
-			if (!Localization.IsCurrentLanguageRuRu)
-				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
+			if (!RDLocale.IsCurrentLanguageRuRu)
+				RDLocale.CurrentLanguage = RDLanguages.ru_ru;
 
 			// Переход в статус запуска для отмены вызова из оповещения
 			AndroidSupport.AppIsRunning = true;
@@ -207,7 +207,7 @@ namespace RD_AAOW
 				convertors3MasterBackColor, true);
 
 			aboutPage = ApplyPageSettings ("AboutPage",
-				Localization.GetDefaultText (LzDefaultTextValues.Control_AppAbout),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				aboutMasterBackColor, true);
 
 			AndroidSupport.SetMainPage (MainPage);
@@ -217,23 +217,23 @@ namespace RD_AAOW
 			#region Страница «оглавления»
 
 			AndroidSupport.ApplyLabelSettings (headersPage, "KeepAppStateLabel",
-				"Помнить настройки приложения", ASLabelTypes.DefaultLeft);
+				"Помнить настройки приложения", RDLabelTypes.DefaultLeft);
 			keepAppState = AndroidSupport.ApplySwitchSettings (headersPage, "KeepAppState", false,
 				headersFieldBackColor, null, ca.KeepApplicationState);
 
 			AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceLabel",
-				"Оставить службу активной после выхода", ASLabelTypes.DefaultLeft);
+				"Оставить службу активной после выхода", RDLabelTypes.DefaultLeft);
 			allowService = AndroidSupport.ApplySwitchSettings (headersPage, "AllowService", false,
 				headersFieldBackColor, AllowService_Toggled, AndroidSupport.AllowServiceToStart);
 
 			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
 				AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceTip",
-					"Если закреплённое оповещение " + ProgramDescription.AssemblyMainName + 
+					"Если закреплённое оповещение " + ProgramDescription.AssemblyMainName +
 					" отсутствует в верхней части экрана, эта опция потребует перезапуска приложения",
-					ASLabelTypes.DefaultLeft);
+					RDLabelTypes.DefaultLeft);
 
 			AndroidSupport.ApplyLabelSettings (headersPage, "ExtendedModeLabel",
-				"Режим сервис-инженера", ASLabelTypes.DefaultLeft);
+				"Режим сервис-инженера", RDLabelTypes.DefaultLeft);
 			extendedMode = AndroidSupport.ApplySwitchSettings (headersPage, "ExtendedMode", false,
 				headersFieldBackColor, ExtendedMode_Toggled, ca.AllowExtendedMode);
 
@@ -248,7 +248,7 @@ namespace RD_AAOW
 			#region Страница инструкций
 
 			Label ut = AndroidSupport.ApplyLabelSettings (userManualsPage, "SelectionLabel", "Модель ККТ:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			userManualLayout = (StackLayout)userManualsPage.FindByName ("UserManualLayout");
 			int operationsCount = ca.AllowExtendedFunctionsLevel1 ? UserManuals.OperationTypes.Length :
 				UserManuals.OperationsForCashiers.Length;
@@ -295,28 +295,28 @@ namespace RD_AAOW
 			userManualsPrintButton.HeightRequest = userManualsPrintButton.FontSize * 2.0;
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "HelpLabel",
-				"<...> – индикация на экране, [...] – клавиши ККТ." + Localization.RN +
+				"<...> – индикация на экране, [...] – клавиши ККТ." + RDLocale.RN +
 				"Нажатие на заголовки разделов позволяет добавить или скрыть их в видимой и печатной " +
 				"версиях этой инструкции",
-				ASLabelTypes.Tip);
+				RDLabelTypes.Tip);
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "OneItemLabel", "В чеках бывает более одной позиции",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 			moreThanOneItemPerDocument = AndroidSupport.ApplySwitchSettings (userManualsPage, "OneItemSwitch",
 				false, userManualsFieldBackColor, null, false);
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "PricesLabel", "В базе товаров есть цены",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 			productBaseContainsPrices = AndroidSupport.ApplySwitchSettings (userManualsPage, "PricesSwitch",
 				false, userManualsFieldBackColor, null, false);
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "PasswordsLabel", "Кассиры пользуются паролями",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 			cashiersHavePasswords = AndroidSupport.ApplySwitchSettings (userManualsPage, "PasswordsSwitch",
 				false, userManualsFieldBackColor, null, false);
 
 			AndroidSupport.ApplyLabelSettings (userManualsPage, "ServicesLabel", "В базе ККТ содержатся услуги",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 			baseContainsServices = AndroidSupport.ApplySwitchSettings (userManualsPage, "ServicesSwitch",
 				false, userManualsFieldBackColor, null, false);
 
@@ -333,7 +333,7 @@ namespace RD_AAOW
 			#region Страница кодов символов ККТ
 
 			AndroidSupport.ApplyLabelSettings (kktCodesPage, "SelectionLabel", "Модель ККТ:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 
 			string kktTypeName;
 			try
@@ -350,34 +350,34 @@ namespace RD_AAOW
 			kktCodesKKTButton = AndroidSupport.ApplyButtonSettings (kktCodesPage, "KKTButton",
 				kktTypeName, kktCodesFieldBackColor, CodesKKTButton_Clicked, true);
 			AndroidSupport.ApplyLabelSettings (kktCodesPage, "SourceTextLabel",
-				"Исходный текст:", ASLabelTypes.HeaderLeft);
+				"Исходный текст:", RDLabelTypes.HeaderLeft);
 
 			codesSourceText = AndroidSupport.ApplyEditorSettings (kktCodesPage, "SourceText",
 				kktCodesFieldBackColor, Keyboard.Default, 72, ca.CodesText, SourceText_TextChanged, true);
 			codesSourceText.HorizontalOptions = LayoutOptions.Fill;
 
 			AndroidSupport.ApplyLabelSettings (kktCodesPage, "ResultTextLabel", "Коды ККТ:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 
 			kktCodesErrorLabel = AndroidSupport.ApplyLabelSettings (kktCodesPage, "ErrorLabel",
-				"Часть введённых символов не поддерживается данной ККТ", ASLabelTypes.ErrorTip);
+				"Часть введённых символов не поддерживается данной ККТ", RDLabelTypes.ErrorTip);
 
 			kktCodesResultText = AndroidSupport.ApplyLabelSettings (kktCodesPage, "ResultText", " ",
-				ASLabelTypes.FieldMonotype, kktCodesFieldBackColor);
+				RDLabelTypes.FieldMonotype, kktCodesFieldBackColor);
 
 			AndroidSupport.ApplyLabelSettings (kktCodesPage, "HelpTextLabel", "Пояснения к вводу:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			kktCodesHelpLabel = AndroidSupport.ApplyLabelSettings (kktCodesPage, "HelpText",
-				kb.CodeTables.GetKKTTypeDescription (ca.KKTForCodes), ASLabelTypes.Field,
+				kb.CodeTables.GetKKTTypeDescription (ca.KKTForCodes), RDLabelTypes.Field,
 				kktCodesFieldBackColor);
 
 			AndroidSupport.ApplyButtonSettings (kktCodesPage, "ClearText",
-				ASButtonDefaultTypes.Delete, kktCodesFieldBackColor, CodesClear_Clicked);
+				RDDefaultButtons.Delete, kktCodesFieldBackColor, CodesClear_Clicked);
 			AndroidSupport.ApplyButtonSettings (kktCodesPage, "SelectSavedText",
-				ASButtonDefaultTypes.Select, kktCodesFieldBackColor, CodesLineGet_Clicked);
+				RDDefaultButtons.Select, kktCodesFieldBackColor, CodesLineGet_Clicked);
 
 			kktCodesLengthLabel = AndroidSupport.ApplyLabelSettings (kktCodesPage, "LengthLabel",
-				"Длина:", ASLabelTypes.HeaderLeft);
+				"Длина:", RDLabelTypes.HeaderLeft);
 			kktCodesCenterButton = AndroidSupport.ApplyButtonSettings (kktCodesPage, "CenterText",
 				"Центрировать", kktCodesFieldBackColor, TextToConvertCenter_Click, false);
 			AndroidSupport.ApplyButtonSettings (kktCodesPage, "RememberText",
@@ -390,9 +390,9 @@ namespace RD_AAOW
 			#region Страница ошибок
 
 			AndroidSupport.ApplyLabelSettings (errorsPage, "SelectionLabel", "Модель ККТ:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyLabelSettings (errorsPage, "SearchLabel", "Поиск ошибки по коду или фрагменту описания:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 
 			try
 				{
@@ -407,53 +407,53 @@ namespace RD_AAOW
 				kktTypeName, errorsFieldBackColor, ErrorsKKTButton_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (errorsPage, "ResultTextLabel", "Описание ошибки:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 
 			errorsResultText = AndroidSupport.ApplyLabelSettings (errorsPage, "ResultText",
-				"", ASLabelTypes.Field, errorsFieldBackColor);
-			errorSearchText = AndroidSupport.ApplyEditorSettings (errorsPage, "ErrorSearchText", errorsFieldBackColor,
-				Keyboard.Default, 30, ca.ErrorCode, null, true);
+				"", RDLabelTypes.Field, errorsFieldBackColor);
+			errorSearchText = AndroidSupport.ApplyEditorSettings (errorsPage, "ErrorSearchText",
+				errorsFieldBackColor, Keyboard.Default, 30, ca.ErrorCode, null, true);
 			Errors_Find (null, null);
 
 			AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorSearchButton",
-				ASButtonDefaultTypes.Find, errorsFieldBackColor, Errors_Find);
+				RDDefaultButtons.Find, errorsFieldBackColor, Errors_Find);
 			AndroidSupport.ApplyButtonSettings (errorsPage, "ErrorClearButton",
-				ASButtonDefaultTypes.Delete, errorsFieldBackColor, Errors_Clear);
+				RDDefaultButtons.Delete, errorsFieldBackColor, Errors_Clear);
 
 			#endregion
 
 			#region Страница "О программе"
 
 			AndroidSupport.ApplyLabelSettings (aboutPage, "AboutLabel",
-				RDGenerics.AppAboutLabelText, ASLabelTypes.AppAbout);
+				RDGenerics.AppAboutLabelText, RDLabelTypes.AppAbout);
 
 			AndroidSupport.ApplyButtonSettings (aboutPage, "ManualsButton",
-				Localization.GetDefaultText (LzDefaultTextValues.Control_ReferenceMaterials),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Control_ReferenceMaterials),
 				aboutFieldBackColor, ReferenceButton_Click, false);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "HelpButton",
-				Localization.GetDefaultText (LzDefaultTextValues.Control_HelpSupport),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Control_HelpSupport),
 				aboutFieldBackColor, HelpButton_Click, false);
 			AndroidSupport.ApplyLabelSettings (aboutPage, "GenericSettingsLabel",
-				Localization.GetDefaultText (LzDefaultTextValues.Control_GenericSettings),
-				ASLabelTypes.HeaderLeft);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Control_GenericSettings),
+				RDLabelTypes.HeaderLeft);
 
 			AndroidSupport.ApplyLabelSettings (aboutPage, "RestartTipLabel",
-				Localization.GetDefaultText (LzDefaultTextValues.Message_RestartRequired),
-				ASLabelTypes.Tip);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Message_RestartRequired),
+				RDLabelTypes.Tip);
 
 			AndroidSupport.ApplyLabelSettings (aboutPage, "FontSizeLabel",
-				Localization.GetDefaultText (LzDefaultTextValues.Control_InterfaceFontSize),
-				ASLabelTypes.DefaultLeft);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Control_InterfaceFontSize),
+				RDLabelTypes.DefaultLeft);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "FontSizeInc",
-				ASButtonDefaultTypes.Increase, aboutFieldBackColor, FontSizeButton_Clicked);
+				RDDefaultButtons.Increase, aboutFieldBackColor, FontSizeButton_Clicked);
 			AndroidSupport.ApplyButtonSettings (aboutPage, "FontSizeDec",
-				ASButtonDefaultTypes.Decrease, aboutFieldBackColor, FontSizeButton_Clicked);
+				RDDefaultButtons.Decrease, aboutFieldBackColor, FontSizeButton_Clicked);
 			aboutFontSizeField = AndroidSupport.ApplyLabelSettings (aboutPage, "FontSizeField",
-				" ", ASLabelTypes.DefaultCenter);
+				" ", RDLabelTypes.DefaultCenter);
 
 			AndroidSupport.ApplyLabelSettings (aboutPage, "HelpTextLabel",
-				RDGenerics.GetEncoding (SupportedEncodings.UTF8).
-				GetString (RD_AAOW.Properties.Resources.KassArray_ru_ru_dph), ASLabelTypes.SmallLeft);
+				RDGenerics.GetEncoding (RDEncodings.UTF8).
+				GetString (RD_AAOW.Properties.Resources.KassArray_ru_ru_dph), RDLabelTypes.SmallLeft);
 
 			FontSizeButton_Clicked (null, null);
 
@@ -462,7 +462,7 @@ namespace RD_AAOW
 			#region Страница определения срока жизни ФН
 
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "SetModelLabel", "ЗН, номинал или модель ФН:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			fnLifeSerial = AndroidSupport.ApplyEditorSettings (fnLifePage, "FNLifeSerial", fnLifeFieldBackColor,
 				Keyboard.Default, 16, ca.FNSerial, FNLifeSerial_TextChanged, true);
 			fnLifeSerial.Margin = new Thickness (0);
@@ -471,86 +471,86 @@ namespace RD_AAOW
 				fnLifeFieldBackColor, FnLife13_Toggled, false);
 
 			fnLifeLabel = AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeLabel",
-				"", ASLabelTypes.DefaultLeft);
+				"", RDLabelTypes.DefaultLeft);
 
 			//
 			fnLifeModelLabel = AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeModelLabel",
-				"", ASLabelTypes.Semaphore);
+				"", RDLabelTypes.Semaphore);
 
 			//
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "SetUserParameters", "Значимые параметры:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 
 			fnLifeGenericTax = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGenericTax", true,
 				fnLifeFieldBackColor, null, false);
 			fnLifeGenericTaxLabel = AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeGenericTaxLabel",
-				"", ASLabelTypes.DefaultLeft);
+				"", RDLabelTypes.DefaultLeft);
 
 			fnLifeGoods = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGoods", true,
 				fnLifeFieldBackColor, null, false);
 			fnLifeGoodsLabel = AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeGoodsLabel",
-				"", ASLabelTypes.DefaultLeft);
+				"", RDLabelTypes.DefaultLeft);
 
 			fnLifeSeason = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeSeason", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeSeasonLabel", "Сезонная торговля",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			fnLifeAgents = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeAgents", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeAgentsLabel", "Платёжный (суб)агент",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			fnLifeExcise = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeExcise", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeExciseLabel", "Подакцизные товары",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			fnLifeAutonomous = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeAutonomous", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeAutonomousLabel", "Автономный режим",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			fnLifeFFD12 = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeFFD12", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeFFD12Label", "ФФД 1.1, 1.2",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			fnLifeGambling = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeGambling", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeGamblingLabel", "Азартные игры и лотереи",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			fnLifePawn = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifePawn", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifePawnLabel", "Ломбарды и страхование",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			fnLifeMarkGoods = AndroidSupport.ApplySwitchSettings (fnLifePage, "FNLifeMarkGoods", false,
 				fnLifeFieldBackColor, null, false);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeMarkGoodsLabel", "Маркированные товары",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 
 			//
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "SetDate", "Дата фискализации:",
-				ASLabelTypes.DefaultLeft);
+				RDLabelTypes.DefaultLeft);
 			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (fnLifePage, "FNLifeStartDate",
 				fnLifeFieldBackColor, FnLifeStartDate_DateSelected);
 
 			//
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeResultLabel", "Результат:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			fnLifeResult = AndroidSupport.ApplyButtonSettings (fnLifePage, "FNLifeResult", "",
 				fnLifeFieldBackColor, FNLifeResultCopy, true);
 			AndroidSupport.ApplyLabelSettings (fnLifePage, "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена",
-				ASLabelTypes.Tip);
+				RDLabelTypes.Tip);
 
 			//
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Clear",
-				ASButtonDefaultTypes.Delete, fnLifeFieldBackColor, FNLifeClear_Clicked);
+				RDDefaultButtons.Delete, fnLifeFieldBackColor, FNLifeClear_Clicked);
 			AndroidSupport.ApplyButtonSettings (fnLifePage, "Find",
-				ASButtonDefaultTypes.Find, fnLifeFieldBackColor, FNLifeFind_Clicked);
+				RDDefaultButtons.Find, fnLifeFieldBackColor, FNLifeFind_Clicked);
 
 			// Применение всех названий
 			FNLifeEvFlags = (FNLifeFlags)ca.FNLifeEvFlags;
@@ -572,37 +572,37 @@ namespace RD_AAOW
 			#region Страница заводских и рег. номеров
 
 			AndroidSupport.ApplyLabelSettings (rnmPage, "SNLabel", "ЗН или модель ККТ:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			rnmKKTSN = AndroidSupport.ApplyEditorSettings (rnmPage, "SN", rnmFieldBackColor, Keyboard.Default,
 				kb.KKTNumbers.MaxSerialNumberLength, ca.KKTSerial, RNM_TextChanged, true);
 
 			rnmKKTTypeLabel = AndroidSupport.ApplyLabelSettings (rnmPage, "TypeLabel",
-				"", ASLabelTypes.DefaultLeft);
+				"", RDLabelTypes.DefaultLeft);
 
 			AndroidSupport.ApplyLabelSettings (rnmPage, "INNLabel", "ИНН пользователя:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			rnmINN = AndroidSupport.ApplyEditorSettings (rnmPage, "INN", rnmFieldBackColor, Keyboard.Numeric, 12,
 				ca.UserINN, RNM_TextChanged, true);
 
 			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettings (rnmPage, "INNCheckLabel", "",
-				ASLabelTypes.Semaphore);
+				RDLabelTypes.Semaphore);
 
 			if (ca.AllowExtendedFunctionsLevel2)
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMLabel",
 					"Регистрационный номер для проверки или произвольное число для генерации:",
-					ASLabelTypes.HeaderLeft);
+					RDLabelTypes.HeaderLeft);
 			else
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMLabel",
-					"Регистрационный номер для проверки:", ASLabelTypes.HeaderLeft);
+					"Регистрационный номер для проверки:", RDLabelTypes.HeaderLeft);
 
 			rnmRNM = AndroidSupport.ApplyEditorSettings (rnmPage, "RNM", rnmFieldBackColor, Keyboard.Numeric, 16,
 				ca.RNMKKT, RNM_TextChanged, true);
 
 			rnmRNMCheckLabel = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMCheckLabel", "",
-				ASLabelTypes.Semaphore);
+				RDLabelTypes.Semaphore);
 
 			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate",
-				ASButtonDefaultTypes.Create, rnmFieldBackColor, RNMGenerate_Clicked);
+				RDDefaultButtons.Create, rnmFieldBackColor, RNMGenerate_Clicked);
 			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsLevel2;
 
 			rnmTip = AndroidSupport.ApplyLabelSettings (rnmPage, "SNAbout",
@@ -611,25 +611,25 @@ namespace RD_AAOW
 				"<b><font color=\"#00C000\">зелёный</font></b> – поддерживается; " +
 				"<b><font color=\"#FFFF00\">жёлтый</font></b> – планируется; " +
 				"<b><font color=\"#6060FF\">синий</font></b> – нет сведений (на момент релиза этой версии приложения)",
-				ASLabelTypes.Tip);
+				RDLabelTypes.Tip);
 			rnmTip.TextType = TextType.Html;
 
 			if (ca.AllowExtendedFunctionsLevel2)
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMAbout",
 					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
-					"РНМ их можно указать вручную – остальные будут достроены программой", ASLabelTypes.Tip);
+					"РНМ их можно указать вручную – остальные будут достроены программой", RDLabelTypes.Tip);
 
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Clear",
-				ASButtonDefaultTypes.Delete, rnmFieldBackColor, RNMClear_Clicked);
+				RDDefaultButtons.Delete, rnmFieldBackColor, RNMClear_Clicked);
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Find",
-				ASButtonDefaultTypes.Find, rnmFieldBackColor, RNMFind_Clicked);
+				RDDefaultButtons.Find, rnmFieldBackColor, RNMFind_Clicked);
 
 			rnmSupport105 = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMSupport105", "ФФД 1.05",
-				ASLabelTypes.Semaphore);
+				RDLabelTypes.Semaphore);
 			rnmSupport11 = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMSupport11", "ФФД 1.1",
-				ASLabelTypes.Semaphore);
+				RDLabelTypes.Semaphore);
 			rnmSupport12 = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMSupport12", "ФФД 1.2",
-				ASLabelTypes.Semaphore);
+				RDLabelTypes.Semaphore);
 			rnmSupport105.Padding = rnmSupport11.Padding = rnmSupport12.Padding = new Thickness (6);
 
 			RNM_TextChanged (null, null);   // Применение значений
@@ -639,19 +639,19 @@ namespace RD_AAOW
 			#region Страница настроек ОФД
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDINNLabel", "ИНН ОФД:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			ofdINN = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDINN", ca.OFDINN, ofdFieldBackColor,
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDNameLabel", "Название:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDSearchLabel", "Поиск по ИНН или фрагменту названия:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			ofdNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDName", "- Выберите или введите ИНН -",
 				ofdFieldBackColor, OFDName_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDDNSNameLabel", "Адрес ОФД:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			ofdDNSNameButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSName", "", ofdFieldBackColor,
 				Field_Clicked, true);
 			ofdIPButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIP", "", ofdFieldBackColor,
@@ -660,7 +660,7 @@ namespace RD_AAOW
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDDNSNameMLabel", "Адрес ИСМ:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			ofdDNSNameMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameM", "", ofdFieldBackColor,
 				Field_Clicked, true);
 			ofdIPMButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPM", "", ofdFieldBackColor,
@@ -669,7 +669,7 @@ namespace RD_AAOW
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDDNSNameKLabel", "Адрес ОКП (стандартный):",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDDNSNameK", OFD.OKPSite,
 				ofdFieldBackColor, Field_Clicked, true);
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDIPK", OFD.OKPIP,
@@ -678,41 +678,34 @@ namespace RD_AAOW
 				ofdFieldBackColor, Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDEmailLabel", "E-mail отправителя чеков:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			ofdEmailButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDEmail", "", ofdFieldBackColor,
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDSiteLabel", "Сайт ОФД:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			ofdSiteButton = AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSite", "", ofdFieldBackColor,
 				Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDNalogSiteLabel", "Сайт ФНС:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDNalogSite", OFD.FNSSite,
 				ofdFieldBackColor, Field_Clicked, true);
 
-			/*AndroidSupport.ApplyLabelSettings (ofdPage, "OFDYaDNSLabel", "Яндекс DNS:",
-				ASLabelTypes.HeaderLeft);
-			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDYaDNS1", OFD.YandexDNSReq,
-				ofdFieldBackColor, Field_Clicked, true);
-			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDYaDNS2", OFD.YandexDNSAlt,
-				ofdFieldBackColor, Field_Clicked, true);*/
-
 			AndroidSupport.ApplyLabelSettings (ofdPage, "OFDHelpLabel",
-				"Нажатие кнопок копирует их подписи в буфер обмена", ASLabelTypes.Tip);
+				"Нажатие кнопок копирует их подписи в буфер обмена", RDLabelTypes.Tip);
 
 			AndroidSupport.ApplyButtonSettings (ofdPage, "Clear",
-				ASButtonDefaultTypes.Delete, ofdFieldBackColor, OFDClear_Clicked);
+				RDDefaultButtons.Delete, ofdFieldBackColor, OFDClear_Clicked);
 
 			ofdSearchText = AndroidSupport.ApplyEditorSettings (ofdPage, "OFDSearchText", ofdFieldBackColor,
 				Keyboard.Default, 30, "", null, true);
 
 			AndroidSupport.ApplyButtonSettings (ofdPage, "OFDSearchButton",
-				ASButtonDefaultTypes.Find, ofdFieldBackColor, OFD_Find);
+				RDDefaultButtons.Find, ofdFieldBackColor, OFD_Find);
 
 			ofdDisabledLabel = AndroidSupport.ApplyLabelSettings (ofdPage, "OFDDisabledLabel",
-				"Аннулирован", ASLabelTypes.ErrorTip);
+				"Аннулирован", RDLabelTypes.ErrorTip);
 			ofdDisabledLabel.IsVisible = false;
 
 			OFDINN_TextChanged (null, null); // Протягивание значений
@@ -722,34 +715,34 @@ namespace RD_AAOW
 			#region Страница TLV-тегов
 
 			AndroidSupport.ApplyLabelSettings (tagsPage, "TLVSearchLabel", "Поиск по номеру или фрагменту описания:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			tlvTag = AndroidSupport.ApplyEditorSettings (tagsPage, "TLVSearchText", tagsFieldBackColor,
 				Keyboard.Default, 20, ca.TLVData, null, true);
 
 			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVSearchButton",
-				ASButtonDefaultTypes.Find, tagsFieldBackColor, TLVFind_Clicked);
+				RDDefaultButtons.Find, tagsFieldBackColor, TLVFind_Clicked);
 			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVClearButton",
-				ASButtonDefaultTypes.Delete, tagsFieldBackColor, TLVClear_Clicked);
+				RDDefaultButtons.Delete, tagsFieldBackColor, TLVClear_Clicked);
 
 			AndroidSupport.ApplyLabelSettings (tagsPage, "TLVDescriptionLabel", "Описание тега:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			tlvDescriptionLabel = AndroidSupport.ApplyLabelSettings (tagsPage, "TLVDescription", "",
-				ASLabelTypes.Field, tagsFieldBackColor);
+				RDLabelTypes.Field, tagsFieldBackColor);
 
 			AndroidSupport.ApplyLabelSettings (tagsPage, "TLVTypeLabel", "Тип тега:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			tlvTypeLabel = AndroidSupport.ApplyLabelSettings (tagsPage, "TLVType", "",
-				ASLabelTypes.Field, tagsFieldBackColor);
+				RDLabelTypes.Field, tagsFieldBackColor);
 
 			AndroidSupport.ApplyLabelSettings (tagsPage, "TLVValuesLabel", "Возможные значения тега:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			tlvValuesLabel = AndroidSupport.ApplyLabelSettings (tagsPage, "TLVValues", "",
-				ASLabelTypes.Field, tagsFieldBackColor);
+				RDLabelTypes.Field, tagsFieldBackColor);
 
 			AndroidSupport.ApplyLabelSettings (tagsPage, "TLVObligationLabel", "Обязательность:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			tlvObligationLabel = AndroidSupport.ApplyLabelSettings (tagsPage, "TLVObligation", "",
-				ASLabelTypes.Field, tagsFieldBackColor);
+				RDLabelTypes.Field, tagsFieldBackColor);
 			tlvObligationLabel.TextType = TextType.Html;
 
 			AndroidSupport.ApplyButtonSettings (tagsPage, "TLVObligationHelpLabel",
@@ -762,62 +755,62 @@ namespace RD_AAOW
 			#region Страница команд нижнего уровня
 
 			AndroidSupport.ApplyLabelSettings (lowLevelPage, "ProtocolLabel", "Протокол:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			lowLevelProtocol = AndroidSupport.ApplyButtonSettings (lowLevelPage, "ProtocolButton",
 				kb.LLCommands.GetProtocolsNames ()[(int)ca.LowLevelProtocol], lowLevelFieldBackColor,
 				LowLevelProtocol_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (lowLevelPage, "CommandLabel", "Команда:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			lowLevelCommand = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandButton",
 				kb.LLCommands.GetCommandsList (ca.LowLevelProtocol)[(int)ca.LowLevelCode],
 				lowLevelFieldBackColor, LowLevelCommandCodeButton_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (lowLevelPage, "CommandSearchLabel", "Поиск по описанию команды:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyLabelSettings (lowLevelPage, "CommandCodeLabel", "Код команды:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			lowLevelCommandCode = AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandCodeButton",
 				kb.LLCommands.GetCommand (ca.LowLevelProtocol, ca.LowLevelCode, false),
 				lowLevelFieldBackColor, Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (lowLevelPage, "CommandDescrLabel", "Пояснение:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 
 			lowLevelCommandDescr = AndroidSupport.ApplyLabelSettings (lowLevelPage, "CommandDescr",
-				kb.LLCommands.GetCommand (ca.LowLevelProtocol, ca.LowLevelCode, true), ASLabelTypes.Field,
+				kb.LLCommands.GetCommand (ca.LowLevelProtocol, ca.LowLevelCode, true), RDLabelTypes.Field,
 				lowLevelFieldBackColor);
 
 			AndroidSupport.ApplyLabelSettings (lowLevelPage, "LowLevelHelpLabel",
-				"Нажатие кнопки копирует команду в буфер обмена", ASLabelTypes.Tip);
+				"Нажатие кнопки копирует команду в буфер обмена", RDLabelTypes.Tip);
 
 			commandSearchText = AndroidSupport.ApplyEditorSettings (lowLevelPage, "CommandSearchText",
 				lowLevelFieldBackColor, Keyboard.Default, 30, "", null, true);
 
 			AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandSearchButton",
-				ASButtonDefaultTypes.Find, lowLevelFieldBackColor, Command_Find);
+				RDDefaultButtons.Find, lowLevelFieldBackColor, Command_Find);
 			AndroidSupport.ApplyButtonSettings (lowLevelPage, "CommandClearButton",
-				ASButtonDefaultTypes.Delete, lowLevelFieldBackColor, Command_Clear);
+				RDDefaultButtons.Delete, lowLevelFieldBackColor, Command_Clear);
 
 			#endregion
 
 			#region Страница штрих-кодов
 
 			AndroidSupport.ApplyLabelSettings (barCodesPage, "BarcodeFieldLabel", "Данные штрих-кода:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			barcodeField = AndroidSupport.ApplyEditorSettings (barCodesPage, "BarcodeField",
 				barCodesFieldBackColor, Keyboard.Default, BarCodes.MaxSupportedDataLength,
 				ca.BarcodeData, BarcodeText_TextChanged, true);
 
 			AndroidSupport.ApplyLabelSettings (barCodesPage, "BarcodeDescriptionLabel",
-				"Описание штрих-кода:", ASLabelTypes.HeaderLeft);
+				"Описание штрих-кода:", RDLabelTypes.HeaderLeft);
 			barcodeDescriptionLabel = AndroidSupport.ApplyLabelSettings (barCodesPage, "BarcodeDescription", "",
-				ASLabelTypes.Field, barCodesFieldBackColor);
+				RDLabelTypes.Field, barCodesFieldBackColor);
 
 			AndroidSupport.ApplyButtonSettings (barCodesPage, "Clear",
-				ASButtonDefaultTypes.Delete, barCodesFieldBackColor, BarcodeClear_Clicked);
+				RDDefaultButtons.Delete, barCodesFieldBackColor, BarcodeClear_Clicked);
 			AndroidSupport.ApplyButtonSettings (barCodesPage, "GetFromClipboard",
-				ASButtonDefaultTypes.Copy, barCodesFieldBackColor, BarcodeGet_Clicked);
+				RDDefaultButtons.Copy, barCodesFieldBackColor, BarcodeGet_Clicked);
 
 			BarcodeText_TextChanged (null, null);
 
@@ -826,32 +819,32 @@ namespace RD_AAOW
 			#region Страница распиновок
 
 			AndroidSupport.ApplyLabelSettings (connectorsPage, "CableLabel", "Тип кабеля:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			cableTypeButton = AndroidSupport.ApplyButtonSettings (connectorsPage, "CableTypeButton",
 				kb.Plugs.GetCablesNames ()[(int)ca.CableType], connectorsFieldBackColor, CableTypeButton_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (connectorsPage, "CableDescriptionLabel", "Сопоставление контактов:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			cableLeftSideText = AndroidSupport.ApplyLabelSettings (connectorsPage, "CableLeftSide",
-				" ", ASLabelTypes.DefaultLeft);
+				" ", RDLabelTypes.DefaultLeft);
 			cableLeftSideText.HorizontalTextAlignment = TextAlignment.Center;
 			cableLeftSideText.HorizontalOptions = LayoutOptions.Center;
 
 			cableLeftPinsText = AndroidSupport.ApplyLabelSettings (connectorsPage, "CableLeftPins", " ",
-				ASLabelTypes.FieldMonotype, connectorsFieldBackColor);
+				RDLabelTypes.FieldMonotype, connectorsFieldBackColor);
 
 			cableRightSideText = AndroidSupport.ApplyLabelSettings (connectorsPage, "CableRightSide",
-				" ", ASLabelTypes.DefaultLeft);
+				" ", RDLabelTypes.DefaultLeft);
 			cableRightSideText.HorizontalTextAlignment = TextAlignment.Center;
 			cableRightSideText.HorizontalOptions = LayoutOptions.Center;
 
 			cableRightPinsText = AndroidSupport.ApplyLabelSettings (connectorsPage, "CableRightPins", " ",
-				ASLabelTypes.FieldMonotype, connectorsFieldBackColor);
+				RDLabelTypes.FieldMonotype, connectorsFieldBackColor);
 			cableLeftPinsText.HorizontalTextAlignment = cableRightPinsText.HorizontalTextAlignment =
 				TextAlignment.Center;
 
 			cableDescriptionText = AndroidSupport.ApplyLabelSettings (connectorsPage, "CableDescription",
-				" ", ASLabelTypes.Tip);
+				" ", RDLabelTypes.Tip);
 
 			CableTypeButton_Clicked (null, null);
 
@@ -860,26 +853,26 @@ namespace RD_AAOW
 			#region Страница конвертора систем счисления
 
 			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberLabel",
-				"Число:", ASLabelTypes.HeaderLeft);
+				"Число:", RDLabelTypes.HeaderLeft);
 			convNumberField = AndroidSupport.ApplyEditorSettings (convertorsSNPage, "ConvNumberField",
 				convertors1FieldBackColor, Keyboard.Default, 10, ca.ConversionNumber, ConvNumber_TextChanged, true);
 
 			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberInc",
-				ASButtonDefaultTypes.Increase, convertors1FieldBackColor, ConvNumberAdd_Click);
+				RDDefaultButtons.Increase, convertors1FieldBackColor, ConvNumberAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberDec",
-				ASButtonDefaultTypes.Decrease, convertors1FieldBackColor, ConvNumberAdd_Click);
+				RDDefaultButtons.Decrease, convertors1FieldBackColor, ConvNumberAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsSNPage, "ConvNumberClear",
-				ASButtonDefaultTypes.Delete, convertors1FieldBackColor, ConvNumberClear_Click);
+				RDDefaultButtons.Delete, convertors1FieldBackColor, ConvNumberClear_Click);
 
 			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberResultLabel", "Представление:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			convNumberResultField = AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvNumberResultField",
-				" ", ASLabelTypes.FieldMonotype, convertors1FieldBackColor);
+				" ", RDLabelTypes.FieldMonotype, convertors1FieldBackColor);
 			ConvNumber_TextChanged (null, null);
 
 			const string convHelp = "Шестнадцатеричные числа следует начинать с символов “0x”";
 			AndroidSupport.ApplyLabelSettings (convertorsSNPage, "ConvHelpLabel", convHelp,
-				ASLabelTypes.Tip);
+				RDLabelTypes.Tip);
 
 			#endregion
 
@@ -888,21 +881,21 @@ namespace RD_AAOW
 			encodingModesCount = (uint)(DataConvertors.AvailableEncodings.Length / 2);
 
 			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeLabel",
-				"Код символа" + Localization.RN + "или символ:", ASLabelTypes.HeaderLeft);
+				"Код символа" + RDLocale.RN + "или символ:", RDLabelTypes.HeaderLeft);
 			convCodeField = AndroidSupport.ApplyEditorSettings (convertorsUCPage, "ConvCodeField",
 				convertors2FieldBackColor, Keyboard.Default, 10, ca.ConversionCode, ConvCode_TextChanged, true);
 
 			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeInc",
-				ASButtonDefaultTypes.Increase, convertors2FieldBackColor, ConvCodeAdd_Click);
+				RDDefaultButtons.Increase, convertors2FieldBackColor, ConvCodeAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeDec",
-				ASButtonDefaultTypes.Decrease, convertors2FieldBackColor, ConvCodeAdd_Click);
+				RDDefaultButtons.Decrease, convertors2FieldBackColor, ConvCodeAdd_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeClear",
-				ASButtonDefaultTypes.Delete, convertors2FieldBackColor, ConvCodeClear_Click);
+				RDDefaultButtons.Delete, convertors2FieldBackColor, ConvCodeClear_Click);
 
 			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeResultLabel", "Символ Unicode:",
-				ASLabelTypes.HeaderLeft);
+				RDLabelTypes.HeaderLeft);
 			convCodeResultField = AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvCodeResultField",
-				"", ASLabelTypes.FieldMonotype, convertors2FieldBackColor);
+				"", RDLabelTypes.FieldMonotype, convertors2FieldBackColor);
 
 			convCodeSymbolField = AndroidSupport.ApplyButtonSettings (convertorsUCPage, "ConvCodeSymbolField",
 				" ", convertors2FieldBackColor, CopyCharacter_Click, true);
@@ -910,34 +903,34 @@ namespace RD_AAOW
 			ConvCode_TextChanged (null, null);
 
 			AndroidSupport.ApplyLabelSettings (convertorsUCPage, "ConvHelpLabel",
-				convHelp + "." + Localization.RN + "Нажатие кнопки с символом Unicode копирует его в буфер обмена",
-				ASLabelTypes.Tip);
+				convHelp + "." + RDLocale.RN + "Нажатие кнопки с символом Unicode копирует его в буфер обмена",
+				RDLabelTypes.Tip);
 
 			#endregion
 
 			#region Страница конвертора двоичных данных
 
 			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "HexLabel",
-				"Данные (hex):", ASLabelTypes.HeaderLeft);
+				"Данные (hex):", RDLabelTypes.HeaderLeft);
 			convHexField = AndroidSupport.ApplyEditorSettings (convertorsHTPage, "HexField",
 				convertors3FieldBackColor, Keyboard.Default, 500, ca.ConversionHex, null, true);
 			convHexField.HorizontalOptions = LayoutOptions.Fill;
 
 			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "HexToTextButton",
-				ASButtonDefaultTypes.Down, convertors3FieldBackColor, ConvertHexToText_Click);
+				RDDefaultButtons.Down, convertors3FieldBackColor, ConvertHexToText_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "TextToHexButton",
-				ASButtonDefaultTypes.Up, convertors3FieldBackColor, ConvertTextToHex_Click);
+				RDDefaultButtons.Up, convertors3FieldBackColor, ConvertTextToHex_Click);
 			AndroidSupport.ApplyButtonSettings (convertorsHTPage, "ClearButton",
-				ASButtonDefaultTypes.Delete, convertors3FieldBackColor, ClearConvertText_Click);
+				RDDefaultButtons.Delete, convertors3FieldBackColor, ClearConvertText_Click);
 
 			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "TextLabel",
-				"Данные (текст):", ASLabelTypes.HeaderLeft);
+				"Данные (текст):", RDLabelTypes.HeaderLeft);
 			convTextField = AndroidSupport.ApplyEditorSettings (convertorsHTPage, "TextField",
 				convertors3FieldBackColor, Keyboard.Default, 250, ca.ConversionText, null, true);
 			convTextField.HorizontalOptions = LayoutOptions.Fill;
 
 			AndroidSupport.ApplyLabelSettings (convertorsHTPage, "EncodingLabel",
-				"Кодировка:", ASLabelTypes.HeaderLeft);
+				"Кодировка:", RDLabelTypes.HeaderLeft);
 			encodingButton = AndroidSupport.ApplyButtonSettings (convertorsHTPage, "EncodingButton",
 				" ", convertors3FieldBackColor, EncodingButton_Clicked, true);
 			EncodingButton_Clicked (null, null);
@@ -992,22 +985,13 @@ namespace RD_AAOW
 				// Только после принятия
 
 				await AndroidSupport.ShowMessage ("Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!" +
-					Localization.RNRN +
+					RDLocale.RNRN +
 					"На этой странице находится перечень функций приложения, который позволяет перейти " +
 					"к нужному разделу. Вернуться сюда можно с помощью кнопки «Назад». Перемещение " +
 					"между разделами также доступно по свайпу влево-вправо",
 
-					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 				}
-
-			/* Шрифт интерфейса
-			if (AndroidSupport.AllowFontSizeTip)
-				{
-				await AndroidSupport.ShowMessage (
-					Localization.GetDefaultText (LzDefaultTextValues.Message_FontSizeAvailable),
-					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
-				}
-			*/
 			}
 
 		// Запрос цвета, соответствующего статусу поддержки
@@ -1066,13 +1050,13 @@ namespace RD_AAOW
 			if (extendedMode.IsToggled)
 				{
 				await AndroidSupport.ShowMessage (ConfigAccessor.ExtendedModeMessage,
-					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 				ca.AllowExtendedMode = true;
 				}
 			else
 				{
 				await AndroidSupport.ShowMessage (ConfigAccessor.NoExtendedModeMessage,
-					Localization.GetDefaultText (LzDefaultTextValues.Button_OK));
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 				ca.AllowExtendedMode = false;
 				}
 			}
@@ -1148,7 +1132,7 @@ namespace RD_AAOW
 
 			// Установка модели
 			int res = await AndroidSupport.ShowList ("Выберите модель ККТ:",
-				Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
 
@@ -1213,7 +1197,7 @@ namespace RD_AAOW
 
 			// Установка модели
 			int res = await AndroidSupport.ShowList ("Выберите модель ККТ:",
-				Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
 
@@ -1237,7 +1221,7 @@ namespace RD_AAOW
 			items.Add ("[из буфера обмена]");
 
 			int res = await AndroidSupport.ShowList ("Доступные варианты:",
-				Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), items);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), items);
 			if (res < 0)
 				return;
 
@@ -1278,7 +1262,7 @@ namespace RD_AAOW
 			int res = 0;
 			if (e != null)
 				res = await AndroidSupport.ShowList ("Выберите команду:",
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 			// Установка результата
 			if ((e == null) || (res >= 0))
@@ -1301,7 +1285,7 @@ namespace RD_AAOW
 
 			// Установка результата
 			int res = await AndroidSupport.ShowList ("Выберите протокол:",
-				Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
 
@@ -1615,7 +1599,7 @@ namespace RD_AAOW
 
 			// Установка результата
 			int res = await AndroidSupport.ShowList ("Выберите название ОФД:",
-				Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
 
@@ -1667,12 +1651,12 @@ namespace RD_AAOW
 		// Вызов справочных материалов
 		private async void ReferenceButton_Click (object sender, EventArgs e)
 			{
-			await AndroidSupport.CallHelpMaterials (HelpMaterialsSets.ReferenceMaterials);
+			await AndroidSupport.CallHelpMaterials (RDHelpMaterials.ReferenceMaterials);
 			}
 
 		private async void HelpButton_Click (object sender, EventArgs e)
 			{
-			await AndroidSupport.CallHelpMaterials (HelpMaterialsSets.HelpAndSupport);
+			await AndroidSupport.CallHelpMaterials (RDHelpMaterials.HelpAndSupport);
 			}
 
 		// Изменение размера шрифта интерфейса
@@ -1681,9 +1665,9 @@ namespace RD_AAOW
 			if (sender != null)
 				{
 				Xamarin.Forms.Button b = (Xamarin.Forms.Button)sender;
-				if (AndroidSupport.IsNameDefault (b.Text, ASButtonDefaultTypes.Increase))
+				if (AndroidSupport.IsNameDefault (b.Text, RDDefaultButtons.Increase))
 					AndroidSupport.MasterFontSize += 0.5;
-				else if (AndroidSupport.IsNameDefault (b.Text, ASButtonDefaultTypes.Decrease))
+				else if (AndroidSupport.IsNameDefault (b.Text, RDDefaultButtons.Decrease))
 					AndroidSupport.MasterFontSize -= 0.5;
 				}
 
@@ -1710,7 +1694,7 @@ namespace RD_AAOW
 				{
 				// Запрос модели ККТ
 				res = await AndroidSupport.ShowList ("Выберите модель ККТ:",
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 				// Установка модели
 				if (res < 0)
@@ -1742,7 +1726,7 @@ namespace RD_AAOW
 				List<string> modes = new List<string> { "Для кассира", "Для сервис-инженера" };
 
 				res = await AndroidSupport.ShowList ("Сохранить / распечатать руководство:",
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), modes);
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), modes);
 				if (res < 0)
 					return;
 				}
@@ -1807,7 +1791,7 @@ namespace RD_AAOW
 		// Поиск тега
 		private void TLVFind_Clicked (object sender, EventArgs e)
 			{
-			if (kb.Tags.FindTag (tlvTag.Text))
+			if (kb.Tags.FindTag (tlvTag.Text, TLVTags_FFDVersions.FFD_105))
 				{
 				tlvDescriptionLabel.Text = kb.Tags.LastDescription;
 				tlvTypeLabel.Text = kb.Tags.LastType;
@@ -1837,8 +1821,8 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				AndroidSupport.ShowBalloon (Localization.GetDefaultText
-					(LzDefaultTextValues.Message_BrowserNotAvailable), true);
+				AndroidSupport.ShowBalloon (RDLocale.GetDefaultText
+					(RDLDefaultTexts.Message_BrowserNotAvailable), true);
 				}
 			}
 
@@ -1880,7 +1864,7 @@ namespace RD_AAOW
 				{
 				// Запрос модели ККТ
 				res = await AndroidSupport.ShowList ("Выберите тип кабеля:",
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 				// Установка типа кабеля
 				if (res < 0)
@@ -1898,7 +1882,7 @@ namespace RD_AAOW
 			cableRightPinsText.Text = kb.Plugs.GetCableConnectorPins ((uint)res, true);
 
 			cableDescriptionText.Text = kb.Plugs.GetCableConnectorDescription ((uint)res, false) +
-				Localization.RNRN + kb.Plugs.GetCableConnectorDescription ((uint)res, true);
+				RDLocale.RNRN + kb.Plugs.GetCableConnectorDescription ((uint)res, true);
 			}
 
 		#endregion
@@ -1914,15 +1898,9 @@ namespace RD_AAOW
 		private void ConvNumberAdd_Click (object sender, EventArgs e)
 			{
 			bool plus = AndroidSupport.IsNameDefault (((Xamarin.Forms.Button)sender).Text,
-				ASButtonDefaultTypes.Increase);
+				RDDefaultButtons.Increase);
 
 			// Извлечение значения с защитой
-			/*uint v = 0;
-			try
-				{
-				v = uint.Parse (convNumberField.Text);
-				}
-			catch { }*/
 			double res = DataConvertors.GetNumber (convNumberField.Text);
 
 			// Обновление и возврат
@@ -1954,7 +1932,7 @@ namespace RD_AAOW
 		private void ConvCodeAdd_Click (object sender, EventArgs e)
 			{
 			bool plus = AndroidSupport.IsNameDefault (((Xamarin.Forms.Button)sender).Text,
-				ASButtonDefaultTypes.Increase);
+				RDDefaultButtons.Increase);
 
 			string[] res = DataConvertors.GetSymbolDescription (convCodeField.Text, (short)(plus ? 1 : -1));
 			convCodeField.Text = res[2];
@@ -1981,7 +1959,7 @@ namespace RD_AAOW
 		private void ConvertHexToText_Click (object sender, EventArgs e)
 			{
 			convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
-				(SupportedEncodings)(ca.EncodingForConvertor % encodingModesCount),
+				(RDEncodings)(ca.EncodingForConvertor % encodingModesCount),
 				ca.EncodingForConvertor >= encodingModesCount);
 			}
 
@@ -1989,7 +1967,7 @@ namespace RD_AAOW
 		private void ConvertTextToHex_Click (object sender, EventArgs e)
 			{
 			convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
-				(SupportedEncodings)(ca.EncodingForConvertor % encodingModesCount),
+				(RDEncodings)(ca.EncodingForConvertor % encodingModesCount),
 				ca.EncodingForConvertor >= encodingModesCount);
 			}
 
@@ -2010,7 +1988,7 @@ namespace RD_AAOW
 				{
 				// Запрос модели ККТ
 				res = await AndroidSupport.ShowList ("Выберите кодировку:",
-					Localization.GetDefaultText (LzDefaultTextValues.Button_Cancel), list);
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 				// Установка модели
 				if (res < 0)

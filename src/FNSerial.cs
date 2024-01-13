@@ -47,9 +47,9 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.FNSN);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.FNSN);
 #else
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.FNSN);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.FNSN);
 #endif
 			StringReader SR = new StringReader (buf);
 
@@ -105,17 +105,6 @@ namespace RD_AAOW
 
 			return "неизвестная модель ФН";
 			}
-
-		/*// <summary>
-		/// Возвращает делегат для метода GetFNName
-		/// </summary>
-		public Func<string, string> GetFNNameDelegate
-			{
-			get
-				{
-				return GetFNName;
-				}
-			}*/
 
 		/// <summary>
 		/// Возвращает флаг, указывающий, что указанный номер позволяет определить модель ФН
@@ -212,18 +201,18 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает сообщение об исключении ФН из реестра ФНС
 		/// </summary>
-		public const string FNIsNotAllowedMessage = Localization.RN + "(выбранный ФН исключён из реестра ФНС)";
+		public const string FNIsNotAllowedMessage = RDLocale.RN + "(выбранный ФН исключён из реестра ФНС)";
 
 		/// <summary>
 		/// Возвращает сообщение о том, что указанный ФН не рекомендуется использовать при указаных параметрах
 		/// </summary>
-		public const string FNIsNotRecommendedMessage = Localization.RN +
+		public const string FNIsNotRecommendedMessage = RDLocale.RN +
 			"(не рекомендуется использовать выбранный ФН с указанными параметрами)";
 
 		/// <summary>
 		/// Возвращает сообщение о том, что указанный ФН неприменим при указаных параметрах
 		/// </summary>
-		public const string FNIsNotAcceptableMessage = Localization.RN +
+		public const string FNIsNotAcceptableMessage = RDLocale.RN +
 			"(выбранный ФН неприменим с указанными параметрами)";
 		}
 	}

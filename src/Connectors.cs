@@ -31,7 +31,7 @@ namespace RD_AAOW
 #else
 			byte[] s1 = Properties.Resources.Connectors;
 #endif
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s1);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s1);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 

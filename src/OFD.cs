@@ -48,18 +48,6 @@ namespace RD_AAOW
 		/// </summary>
 		public const string OKPPort = "26101";
 
-		/*
-		/// <summary>
-		/// Предпочитаемый DNS Яндекс (РФ)
-		/// </summary>
-		public const string YandexDNSReq = "77.88.8.8";
-
-		/// <summary>
-		/// Альтернативный DNS Яндекс (РФ)
-		/// </summary>
-		public const string YandexDNSAlt = "77.88.8.1";
-		*/
-
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу ОФД
 		/// </summary>
@@ -67,9 +55,9 @@ namespace RD_AAOW
 			{
 			// Получение файла символов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.OFD);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.OFD);
 #else
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.OFD);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.OFD);
 #endif
 			StringReader SR = new StringReader (buf);
 
@@ -138,17 +126,6 @@ namespace RD_AAOW
 			return new List<string> (names);
 			}
 
-		/*// <summary>
-		/// Возвращает параметры ОФД в необработанном виде
-		/// </summary>
-		public Func<List<string>> GetOFDDataDelegate
-			{
-			get
-				{
-				return GetOFDData;
-				}
-			}*/
-
 		/// <summary>
 		/// Метод возвращает данные ОФД в необработанном виде
 		/// </summary>
@@ -196,17 +173,6 @@ namespace RD_AAOW
 				dnsNamesM[i], ipM[i], portsM[i], disabledMessages[i]
 				};
 			}
-
-		/*// <summary>
-		/// Возвращает делегат для метода GetOFDNameByINN
-		/// </summary>
-		public Func<string, uint, string> GetOFDByINNDelegate
-			{
-			get
-				{
-				return GetOFDByINN;
-				}
-			}*/
 
 		/// <summary>
 		/// Метод возвращает параметры ОФД по его ИНН

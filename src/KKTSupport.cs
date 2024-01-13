@@ -8,9 +8,9 @@ using System.IO;
 	using Android.Print.Pdf;
 	using Android.Runtime;
 #else
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
+	using System.Drawing;
+	using System.Drawing.Printing;
+	using System.Windows.Forms;
 #endif
 
 namespace RD_AAOW
@@ -309,7 +309,7 @@ namespace RD_AAOW
 			// Контроль
 			if ((Message == null) || (Message == ""))
 				return 0;
-			byte[] msg = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetBytes (Message);
+			byte[] msg = RDGenerics.GetEncoding (RDEncodings.UTF8).GetBytes (Message);
 
 			// Переменные
 			UInt16 crc16 = 0xFFFF;
@@ -1063,7 +1063,7 @@ namespace RD_AAOW
 
 			string tmp = "(<> – индикация на дисплее, [] – кнопки клавиатуры)";
 			tmp = tmp.PadLeft ((ManualA4CharPerLine - tmp.Length) / 2 + tmp.Length);
-			text += (Localization.RN + tmp);
+			text += (RDLocale.RN + tmp);
 
 			string[] operations = UserManuals.OperationTypes;
 			uint operationsCount = forCashier ? (uint)UserManuals.OperationsForCashiers.Length :
@@ -1074,7 +1074,7 @@ namespace RD_AAOW
 				if ((Sections & (1ul << i)) == 0)
 					continue;
 
-				text += ((i != 0 ? Localization.RN : "") + Localization.RNRN + operations[i] + Localization.RNRN);
+				text += ((i != 0 ? RDLocale.RN : "") + RDLocale.RNRN + operations[i] + RDLocale.RNRN);
 				text += Manuals.GetManual (ManualNumber, (uint)i, Flags);
 				}
 

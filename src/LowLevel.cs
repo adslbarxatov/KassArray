@@ -26,10 +26,10 @@ namespace RD_AAOW
 #else
 			byte[] s1 = Properties.Resources.LowLevel;
 #endif
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s1);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s1);
 			StringReader SR = new StringReader (buf);
 
-			// Формирование массива 
+			// Формирование массива
 			string str;
 			char[] splitters = new char[] { ';' };
 
@@ -55,7 +55,7 @@ namespace RD_AAOW
 						{
 						names[names.Count - 1].Add (values[0]);
 						commands[commands.Count - 1].Add (values[1]);
-						descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", Localization.RN));
+						descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", RDLocale.RN));
 						}
 					}
 				}

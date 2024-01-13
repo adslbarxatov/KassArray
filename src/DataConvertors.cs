@@ -63,9 +63,9 @@ namespace RD_AAOW
 			if (n > MaxValue)
 				return "(введённое число слишком велико)";
 
-			string answer = "0d " + n.ToString ("#,0") + Localization.RN + "0x ";
+			string answer = "0d " + n.ToString ("#,0") + RDLocale.RN + "0x ";
 			answer += ((n & 0xFFFF0000) >> 16).ToString ("X4") + " ";
-			answer += (n & 0xFFFF).ToString ("X4") + Localization.RN + "0b";
+			answer += (n & 0xFFFF).ToString ("X4") + RDLocale.RN + "0b";
 
 			string b = "";
 			for (int i = 1; i <= 32; i++)
@@ -74,7 +74,7 @@ namespace RD_AAOW
 
 #if ANDROID
 				if (i == 16)
-					b = Localization.RN + "   " + b;
+					b = RDLocale.RN + "   " + b;
 				else if (i % 4 == 0)
 #else
 				if (i % 4 == 0)
@@ -83,7 +83,7 @@ namespace RD_AAOW
 				}
 
 			// Разложение на простые множители
-			answer += (b + Localization.RN);
+			answer += (b + RDLocale.RN);
 			return answer + SplitNumberToSimpleMultipliers (n);
 			}
 
@@ -165,7 +165,7 @@ namespace RD_AAOW
 			ulong n = 0;
 			if (double.IsNaN (v))
 				{
-				byte[] b = RDGenerics.GetEncoding (SupportedEncodings.Unicode32).GetBytes (Symbol);
+				byte[] b = RDGenerics.GetEncoding (RDEncodings.Unicode32).GetBytes (Symbol);
 				for (int i = 0; i < 4; i++)
 					n |= (ulong)b[i] << (i * 8);
 				}
@@ -188,11 +188,11 @@ namespace RD_AAOW
 				(byte)((n >> 16) & 0xFF),
 				(byte)((n >> 24) & 0xFF)
 				};
-			answer[0] = RDGenerics.GetEncoding (SupportedEncodings.Unicode32).GetString (ch);
+			answer[0] = RDGenerics.GetEncoding (RDEncodings.Unicode32).GetString (ch);
 
 			// Сборка описания
-			answer[1] = "Символ: U+" + n.ToString ("X4") + Localization.RN + "HTML:   &#" + n.ToString () + ";";
-			answer[1] += (Localization.RN + "Класс:  " + CharUnicodeInfo.GetUnicodeCategory (answer[0][0]).ToString ());
+			answer[1] = "Символ: U+" + n.ToString ("X4") + RDLocale.RN + "HTML:   &#" + n.ToString () + ";";
+			answer[1] += (RDLocale.RN + "Класс:  " + CharUnicodeInfo.GetUnicodeCategory (answer[0][0]).ToString ());
 			answer[2] = "0x" + n.ToString ("X4");
 			return answer;
 			}
@@ -237,7 +237,7 @@ namespace RD_AAOW
 		/// <param name="FromBASE64">Флаг, указывающий, что исходные данные представлены в BASE64</param>
 		/// <param name="Mode">Кодировка исходных данных</param>
 		/// <returns>Исходный текст</returns>
-		public static string ConvertHexToText (string HexData, SupportedEncodings Mode, bool FromBASE64)
+		public static string ConvertHexToText (string HexData, RDEncodings Mode, bool FromBASE64)
 			{
 			// Обычные данные
 			List<byte> bytes = new List<byte> ();
@@ -306,7 +306,7 @@ namespace RD_AAOW
 		/// представлены в BASE64</param>
 		/// <param name="Mode">Кодировка конечных данных</param>
 		/// <returns>Исходный текст</returns>
-		public static string ConvertTextToHex (string TextData, SupportedEncodings Mode, bool ToBASE64)
+		public static string ConvertTextToHex (string TextData, RDEncodings Mode, bool ToBASE64)
 			{
 			// Сборка байт-массива
 			byte[] bytes;

@@ -49,8 +49,8 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
-			if (!Localization.IsCurrentLanguageRuRu)
-				Localization.CurrentLanguage = SupportedLanguages.ru_ru;
+			if (!RDLocale.IsCurrentLanguageRuRu)
+				RDLocale.CurrentLanguage = RDLanguages.ru_ru;
 
 			ca = new ConfigAccessor ();
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
@@ -59,7 +59,7 @@ namespace RD_AAOW
 			if (KassArrayDB::ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
 				{
 				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
-					Localization.GetIncompatibleVersionsMessage (ProgramDescription.KassArrayDLLs[0]));
+					RDLocale.GetIncompatibleVersionsMessage (ProgramDescription.KassArrayDLLs[0]));
 
 				closeWindow = true;
 				return;
@@ -92,7 +92,7 @@ namespace RD_AAOW
 
 			if (!RDGenerics.IsRegistryAccessible)
 				{
-				this.Text += Localization.GetDefaultText (LzDefaultTextValues.Message_LimitedFunctionality);
+				this.Text += RDLocale.GetDefaultText (RDLDefaultTexts.Message_LimitedFunctionality);
 				KeepAppState.Checked = KeepAppState.Enabled = false;
 				}
 			else
@@ -190,11 +190,11 @@ namespace RD_AAOW
 			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
-				"жёлтый – планируется; синий – нет сведений" + Localization.RN +
+				"жёлтый – планируется; синий – нет сведений" + RDLocale.RN +
 				"(на момент релиза этой версии приложения)";
 			if (ca.AllowExtendedFunctionsLevel2)
 				{
-				RNMTip.Text += (Localization.RNRN +
+				RNMTip.Text += (RDLocale.RNRN +
 					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
 					"РНМ их можно указать вручную – остальные будут достроены программой");
 				}
@@ -408,7 +408,7 @@ namespace RD_AAOW
 			try
 				{
 				status = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.StatusFilePath,
-					RDGenerics.GetEncoding (SupportedEncodings.UTF8));
+					RDGenerics.GetEncoding (RDEncodings.UTF8));
 				}
 			catch { }
 
@@ -888,7 +888,7 @@ namespace RD_AAOW
 			// Обработка аннулированных ОФД
 			OFDDisabledLabel.Enabled = OFDDisabledLabel.Visible = !string.IsNullOrWhiteSpace (parameters[10]);
 			if (OFDDisabledLabel.Enabled)
-				OFDDisabledLabel.Text = parameters[10] + Localization.RN;
+				OFDDisabledLabel.Text = parameters[10] + RDLocale.RN;
 			}
 
 		// Копирование в буфер обмена
@@ -1076,7 +1076,7 @@ namespace RD_AAOW
 				TLVType.Text = kb.Tags.LastType;
 
 				if (!string.IsNullOrWhiteSpace (kb.Tags.LastValuesSet))
-					TLVValues.Text = kb.Tags.LastValuesSet + Localization.RNRN;
+					TLVValues.Text = kb.Tags.LastValuesSet + RDLocale.RNRN;
 				else
 					TLVValues.Text = "";
 				TLVValues.Text += kb.Tags.LastObligation;
@@ -1165,7 +1165,7 @@ namespace RD_AAOW
 			CableRightSide.Text = "Со стороны " + kb.Plugs.GetCableConnector (i, true);
 			CableRightPins.Text = kb.Plugs.GetCableConnectorPins (i, true);
 
-			CableLeftDescription.Text = kb.Plugs.GetCableConnectorDescription (i, false) + Localization.RNRN +
+			CableLeftDescription.Text = kb.Plugs.GetCableConnectorDescription (i, false) + RDLocale.RNRN +
 				kb.Plugs.GetCableConnectorDescription (i, true);
 			}
 
@@ -1262,7 +1262,7 @@ namespace RD_AAOW
 		private void ConvertHexToText_Click (object sender, EventArgs e)
 			{
 			ConvertTextField.Text = KassArrayDB::RD_AAOW.DataConvertors.ConvertHexToText (ConvertHexField.Text,
-				(KassArrayDB::RD_AAOW.SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
+				(KassArrayDB::RD_AAOW.RDEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
 				EncodingCombo.SelectedIndex >= encodingModesCount);
 			}
 
@@ -1270,7 +1270,7 @@ namespace RD_AAOW
 		private void ConvertTextToHex_Click (object sender, EventArgs e)
 			{
 			ConvertHexField.Text = KassArrayDB::RD_AAOW.DataConvertors.ConvertTextToHex (ConvertTextField.Text,
-				(KassArrayDB::RD_AAOW.SupportedEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
+				(KassArrayDB::RD_AAOW.RDEncodings)(EncodingCombo.SelectedIndex % encodingModesCount),
 				EncodingCombo.SelectedIndex >= encodingModesCount);
 			}
 

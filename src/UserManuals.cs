@@ -73,7 +73,7 @@ namespace RD_AAOW
 #else
 			byte[] s1 = Properties.Resources.UserManuals;
 #endif
-			string buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s1);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s1);
 			StringReader SR = new StringReader (buf);
 			string str;
 
@@ -92,7 +92,7 @@ namespace RD_AAOW
 				// Загрузка файла целиком (требует структура)
 				for (int i = 0; i < operations.Count; i++)
 					{
-					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", Localization.RN + "• "));
+					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", RDLocale.RN + "• "));
 
 					switch (i)
 						{
@@ -126,24 +126,24 @@ namespace RD_AAOW
 
 						case 6:
 							operations[i][operations[i].Count - 1] +=
-								";" + Localization.RN + "• Дальнейшие действия совпадают с действиями при продаже";
+								";" + RDLocale.RN + "• Дальнейшие действия совпадают с действиями при продаже";
 							break;
 
 						case 7:
-							operations[i][operations[i].Count - 1] += ";" + Localization.RN + "• Дождаться снятия отчёта";
+							operations[i][operations[i].Count - 1] += ";" + RDLocale.RN + "• Дождаться снятия отчёта";
 							break;
 
 						case 8:
 						case 9:
 							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
 								operations[i][operations[i].Count - 1] =
-									"! Необходимо предварительно закрыть смену;" + Localization.RN +
+									"! Необходимо предварительно закрыть смену;" + RDLocale.RN +
 									operations[i][operations[i].Count - 1];
 							break;
 
 						case 14:
 							operations[i][operations[i].Count - 1] =
-								"! Необходимо убедиться, что сохранены все важные настройки;" + Localization.RN +
+								"! Необходимо убедиться, что сохранены все важные настройки;" + RDLocale.RN +
 								operations[i][operations[i].Count - 1];
 							break;
 
@@ -151,8 +151,8 @@ namespace RD_AAOW
 							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
 								operations[i][operations[i].Count - 1] =
 									"! Необходимо убедиться, что смена закрыта, а дата в ККТ позволяет закрыть архив;" +
-									Localization.RN + operations[i][operations[i].Count - 1] +
-									";" + Localization.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
+									RDLocale.RN + operations[i][operations[i].Count - 1] +
+									";" + RDLocale.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
 							break;
 						}
 
@@ -172,7 +172,7 @@ namespace RD_AAOW
 					if (operations[i][operations[i].Count - 1].Contains ("&6"))
 						operations[i][operations[i].Count - 1] =
 						operations[i][operations[i].Count - 1].Replace ("&6", "") +
-							Localization.RNRN + "* Порядок действий может отличаться в разных версиях прошивок";
+							RDLocale.RNRN + "* Порядок действий может отличаться в разных версиях прошивок";
 					if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 						operations[i][operations[i].Count - 1] = "(не предусмотрено)";
 					}
@@ -211,8 +211,7 @@ namespace RD_AAOW
 				if (KKTSupport.IsSet (Flags, UserManualsFlags.MoreThanOneItemPerDocument))
 					{
 					text = text.Replace ("#1", "↑ (повторить предыдущие действия для всех " +
-						(goods ? "товаров" : "услуг") +
-						" в чеке);" + Localization.RN);
+						(goods ? "товаров" : "услуг") + " в чеке);" + RDLocale.RN);
 					}
 				else
 					{
@@ -224,9 +223,9 @@ namespace RD_AAOW
 					int left = text.IndexOf ("#3");
 					if (left >= 0)
 						{
-						int right = text.IndexOf (Localization.RN, left);
+						int right = text.IndexOf (RDLocale.RN, left);
 						if (right >= 0)
-							text = text.Substring (0, left - 2) + text.Substring (right + Localization.RN.Length);
+							text = text.Substring (0, left - 2) + text.Substring (right + RDLocale.RN.Length);
 						}
 					}
 				else
@@ -240,7 +239,7 @@ namespace RD_AAOW
 			if (KKTSupport.IsSet (Flags, UserManualsFlags.CashiersHavePasswords))
 				{
 				text = text.Replace ("#4", "ввести пароль кассира, если он задан, ");
-				text = text.Replace ("#5", "Ввести пароль кассира в случае запроса;" + Localization.RN + "• ");
+				text = text.Replace ("#5", "Ввести пароль кассира в случае запроса;" + RDLocale.RN + "• ");
 				}
 			else
 				{

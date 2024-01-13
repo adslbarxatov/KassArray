@@ -33,7 +33,7 @@ namespace RD_AAOW
 #else
 			byte[] s = Properties.Resources.KKTCodes;
 #endif
-			string[] buf = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (s).Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+			string[] buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s).Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 			// Формирование массива 
 			int line = 0;
@@ -147,9 +147,9 @@ namespace RD_AAOW
 				{
 				if (resText[i] == '~')
 #if ANDROID
-					resultText += ((idx++ % 5 != 0) ? "    " : Localization.RN);
+					resultText += ((idx++ % 5 != 0) ? "    " : RDLocale.RN);
 #else
-					resultText += ((idx++ % 5 != 0) ? Localization.T : Localization.RN);
+					resultText += ((idx++ % 5 != 0) ? RDLocale.T : RDLocale.RN);
 #endif
 				else
 					resultText += resText[i];

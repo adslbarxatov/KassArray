@@ -156,11 +156,11 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string tlv = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.TLVTags);
-			string obl = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.Obligation);
+			string tlv = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.TLVTags);
+			string obl = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.Obligation);
 #else
-			string tlv = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.TLVTags);
-			string obl = RDGenerics.GetEncoding (SupportedEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Obligation);
+			string tlv = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.TLVTags);
+			string obl = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Obligation);
 #endif
 			StringReader tlvSR = new StringReader (tlv);
 			StringReader oblSR = new StringReader (obl);
@@ -222,7 +222,7 @@ namespace RD_AAOW
 						if (int.Parse (tlvValues[0]) > possibleValues.Count)
 							possibleValues.Add ("");
 
-						possibleValues[possibleValues.Count - 1] += (tlvValues[1] + Localization.RN);
+						possibleValues[possibleValues.Count - 1] += (tlvValues[1] + RDLocale.RN);
 						}
 
 					// Пропуски
@@ -248,11 +248,7 @@ namespace RD_AAOW
 		/// <param name="Tag">Номер тега или фрагмент описания</param>
 		/// <param name="FFD">Версия ФФД для определения обязательности</param>
 		/// <returns>Возвращает true в случае обнаружения</returns>
-#if ANDROID
-		public bool FindTag (string Tag)
-#else
 		public bool FindTag (string Tag, TLVTags_FFDVersions FFD)
-#endif
 			{
 			// Защита
 			if (string.IsNullOrWhiteSpace (Tag))
@@ -291,16 +287,16 @@ namespace RD_AAOW
 				lastValuesSet = "";
 			else
 				lastValuesSet = possibleValues[links[i]];
-			if (lastValuesSet.EndsWith (Localization.RN))
+			if (lastValuesSet.EndsWith (RDLocale.RN))
 				lastValuesSet = lastValuesSet.Substring (0, lastValuesSet.Length - 2);
 
 #if ANDROID
 			lastObligation = "<b>Для ФФД 1.05:</b><br/><i>" +
-				BuildObligation (i, TLVTags_FFDVersions.FFD_105).Replace (Localization.RN, "<br/>") +
+				BuildObligation (i, TLVTags_FFDVersions.FFD_105).Replace (RDLocale.RN, "<br/>") +
 				"</i><br/><br/><b>Для ФФД 1.1:</b><br/><i>" +
-				BuildObligation (i, TLVTags_FFDVersions.FFD_110).Replace (Localization.RN, "<br/>") +
+				BuildObligation (i, TLVTags_FFDVersions.FFD_110).Replace (RDLocale.RN, "<br/>") +
 				"</i><br/><br/><b>Для ФФД 1.2:</b><br/><i>" +
-				BuildObligation (i, TLVTags_FFDVersions.FFD_120).Replace (Localization.RN, "<br/>") + "</i>";
+				BuildObligation (i, TLVTags_FFDVersions.FFD_120).Replace (RDLocale.RN, "<br/>") + "</i>";
 #else
 			lastObligation = BuildObligation (i, FFD);
 #endif
@@ -485,7 +481,7 @@ namespace RD_AAOW
 					TLVTags_ObligationStates os = ((j == 0) ? oblPrintObligations[oblIndices[Index][i]] :
 						oblVirtualObligations[oblIndices[Index][i]]);
 
-					res += Localization.RN + "• ";
+					res += RDLocale.RN + "• ";
 					switch (os)
 						{
 						case TLVTags_ObligationStates.Unused:
@@ -535,12 +531,12 @@ namespace RD_AAOW
 							break;
 						}
 
-					res += ((j == 0) ? " в печ. форме" : " в эл. форме" + Localization.RNRN);
+					res += ((j == 0) ? " в печ. форме" : " в эл. форме" + RDLocale.RNRN);
 					}
 				}
 
 			// Завершено
-			while (res.EndsWith (Localization.RN))
+			while (res.EndsWith (RDLocale.RN))
 				res = res.Substring (0, res.Length - 2);
 			if (string.IsNullOrWhiteSpace (res))
 				res = "• Нет сведений об обязательности тега в данном ФФД";
