@@ -59,7 +59,10 @@ namespace RD_AAOW
 			if (KassArrayDB::ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
 				{
 				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
-					RDLocale.GetIncompatibleVersionsMessage (ProgramDescription.KassArrayDLLs[0]));
+					/*RDLocale.GetIncompatibleVersionsMessage (ProgramDescription.KassArrayDLLs[0])
+					*/
+					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_IncompatibleLibrary_Fmt),
+					ProgramDescription.KassArrayDLLs[0]));
 
 				closeWindow = true;
 				return;
@@ -211,7 +214,7 @@ namespace RD_AAOW
 			ConvCode_TextChanged (null, null);
 
 			// Настройка иконки в трее
-			ni.Icon = Properties.TextToKKMResources.TextToKKTTray;
+			ni.Icon = Properties.TextToKKMResources.KassArrayTray;
 			ni.Text = ProgramDescription.AssemblyVisibleName;
 			ni.Visible = true;
 
@@ -219,7 +222,8 @@ namespace RD_AAOW
 
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("Работа с &ФН", FNReader_Click));
 			ni.ContextMenu.MenuItems[0].Enabled = !RDGenerics.StartedFromMSStore && ca.AllowExtendedFunctionsLevel2;
-			ni.ContextMenu.MenuItems.Add (new MenuItem ("В&ыход", CloseService));
+			ni.ContextMenu.MenuItems.Add (new MenuItem (RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit),
+				CloseService));
 
 			ni.MouseDown += ReturnWindow;
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
@@ -1129,19 +1133,6 @@ namespace RD_AAOW
 			if (e.KeyCode == Keys.Return)
 				BarcodesConvertToEN_Click (sender, null);
 			}
-
-		/* Ввод штрих-кода
-		private void BarcodeData_TextChanged (object sender, EventArgs e)
-			{
-			string s = KassArrayDB::RD_AAOW.BarCodes.ConvertFromRussianKeyboard (BarcodeData.Text);
-			if (s != BarcodeData.Text)
-				{
-				BarcodeData.Text = s;
-				BarcodeData.SelectionStart = BarcodeData.Text.Length;
-				}
-
-			BarcodeDescription.Text = kb.Barcodes.GetBarcodeDescription (BarcodeData.Text);
-			}*/
 
 		// Сброс текста
 		private void BarcodeClear_Click (object sender, EventArgs e)
