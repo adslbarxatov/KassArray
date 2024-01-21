@@ -61,7 +61,7 @@ namespace RD_AAOW
 				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
 					/*RDLocale.GetIncompatibleVersionsMessage (ProgramDescription.KassArrayDLLs[0])
 					*/
-					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_IncompatibleLibrary_Fmt),
+					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
 					ProgramDescription.KassArrayDLLs[0]));
 
 				closeWindow = true;
