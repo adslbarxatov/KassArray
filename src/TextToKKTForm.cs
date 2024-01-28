@@ -59,8 +59,6 @@ namespace RD_AAOW
 			if (KassArrayDB::ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
 				{
 				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
-					/*RDLocale.GetIncompatibleVersionsMessage (ProgramDescription.KassArrayDLLs[0])
-					*/
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
 					ProgramDescription.KassArrayDLLs[0]));
 
