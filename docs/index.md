@@ -7,7 +7,7 @@
 
 - [Общие сведения об инструменте KassArray](#kassarray)
 
-    - [Видеоруководство к инструменту](https://youtube.com/watch?v=fdH4SKFdTCI)
+    - [Видеоруководство к инструменту](https://youtube.com/watch?v=25BYSySdAJk)
 
 - Модуль чтения и обработки данных ФН для KassArray
 
