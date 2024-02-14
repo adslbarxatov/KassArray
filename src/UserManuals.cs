@@ -39,6 +39,7 @@ namespace RD_AAOW
 					operationTypes[5],
 					operationTypes[6],
 					operationTypes[7],
+					operationTypes[8],
 					};
 				}
 			}
@@ -47,19 +48,21 @@ namespace RD_AAOW
 			"Открытие смены",
 			"Продажа за наличные",
 			"Продажа по карте",
-			"Продажа по штрих-коду",	// 0x???7
+			"Продажа по штрих-коду",		// 3, 0x????7
 			"Продажа с количеством",
 			"Продажа с электронным чеком",
-			"Возврат",
-			"Закрытие смены",	// 7, 0x??D?
+			"Аннулирование",
+			"Возврат",						// 7, 0x???D?
+			"Закрытие смены",
+
 			"Коррекция даты",
 			"Коррекция времени",
-			"Тест связи с сетью интернет",
+			"Тест связи с сетью интернет",	// 11, 0x??F??
 			"Автотест / информация о ККТ",
 			"Запрос состояния ФН",
 			"Запрос реквизитов регистраций",
-			"Техобнуление",
-			"Закрытие архива ФН",	// 15
+			"Техобнуление",					// 15, 0x?7???
+			"Закрытие архива ФН",			// 16, 0x0????
 			};
 
 		/// <summary>
@@ -122,32 +125,45 @@ namespace RD_AAOW
 							operations[i][operations[i].Count - 1] =
 								operations[i][operations[i].Count - 1].Replace ("&3",
 								"Отсканировать штрих-код товара");
+
+							if (i == 4)
+								operations[i][operations[i].Count - 1] = "Действие выполняется для всех позиций, " +
+									"в которых количество не равно единице:" + RDLocale.RN +
+									operations[i][operations[i].Count - 1];
 							break;
 
 						case 6:
-							operations[i][operations[i].Count - 1] +=
-								";" + RDLocale.RN + "• Дальнейшие действия совпадают с действиями при продаже";
+							operations[i][operations[i].Count - 1] = "Если требуется «отменить» чек, который ещё " +
+								"не был закрыт, выполняется аннулирование:" + RDLocale.RN +
+								operations[i][operations[i].Count - 1];
 							break;
 
 						case 7:
-							operations[i][operations[i].Count - 1] += ";" + RDLocale.RN + "• Дождаться снятия отчёта";
+							operations[i][operations[i].Count - 1] = "Если требуется «отменить» чек, который уже " +
+								"был закрыт, выполняется возврат:" + RDLocale.RN +
+								operations[i][operations[i].Count - 1] +
+								";" + RDLocale.RN + "• Дальнейшие действия совпадают с действиями при продаже";
 							break;
 
 						case 8:
+							operations[i][operations[i].Count - 1] += ";" + RDLocale.RN + "• Дождаться снятия отчёта";
+							break;
+
 						case 9:
+						case 10:
 							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
 								operations[i][operations[i].Count - 1] =
 									"! Необходимо предварительно закрыть смену;" + RDLocale.RN +
 									operations[i][operations[i].Count - 1];
 							break;
 
-						case 14:
+						case 15:
 							operations[i][operations[i].Count - 1] =
 								"! Необходимо убедиться, что сохранены все важные настройки;" + RDLocale.RN +
 								operations[i][operations[i].Count - 1];
 							break;
 
-						case 15:
+						case 16:
 							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
 								operations[i][operations[i].Count - 1] =
 									"! Необходимо убедиться, что смена закрыта, а дата в ККТ позволяет закрыть архив;" +
@@ -169,10 +185,10 @@ namespace RD_AAOW
 					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&8",
 						"#5");
 
-					if (operations[i][operations[i].Count - 1].Contains ("&6"))
+					/*if (operations[i][operations[i].Count - 1].Contains ("&6"))
 						operations[i][operations[i].Count - 1] =
 						operations[i][operations[i].Count - 1].Replace ("&6", "") +
-							RDLocale.RNRN + "* Порядок действий может отличаться в разных версиях прошивок";
+							RDLocale.RNRN + "* Порядок действий может отличаться в разных версиях прошивок";*/
 					if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 						operations[i][operations[i].Count - 1] = "(не предусмотрено)";
 					}
