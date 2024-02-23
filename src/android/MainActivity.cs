@@ -39,6 +39,7 @@ namespace RD_AAOW.Droid
 				return;
 				}
 
+			originalContext = @base;
 			Configuration overrideConfiguration = new Configuration ();
 			overrideConfiguration = @base.Resources.Configuration;
 			overrideConfiguration.FontScale = 0.9f;
@@ -49,6 +50,7 @@ namespace RD_AAOW.Droid
 			base.AttachBaseContext (context);
 			}
 		private bool baseContextOverriden = false;
+		private Context originalContext;
 
 		/// <summary>
 		/// Обработчик события создания экземпляра
@@ -78,7 +80,7 @@ namespace RD_AAOW.Droid
 			// Запрет на переход в ждущий режим
 			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
 
-			LoadApplication (new App ((PrintManager)this.GetSystemService (Service.PrintService),
+			LoadApplication (new App ((PrintManager)originalContext.GetSystemService (Service.PrintService),
 #if HUAWEI
 				true
 #else
