@@ -185,10 +185,6 @@ namespace RD_AAOW
 					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&8",
 						"#5");
 
-					/*if (operations[i][operations[i].Count - 1].Contains ("&6"))
-						operations[i][operations[i].Count - 1] =
-						operations[i][operations[i].Count - 1].Replace ("&6", "") +
-							RDLocale.RNRN + "* Порядок действий может отличаться в разных версиях прошивок";*/
 					if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 						operations[i][operations[i].Count - 1] = "(не предусмотрено)";
 					}

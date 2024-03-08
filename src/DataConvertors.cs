@@ -13,7 +13,6 @@ namespace RD_AAOW
 		/// Метод получает число из строки, учитывая возможный шестнадцатеричный префикс
 		/// </summary>
 		/// <param name="Value">Строка, содержащая десятичное или шестнадцатеричное число</param>
-		/// <returns></returns>
 		public static double GetNumber (string Value)
 			{
 			// Прямое преобразование
@@ -24,18 +23,21 @@ namespace RD_AAOW
 				}
 			catch { }
 
+			if (!double.IsNaN (v))
+				return v;
+
+			// Преобразование из hex
 			string res = Value.ToLower ();
 			if (res.StartsWith ("0x"))
 				res = res.Substring (2);
 
-			// Преобразование из hex
-			if (double.IsNaN (v))
+			try
 				{
-				try
-					{
-					v = ulong.Parse (res, RDGenerics.HexNumberStyle);
-					}
-				catch { }
+				v = ulong.Parse (res, RDGenerics.HexNumberStyle);
+				}
+			catch
+				{
+				return 0.0;
 				}
 
 			return v;
@@ -120,7 +122,7 @@ namespace RD_AAOW
 					else
 						i += 2;
 
-					if (i > 2048)
+					if (i > (1 << 16))
 						return "Факторизация числа превышает возможности приложения";
 					}
 				}
