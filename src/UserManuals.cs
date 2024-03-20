@@ -244,7 +244,10 @@ namespace RD_AAOW
 					{
 					text = text.Replace ("#3", "");
 					}
+				}
 
+			if (ManualType <= 4)
+				{
 				text = text.Replace ("#6", goods ? "товара" : "услуги");
 				}
 
