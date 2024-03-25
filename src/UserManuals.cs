@@ -97,6 +97,7 @@ namespace RD_AAOW
 					{
 					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", RDLocale.RN + "• "));
 
+					// Выборочные подстановки
 					switch (i)
 						{
 						case 1:
@@ -172,6 +173,7 @@ namespace RD_AAOW
 							break;
 						}
 
+					// Общие подстановки
 					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&4",
 						"несколько раз до отображения");
 					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("• &5",
@@ -184,6 +186,8 @@ namespace RD_AAOW
 						"#4");
 					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&8",
 						"#5");
+					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("???",
+						"(требует уточнения)");
 
 					if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
 						operations[i][operations[i].Count - 1] = "(не предусмотрено)";
