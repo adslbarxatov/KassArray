@@ -112,6 +112,11 @@ namespace RD_AAOW
 		ProductBaseContainsServices = 0x08,
 
 		/// <summary>
+		/// База товаров содержит услуги
+		/// </summary>
+		DocumentsContainMarks = 0x10,
+
+		/// <summary>
 		/// Руководство для кассира
 		/// </summary>
 		GuideForCashier = 0x80,

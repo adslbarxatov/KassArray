@@ -9,6 +9,8 @@
 		<ScrollView>
 			<StackLayout>
 
+				<Label x:Name="FunctionsLabel" />
+
 				<StackLayout x:Name="MenuField">
 				</StackLayout>
 
@@ -17,19 +19,21 @@
 
 				<Label />
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Label x:Name="SettingsLabel" />
+
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
 					<Switch x:Name="AllowService" />
 					<Label x:Name="AllowServiceLabel" />
 				</StackLayout>
 
 				<Label x:Name="AllowServiceTip" />
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
 					<Switch x:Name="KeepAppState" />
 					<Label x:Name="KeepAppStateLabel" />
 				</StackLayout>
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
 					<Switch x:Name="ExtendedMode" />
 					<Label x:Name="ExtendedModeLabel" />
 				</StackLayout>

@@ -93,13 +93,14 @@ namespace RD_AAOW
 			encodingButton;
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
-			fnLifeSerial, tlvTag, rnmKKTSN, rnmINN, rnmRNM,
+			fnLifeSerial, tlvTag, rnmKKTSN, rnmINN, rnmRNM, connSearchText,
 			barcodeField, convNumberField, convCodeField, convHexField, convTextField;
 
 		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
 			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
 			keepAppState, allowService, extendedMode,
-			moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords, baseContainsServices;
+			moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords, baseContainsServices,
+			documentsContainMarks;
 
 		private Xamarin.Forms.DatePicker fnLifeStartDate;
 
@@ -118,6 +119,7 @@ namespace RD_AAOW
 		private int lastErrorSearchOffset = 0;
 		private int lastCommandSearchOffset = 0;
 		private int lastOFDSearchOffset = 0;
+		private int lastConnSearchOffset = 0;
 
 		// Дата срока жизни ФН (в чистом виде)
 		private string fnLifeResultDate = "";
@@ -150,12 +152,12 @@ namespace RD_AAOW
 			AndroidSupport.AppIsRunning = true;
 
 			// Переопределение цветов для закрытых функций
-			if (!ca.AllowExtendedFunctionsLevel1)
+			if (!ca.EnableExtendedMode)	// Уровень 1
 				{
 				kktCodesFieldBackColor = AndroidSupport.DefaultGreyColors[2];
 				kktCodesMasterBackColor = AndroidSupport.DefaultGreyColors[3];
 				}
-			if (!ca.AllowExtendedFunctionsLevel2)
+			if (!ca.EnableExtendedMode)	// Уровень 2
 				{
 				tagsFieldBackColor = lowLevelFieldBackColor = connectorsFieldBackColor =
 					AndroidSupport.DefaultGreyColors[2];
@@ -167,7 +169,7 @@ namespace RD_AAOW
 
 			MainPage = new MasterPage ();
 
-			headersPage = ApplyPageSettings ("HeadersPage", "Функции приложения",
+			headersPage = ApplyPageSettings ("HeadersPage", "Разделы и настройки приложения",
 				headersMasterBackColor, false);
 			menuLayout = (StackLayout)headersPage.FindByName ("MenuField");
 
@@ -183,19 +185,19 @@ namespace RD_AAOW
 				ofdMasterBackColor, true);
 
 			tagsPage = ApplyPageSettings ("TagsPage", "TLV-теги", tagsMasterBackColor, true);
-			tagsPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
+			tagsPage.IsEnabled = ca.EnableExtendedMode;	// Уровень 2
 
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, true);
-			lowLevelPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
+			lowLevelPage.IsEnabled = ca.EnableExtendedMode;   // Уровень 2
 
 			kktCodesPage = ApplyPageSettings ("KKTCodesPage", "Перевод текста в коды ККТ",
 				kktCodesMasterBackColor, true);
-			kktCodesPage.IsEnabled = ca.AllowExtendedFunctionsLevel1;
+			kktCodesPage.IsEnabled = ca.EnableExtendedMode;   // Уровень 1
 
 			connectorsPage = ApplyPageSettings ("ConnectorsPage", "Разъёмы",
 				connectorsMasterBackColor, true);
-			connectorsPage.IsEnabled = ca.AllowExtendedFunctionsLevel2;
+			connectorsPage.IsEnabled = ca.EnableExtendedMode; // Уровень 2
 
 			barCodesPage = ApplyPageSettings ("BarCodesPage", "Штрих-коды",
 				barCodesMasterBackColor, true);
@@ -235,7 +237,12 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (headersPage, "ExtendedModeLabel",
 				"Режим сервис-инженера", RDLabelTypes.DefaultLeft);
 			extendedMode = AndroidSupport.ApplySwitchSettings (headersPage, "ExtendedMode", false,
-				headersFieldBackColor, ExtendedMode_Toggled, ca.AllowExtendedMode);
+				headersFieldBackColor, ExtendedMode_Toggled, ca.EnableExtendedMode);
+
+			AndroidSupport.ApplyLabelSettings (headersPage, "FunctionsLabel",
+				"Разделы приложения", RDLabelTypes.HeaderCenter);
+			AndroidSupport.ApplyLabelSettings (headersPage, "SettingsLabel",
+				"Настройки", RDLabelTypes.HeaderCenter);
 
 			try
 				{
@@ -250,8 +257,8 @@ namespace RD_AAOW
 			Label ut = AndroidSupport.ApplyLabelSettings (userManualsPage, "SelectionLabel", "Модель ККТ:",
 				RDLabelTypes.HeaderLeft);
 			userManualLayout = (StackLayout)userManualsPage.FindByName ("UserManualLayout");
-			int operationsCount = ca.AllowExtendedFunctionsLevel1 ? UserManuals.OperationTypes.Length :
-				UserManuals.OperationsForCashiers.Length;
+			int operationsCount = ca.EnableExtendedMode ? UserManuals.OperationTypes.Length :
+				UserManuals.OperationsForCashiers.Length;	// Уровень 1
 
 			for (int i = 0; i < operationsCount; i++)
 				{
@@ -320,11 +327,18 @@ namespace RD_AAOW
 			baseContainsServices = AndroidSupport.ApplySwitchSettings (userManualsPage, "ServicesSwitch",
 				false, userManualsFieldBackColor, null, false);
 
+			AndroidSupport.ApplyLabelSettings (userManualsPage, "MarksLabel", "Среди товаров есть маркированные (ТМТ)",
+				RDLabelTypes.DefaultLeft);
+			documentsContainMarks = AndroidSupport.ApplySwitchSettings (userManualsPage, "MarksSwitch",
+				false, userManualsFieldBackColor, null, false);
+
 			UserManualFlags = (UserManualsFlags)ca.UserManualFlags;
+
 			moreThanOneItemPerDocument.Toggled += UserManualsFlags_Clicked;
 			productBaseContainsPrices.Toggled += UserManualsFlags_Clicked;
 			cashiersHavePasswords.Toggled += UserManualsFlags_Clicked;
 			baseContainsServices.Toggled += UserManualsFlags_Clicked;
+			documentsContainMarks.Toggled += UserManualsFlags_Clicked;
 
 			UserManualsKKTButton_Clicked (null, null);
 
@@ -587,7 +601,7 @@ namespace RD_AAOW
 			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettings (rnmPage, "INNCheckLabel", "",
 				RDLabelTypes.Semaphore);
 
-			if (ca.AllowExtendedFunctionsLevel2)
+			if (ca.EnableExtendedMode)	// Уровень 2
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMLabel",
 					"Регистрационный номер для проверки или произвольное число для генерации:",
 					RDLabelTypes.HeaderLeft);
@@ -603,7 +617,7 @@ namespace RD_AAOW
 
 			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate",
 				RDDefaultButtons.Create, rnmFieldBackColor, RNMGenerate_Clicked);
-			rnmGenerate.IsVisible = ca.AllowExtendedFunctionsLevel2;
+			rnmGenerate.IsVisible = ca.EnableExtendedMode;	// Уровень 2
 
 			rnmTip = AndroidSupport.ApplyLabelSettings (rnmPage, "SNAbout",
 				"Индикатор ФФД: " +
@@ -614,7 +628,7 @@ namespace RD_AAOW
 				RDLabelTypes.Tip);
 			rnmTip.TextType = TextType.Html;
 
-			if (ca.AllowExtendedFunctionsLevel2)
+			if (ca.EnableExtendedMode)	// Уровень 2
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMAbout",
 					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
 					"РНМ их можно указать вручную – остальные будут достроены программой", RDLabelTypes.Tip);
@@ -846,6 +860,13 @@ namespace RD_AAOW
 			cableDescriptionText = AndroidSupport.ApplyLabelSettings (connectorsPage, "CableDescription",
 				" ", RDLabelTypes.Tip);
 
+			connSearchText = AndroidSupport.ApplyEditorSettings (connectorsPage, "ConnSearchText",
+				connectorsFieldBackColor, Keyboard.Default, 30, "", null, true);
+			AndroidSupport.ApplyButtonSettings (connectorsPage, "ConnSearchButton",
+				RDDefaultButtons.Find, connectorsFieldBackColor, Conn_Find);
+			AndroidSupport.ApplyButtonSettings (connectorsPage, "ConnClearButton",
+				RDDefaultButtons.Delete, connectorsFieldBackColor, Conn_Clear);
+
 			CableTypeButton_Clicked (null, null);
 
 			#endregion
@@ -1051,13 +1072,13 @@ namespace RD_AAOW
 				{
 				await AndroidSupport.ShowMessage (ConfigAccessor.ExtendedModeMessage,
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
-				ca.AllowExtendedMode = true;
+				ca.EnableExtendedMode = true;
 				}
 			else
 				{
 				await AndroidSupport.ShowMessage (ConfigAccessor.NoExtendedModeMessage,
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
-				ca.AllowExtendedMode = false;
+				ca.EnableExtendedMode = false;
 				}
 			}
 
@@ -1721,7 +1742,7 @@ namespace RD_AAOW
 			// Выбор варианта (если доступно)
 			int res = 0;
 
-			if (ca.AllowExtendedFunctionsLevel2)
+			if (ca.EnableExtendedMode)	// Уровень 2
 				{
 				List<string> modes = new List<string> { "Для кассира", "Для сервис-инженера" };
 
@@ -1768,6 +1789,8 @@ namespace RD_AAOW
 					cashiersHavePasswords.IsToggled);
 				flags = KKTSupport.SetFlag (flags, UserManualsFlags.ProductBaseContainsServices,
 					baseContainsServices.IsToggled);
+				flags = KKTSupport.SetFlag (flags, UserManualsFlags.DocumentsContainMarks,
+					documentsContainMarks.IsToggled);
 
 				return flags;
 				}
@@ -1781,6 +1804,8 @@ namespace RD_AAOW
 					UserManualsFlags.CashiersHavePasswords);
 				baseContainsServices.IsToggled = KKTSupport.IsSet (value,
 					UserManualsFlags.ProductBaseContainsServices);
+				documentsContainMarks.IsToggled = KKTSupport.IsSet (value,
+					UserManualsFlags.DocumentsContainMarks);
 				}
 			}
 
@@ -1883,6 +1908,39 @@ namespace RD_AAOW
 
 			cableDescriptionText.Text = kb.Plugs.GetCableConnectorDescription ((uint)res, false) +
 				RDLocale.RNRN + kb.Plugs.GetCableConnectorDescription ((uint)res, true);
+			}
+
+		// Поиск по тексту названия кабеля
+		private void Conn_Find (object sender, EventArgs e)
+			{
+			List<string> conns = kb.Plugs.GetCablesNames ();
+			string text = connSearchText.Text.ToLower ();
+
+			lastConnSearchOffset++;
+			for (int i = 0; i < conns.Count; i++)
+				{
+				int j = (i + lastConnSearchOffset) % conns.Count;
+				string conn = conns[j].ToLower ();
+
+				if (conn.Contains (text))
+					{
+					ca.CableType = (uint)j;
+					lastConnSearchOffset = j;
+
+					CableTypeButton_Clicked (null, null);
+					return;
+					}
+				}
+
+			// Код не найден
+			cableLeftSideText.Text = "(описание не найдено)";
+			cableLeftPinsText.Text = cableRightSideText.Text = cableRightPinsText.Text =
+				cableDescriptionText.Text = "";
+			}
+
+		private void Conn_Clear (object sender, EventArgs e)
+			{
+			connSearchText.Text = "";
 			}
 
 		#endregion

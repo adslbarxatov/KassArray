@@ -28,6 +28,7 @@ namespace RD_AAOW
 		private int lastErrorSearchOffset = 0;
 		private int lastOFDSearchOffset = 0;
 		private int lastLowLevelSearchOffset = 0;
+		private int lastConnSearchOffset = 0;
 
 		// Число режимов преобразования
 		private uint encodingModesCount;
@@ -37,7 +38,8 @@ namespace RD_AAOW
 		/// </summary>
 		public const string HideWindowKey = "-h";
 		private bool hideWindow = false;
-		private bool closeWindow = false;
+		private bool closeWindowOnError = false;
+		private bool closeWindowOnRequest = false;
 
 		#region Главный интерфейс
 
@@ -62,9 +64,11 @@ namespace RD_AAOW
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
 					ProgramDescription.KassArrayDLLs[0]));
 
-				closeWindow = true;
+				closeWindowOnError = true;
 				return;
 				}
+
+			OverrideCloseButton.Checked = ca.OverrideCloseButton;
 
 			// Настройка контролов
 			KKTListForCodes.Items.AddRange (kb.CodeTables.GetKKTTypeNames ().ToArray ());
@@ -103,7 +107,7 @@ namespace RD_AAOW
 
 			TopFlag.Checked = ca.TopMost;
 			FNReader.Visible = FNFromFNReader.Visible = OFDFromFNReader.Visible =
-				RNMFromFNReader.Visible = !RDGenerics.StartedFromMSStore && ca.AllowExtendedFunctionsLevel2;
+				RNMFromFNReader.Visible = !RDGenerics.StartedFromMSStore && ca.EnableExtendedMode;	// Уровень 2
 
 			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
 			ConvertorsContainer.SelectedIndex = (int)ca.ConvertorTab;
@@ -149,7 +153,7 @@ namespace RD_AAOW
 			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
 			UserManualFlags = (KassArrayDB::RD_AAOW.UserManualsFlags)ca.UserManualFlags;
 
-			if (ca.AllowExtendedFunctionsLevel1)
+			if (ca.EnableExtendedMode)	// Уровень 1
 				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationTypes);
 			else
 				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationsForCashiers);
@@ -187,13 +191,13 @@ namespace RD_AAOW
 
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled =
-				PrintFullUserManual.Visible = ca.AllowExtendedFunctionsLevel2;
-			CodesTab.Enabled = ca.AllowExtendedFunctionsLevel1;
+				PrintFullUserManual.Visible = ca.EnableExtendedMode;	// Уровень 2
+			CodesTab.Enabled = ca.EnableExtendedMode;	// Уровень 1
 
 			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
 				"жёлтый – планируется; синий – нет сведений" + RDLocale.RN +
 				"(на момент релиза этой версии приложения)";
-			if (ca.AllowExtendedFunctionsLevel2)
+			if (ca.EnableExtendedMode)	// Уровень 2
 				{
 				RNMTip.Text += (RDLocale.RNRN +
 					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
@@ -219,7 +223,7 @@ namespace RD_AAOW
 			ni.ContextMenu = new ContextMenu ();
 
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("Работа с &ФН", FNReader_Click));
-			ni.ContextMenu.MenuItems[0].Enabled = !RDGenerics.StartedFromMSStore && ca.AllowExtendedFunctionsLevel2;
+			ni.ContextMenu.MenuItems[0].Enabled = !RDGenerics.StartedFromMSStore && ca.EnableExtendedMode;	// Уровень 2
 			ni.ContextMenu.MenuItems.Add (new MenuItem (RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit),
 				CloseService));
 
@@ -227,7 +231,7 @@ namespace RD_AAOW
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
 			// Настройка расширенного режима
-			ExtendedMode.Checked = ca.AllowExtendedMode;
+			ExtendedMode.Checked = ca.EnableExtendedMode;
 			ExtendedMode.CheckedChanged += ExtendedMode_CheckedChanged;
 			}
 
@@ -235,7 +239,7 @@ namespace RD_AAOW
 			{
 			if (hideWindow)
 				this.Hide ();
-			if (closeWindow)
+			if (closeWindowOnError)
 				this.Close ();
 			}
 
@@ -245,12 +249,12 @@ namespace RD_AAOW
 			if (ExtendedMode.Checked)
 				{
 				RDGenerics.MessageBox (RDMessageTypes.Error_Left, ConfigAccessor.ExtendedModeMessage);
-				ca.AllowExtendedMode = true;
+				ca.EnableExtendedMode = true;
 				}
 			else
 				{
 				RDGenerics.MessageBox (RDMessageTypes.Question_Left, ConfigAccessor.NoExtendedModeMessage);
-				ca.AllowExtendedMode = false;
+				ca.EnableExtendedMode = false;
 				}
 			}
 
@@ -278,6 +282,7 @@ namespace RD_AAOW
 		// Завершение работы
 		private void CloseService (object sender, EventArgs e)
 			{
+			closeWindowOnRequest = true;
 			this.Close ();
 			}
 
@@ -290,8 +295,15 @@ namespace RD_AAOW
 		private void TextToKKMForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
 			// Контроль
-			if (closeWindow)
+			if (closeWindowOnError)
 				return;
+
+			if (ca.OverrideCloseButton && !closeWindowOnRequest)
+				{
+				e.Cancel = true;
+				BExit_Click (null, null);
+				return;
+				}
 
 			// Сохранение параметров
 			SaveAppSettings ();
@@ -497,6 +509,13 @@ namespace RD_AAOW
 						}
 					break;
 				}
+			}
+
+		// Включение / выключение отдельной кнопки сворачивания
+		private void OverrideCloseButton_CheckedChanged (object sender, EventArgs e)
+			{
+			ca.OverrideCloseButton = OverrideCloseButton.Checked;
+			BExit.Visible = !OverrideCloseButton.Checked;
 			}
 
 		#endregion
@@ -1041,6 +1060,9 @@ namespace RD_AAOW
 				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
 					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices,
 					BaseContainsServices.Checked);
+				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
+					KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks,
+					DocumentsContainMarks.Checked);
 
 				return flags;
 				}
@@ -1054,6 +1076,8 @@ namespace RD_AAOW
 					KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords);
 				BaseContainsServices.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
 					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices);
+				DocumentsContainMarks.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
+					KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks);
 				}
 			}
 
@@ -1156,6 +1180,41 @@ namespace RD_AAOW
 
 			CableLeftDescription.Text = kb.Plugs.GetCableConnectorDescription (i, false) + RDLocale.RNRN +
 				kb.Plugs.GetCableConnectorDescription (i, true);
+			}
+
+		// Поиск по тексту ошибки
+		private void ConnFindButton_Click (object sender, EventArgs e)
+			{
+			List<string> conns = kb.Plugs.GetCablesNames ();
+			string text = ConnFind.Text.ToLower ();
+
+			lastConnSearchOffset++;
+			for (int i = 0; i < conns.Count; i++)
+				{
+				int j = (i + lastConnSearchOffset) % conns.Count;
+				string conn = conns[j].ToLower ();
+
+				if (conn.Contains (text))
+					{
+					CableType.SelectedIndex = lastConnSearchOffset = j;
+					return;
+					}
+				}
+
+			// Код не найден
+			CableLeftSide.Text = "(описание не найдено)";
+			CableLeftPins.Text = CableRightPins.Text = CableLeftDescription.Text = CableRightSide.Text = "";
+			}
+
+		private void ConnFind_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				ConnFindButton_Click (null, null);
+			}
+
+		private void ConnClearButton_Click (object sender, EventArgs e)
+			{
+			ConnFind.Text = "";
 			}
 
 		#endregion

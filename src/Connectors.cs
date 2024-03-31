@@ -54,26 +54,29 @@ namespace RD_AAOW
 					// Чтение разъёмов
 					if (connectors)
 						{
-						connectorsNames.Add (str);
+						connectorsNames.Add (str.Substring (3));
 						connectorsDescriptions.Add (SR.ReadLine ());
+						continue;
 						}
 
 					// Чтение кабелей
-					else
-						{
-						cablesNames.Add (str);
+					/*else
+						{*/
+					cablesNames.Add (str);
 
-						string[] values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-						cablesLeftSides.Add (values[0]);
-						cablesLeftDescriptions.Add (uint.Parse (values[1]));
+					string[] values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+					cablesLeftSides.Add (values[0]);
+					cablesLeftDescriptions.Add (uint.Parse (values[1]));
 
-						values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-						cablesRightSides.Add (values[0]);
-						cablesRightDescriptions.Add (uint.Parse (values[1]));
+					values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+					cablesRightSides.Add (values[0]);
+					cablesRightDescriptions.Add (uint.Parse (values[1]));
 
-						cablesLeftPins.Add (SR.ReadLine ().Replace ("\t", " | "));
-						cablesRightPins.Add (SR.ReadLine ().Replace ("\t", " | "));
-						}
+					cablesLeftPins.Add (SR.ReadLine ().Replace ("\t", " | "));
+					cablesRightPins.Add (SR.ReadLine ().Replace ("\t", " | "));
+					/*}*/
+
+					SR.ReadLine ();
 					}
 				}
 			catch

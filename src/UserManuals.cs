@@ -96,101 +96,84 @@ namespace RD_AAOW
 				for (int i = 0; i < operations.Count; i++)
 					{
 					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", RDLocale.RN + "• "));
+					string op = operations[i][operations[i].Count - 1];
 
 					// Выборочные подстановки
 					switch (i)
 						{
+						case 0:
+							op = op.Replace ("&B", "для открытия смены");
+							break;
+
 						case 1:
 						case 2:
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("• &1", "#1• ");
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("&2",
-								"Ввести код #6");
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("&02",
-								"ввести код #6");
+							op = op.Replace ("• &1", "#1• ");
+							op = op.Replace ("&2", "Ввести код #6");
+							op = op.Replace ("&02", "ввести код #6");
+							op = op.Replace ("&A", "для закрытия чека");
 							break;
 
 						case 3:
 						case 4:
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("• &1",
-								"#1• Закрыть чек согласно способу оплаты");
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("&2",
-								"Ввести код #6");
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("&02",
-								"ввести код #6");
-							operations[i][operations[i].Count - 1] =
-								operations[i][operations[i].Count - 1].Replace ("&3",
-								"Отсканировать штрих-код товара");
+							op = op.Replace ("• &1", "#1• Закрыть чек согласно способу оплаты");
+							op = op.Replace ("&2", "Ввести код #6");
+							op = op.Replace ("&02", "ввести код #6");
+							op = op.Replace ("&3", "Отсканировать штрих-код товара");
 
 							if (i == 4)
-								operations[i][operations[i].Count - 1] = "Действие выполняется для всех позиций, " +
-									"в которых количество не равно единице:" + RDLocale.RN +
-									operations[i][operations[i].Count - 1];
+								op = "Действие выполняется для всех позиций, " +
+									"в которых количество не равно единице:" + RDLocale.RN + op;
 							break;
 
 						case 6:
-							operations[i][operations[i].Count - 1] = "Если требуется «отменить» чек, который ещё " +
-								"не был закрыт, выполняется аннулирование:" + RDLocale.RN +
-								operations[i][operations[i].Count - 1];
+							op = "Если требуется «отменить» чек, который ещё " +
+								"не был закрыт, выполняется аннулирование:" + RDLocale.RN + op;
 							break;
 
 						case 7:
-							operations[i][operations[i].Count - 1] = "Если требуется «отменить» чек, который уже " +
-								"был закрыт, выполняется возврат:" + RDLocale.RN +
-								operations[i][operations[i].Count - 1] +
+							op = "Если требуется «отменить» чек, который уже " +
+								"был закрыт, выполняется возврат:" + RDLocale.RN + op +
 								";" + RDLocale.RN + "• Дальнейшие действия совпадают с действиями при продаже";
 							break;
 
 						case 8:
-							operations[i][operations[i].Count - 1] += ";" + RDLocale.RN + "• Дождаться снятия отчёта";
+							op += ";" + RDLocale.RN + "• Дождаться снятия отчёта";
 							break;
 
 						case 9:
 						case 10:
-							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
-								operations[i][operations[i].Count - 1] =
-									"! Необходимо предварительно закрыть смену;" + RDLocale.RN +
-									operations[i][operations[i].Count - 1];
+							if (!op.StartsWith ("• ("))
+								op = "! Необходимо предварительно закрыть смену;" + RDLocale.RN + op;
 							break;
 
 						case 15:
-							operations[i][operations[i].Count - 1] =
-								"! Необходимо убедиться, что сохранены все важные настройки;" + RDLocale.RN +
-								operations[i][operations[i].Count - 1];
+							op = "! Необходимо убедиться, что сохранены все важные настройки;" +
+								RDLocale.RN + op;
 							break;
 
 						case 16:
-							if (!operations[i][operations[i].Count - 1].StartsWith ("• ("))
-								operations[i][operations[i].Count - 1] =
+							if (!op.StartsWith ("• ("))
+								op =
 									"! Необходимо убедиться, что смена закрыта, а дата в ККТ позволяет закрыть архив;" +
-									RDLocale.RN + operations[i][operations[i].Count - 1] +
+									RDLocale.RN + op +
 									";" + RDLocale.RN + "• Дождаться распечатки отчёта и отправки документов ОФД";
 							break;
 						}
 
 					// Общие подстановки
-					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&4",
-						"несколько раз до отображения");
-					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("• &5",
-						"! (выполняется от имени");
-					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&[",
-						"Нажать [");
-					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&0[",
-						"нажать [");
-					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&7",
-						"#4");
-					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("&8",
-						"#5");
-					operations[i][operations[i].Count - 1] = operations[i][operations[i].Count - 1].Replace ("???",
-						"(требует уточнения)");
+					op = op.Replace ("&4", "несколько раз до отображения");
+					op = op.Replace ("• &5", "! (выполняется от имени");
+					op = op.Replace ("&[", "Нажать [");
+					op = op.Replace ("&0[", "нажать [");
+					op = op.Replace ("&7", "#4");
+					op = op.Replace ("&8", "#5");
+					op = op.Replace ("???", "(требует уточнения)");
 
-					if (operations[i][operations[i].Count - 1].StartsWith ("• -"))
-						operations[i][operations[i].Count - 1] = "(не предусмотрено)";
+					if (op.StartsWith ("• -"))
+						op = "(не предусмотрено)";
+
+					// Завершено
+					operations[i][operations[i].Count - 1] = op;
 					}
 				}
 
@@ -246,7 +229,7 @@ namespace RD_AAOW
 					}
 				else
 					{
-					text = text.Replace ("#3", "");
+					text = text.Replace ("#3", "Ввести цену,");
 					}
 				}
 
@@ -263,6 +246,15 @@ namespace RD_AAOW
 			else
 				{
 				text = text.Replace ("#4", "").Replace ("#5", "");
+				}
+
+			if (KKTSupport.IsSet (Flags, UserManualsFlags.DocumentsContainMarks))
+				{
+				text = text.Replace ("#C", ";" + RDLocale.RN + "• Отсканировать код маркировки");
+				}
+			else
+				{
+				text = text.Replace ("#C", "");
 				}
 
 			return text;

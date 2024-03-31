@@ -12,6 +12,12 @@
 				<Label x:Name="CableLabel" />
 				<Button x:Name="CableTypeButton" />
 
+				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+					<Editor x:Name="ConnSearchText" VerticalOptions="Center" />
+					<Button x:Name="ConnSearchButton" VerticalOptions="Center" />
+					<Button x:Name="ConnClearButton" VerticalOptions="Center" />
+				</StackLayout>
+
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
 
