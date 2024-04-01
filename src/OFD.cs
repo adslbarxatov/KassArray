@@ -49,6 +49,11 @@ namespace RD_AAOW
 		public const string OKPPort = "26101";
 
 		/// <summary>
+		/// Общий адрес сервера ГИС МТ
+		/// </summary>
+		public const string CDNSite = "cdn.crpt.ru";
+
+		/// <summary>
 		/// Конструктор. Инициализирует таблицу ОФД
 		/// </summary>
 		public OFD ()

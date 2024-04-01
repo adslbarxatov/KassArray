@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace RD_AAOW
@@ -41,6 +42,11 @@ namespace RD_AAOW
 		private bool closeWindowOnError = false;
 		private bool closeWindowOnRequest = false;
 
+		/*private string showWindowSignFile = RDGenerics.AppStartupPath +
+			KassArrayDB::RD_AAOW.KKTSupport.ShowWindowSignFile;*/
+		private EventWaitHandle ewh;
+		private bool ewhIsActive = true;
+
 		#region Главный интерфейс
 
 		/// <summary>
@@ -57,6 +63,16 @@ namespace RD_AAOW
 			ca = new ConfigAccessor ();
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
 			hideWindow = (Flags == HideWindowKey);
+
+			try
+				{
+				ewh = new EventWaitHandle (false, EventResetMode.AutoReset,
+					KassArrayDB::ProgramDescription.AssemblyTitle);
+				}
+			catch
+				{
+				ewhIsActive = false;
+				}
 
 			if (KassArrayDB::ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
 				{
@@ -396,15 +412,41 @@ namespace RD_AAOW
 
 		private void CallFNReader ()
 			{
-			// Контроль на завершение предыдущих процессов
-			this.TopMost = false;
-			bool res = RDGenerics.KillAllProcesses (
-				Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), true, false);
-			this.TopMost = TopFlag.Checked;
+			// Отправка "сообщения" окну модуля работы с ФН
+			/*bool problem = File.Exists (showWindowSignFile);*/
+			bool problem = ewhIsActive ? ewh.WaitOne (100) : true;
+			if (!problem)
+				ewh.Set ();
 
+			/*if (!problem)
+				try
+					{
+					File.WriteAllText (showWindowSignFile, "\x1");
+					}
+				catch { }*/
+
+			// Контроль на завершение предыдущих процессов
+			bool res;
+			if (!problem)
+				{
+				// Тихо
+				res = RDGenerics.KillAllProcesses (
+					Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), false, true);
+				}
+			else
+				{
+				// С предупреждением
+				this.TopMost = false;
+				res = RDGenerics.KillAllProcesses (
+					Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), true, false);
+				this.TopMost = TopFlag.Checked;
+				}
+
+			// Отмена дальнейших действий, если процесс не был завершён / уже был запущен
 			if (!res)
 				return;
 
+			// Нормальный запуск модуля работы с ФН
 			RDGenerics.RunURL (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]);
 			}
 
@@ -515,7 +557,6 @@ namespace RD_AAOW
 		private void OverrideCloseButton_CheckedChanged (object sender, EventArgs e)
 			{
 			ca.OverrideCloseButton = OverrideCloseButton.Checked;
-			BExit.Visible = !OverrideCloseButton.Checked;
 			}
 
 		#endregion

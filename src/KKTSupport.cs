@@ -1147,6 +1147,17 @@ namespace RD_AAOW
 		/// </summary>
 		public static string StatusFilePath = RDGenerics.AppStartupPath + "KassArrayStatus.dat";
 
+		/// <summary>
+		/// Возвращает имя настройки, хранящей флаг переопределения действия кнопки закрытия окна
+		/// </summary>
+		public const string OverrideCloseButtonPar = "OCB";
+
+		/*/// <summary>
+		/// Возвращает имя файла, появление которого является требованием к отображению окна модуля
+		/// работы с ФН
+		/// </summary>
+		public const string ShowWindowSignFile = "_show.win";*/
+
 #endif
 		}
 
