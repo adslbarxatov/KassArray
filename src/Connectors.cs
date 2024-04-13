@@ -60,8 +60,6 @@ namespace RD_AAOW
 						}
 
 					// Чтение кабелей
-					/*else
-						{*/
 					cablesNames.Add (str);
 
 					string[] values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
@@ -74,7 +72,6 @@ namespace RD_AAOW
 
 					cablesLeftPins.Add (SR.ReadLine ().Replace ("\t", " | "));
 					cablesRightPins.Add (SR.ReadLine ().Replace ("\t", " | "));
-					/*}*/
 
 					SR.ReadLine ();
 					}

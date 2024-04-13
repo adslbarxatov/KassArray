@@ -859,7 +859,7 @@ namespace RD_AAOW
 		/// Метод выводит произвольный текст на печать с указанными настройками
 		/// </summary>
 		/// <param name="TextForPrinting">Текст для печати</param>
-		/// <param name="PrinterType">Пользовательский тип принтера</param>
+		/// <param name="PrinterType">Тип принтера</param>
 		/// <returns>Возвращает текст ошибки или null в случае успеха</returns>
 		public static string PrintText (string TextForPrinting, PrinterTypes PrinterType)
 			{
@@ -1151,12 +1151,6 @@ namespace RD_AAOW
 		/// Возвращает имя настройки, хранящей флаг переопределения действия кнопки закрытия окна
 		/// </summary>
 		public const string OverrideCloseButtonPar = "OCB";
-
-		/*/// <summary>
-		/// Возвращает имя файла, появление которого является требованием к отображению окна модуля
-		/// работы с ФН
-		/// </summary>
-		public const string ShowWindowSignFile = "_show.win";*/
 
 #endif
 		}

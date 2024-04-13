@@ -42,8 +42,6 @@ namespace RD_AAOW
 		private bool closeWindowOnError = false;
 		private bool closeWindowOnRequest = false;
 
-		/*private string showWindowSignFile = RDGenerics.AppStartupPath +
-			KassArrayDB::RD_AAOW.KKTSupport.ShowWindowSignFile;*/
 		private EventWaitHandle ewh;
 		private bool ewhIsActive = true;
 
@@ -413,17 +411,9 @@ namespace RD_AAOW
 		private void CallFNReader ()
 			{
 			// Отправка "сообщения" окну модуля работы с ФН
-			/*bool problem = File.Exists (showWindowSignFile);*/
 			bool problem = ewhIsActive ? ewh.WaitOne (100) : true;
 			if (!problem)
 				ewh.Set ();
-
-			/*if (!problem)
-				try
-					{
-					File.WriteAllText (showWindowSignFile, "\x1");
-					}
-				catch { }*/
 
 			// Контроль на завершение предыдущих процессов
 			bool res;
