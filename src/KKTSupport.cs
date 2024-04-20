@@ -149,6 +149,7 @@ namespace RD_AAOW
 			{
 			// Определение недопустимых вариантов
 			string res = "";
+			uint length = GetFNLifeLength (Flags);
 
 			// Нельзя игнорировать
 			if (IsSet (Flags, FNLifeFlags.GenericTax) && !IsSet (Flags, FNLifeFlags.FN15) &&
@@ -170,13 +171,18 @@ namespace RD_AAOW
 			// Определение нежелательных вариантов
 			else if (!IsSet (Flags, FNLifeFlags.GenericTax) && IsSet (Flags, FNLifeFlags.FN15) &&
 				!IsSet (Flags, FNLifeFlags.Season) && !IsSet (Flags, FNLifeFlags.Agents) &&
-				!IsSet (Flags, FNLifeFlags.Excise) && !IsSet (Flags, FNLifeFlags.Autonomous))
+				!IsSet (Flags, FNLifeFlags.Excise) && !IsSet (Flags, FNLifeFlags.Autonomous) ||
+
+				!IsSet (Flags, FNLifeFlags.FN15) && IsSet (Flags, FNLifeFlags.FFD12) &&
+				IsSet (Flags, FNLifeFlags.Excise) ||
+
+				!IsSet (Flags, FNLifeFlags.FN15) && IsSet (Flags, FNLifeFlags.Autonomous))
 				{
 				res = FNLifeUnwelcomeSign;
 				}
 
 			// Результат
-			return res + StartDate.AddDays (GetFNLifeLength (Flags)).ToString ("dd.MM.yyyy");
+			return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");
 			}
 
 		private static uint GetFNLifeLength (FNLifeFlags Flags)

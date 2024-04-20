@@ -109,7 +109,7 @@ namespace RD_AAOW
 			// Получение настроек
 			RDGenerics.LoadWindowDimensions (this);
 
-			if (!RDGenerics.IsRegistryAccessible)
+			if (!RDGenerics.AppHasAccessRights (false, true))
 				{
 				this.Text += RDLocale.GetDefaultText (RDLDefaultTexts.Message_LimitedFunctionality);
 				KeepAppState.Checked = KeepAppState.Enabled = false;
