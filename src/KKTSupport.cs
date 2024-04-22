@@ -1005,6 +1005,12 @@ namespace RD_AAOW
 				line = "• " + ProgramDescription.AssemblyMainName + " • v " + ProgramDescription.AssemblyVersion + " •";
 				line = line.PadLeft ((charactersPerLine - line.Length) / 2 + line.Length) +
 					" ".PadLeft (charactersPerLine / 2);
+
+#if UMPRINT
+				if (IsA4)
+					ev.Graphics.DrawImage (Properties.KassArrayDB.KAQR, ev.PageBounds.Width -
+						leftMargin - 50, topMargin);
+#endif
 				}
 
 			int count = 0;

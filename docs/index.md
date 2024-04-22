@@ -1,13 +1,16 @@
 # Инструмент сервис-инженера контрольно-кассовой техники KassArray: руководство пользователя
-> **ƒ** &nbsp;RD AAOW FDL; 24.12.2023; 15:25
+> **ƒ** &nbsp;RD AAOW FDL; 23.04.2024; 2:46
 
 ---
 
 ### Содержание страницы
 
 - [Общие сведения об инструменте KassArray](#kassarray)
+- [Видеоруководство к инструменту](https://youtube.com/watch?v=25BYSySdAJk)
+- [Быстрые руководства по распространённым операциям](https://adslbarxatov.github.io/KassArray/quick)
+- [Ссылки для загрузки](https://adslbarxatov.github.io/DPArray/ru#kassarray)
 
-    - [Видеоруководство к инструменту](https://youtube.com/watch?v=25BYSySdAJk)
+---
 
 - Модуль чтения и обработки данных ФН для KassArray
 
@@ -45,9 +48,6 @@
     - [Запрос счётчиков ФН](#section-25)
     - [Интерактивные функции](#section-26)
     - [Запись в ФН](#section-27)
-
-- [Быстрые руководства по распространённым операциям](https://adslbarxatov.github.io/KassArray/quick)
-- [Ссылки для загрузки](https://adslbarxatov.github.io/DPArray/ru#kassarray)
 
 ---
 
