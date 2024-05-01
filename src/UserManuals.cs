@@ -103,6 +103,8 @@ namespace RD_AAOW
 						{
 						case 0:
 							op = op.Replace ("&B", "для открытия смены");
+							op = op.Replace ("• !", "!");
+							op = op.Replace ("• " + RDLocale.RN, RDLocale.RN);
 							break;
 
 						case 1:
@@ -209,7 +211,7 @@ namespace RD_AAOW
 				{
 				if (KKTSupport.IsSet (Flags, UserManualsFlags.MoreThanOneItemPerDocument))
 					{
-					text = text.Replace ("#1", "↑ (повторить предыдущие действия для всех " +
+					text = text.Replace ("#1", "↑ (повторить эти действия для всех " +
 						(goods ? "товаров" : "услуг") + " в чеке);" + RDLocale.RN);
 					}
 				else
