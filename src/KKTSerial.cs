@@ -15,6 +15,8 @@ namespace RD_AAOW
 		private List<string> serialSamples = new List<string> ();
 		private List<uint> serialOffsets = new List<uint> ();
 		private List<List<FFDSupportStatuses>> ffdSupport = new List<List<FFDSupportStatuses>> ();
+		private List<bool> serialConfirmed = new List<bool> ();
+
 		private List<string> regions = new List<string> ();
 
 		/// <summary>
@@ -42,7 +44,7 @@ namespace RD_AAOW
 					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 					// Имя протокола
-					if (values.Length != 5)
+					if (values.Length != 6)
 						continue;
 
 					// Список команд
@@ -66,6 +68,8 @@ namespace RD_AAOW
 						else
 							ffdSupport[ffdSupport.Count - 1].Add (FFDSupportStatuses.Unknown);
 						}
+
+					serialConfirmed.Add (values[5] == "1");
 					}
 				}
 			catch
@@ -140,7 +144,7 @@ namespace RD_AAOW
 			if (i < 0)
 				return "неизвестная модель ККТ";
 
-			return names[i];
+			return names[i] + (serialConfirmed[i] ? "" : " (неточно)");
 			}
 
 		// Поиск ККТ по фрагментам ЗН
