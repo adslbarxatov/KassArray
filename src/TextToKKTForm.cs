@@ -112,11 +112,11 @@ namespace RD_AAOW
 			if (!RDGenerics.AppHasAccessRights (false, true))
 				{
 				this.Text += RDLocale.GetDefaultText (RDLDefaultTexts.Message_LimitedFunctionality);
-				KeepAppState.Checked = KeepAppState.Enabled = false;
+				/*KeepAppState.Checked = KeepAppState.Enabled = false;
 				}
 			else
 				{
-				KeepAppState.Checked = ca.KeepApplicationState;
+				KeepAppState.Checked = ca.KeepApplicationState;*/
 				}
 
 			TopFlag.Checked = ca.TopMost;
@@ -331,10 +331,10 @@ namespace RD_AAOW
 			{
 			RDGenerics.SaveWindowDimensions (this);
 
-			ca.KeepApplicationState = KeepAppState.Checked;
+			/*ca.KeepApplicationState = KeepAppState.Checked;*/
 			ca.TopMost = TopFlag.Checked;
-			if (!ca.KeepApplicationState)
-				return;
+			/*if (!ca.KeepApplicationState)
+				return;*/
 
 			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
 			ca.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;

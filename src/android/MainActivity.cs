@@ -68,26 +68,31 @@ namespace RD_AAOW.Droid
 			base.OnCreate (savedInstanceState);
 			global::Xamarin.Forms.Forms.Init (this, savedInstanceState);
 
+			// Получение списка доступных прав
+			RDAppStartupFlags flags = AndroidSupportX.GetAppStartupFlags (RDAppStartupFlags.CanShowNotifications, this);
+
 			// Запуск независимо от разрешения
-			Intent mainService = new Intent (this, typeof (MainService));
+			if (mainService == null)
+				mainService = new Intent (this, typeof (MainService));
 			AndroidSupport.StopRequested = false;
 
-			if (AndroidSupport.IsForegroundAvailable)
-				StartForegroundService (mainService);
-			else
-				StartService (mainService);
+			// Для Android 12 и выше запуск службы возможен только здесь
+			if (flags.HasFlag (RDAppStartupFlags.CanShowNotifications))
+				if (!AndroidSupport.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)
+					{
+					if (AndroidSupport.IsForegroundAvailable)
+						StartForegroundService (mainService);
+					else
+						StartService (mainService);
+					}
 
 			// Запрет на переход в ждущий режим
 			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
 
 			LoadApplication (new App ((PrintManager)originalContext.GetSystemService (Service.PrintService),
-#if HUAWEI
-				true
-#else
-				false
-#endif
-				));
+				flags));
 			}
+		private Intent mainService;
 
 		/// <summary>
 		/// Перезапуск службы
@@ -108,7 +113,8 @@ namespace RD_AAOW.Droid
 		protected override void OnResume ()
 			{
 			// Перезапуск, если была остановлена (независимо от разрешения)
-			Intent mainService = new Intent (this, typeof (MainService));
+			if (mainService == null)
+				mainService = new Intent (this, typeof (MainService));
 			AndroidSupport.StopRequested = false;
 
 			// Нет смысла запускать сервис, если он не был закрыт приложением.
@@ -133,7 +139,7 @@ namespace RD_AAOW.Droid
 	/// Класс описывает фоновую службу приложения
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKT",
-		ForegroundServiceType = ForegroundService.TypeDataSync,
+		/*ForegroundServiceType = ForegroundService.TypeDataSync,*/
 		Label = "KassArray",
 		Exported = true)]
 	public class MainService: global::Android.App.Service
@@ -182,11 +188,21 @@ namespace RD_AAOW.Droid
 		private void TimerTick ()
 			{
 			// Контроль требования завершения службы (игнорирует все прочие флаги)
-			if (AndroidSupport.StopRequested)
+			if (isStarted && AndroidSupport.StopRequested)
 				{
-				Intent mainService = new Intent (this, typeof (MainService));
-				StopService (mainService);
+				// Остановка службы
+				isStarted = false;
 
+				// Освобождение ресурсов
+				notBuilder.Dispose ();
+				masterIntent.Dispose ();
+				masterPendingIntent.Dispose ();
+
+				foreach (BroadcastReceiver br in bcReceivers)
+					this.UnregisterReceiver (br);
+
+				// Глушение (и отправка события destroy)
+				StopSelf ();
 				return;
 				}
 			}
@@ -228,7 +244,12 @@ namespace RD_AAOW.Droid
 			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
 				notBuilder.SetForegroundServiceBehavior (0x01);
 
-			string launchMessage = "Нажмите, чтобы вернуться в основное приложение";
+			string launchMessage;
+			if (AndroidSupport.IsForegroundStartableFromResumeEvent)
+				launchMessage = "Нажмите, чтобы вернуться в основное приложение";
+			else
+				launchMessage = "Служба " + ProgramDescription.AssemblyMainName + " активна";
+
 			notBuilder.SetContentText (launchMessage);
 			notBuilder.SetContentTitle (ProgramDescription.AssemblyMainName);
 			notBuilder.SetTicker (ProgramDescription.AssemblyMainName);
@@ -251,12 +272,11 @@ namespace RD_AAOW.Droid
 			// Прикрепление ссылки для перехода в основное приложение
 			masterIntent = new Intent (this, typeof (NotificationLink));
 			masterPendingIntent = PendingIntent.GetService (this, 0, masterIntent, PendingIntentFlags.Immutable);
-		
 			notBuilder.SetContentIntent (masterPendingIntent);
 
-			// Стартовое сообщение (с применением типа согласно рекомендациям для Android S)
+			// Стартовое сообщение
 			Android.App.Notification notification = notBuilder.Build ();
-			StartForeground (notServiceID, notification, ForegroundService.TypeDataSync);
+			StartForeground (notServiceID, notification);
 
 			// Перенастройка для основного режима
 			if (!AndroidSupport.IsForegroundAvailable)
@@ -282,29 +302,19 @@ namespace RD_AAOW.Droid
 		/// </summary>
 		public override void OnDestroy ()
 			{
-			// Остановка службы
+			// Освобождение ресурсов, которые нельзя освободить в таймере
 			handler.RemoveCallbacks (runnable);
 			notManager.Cancel (notServiceID);
 			if (AndroidSupport.IsForegroundAvailable)
 				notManager.DeleteNotificationChannel (ProgramDescription.AssemblyMainName.ToLower ());
-			isStarted = false;
-
-			// Освобождение ресурсов
-			notBuilder.Dispose ();
 			notManager.Dispose ();
 
-			masterIntent.Dispose ();
-			masterPendingIntent.Dispose ();
-
-			// Глушение
+			// Остановка
 			if (AndroidSupport.IsForegroundAvailable)
 				StopForeground (StopForegroundFlags.Remove);
 			else
 				StopForeground (true);
 			StopSelf ();
-
-			foreach (BroadcastReceiver br in bcReceivers)
-				this.UnregisterReceiver (br);
 
 			// Стандартная обработка
 			base.OnDestroy ();
@@ -348,7 +358,7 @@ namespace RD_AAOW.Droid
 		public override StartCommandResult OnStartCommand (Intent intent, StartCommandFlags flags, int startId)
 			{
 			if (AndroidSupport.IsForegroundAvailable)
-				StartActivity ();
+				StartMasterActivity ();
 
 			return base.OnStartCommand (intent, flags, startId);
 			}
@@ -359,21 +369,26 @@ namespace RD_AAOW.Droid
 		protected override void OnHandleWork (Intent intent)
 			{
 			if (!AndroidSupport.IsForegroundAvailable)
-				StartActivity ();
+				StartMasterActivity ();
 			}
 
 		// Общий метод запуска
-		private void StartActivity ()
+		private void StartMasterActivity ()
 			{
+			// Защита от повторов
 			if (AndroidSupport.AppIsRunning)
 				return;
-
 			AndroidSupport.StopRequested = false;
-			Intent mainActivity = new Intent (this, typeof (MainActivity));
-			mainActivity.PutExtra ("Tab", 0);
+
+			if (mainActivity == null)
+				{
+				mainActivity = new Intent (this, typeof (MainActivity));
+				mainActivity.PutExtra ("Tab", 0);
+				}
 			PendingIntent.GetActivity (this, 0, mainActivity,
 				PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable).Send ();   // Android S+ req
 			}
+		private Intent mainActivity;
 		}
 
 	/// <summary>
@@ -395,7 +410,8 @@ namespace RD_AAOW.Droid
 			if (intent.Action.Equals (Intent.ActionBootCompleted, StringComparison.CurrentCultureIgnoreCase) ||
 				intent.Action.Equals (Intent.ActionReboot, StringComparison.CurrentCultureIgnoreCase))
 				{
-				Intent mainService = new Intent (context, typeof (MainService));
+				if (mainService == null)
+					mainService = new Intent (context, typeof (MainService));
 				AndroidSupport.StopRequested = false;
 
 				if (AndroidSupport.IsForegroundAvailable)
@@ -404,5 +420,6 @@ namespace RD_AAOW.Droid
 					context.StartService (mainService);
 				}
 			}
+		private Intent mainService;
 		}
 	}

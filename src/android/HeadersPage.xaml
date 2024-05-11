@@ -27,11 +27,7 @@
 				</StackLayout>
 
 				<Label x:Name="AllowServiceTip" />
-
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
-					<Switch x:Name="KeepAppState" />
-					<Label x:Name="KeepAppStateLabel" />
-				</StackLayout>
+				<Button x:Name="AllowServiceButton" />
 
 				<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
 					<Switch x:Name="ExtendedMode" />

@@ -98,7 +98,7 @@ namespace RD_AAOW
 
 		private Xamarin.Forms.Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
 			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
-			keepAppState, allowService, extendedMode,
+			/*keepAppState,*/ allowService, extendedMode,
 			moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords, baseContainsServices,
 			documentsContainMarks;
 
@@ -137,7 +137,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Точка входа приложения
 		/// </summary>
-		public App (PrintManager PrintingManager, bool Huawei)
+		public App (PrintManager PrintingManager, RDAppStartupFlags Flags)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -152,12 +152,12 @@ namespace RD_AAOW
 			AndroidSupport.AppIsRunning = true;
 
 			// Переопределение цветов для закрытых функций
-			if (!ca.EnableExtendedMode)	// Уровень 1
+			if (!ca.EnableExtendedMode) // Уровень 1
 				{
 				kktCodesFieldBackColor = AndroidSupport.DefaultGreyColors[2];
 				kktCodesMasterBackColor = AndroidSupport.DefaultGreyColors[3];
 				}
-			if (!ca.EnableExtendedMode)	// Уровень 2
+			if (!ca.EnableExtendedMode) // Уровень 2
 				{
 				tagsFieldBackColor = lowLevelFieldBackColor = connectorsFieldBackColor =
 					AndroidSupport.DefaultGreyColors[2];
@@ -185,7 +185,7 @@ namespace RD_AAOW
 				ofdMasterBackColor, true);
 
 			tagsPage = ApplyPageSettings ("TagsPage", "TLV-теги", tagsMasterBackColor, true);
-			tagsPage.IsEnabled = ca.EnableExtendedMode;	// Уровень 2
+			tagsPage.IsEnabled = ca.EnableExtendedMode; // Уровень 2
 
 			lowLevelPage = ApplyPageSettings ("LowLevelPage", "Команды нижнего уровня",
 				lowLevelMasterBackColor, true);
@@ -218,21 +218,52 @@ namespace RD_AAOW
 
 			#region Страница «оглавления»
 
-			AndroidSupport.ApplyLabelSettings (headersPage, "KeepAppStateLabel",
+			/*AndroidSupport.ApplyLabelSettings (headersPage, "KeepAppStateLabel",
 				"Помнить настройки приложения", RDLabelTypes.DefaultLeft);
 			keepAppState = AndroidSupport.ApplySwitchSettings (headersPage, "KeepAppState", false,
-				headersFieldBackColor, null, ca.KeepApplicationState);
+				headersFieldBackColor, null, ca.KeepApplicationState);*/
 
 			AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceLabel",
 				"Оставить службу активной после выхода", RDLabelTypes.DefaultLeft);
 			allowService = AndroidSupport.ApplySwitchSettings (headersPage, "AllowService", false,
 				headersFieldBackColor, AllowService_Toggled, AndroidSupport.AllowServiceToStart);
 
-			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
-				AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceTip",
+			Label allowServiceTip;
+			Button allowServiceButton;
+			if (!Flags.HasFlag (RDAppStartupFlags.CanShowNotifications))
+				{
+				allowService.IsEnabled = false;
+				allowServiceTip = AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceTip",
+					RDLocale.GetDefaultText (RDLDefaultTexts.Message_NotificationPermission), RDLabelTypes.ErrorTip);
+
+				allowServiceButton = AndroidSupport.ApplyButtonSettings (headersPage, "AllowServiceButton",
+					"Перейти к настройкам", headersFieldBackColor, CallAppSettings, false);
+				allowServiceButton.HorizontalOptions = LayoutOptions.Center;
+				}
+			else if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
+				{
+				allowServiceTip = AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceTip",
 					"Если закреплённое оповещение " + ProgramDescription.AssemblyMainName +
-					" отсутствует в верхней части экрана, эта опция потребует перезапуска приложения",
-					RDLabelTypes.DefaultLeft);
+					" отсутствует в верхней части экрана, эта опция потребует перезапуска приложения." + RDLocale.RNRN +
+					"В Android 12 и выше отсутствует адекватная реализация перехода к приложению " +
+					"при нажатии на оповещение. Поэтому для возвращения в приложение необходимо будет запустить " +
+					"его заново. Оповещение в данной версии ОС лишь помогает ускорить его запуск" + RDLocale.RN,
+					RDLabelTypes.Tip);
+
+				allowServiceButton = AndroidSupport.ApplyButtonSettings (headersPage, "AllowServiceButton",
+					" ", headersFieldBackColor, null, false);
+				allowServiceButton.IsVisible = false;
+				}
+			else
+				{
+				allowServiceTip = AndroidSupport.ApplyLabelSettings (headersPage, "AllowServiceTip",
+					" ", RDLabelTypes.Tip);
+				allowServiceTip.IsVisible = false;
+
+				allowServiceButton = AndroidSupport.ApplyButtonSettings (headersPage, "AllowServiceButton",
+					" ", headersFieldBackColor, null, false);
+				allowServiceButton.IsVisible = false;
+				}
 
 			AndroidSupport.ApplyLabelSettings (headersPage, "ExtendedModeLabel",
 				"Режим сервис-инженера", RDLabelTypes.DefaultLeft);
@@ -258,7 +289,7 @@ namespace RD_AAOW
 				RDLabelTypes.HeaderLeft);
 			userManualLayout = (StackLayout)userManualsPage.FindByName ("UserManualLayout");
 			int operationsCount = ca.EnableExtendedMode ? UserManuals.OperationTypes.Length :
-				UserManuals.OperationsForCashiers.Length;	// Уровень 1
+				UserManuals.OperationsForCashiers.Length;   // Уровень 1
 
 			for (int i = 0; i < operationsCount; i++)
 				{
@@ -601,7 +632,7 @@ namespace RD_AAOW
 			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettings (rnmPage, "INNCheckLabel", "",
 				RDLabelTypes.Semaphore);
 
-			if (ca.EnableExtendedMode)	// Уровень 2
+			if (ca.EnableExtendedMode)  // Уровень 2
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMLabel",
 					"Регистрационный номер для проверки или произвольное число для генерации:",
 					RDLabelTypes.HeaderLeft);
@@ -617,7 +648,7 @@ namespace RD_AAOW
 
 			rnmGenerate = AndroidSupport.ApplyButtonSettings (rnmPage, "RNMGenerate",
 				RDDefaultButtons.Create, rnmFieldBackColor, RNMGenerate_Clicked);
-			rnmGenerate.IsVisible = ca.EnableExtendedMode;	// Уровень 2
+			rnmGenerate.IsVisible = ca.EnableExtendedMode;  // Уровень 2
 
 			rnmTip = AndroidSupport.ApplyLabelSettings (rnmPage, "SNAbout",
 				"Индикатор ФФД: " +
@@ -628,7 +659,7 @@ namespace RD_AAOW
 				RDLabelTypes.Tip);
 			rnmTip.TextType = TextType.Html;
 
-			if (ca.EnableExtendedMode)	// Уровень 2
+			if (ca.EnableExtendedMode)  // Уровень 2
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMAbout",
 					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
 					"РНМ их можно указать вручную – остальные будут достроены программой", RDLabelTypes.Tip);
@@ -959,7 +990,7 @@ namespace RD_AAOW
 			#endregion
 
 			// Обязательное принятие Политики и EULA
-			AcceptPolicy (Huawei);
+			AcceptPolicy (Flags.HasFlag (RDAppStartupFlags.Huawei));
 			}
 
 		// Локальный оформитель страниц приложения
@@ -994,19 +1025,19 @@ namespace RD_AAOW
 		private async void AcceptPolicy (bool Huawei)
 			{
 			// Контроль XPUN
-			await AndroidSupport.XPUNLoop (Huawei);
+			if (!Huawei)
+				await AndroidSupport.XPUNLoop ();
 
 			// Политика
 			if (RDGenerics.GetAppSettingsValue (firstStartRegKey) == "")
 				{
 				await AndroidSupport.PolicyLoop ();
 
-				// Вступление
-				RDGenerics.SetAppSettingsValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
 				// Только после принятия
+				RDGenerics.SetAppSettingsValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
 
-				await AndroidSupport.ShowMessage ("Вас приветствует инструмент сервис-инженера ККТ (54-ФЗ)!" +
-					RDLocale.RNRN +
+				await AndroidSupport.ShowMessage ("Вас приветствует " + ProgramDescription.AssemblyMainName +
+					" – " + ProgramDescription.AssemblyDescription + RDLocale.RNRN +
 					"На этой странице находится перечень функций приложения, который позволяет перейти " +
 					"к нужному разделу. Вернуться сюда можно с помощью кнопки «Назад». Перемещение " +
 					"между разделами также доступно по свайпу влево-вправо",
@@ -1094,9 +1125,9 @@ namespace RD_AAOW
 			AndroidSupport.AppIsRunning = false;
 
 			// Сохранение настроек
-			ca.KeepApplicationState = keepAppState.IsToggled;
+			/*ca.KeepApplicationState = keepAppState.IsToggled;
 			if (!keepAppState.IsToggled)
-				return;
+				return;*/
 
 			ca.CurrentTab = (uint)((CarouselPage)MainPage).Children.IndexOf (((CarouselPage)MainPage).CurrentPage);
 
@@ -1139,6 +1170,12 @@ namespace RD_AAOW
 		protected override void OnResume ()
 			{
 			AndroidSupport.AppIsRunning = true;
+			}
+
+		// Вызов настроек приложения (для Android 12 и выше)
+		private void CallAppSettings (object sender, EventArgs e)
+			{
+			AndroidSupport.CallAppSettings ();
 			}
 
 		#endregion
@@ -1742,7 +1779,7 @@ namespace RD_AAOW
 			// Выбор варианта (если доступно)
 			int res = 0;
 
-			if (ca.EnableExtendedMode)	// Уровень 2
+			if (ca.EnableExtendedMode)  // Уровень 2
 				{
 				List<string> modes = new List<string> { "Для кассира", "Для сервис-инженера" };
 
