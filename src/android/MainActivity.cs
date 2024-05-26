@@ -69,7 +69,8 @@ namespace RD_AAOW.Droid
 			global::Xamarin.Forms.Forms.Init (this, savedInstanceState);
 
 			// Получение списка доступных прав
-			RDAppStartupFlags flags = AndroidSupportX.GetAppStartupFlags (RDAppStartupFlags.CanShowNotifications, this);
+			RDAppStartupFlags flags = AndroidSupportX.GetAppStartupFlags (RDAppStartupFlags.CanShowNotifications |
+				RDAppStartupFlags.Huawei, this);
 
 			// Запуск независимо от разрешения
 			if (mainService == null)
@@ -78,7 +79,7 @@ namespace RD_AAOW.Droid
 
 			// Для Android 12 и выше запуск службы возможен только здесь
 			if (flags.HasFlag (RDAppStartupFlags.CanShowNotifications))
-				if (!AndroidSupport.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)
+				/*if (!AndroidSupport.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)*/
 					{
 					if (AndroidSupport.IsForegroundAvailable)
 						StartForegroundService (mainService);

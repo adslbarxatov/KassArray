@@ -208,14 +208,13 @@ namespace RD_AAOW
 				PrintFullUserManual.Visible = ca.EnableExtendedMode;	// Уровень 2
 			CodesTab.Enabled = ca.EnableExtendedMode;	// Уровень 1
 
-			RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
+			/*RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
 				"жёлтый – планируется; синий – нет сведений" + RDLocale.RN +
-				"(на момент релиза этой версии приложения)";
+				"(на момент релиза этой версии приложения)";*/
 			if (ca.EnableExtendedMode)	// Уровень 2
 				{
-				RNMTip.Text += (RDLocale.RNRN +
-					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
-					"РНМ их можно указать вручную – остальные будут достроены программой");
+				RNMTip.Text = "Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
+					"РНМ их можно указать вручную – остальные будут достроены программой";
 				}
 			else
 				{
@@ -386,7 +385,7 @@ namespace RD_AAOW
 			this.TopMost = TopFlag.Checked;
 			}
 
-		// Запрос цвета, соответствующего статусу поддержки
+		/*// Запрос цвета, соответствующего статусу поддержки
 		private Color StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses Status)
 			{
 			if (Status == KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Planned)
@@ -400,7 +399,7 @@ namespace RD_AAOW
 
 			// Остальные
 			return Color.FromArgb (200, 200, 255);
-			}
+			}*/
 
 		// Вызов библиотеки FNReader
 		private void FNReader_Click (object sender, EventArgs e)
@@ -714,16 +713,19 @@ namespace RD_AAOW
 					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
 
 					FNLifeResult.Text += KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage;
-					FNLifeName.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported);
+					FNLifeName.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported);*/
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					}
 				else
 					{
-					FNLifeName.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);
+					FNLifeName.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);*/
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 					}
 				}
 			else
 				{
-				FNLifeName.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
+				FNLifeName.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 				}
 			}
 
@@ -834,42 +836,53 @@ namespace RD_AAOW
 			// Заводской номер ККТ
 			if (RNMSerial.Text != "")
 				{
-				RNMSerialResult.Text = kb.KKTNumbers.GetKKTModel (RNMSerial.Text);
+				RNMSerialResult.Text = "Модель ККТ: " + kb.KKTNumbers.GetKKTModel (RNMSerial.Text);
 
-				KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses[] statuses =
-					kb.KKTNumbers.GetFFDSupportStatus (RNMSerial.Text);
-				RNMSupport105.BackColor = StatusToColor (statuses[0]);
+				string s = kb.KKTNumbers.GetFFDSupportStatus (RNMSerial.Text);
+				if (!string.IsNullOrWhiteSpace (s))
+					RNMSerialResult.Text += RDLocale.RN + s;
+
+				/*KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStates statuses =
+					kb.KKTNumbers.GetFFDSupportStatus (RNMSerial.Text);*/
+
+				/*RNMSupport105.BackColor = StatusToColor (statuses[0]);
 				RNMSupport11.BackColor = StatusToColor (statuses[1]);
-				RNMSupport12.BackColor = StatusToColor (statuses[2]);
+				RNMSupport12.BackColor = StatusToColor (statuses[2]);*/
 				}
 			else
 				{
 				RNMSerialResult.Text = "(введите ЗН ККТ)";
-				RNMSupport105.BackColor = RNMSupport11.BackColor = RNMSupport12.BackColor =
-					StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
+				/*RNMSupport105.BackColor = RNMSupport11.BackColor = RNMSupport12.BackColor =
+					StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);*/
 				}
 
 			// ИНН пользователя
 			RegionLabel.Text = "";
 			int checkINN = KassArrayDB::RD_AAOW.KKTSupport.CheckINN (RNMUserINN.Text);
 			if (checkINN < 0)
-				RNMUserINN.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
+				RNMUserINN.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 			else if (checkINN == 0)
-				RNMUserINN.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);
+				RNMUserINN.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 			else
-				RNMUserINN.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Planned);
+				RNMUserINN.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Planned);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
 			// Не ошибка
 
 			RegionLabel.Text = kb.KKTNumbers.GetRegionName (RNMUserINN.Text);
 
 			// РН
 			if (RNMValue.Text.Length < 10)
-				RNMValue.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);
+				RNMValue.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unknown);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 			else if (KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (RNMUserINN.Text, RNMSerial.Text,
 				RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
-				RNMValue.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);
+				RNMValue.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 			else
-				RNMValue.BackColor = StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported);
+				RNMValue.BackColor = /*StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 			}
 
 		// Генерация регистрационного номера
@@ -906,6 +919,12 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				RNMSerialFind_Click (null, null);
+			}
+
+		// Статистика по базе ЗН ККТ
+		private void RNMStats_Click (object sender, EventArgs e)
+			{
+			RDGenerics.MessageBox (RDMessageTypes.Information_Left, kb.KKTNumbers.RegistryStats);
 			}
 
 		#endregion

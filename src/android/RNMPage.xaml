@@ -14,15 +14,8 @@
 					<Button x:Name="Find" VerticalOptions="Center" />
 				</StackLayout>
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Label x:Name="TypeLabel" VerticalOptions="Center" />
-
-					<Label x:Name="RNMSupport105" HorizontalTextAlignment="Center" />
-					<Label x:Name="RNMSupport11" HorizontalTextAlignment="Center" />
-					<Label x:Name="RNMSupport12" HorizontalTextAlignment="Center" />
-				</StackLayout>
-
-				<Label x:Name="SNAbout" />
+				<Label x:Name="TypeLabel" HorizontalOptions="Center" />
+				<Button x:Name="RegistryStats" HorizontalOptions="Center" />
 
 				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
@@ -45,9 +38,7 @@
 				</StackLayout>
 				<Label x:Name="RNMCheckLabel" HorizontalOptions="Center" />
 
-				<Label />
 				<Label x:Name="RNMAbout" />
-
 				<Label />
 			</StackLayout>
 		</ScrollView>

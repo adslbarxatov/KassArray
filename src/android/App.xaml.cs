@@ -76,10 +76,10 @@ namespace RD_AAOW
 			errorsResultText, cableLeftSideText, cableRightSideText, cableLeftPinsText, cableRightPinsText,
 			cableDescriptionText,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
-			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, rnmSupport105, rnmSupport11, rnmSupport12,
+			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, /*rnmSupport105, rnmSupport11, rnmSupport12,*/
 			lowLevelCommandDescr,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
-			barcodeDescriptionLabel, rnmTip, ofdDisabledLabel, convNumberResultField, convCodeResultField,
+			barcodeDescriptionLabel, /*rnmTip,*/ ofdDisabledLabel, convNumberResultField, convCodeResultField,
 			aboutFontSizeField;
 		private List<Label> operationTextLabels = new List<Label> ();
 		private List<Xamarin.Forms.Button> operationTextButtons = new List<Xamarin.Forms.Button> ();
@@ -622,7 +622,7 @@ namespace RD_AAOW
 				kb.KKTNumbers.MaxSerialNumberLength, ca.KKTSerial, RNM_TextChanged, true);
 
 			rnmKKTTypeLabel = AndroidSupport.ApplyLabelSettings (rnmPage, "TypeLabel",
-				"", RDLabelTypes.DefaultLeft);
+				"", RDLabelTypes.Semaphore);
 
 			AndroidSupport.ApplyLabelSettings (rnmPage, "INNLabel", "ИНН пользователя:",
 				RDLabelTypes.HeaderLeft);
@@ -650,14 +650,17 @@ namespace RD_AAOW
 				RDDefaultButtons.Create, rnmFieldBackColor, RNMGenerate_Clicked);
 			rnmGenerate.IsVisible = ca.EnableExtendedMode;  // Уровень 2
 
-			rnmTip = AndroidSupport.ApplyLabelSettings (rnmPage, "SNAbout",
+			/*rnmTip = AndroidSupport.ApplyLabelSettings (rnmPage, "SNAbout",
 				"Индикатор ФФД: " +
 				"<b><font color=\"#FF4040\">красный</font></b> – поддержка не планируется; " +
 				"<b><font color=\"#00C000\">зелёный</font></b> – поддерживается; " +
 				"<b><font color=\"#FFFF00\">жёлтый</font></b> – планируется; " +
 				"<b><font color=\"#6060FF\">синий</font></b> – нет сведений (на момент релиза этой версии приложения)",
 				RDLabelTypes.Tip);
-			rnmTip.TextType = TextType.Html;
+			rnmTip.TextType = TextType.Html;*/
+
+			AndroidSupport.ApplyButtonSettings (rnmPage, "RegistryStats", "Статистика реестра ККТ",
+				rnmFieldBackColor, RNMStats_Clicked, false);
 
 			if (ca.EnableExtendedMode)  // Уровень 2
 				AndroidSupport.ApplyLabelSettings (rnmPage, "RNMAbout",
@@ -669,13 +672,13 @@ namespace RD_AAOW
 			AndroidSupport.ApplyButtonSettings (rnmPage, "Find",
 				RDDefaultButtons.Find, rnmFieldBackColor, RNMFind_Clicked);
 
-			rnmSupport105 = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMSupport105", "ФФД 1.05",
+			/*rnmSupport105 = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMSupport105", "ФФД 1.05",
 				RDLabelTypes.Semaphore);
 			rnmSupport11 = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMSupport11", "ФФД 1.1",
 				RDLabelTypes.Semaphore);
 			rnmSupport12 = AndroidSupport.ApplyLabelSettings (rnmPage, "RNMSupport12", "ФФД 1.2",
 				RDLabelTypes.Semaphore);
-			rnmSupport105.Padding = rnmSupport11.Padding = rnmSupport12.Padding = new Thickness (6);
+			rnmSupport105.Padding = rnmSupport11.Padding = rnmSupport12.Padding = new Thickness (6);*/
 
 			RNM_TextChanged (null, null);   // Применение значений
 
@@ -1046,7 +1049,7 @@ namespace RD_AAOW
 				}
 			}
 
-		// Запрос цвета, соответствующего статусу поддержки
+		/*// Запрос цвета, соответствующего статусу поддержки
 		private Color StatusToColor (KKTSerial.FFDSupportStatuses Status)
 			{
 			if (Status == KKTSerial.FFDSupportStatuses.Planned)
@@ -1060,7 +1063,7 @@ namespace RD_AAOW
 
 			// Остальные
 			return Color.FromHex ("#C8C8FF");
-			}
+			}*/
 
 		// Отправка значения кнопки в буфер
 		private void Field_Clicked (object sender, EventArgs e)
@@ -1433,19 +1436,28 @@ namespace RD_AAOW
 			fnLifeResult.Text = "ФН прекратит работу ";
 			if (res.Contains (KKTSupport.FNLifeInacceptableSign))
 				{
-				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+				fnLifeResult.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+				fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+
 				fnLifeResultDate = res.Substring (1);
 				fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotAcceptableMessage);
 				}
 			else if (res.Contains (KKTSupport.FNLifeUnwelcomeSign))
 				{
-				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
+				fnLifeResult.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Planned);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+				fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+
 				fnLifeResultDate = res.Substring (1);
 				fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotRecommendedMessage);
 				}
 			else
 				{
-				fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+				fnLifeResult.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Supported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+				fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+
 				fnLifeResultDate = res;
 				fnLifeResult.Text += res;
 				}
@@ -1454,19 +1466,27 @@ namespace RD_AAOW
 				{
 				if (!kb.FNNumbers.IsFNAllowed (fnLifeSerial.Text))
 					{
-					fnLifeResult.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+					fnLifeResult.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);*/
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
 					fnLifeResult.Text += FNSerial.FNIsNotAllowedMessage;
-					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+					fnLifeModelLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);*/
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					fnLifeModelLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 					}
 				else
 					{
-					fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+					fnLifeModelLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Supported);*/
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+					fnLifeModelLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
 					}
 				}
 			else
 				{
-				fnLifeModelLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				fnLifeModelLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				fnLifeModelLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
 				}
 			}
 
@@ -1546,51 +1566,75 @@ namespace RD_AAOW
 			if (rnmKKTSN.Text != "")
 				{
 				rnmKKTTypeLabel.Text = kb.KKTNumbers.GetKKTModel (rnmKKTSN.Text);
+				string s = kb.KKTNumbers.GetFFDSupportStatus (rnmKKTSN.Text);
+				if (!string.IsNullOrWhiteSpace (s))
+					{
+					rnmKKTTypeLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+					rnmKKTTypeLabel.Text += RDLocale.RN + s;
+					}
+				else
+					{
+					rnmKKTTypeLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+					}
 
-				KKTSerial.FFDSupportStatuses[] statuses = kb.KKTNumbers.GetFFDSupportStatus (rnmKKTSN.Text);
+				/*KKTSerial.FFDSupportStatuses[] statuses = kb.KKTNumbers.GetFFDSupportStatus (rnmKKTSN.Text);
 				rnmSupport105.BackgroundColor = StatusToColor (statuses[0]);
 				rnmSupport11.BackgroundColor = StatusToColor (statuses[1]);
-				rnmSupport12.BackgroundColor = StatusToColor (statuses[2]);
+				rnmSupport12.BackgroundColor = StatusToColor (statuses[2]);*/
 				}
 			else
 				{
-				rnmKKTTypeLabel.Text = "";
-				rnmSupport105.BackgroundColor = rnmSupport11.BackgroundColor = rnmSupport12.BackgroundColor =
-					StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				rnmKKTTypeLabel.Text = "(введите ЗН ККТ)";
+				rnmKKTTypeLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+
+				/*rnmSupport105.BackgroundColor = rnmSupport11.BackgroundColor = rnmSupport12.BackgroundColor =
+					StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);*/
 				}
 
 			// ИНН пользователя
 			rnmINNCheckLabel.Text = kb.KKTNumbers.GetRegionName (rnmINN.Text);
 			if (KKTSupport.CheckINN (rnmINN.Text) < 0)
 				{
-				rnmINNCheckLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				rnmINNCheckLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				rnmINNCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
 				rnmINNCheckLabel.Text += " (неполный)";
 				}
 			else if (KKTSupport.CheckINN (rnmINN.Text) == 0)
 				{
-				rnmINNCheckLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+				rnmINNCheckLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Supported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+				rnmINNCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
 				rnmINNCheckLabel.Text += " (ОК)";
 				}
 			else
 				{
-				rnmINNCheckLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Planned);
+				rnmINNCheckLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Planned);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+				rnmINNCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
 				rnmINNCheckLabel.Text += " (возможно, некорректный)";
 				}
 
 			// РН
 			if (rnmRNM.Text.Length < 10)
 				{
-				rnmRNMCheckLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);
+				rnmRNMCheckLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Unknown);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				rnmRNMCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
 				rnmRNMCheckLabel.Text = "(неполный)";
 				}
 			else if (KKTSupport.GetFullRNM (rnmINN.Text, rnmKKTSN.Text, rnmRNM.Text.Substring (0, 10)) == rnmRNM.Text)
 				{
-				rnmRNMCheckLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Supported);
+				rnmRNMCheckLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Supported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+				rnmRNMCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
 				rnmRNMCheckLabel.Text = "(OK)";
 				}
 			else
 				{
-				rnmRNMCheckLabel.BackgroundColor = StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);
+				rnmRNMCheckLabel.BackgroundColor = /*StatusToColor (KKTSerial.FFDSupportStatuses.Unsupported);*/
+					RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+				rnmRNMCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 				rnmRNMCheckLabel.Text = "(некорректный)";
 				}
 			}
@@ -1621,6 +1665,14 @@ namespace RD_AAOW
 			if (sig != "")
 				rnmKKTSN.Text = sig;
 			}
+
+		// Статистика по базе ЗН ККТ
+		private async void RNMStats_Clicked (object sender, EventArgs e)
+			{
+			await AndroidSupport.ShowMessage (kb.KKTNumbers.RegistryStats,
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
+			}
+
 
 		#endregion
 
