@@ -242,12 +242,6 @@ namespace RD_AAOW
 			/// </summary>
 			Planned12 = 0x0400,
 			}
-		/*private FFDSupportStatuses[] emptyStatus = new FFDSupportStatuses[]
-			{
-			FFDSupportStatuses.Unknown, // 1.05
-			FFDSupportStatuses.Unknown, // 1.1
-			FFDSupportStatuses.Unknown  // 1.2
-			};*/
 
 		/// <summary>
 		/// Метод возвращает статус поддержки ФФД для ККТ по её заводскому номеру
@@ -337,23 +331,23 @@ namespace RD_AAOW
 			get
 				{
 #if ANDROID
-				string t = "";
+				string t = " ";
 #else
 				string t = RDLocale.T;
 #endif
 
 				string res = t + "Моделей ККТ в реестре" + RDLocale.RN + t +
-					"(на " + ProgramDescription.AssemblyLastUpdate + "):" + RDLocale.T +
+					"(на " + ProgramDescription.AssemblyLastUpdate + "):" + t +
 					(registryStats[0] - registryStats[ffdNames.Length + 2]).ToString () + RDLocale.RNRN;
 				res += t + "Из них поддерживают:" + RDLocale.RN;
 
 				for (int i = 0; i < ffdNames.Length; i++)
-					res += t + "  ФФД " + ffdNames[i] + ":  " + RDLocale.TT +
+					res += t + "  ФФД " + ffdNames[i] + ":  " + t + t +
 						registryStats[1 + i].ToString () + RDLocale.RN;
 
-				res += RDLocale.RN + t + "Известно сигнатур ЗН:" + RDLocale.T +
+				res += RDLocale.RN + t + "Известно сигнатур ЗН:" + t +
 					names.Count.ToString () + RDLocale.RN;
-				res += t + "  из них – точно:" + RDLocale.TT + registryStats[ffdNames.Length + 1];
+				res += t + "  из них – точно:" + t + t + registryStats[ffdNames.Length + 1];
 
 				return res;
 				}

@@ -37,7 +37,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				return 0.0;
+				return double.NaN;
 				}
 
 			return v;

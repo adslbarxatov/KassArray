@@ -101,7 +101,7 @@ namespace RD_AAOW.Droid
 		protected override void OnStop ()
 			{
 			// Запрос на остановку при необходимости
-			if (!AndroidSupport.AllowServiceToStart)
+			if (!AppSettings.AllowServiceToStart)
 				AndroidSupport.StopRequested = true;
 			// Иначе служба продолжит работу в фоне
 
@@ -120,7 +120,7 @@ namespace RD_AAOW.Droid
 
 			// Нет смысла запускать сервис, если он не был закрыт приложением.
 			// Также функция запуска foreground из свёрнутого состояния недоступна в Android 12 и новее
-			if (AndroidSupport.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)
+			if (AppSettings.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)
 				{
 				base.OnResume ();
 				return;
@@ -405,7 +405,7 @@ namespace RD_AAOW.Droid
 		/// </summary>
 		public override void OnReceive (Context context, Intent intent)
 			{
-			if (!AndroidSupport.AllowServiceToStart || (intent == null))
+			if (!AppSettings.AllowServiceToStart || (intent == null))
 				return;
 
 			if (intent.Action.Equals (Intent.ActionBootCompleted, StringComparison.CurrentCultureIgnoreCase) ||

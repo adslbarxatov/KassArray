@@ -16,7 +16,7 @@ namespace RD_AAOW
 	public partial class TextToKKTForm: Form
 		{
 		// Дескрипторы информационных классов
-		private ConfigAccessor ca = null;
+		/*private ConfigAccessor ca = null;*/
 		private KassArrayDB::RD_AAOW.KnowledgeBase kb;
 
 		// Дескриптор иконки в трее
@@ -58,7 +58,7 @@ namespace RD_AAOW
 			if (!RDLocale.IsCurrentLanguageRuRu)
 				RDLocale.CurrentLanguage = RDLanguages.ru_ru;
 
-			ca = new ConfigAccessor ();
+			/*ca = new ConfigAccessor ();*/
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
 			hideWindow = (Flags == HideWindowKey);
 
@@ -82,7 +82,7 @@ namespace RD_AAOW
 				return;
 				}
 
-			OverrideCloseButton.Checked = ca.OverrideCloseButton;
+			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
 
 			// Настройка контролов
 			KKTListForCodes.Items.AddRange (kb.CodeTables.GetKKTTypeNames ().ToArray ());
@@ -92,7 +92,7 @@ namespace RD_AAOW
 			KKTListForErrors.SelectedIndex = 0;
 
 			LowLevelProtocol.Items.AddRange (kb.LLCommands.GetProtocolsNames ().ToArray ());
-			LowLevelProtocol.SelectedIndex = (int)ca.LowLevelProtocol;
+			LowLevelProtocol.SelectedIndex = (int)AppSettings.LowLevelProtocol;
 			LowLevelProtocol_CheckedChanged (null, null);
 
 			FNLifeStartDate.Value = DateTime.Now;
@@ -110,71 +110,64 @@ namespace RD_AAOW
 			RDGenerics.LoadWindowDimensions (this);
 
 			if (!RDGenerics.AppHasAccessRights (false, true))
-				{
 				this.Text += RDLocale.GetDefaultText (RDLDefaultTexts.Message_LimitedFunctionality);
-				/*KeepAppState.Checked = KeepAppState.Enabled = false;
-				}
-			else
-				{
-				KeepAppState.Checked = ca.KeepApplicationState;*/
-				}
 
-			TopFlag.Checked = ca.TopMost;
+			TopFlag.Checked = AppSettings.TopMost;
 			FNReader.Visible = FNFromFNReader.Visible = OFDFromFNReader.Visible =
-				RNMFromFNReader.Visible = !RDGenerics.StartedFromMSStore && ca.EnableExtendedMode;	// Уровень 2
+				RNMFromFNReader.Visible = !RDGenerics.StartedFromMSStore && AppSettings.EnableExtendedMode; // Уровень 2
 
-			MainTabControl.SelectedIndex = (int)ca.CurrentTab;
-			ConvertorsContainer.SelectedIndex = (int)ca.ConvertorTab;
+			MainTabControl.SelectedIndex = (int)AppSettings.CurrentTab;
+			ConvertorsContainer.SelectedIndex = (int)AppSettings.ConvertorTab;
 
 			try
 				{
-				KKTListForErrors.SelectedIndex = (int)ca.KKTForErrors;
+				KKTListForErrors.SelectedIndex = (int)AppSettings.KKTForErrors;
 				}
 			catch
 				{
 				KKTListForErrors.SelectedIndex = 0;
 				}
-			ErrorSearchText.Text = ca.ErrorCode;
+			ErrorSearchText.Text = AppSettings.ErrorCode;
 			ErrorFindButton_Click (null, null);
 
-			FNLifeSN.Text = ca.FNSerial;
-			FNLifeEvFlags = (KassArrayDB::RD_AAOW.FNLifeFlags)ca.FNLifeEvFlags;
+			FNLifeSN.Text = AppSettings.FNSerial;
+			FNLifeEvFlags = (KassArrayDB::RD_AAOW.FNLifeFlags)AppSettings.FNLifeEvFlags;
 
 			RNMSerial.MaxLength = (int)kb.KKTNumbers.MaxSerialNumberLength;
-			RNMSerial.Text = ca.KKTSerial;
-			RNMUserINN.Text = ca.UserINN;
-			RNMValue.Text = ca.RNMKKT;
+			RNMSerial.Text = AppSettings.KKTSerial;
+			RNMUserINN.Text = AppSettings.UserINN;
+			RNMValue.Text = AppSettings.RNMKKT;
 			RNMSerial_TextChanged (null, null); // Для протяжки пустых полей
 
-			OFDINN.Text = ca.OFDINN;
+			OFDINN.Text = AppSettings.OFDINN;
 			OFDNalogSite.Text = KassArrayDB::RD_AAOW.OFD.FNSSite;
 			OFDDNSNameK.Text = KassArrayDB::RD_AAOW.OFD.OKPSite;
 			OFDIPK.Text = KassArrayDB::RD_AAOW.OFD.OKPIP;
 			OFDPortK.Text = KassArrayDB::RD_AAOW.OFD.OKPPort;
 			LoadOFDParameters ();
 
-			LowLevelCommand.SelectedIndex = (int)ca.LowLevelCode;
+			LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;
 
 			try
 				{
-				KKTListForCodes.SelectedIndex = (int)ca.KKTForCodes;
+				KKTListForCodes.SelectedIndex = (int)AppSettings.KKTForCodes;
 				}
 			catch { }
-			TextToConvert.Text = ca.CodesText;
-			TextToConvert.Items.AddRange (ca.CodesOftenTexts);
+			TextToConvert.Text = AppSettings.CodesText;
+			TextToConvert.Items.AddRange (AppSettings.CodesOftenTexts);
 
 			KKTListForManuals.Items.AddRange (kb.UserGuides.GetKKTList ());
-			KKTListForManuals.SelectedIndex = (int)ca.KKTForManuals;
-			UserManualFlags = (KassArrayDB::RD_AAOW.UserManualsFlags)ca.UserManualFlags;
+			KKTListForManuals.SelectedIndex = (int)AppSettings.KKTForManuals;
+			UserManualFlags = (KassArrayDB::RD_AAOW.UserManualsFlags)AppSettings.UserManualFlags;
 
-			if (ca.EnableExtendedMode)	// Уровень 1
+			if (AppSettings.EnableExtendedMode) // Уровень 1
 				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationTypes);
 			else
 				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationsForCashiers);
 
 			try
 				{
-				OperationsListForManuals.SelectedIndex = (int)ca.OperationForManuals;
+				OperationsListForManuals.SelectedIndex = (int)AppSettings.OperationForManuals;
 				}
 			catch
 				{
@@ -182,36 +175,33 @@ namespace RD_AAOW
 				}
 
 			BarcodeData.MaxLength = (int)KassArrayDB::RD_AAOW.BarCodes.MaxSupportedDataLength;
-			BarcodeData.Text = ca.BarcodeData;
+			BarcodeData.Text = AppSettings.BarcodeData;
 			BarcodesConvertToEN_Click (null, null);
 
-			CableType.SelectedIndex = (int)ca.CableType;
+			CableType.SelectedIndex = (int)AppSettings.CableType;
 
 			TLV_FFDCombo.Items.Add ("ФФД 1.05");
 			TLV_FFDCombo.Items.Add ("ФФД 1.1");
 			TLV_FFDCombo.Items.Add ("ФФД 1.2");
-			TLV_FFDCombo.SelectedIndex = (int)ca.FFDForTLV;
+			TLV_FFDCombo.SelectedIndex = (int)AppSettings.FFDForTLV;
 
-			TLVFind.Text = ca.TLVData;
+			TLVFind.Text = AppSettings.TLVData;
 			TLV_ObligationBase.Text = KassArrayDB::RD_AAOW.TLVTags.ObligationBase;
 			TLVButton_Click (null, null);
 
 			EncodingCombo.Items.AddRange (KassArrayDB::RD_AAOW.DataConvertors.AvailableEncodings);
 			encodingModesCount = (uint)EncodingCombo.Items.Count / 2;
-			EncodingCombo.SelectedIndex = (int)ca.EncodingForConvertor;
+			EncodingCombo.SelectedIndex = (int)AppSettings.EncodingForConvertor;
 
-			ConvertHexField.Text = ca.ConversionHex;
-			ConvertTextField.Text = ca.ConversionText;
+			ConvertHexField.Text = AppSettings.ConversionHex;
+			ConvertTextField.Text = AppSettings.ConversionText;
 
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled =
-				PrintFullUserManual.Visible = ca.EnableExtendedMode;	// Уровень 2
-			CodesTab.Enabled = ca.EnableExtendedMode;	// Уровень 1
+				PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;   // Уровень 2
+			CodesTab.Enabled = AppSettings.EnableExtendedMode;  // Уровень 1
 
-			/*RNMTip.Text = "Индикатор ФФД: красный – поддержка не планируется; зелёный – поддерживается; " +
-				"жёлтый – планируется; синий – нет сведений" + RDLocale.RN +
-				"(на момент релиза этой версии приложения)";*/
-			if (ca.EnableExtendedMode)	// Уровень 2
+			if (AppSettings.EnableExtendedMode) // Уровень 2
 				{
 				RNMTip.Text = "Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
 					"РНМ их можно указать вручную – остальные будут достроены программой";
@@ -222,10 +212,10 @@ namespace RD_AAOW
 				FNReader.Enabled = false;
 				}
 
-			ConvNumber.Text = ca.ConversionNumber;
+			ConvNumber.Text = AppSettings.ConversionNumber;
 			ConvNumber_TextChanged (null, null);
 
-			ConvCode.Text = ca.ConversionCode;
+			ConvCode.Text = AppSettings.ConversionCode;
 			ConvCode_TextChanged (null, null);
 
 			// Настройка иконки в трее
@@ -236,7 +226,8 @@ namespace RD_AAOW
 			ni.ContextMenu = new ContextMenu ();
 
 			ni.ContextMenu.MenuItems.Add (new MenuItem ("Работа с &ФН", FNReader_Click));
-			ni.ContextMenu.MenuItems[0].Enabled = !RDGenerics.StartedFromMSStore && ca.EnableExtendedMode;	// Уровень 2
+			ni.ContextMenu.MenuItems[0].Enabled = !RDGenerics.StartedFromMSStore &&
+				AppSettings.EnableExtendedMode; // Уровень 2
 			ni.ContextMenu.MenuItems.Add (new MenuItem (RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit),
 				CloseService));
 
@@ -244,7 +235,7 @@ namespace RD_AAOW
 			ni.ContextMenu.MenuItems[1].DefaultItem = true;
 
 			// Настройка расширенного режима
-			ExtendedMode.Checked = ca.EnableExtendedMode;
+			ExtendedMode.Checked = AppSettings.EnableExtendedMode;
 			ExtendedMode.CheckedChanged += ExtendedMode_CheckedChanged;
 			}
 
@@ -261,13 +252,13 @@ namespace RD_AAOW
 			{
 			if (ExtendedMode.Checked)
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Error_Left, ConfigAccessor.ExtendedModeMessage);
-				ca.EnableExtendedMode = true;
+				RDGenerics.MessageBox (RDMessageTypes.Error_Left, AppSettings.ExtendedModeMessage);
+				AppSettings.EnableExtendedMode = true;
 				}
 			else
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Question_Left, ConfigAccessor.NoExtendedModeMessage);
-				ca.EnableExtendedMode = false;
+				RDGenerics.MessageBox (RDMessageTypes.Question_Left, AppSettings.NoExtendedModeMessage);
+				AppSettings.EnableExtendedMode = false;
 				}
 			}
 
@@ -311,7 +302,7 @@ namespace RD_AAOW
 			if (closeWindowOnError)
 				return;
 
-			if (ca.OverrideCloseButton && !closeWindowOnRequest)
+			if (AppSettings.OverrideCloseButton && !closeWindowOnRequest)
 				{
 				e.Cancel = true;
 				BExit_Click (null, null);
@@ -330,51 +321,48 @@ namespace RD_AAOW
 			{
 			RDGenerics.SaveWindowDimensions (this);
 
-			/*ca.KeepApplicationState = KeepAppState.Checked;*/
-			ca.TopMost = TopFlag.Checked;
-			/*if (!ca.KeepApplicationState)
-				return;*/
+			AppSettings.TopMost = TopFlag.Checked;
 
-			ca.CurrentTab = (uint)MainTabControl.SelectedIndex;
-			ca.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;
+			AppSettings.CurrentTab = (uint)MainTabControl.SelectedIndex;
+			AppSettings.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;
 
-			ca.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
-			ca.ErrorCode = ErrorSearchText.Text;
+			AppSettings.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
+			AppSettings.ErrorCode = ErrorSearchText.Text;
 
-			ca.FNSerial = FNLifeSN.Text;
-			ca.FNLifeEvFlags = (uint)FNLifeEvFlags;
+			AppSettings.FNSerial = FNLifeSN.Text;
+			AppSettings.FNLifeEvFlags = (uint)FNLifeEvFlags;
 
-			ca.KKTSerial = RNMSerial.Text;
-			ca.UserINN = RNMUserINN.Text;
-			ca.RNMKKT = RNMValue.Text;
+			AppSettings.KKTSerial = RNMSerial.Text;
+			AppSettings.UserINN = RNMUserINN.Text;
+			AppSettings.RNMKKT = RNMValue.Text;
 
-			ca.OFDINN = OFDINN.Text;
+			AppSettings.OFDINN = OFDINN.Text;
 
-			ca.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
-			ca.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
+			AppSettings.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
+			AppSettings.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
 
-			ca.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
-			ca.CodesText = TextToConvert.Text;
+			AppSettings.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
+			AppSettings.CodesText = TextToConvert.Text;
 
 			List<string> cots = new List<string> ();
 			foreach (object o in TextToConvert.Items)
 				cots.Add (o.ToString ());
-			ca.CodesOftenTexts = cots.ToArray ();
+			AppSettings.CodesOftenTexts = cots.ToArray ();
 
-			ca.BarcodeData = BarcodeData.Text;
-			ca.CableType = (uint)CableType.SelectedIndex;
-			ca.TLVData = TLVFind.Text;
+			AppSettings.BarcodeData = BarcodeData.Text;
+			AppSettings.CableType = (uint)CableType.SelectedIndex;
+			AppSettings.TLVData = TLVFind.Text;
 
-			ca.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
-			ca.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
-			ca.UserManualFlags = (uint)UserManualFlags;
-			ca.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;
+			AppSettings.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
+			AppSettings.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
+			AppSettings.UserManualFlags = (uint)UserManualFlags;
+			AppSettings.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;
 
-			ca.ConversionNumber = ConvNumber.Text;
-			ca.ConversionCode = ConvCode.Text;
-			ca.EncodingForConvertor = (uint)EncodingCombo.SelectedIndex;
-			ca.ConversionHex = ConvertHexField.Text;
-			ca.ConversionText = ConvertTextField.Text;
+			AppSettings.ConversionNumber = ConvNumber.Text;
+			AppSettings.ConversionCode = ConvCode.Text;
+			AppSettings.EncodingForConvertor = (uint)EncodingCombo.SelectedIndex;
+			AppSettings.ConversionHex = ConvertHexField.Text;
+			AppSettings.ConversionText = ConvertTextField.Text;
 			}
 
 		// Отображение справки
@@ -384,22 +372,6 @@ namespace RD_AAOW
 			RDGenerics.ShowAbout (false);
 			this.TopMost = TopFlag.Checked;
 			}
-
-		/*// Запрос цвета, соответствующего статусу поддержки
-		private Color StatusToColor (KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses Status)
-			{
-			if (Status == KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Planned)
-				return Color.FromArgb (255, 255, 200);
-
-			if (Status == KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Supported)
-				return Color.FromArgb (200, 255, 200);
-
-			if (Status == KassArrayDB::RD_AAOW.KKTSerial.FFDSupportStatuses.Unsupported)
-				return Color.FromArgb (255, 200, 200);
-
-			// Остальные
-			return Color.FromArgb (200, 200, 255);
-			}*/
 
 		// Вызов библиотеки FNReader
 		private void FNReader_Click (object sender, EventArgs e)
@@ -545,7 +517,7 @@ namespace RD_AAOW
 		// Включение / выключение отдельной кнопки сворачивания
 		private void OverrideCloseButton_CheckedChanged (object sender, EventArgs e)
 			{
-			ca.OverrideCloseButton = OverrideCloseButton.Checked;
+			AppSettings.OverrideCloseButton = OverrideCloseButton.Checked;
 			}
 
 		#endregion
@@ -689,19 +661,28 @@ namespace RD_AAOW
 			FNLifeResult.Text = "ФН прекратит работу ";
 			if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeInacceptableSign))
 				{
-				FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
+				/*FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);*/
+				FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+				/*FNLifeResult.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);*/
+
 				fnLifeResult = res.Substring (1);
 				FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage);
 				}
 			else if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeUnwelcomeSign))
 				{
-				FNLifeResult.ForeColor = Color.FromArgb (255, 128, 0);
+				/*FNLifeResult.ForeColor = Color.FromArgb (255, 128, 0);*/
+				FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+				/*FNLifeResult.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);*/
+
 				fnLifeResult = res.Substring (1);
 				FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage);
 				}
 			else
 				{
-				FNLifeResult.ForeColor = Color.FromArgb (0, 128, 0);
+				/*FNLifeResult.ForeColor = Color.FromArgb (0, 128, 0);*/
+				FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+				/*FNLifeResult.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);*/
+
 				fnLifeResult = res;
 				FNLifeResult.Text += res;
 				}
@@ -924,7 +905,9 @@ namespace RD_AAOW
 		// Статистика по базе ЗН ККТ
 		private void RNMStats_Click (object sender, EventArgs e)
 			{
+			this.TopMost = false;
 			RDGenerics.MessageBox (RDMessageTypes.Information_Left, kb.KKTNumbers.RegistryStats);
+			this.TopMost = TopFlag.Checked;
 			}
 
 		#endregion
@@ -1064,8 +1047,10 @@ namespace RD_AAOW
 		private void KKTListForManuals_SelectedIndexChanged (object sender, EventArgs e)
 			{
 			byte idx = (byte)OperationsListForManuals.SelectedIndex;
+			
+			var sections = (KassArrayDB::RD_AAOW.UserManualsSections)AppSettings.UserManualSectionsState;
+			AddToPrint.Checked = sections.HasFlag ((KassArrayDB::RD_AAOW.UserManualsSections)(1u << idx));
 
-			AddToPrint.Checked = ca.GetUserManualSectionState (idx);
 			UMOperationText.Text = kb.UserGuides.GetManual ((uint)KKTListForManuals.SelectedIndex, idx,
 				UserManualFlags);
 			}
@@ -1079,7 +1064,7 @@ namespace RD_AAOW
 				flags |= KassArrayDB::RD_AAOW.UserManualsFlags.GuideForCashier;
 
 			string text = KassArrayDB::RD_AAOW.KKTSupport.BuildUserManual (kb.UserGuides,
-				(uint)KKTListForManuals.SelectedIndex, ca.UserManualSections, flags);
+				(uint)KKTListForManuals.SelectedIndex, AppSettings.UserManualSectionsState, flags);
 
 			// Печать
 			KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4);
@@ -1088,7 +1073,16 @@ namespace RD_AAOW
 		// Выбор компонентов инструкции
 		private void AddToPrint_CheckedChanged (object sender, EventArgs e)
 			{
-			ca.SetUserManualSectionState ((byte)OperationsListForManuals.SelectedIndex, AddToPrint.Checked);
+			var sections = (KassArrayDB::RD_AAOW.UserManualsSections)AppSettings.UserManualSectionsState;
+			var idx = (KassArrayDB::RD_AAOW.UserManualsSections)(1u << OperationsListForManuals.SelectedIndex);
+
+			if (AddToPrint.Checked)
+				sections |= idx;
+			else
+				sections &= ~idx;
+
+			/*ca.SetUserManualSectionState ((byte)OperationsListForManuals.SelectedIndex, AddToPrint.Checked);*/
+			AppSettings.UserManualSectionsState = (uint)sections;
 			}
 
 		/// <summary>
@@ -1282,6 +1276,8 @@ namespace RD_AAOW
 			// Извлечение значения с защитой
 			bool plus = ((Button)sender).Text.Contains ("+");
 			double res = KassArrayDB::RD_AAOW.DataConvertors.GetNumber (ConvNumber.Text);
+			if (double.IsNaN (res))
+				res = 0.0;
 
 			// Обновление и возврат
 			if (plus)
