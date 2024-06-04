@@ -26,6 +26,11 @@ namespace RD_AAOW
 			if (!RDGenerics.IsAppInstanceUnique (true))
 				return;
 
+
+			// Контроль прав и целостности
+			if (!RDGenerics.AppHasAccessRights (true, false))
+				return;
+
 			if (!RDGenerics.StartedFromMSStore &&
 				!RDGenerics.CheckLibraries (new string[] { ProgramDescription.KassArrayDLLs[0] }, true))
 				return;

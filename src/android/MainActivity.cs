@@ -79,13 +79,12 @@ namespace RD_AAOW.Droid
 
 			// Для Android 12 и выше запуск службы возможен только здесь
 			if (flags.HasFlag (RDAppStartupFlags.CanShowNotifications))
-				/*if (!AndroidSupport.AllowServiceToStart || !AndroidSupport.IsForegroundStartableFromResumeEvent)*/
-					{
-					if (AndroidSupport.IsForegroundAvailable)
-						StartForegroundService (mainService);
-					else
-						StartService (mainService);
-					}
+				{
+				if (AndroidSupport.IsForegroundAvailable)
+					StartForegroundService (mainService);
+				else
+					StartService (mainService);
+				}
 
 			// Запрет на переход в ждущий режим
 			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
@@ -140,7 +139,7 @@ namespace RD_AAOW.Droid
 	/// Класс описывает фоновую службу приложения
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKT",
-		/*ForegroundServiceType = ForegroundService.TypeDataSync,*/
+		ForegroundServiceType = ForegroundService.TypeDataSync,
 		Label = "KassArray",
 		Exported = true)]
 	public class MainService: global::Android.App.Service
@@ -239,11 +238,13 @@ namespace RD_AAOW.Droid
 			// Инициализация сообщений
 			notBuilder.SetCategory ("msg");     // Категория "сообщение"
 			notBuilder.SetColor (0x80FFC0);     // Оттенок заголовков оповещений
-			notBuilder.SetOngoing (true);       // Android 13 и новее: не позволяет закрыть оповещение вручную
+
+			// По-видимому, ломает ОС
+			/*notBuilder.SetOngoing (true);       // Android 13 и новее: не позволяет закрыть оповещение вручную*/
 
 			// Android 12 и новее: требует немедленного отображения оповещения
 			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
-				notBuilder.SetForegroundServiceBehavior (0x01);
+				notBuilder.SetForegroundServiceBehavior (NotificationCompat.ForegroundServiceImmediate);
 
 			string launchMessage;
 			if (AndroidSupport.IsForegroundStartableFromResumeEvent)
@@ -277,7 +278,7 @@ namespace RD_AAOW.Droid
 
 			// Стартовое сообщение
 			Android.App.Notification notification = notBuilder.Build ();
-			StartForeground (notServiceID, notification);
+			StartForeground (notServiceID, notification, ForegroundService.TypeDataSync);
 
 			// Перенастройка для основного режима
 			if (!AndroidSupport.IsForegroundAvailable)

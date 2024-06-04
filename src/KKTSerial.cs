@@ -87,7 +87,6 @@ namespace RD_AAOW
 
 					serialSamples.Add (values[4]);
 					serialOffsets.Add (uint.Parse (values[5]));
-					/*ffdSupport.Add (new List<FFDSupportStatuses> ());*/
 					ffdSupport.Add (state);
 
 					if (values[2] == "1")
