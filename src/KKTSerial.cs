@@ -330,23 +330,32 @@ namespace RD_AAOW
 			get
 				{
 #if ANDROID
-				string t = " ";
-#else
-				string t = RDLocale.T;
-#endif
-
-				string res = t + "Моделей ККТ в реестре" + RDLocale.RN + t +
-					"(на " + ProgramDescription.AssemblyLastUpdate + "):" + t +
+				string res = "Моделей ККТ в реестре" + RDLocale.RN +
+					"(на " + ProgramDescription.AssemblyLastUpdate + "): " +
 					(registryStats[0] - registryStats[ffdNames.Length + 2]).ToString () + RDLocale.RNRN;
-				res += t + "Из них поддерживают:" + RDLocale.RN;
+				res += "Из них поддерживают:" + RDLocale.RN;
 
 				for (int i = 0; i < ffdNames.Length; i++)
-					res += t + "  ФФД " + ffdNames[i] + ":  " + t + t +
+					res += "  ФФД " + ffdNames[i] + ": " +
 						registryStats[1 + i].ToString () + RDLocale.RN;
 
-				res += RDLocale.RN + t + "Известно сигнатур ЗН:" + t +
+				res += RDLocale.RN + "Известно сигнатур ЗН: " +
 					names.Count.ToString () + RDLocale.RN;
-				res += t + "  из них – точно:" + t + t + registryStats[ffdNames.Length + 1];
+				res += "  из них – точно: " + registryStats[ffdNames.Length + 1];
+#else
+				string res = "\tМоделей ККТ в реестре" + RDLocale.RN +
+					"\t(на " + ProgramDescription.AssemblyLastUpdate + "):\t" +
+					(registryStats[0] - registryStats[ffdNames.Length + 2]).ToString () + RDLocale.RNRN;
+				res += "\tИз них поддерживают:" + RDLocale.RN;
+
+				for (int i = 0; i < ffdNames.Length; i++)
+					res += "\t  ФФД " + ffdNames[i] + ":  \t\t" +
+						registryStats[1 + i].ToString () + RDLocale.RN;
+
+				res += RDLocale.RN + "\tИзвестно сигнатур ЗН:\t" +
+					names.Count.ToString () + RDLocale.RN;
+				res += "\t  из них – точно:\t\t" + registryStats[ffdNames.Length + 1];
+#endif
 
 				return res;
 				}
