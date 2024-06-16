@@ -1,47 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.TagsPage">
 
-	<StackLayout>
-		<Label x:Name="HeaderLabel" />
+	<ScrollView>
+		<StackLayout>
 
-		<ScrollView>
-			<StackLayout>
+			<Label x:Name="TLVSearchLabel" VerticalOptions="Center" />
 
-				<Label x:Name="TLVSearchLabel" VerticalOptions="Center" />
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Editor x:Name="TLVSearchText" VerticalOptions="Center" />
 
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Editor x:Name="TLVSearchText" VerticalOptions="Center" />
-
-					<Button x:Name="TLVSearchButton" VerticalOptions="Center" />
-					<Button x:Name="TLVClearButton" VerticalOptions="Center" />
-				</StackLayout>
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="6" />
-
-				<Label x:Name="TLVDescriptionLabel" />
-				<Label x:Name="TLVDescription" />
-
-				<Label x:Name="TLVTypeLabel" />
-				<Label x:Name="TLVType" />
-
-				<Label x:Name="TLVValuesLabel" />
-				<Label x:Name="TLVValues" />
-
-				<Label x:Name="TLVObligationLabel" />
-				<Label x:Name="TLVObligation" />
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="6" />
-
-				<Button x:Name="TLVObligationHelpLabel" />
-
-				<Label />
-
+				<Button x:Name="TLVSearchButton" VerticalOptions="Center" />
+				<Button x:Name="TLVClearButton" VerticalOptions="Center" />
 			</StackLayout>
-		</ScrollView>
 
-	</StackLayout>
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
+			<Label />
+			<Label x:Name="TLVDescriptionLabel" />
+			<Label x:Name="TLVDescription" />
+
+			<Label x:Name="TLVTypeLabel" />
+			<Label x:Name="TLVType" />
+
+			<Label x:Name="TLVValuesLabel" />
+			<Label x:Name="TLVValues" />
+
+			<Label x:Name="TLVObligationLabel" />
+			<Label x:Name="TLVObligation" />
+
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
+			<Button x:Name="TLVObligationHelpLabel" />
+
+			<Label />
+
+		</StackLayout>
+	</ScrollView>
 </ContentPage>

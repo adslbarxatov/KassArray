@@ -1,48 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.RNMPage">
 
-	<StackLayout >
-		<Label x:Name="HeaderLabel" />
-
-		<ScrollView>
-			<StackLayout>
-				<StackLayout Orientation="Horizontal">
-					<Label x:Name="SNLabel" VerticalOptions="Center" />
-					<Editor x:Name="SN" VerticalOptions="Center" />
-					<Button x:Name="Find" VerticalOptions="Center" />
-				</StackLayout>
-
-				<Label x:Name="TypeLabel" HorizontalOptions="Center" />
-				<Button x:Name="RegistryStats" HorizontalOptions="Center" />
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="6" />
-
-				<StackLayout Orientation="Horizontal">
-					<Label x:Name="INNLabel" VerticalOptions="Center" />
-					<Editor x:Name="INN" VerticalOptions="Center" />
-				</StackLayout>
-
-				<Label x:Name="INNCheckLabel" HorizontalOptions="Center" />
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="6" />
-
-				<Label x:Name="RNMLabel" />
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Editor x:Name="RNM" VerticalOptions="Center" />
-					<Button x:Name="RNMGenerate" VerticalOptions="Center" />
-					<Button x:Name="Clear" VerticalOptions="Center" />
-				</StackLayout>
-				<Label x:Name="RNMCheckLabel" HorizontalOptions="Center" />
-
-				<Label x:Name="RNMAbout" />
-				<Label />
+	<ScrollView>
+		<StackLayout>
+			<StackLayout Orientation="Horizontal">
+				<Label x:Name="SNLabel" VerticalOptions="Center" />
+				<Editor x:Name="SN" VerticalOptions="Center" />
+				<Button x:Name="Find" VerticalOptions="Center" />
 			</StackLayout>
-		</ScrollView>
 
-	</StackLayout>
+			<Label x:Name="TypeLabel" HorizontalOptions="Center" />
+			<Button x:Name="RegistryStats" HorizontalOptions="Center" />
+
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
+			<Label />
+			<StackLayout Orientation="Horizontal">
+				<Label x:Name="INNLabel" VerticalOptions="Center" />
+				<Editor x:Name="INN" VerticalOptions="Center" />
+			</StackLayout>
+
+			<Label x:Name="INNCheckLabel" HorizontalOptions="Center" />
+
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
+			<Label />
+			<Label x:Name="RNMLabel" />
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Editor x:Name="RNM" VerticalOptions="Center" />
+				<Button x:Name="RNMGenerate" VerticalOptions="Center" />
+				<Button x:Name="Clear" VerticalOptions="Center" />
+			</StackLayout>
+			<Label x:Name="RNMCheckLabel" HorizontalOptions="Center" />
+
+			<Label x:Name="RNMAbout" />
+			<Label />
+			
+		</StackLayout>
+	</ScrollView>
 </ContentPage>
     

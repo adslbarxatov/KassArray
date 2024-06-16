@@ -1,31 +1,20 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
-using Android.Content.Res;
 using Android.Graphics;
 using Android.OS;
 using Android.Print;
 using Android.Views;
 using AndroidX.Core.App;
-using System;
 
-#if DEBUG
-[assembly: Application (Debuggable = true)]
-#else
-[assembly: Application (Debuggable = false)]
-#endif
-
-namespace RD_AAOW.Droid
+namespace RD_AAOW
 	{
-	/// <summary>
-	/// Класс описывает загрузчик приложения
-	/// </summary>
 	[Activity (Label = "KassArray",
 		Icon = "@drawable/launcher_foreground",
 		Theme = "@style/SplashTheme",
 		MainLauncher = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class MainActivity: global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+	public class MainActivity: MauiAppCompatActivity
 		{
 		/// <summary>
 		/// Принудительная установка масштаба шрифта
@@ -40,7 +29,7 @@ namespace RD_AAOW.Droid
 				}
 
 			originalContext = @base;
-			Configuration overrideConfiguration = new Configuration ();
+			Android.Content.Res.Configuration overrideConfiguration = new Android.Content.Res.Configuration ();
 			overrideConfiguration = @base.Resources.Configuration;
 			overrideConfiguration.FontScale = 0.9f;
 
@@ -57,20 +46,12 @@ namespace RD_AAOW.Droid
 		/// </summary>
 		protected override void OnCreate (Bundle savedInstanceState)
 			{
-			// Базовая настройка
-			TabLayoutResource = Resource.Layout.Tabbar;
-			ToolbarResource = Resource.Layout.Toolbar;
-
 			// Отмена темы для splash screen
-			base.SetTheme (Resource.Style.MainTheme);
-
-			// Инициализация и запуск
-			base.OnCreate (savedInstanceState);
-			global::Xamarin.Forms.Forms.Init (this, savedInstanceState);
+			base.SetTheme (Microsoft.Maui.Controls.Resource.Style.MainTheme);
 
 			// Получение списка доступных прав
-			RDAppStartupFlags flags = AndroidSupportX.GetAppStartupFlags (RDAppStartupFlags.CanShowNotifications |
-				RDAppStartupFlags.Huawei, this);
+			RDAppStartupFlags flags = AndroidSupport.GetAppStartupFlags (RDAppStartupFlags.CanShowNotifications |
+				RDAppStartupFlags.Huawei);
 
 			// Запуск независимо от разрешения
 			if (mainService == null)
@@ -89,8 +70,11 @@ namespace RD_AAOW.Droid
 			// Запрет на переход в ждущий режим
 			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
 
-			LoadApplication (new App ((PrintManager)originalContext.GetSystemService (Service.PrintService),
-				flags));
+			// Сохранение менеджера печати
+			KKTSupport.ActPrintManager = (PrintManager)originalContext.GetSystemService (Service.PrintService);
+
+			// Инициализация и запуск
+			base.OnCreate (savedInstanceState);
 			}
 		private Intent mainService;
 
@@ -139,10 +123,10 @@ namespace RD_AAOW.Droid
 	/// Класс описывает фоновую службу приложения
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.TextToKKT",
-		ForegroundServiceType = ForegroundService.TypeDataSync,
+		ForegroundServiceType = ForegroundService.TypeSpecialUse,
 		Label = "KassArray",
 		Exported = true)]
-	public class MainService: global::Android.App.Service
+	public class MainService: Service
 		{
 		// Идентификаторы процесса
 		private Handler handler;
@@ -236,11 +220,9 @@ namespace RD_AAOW.Droid
 				}
 
 			// Инициализация сообщений
-			notBuilder.SetCategory ("msg");     // Категория "сообщение"
-			notBuilder.SetColor (0x80FFC0);     // Оттенок заголовков оповещений
-
-			// По-видимому, ломает ОС
-			/*notBuilder.SetOngoing (true);       // Android 13 и новее: не позволяет закрыть оповещение вручную*/
+			notBuilder.SetCategory ("msg");		// Категория "сообщение"
+			notBuilder.SetColor (0x80FFC0);		// Оттенок заголовков оповещений
+			notBuilder.SetOngoing (true);		// Android 13 и новее: не позволяет закрыть оповещение вручную
 
 			// Android 12 и новее: требует немедленного отображения оповещения
 			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
@@ -278,7 +260,7 @@ namespace RD_AAOW.Droid
 
 			// Стартовое сообщение
 			Android.App.Notification notification = notBuilder.Build ();
-			StartForeground (notServiceID, notification, ForegroundService.TypeDataSync);
+			StartForeground (notServiceID, notification, ForegroundService.TypeSpecialUse);
 
 			// Перенастройка для основного режима
 			if (!AndroidSupport.IsForegroundAvailable)

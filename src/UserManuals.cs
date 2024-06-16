@@ -206,10 +206,10 @@ namespace RD_AAOW
 				return names[(int)KKTType];
 
 			string text = operations[(int)ManualType][(int)KKTType];
-			bool goods = !KKTSupport.IsSet (Flags, UserManualsFlags.ProductBaseContainsServices);
+			bool goods = !Flags.HasFlag (UserManualsFlags.ProductBaseContainsServices);
 			if ((ManualType >= 1) && (ManualType <= 4))
 				{
-				if (KKTSupport.IsSet (Flags, UserManualsFlags.MoreThanOneItemPerDocument))
+				if (Flags.HasFlag (UserManualsFlags.MoreThanOneItemPerDocument))
 					{
 					text = text.Replace ("#1", "↑ (повторить эти действия для всех " +
 						(goods ? "товаров" : "услуг") + " в чеке);" + RDLocale.RN);
@@ -219,7 +219,7 @@ namespace RD_AAOW
 					text = text.Replace ("#1", "");
 					}
 
-				if (KKTSupport.IsSet (Flags, UserManualsFlags.ProductBaseContainsPrices))
+				if (Flags.HasFlag (UserManualsFlags.ProductBaseContainsPrices))
 					{
 					int left = text.IndexOf ("#3");
 					if (left >= 0)
@@ -240,7 +240,7 @@ namespace RD_AAOW
 				text = text.Replace ("#6", goods ? "товара" : "услуги");
 				}
 
-			if (KKTSupport.IsSet (Flags, UserManualsFlags.CashiersHavePasswords))
+			if (Flags.HasFlag (UserManualsFlags.CashiersHavePasswords))
 				{
 				text = text.Replace ("#4", "ввести пароль кассира, если он задан, ");
 				text = text.Replace ("#5", "Ввести пароль кассира в случае запроса;" + RDLocale.RN + "• ");
@@ -250,7 +250,7 @@ namespace RD_AAOW
 				text = text.Replace ("#4", "").Replace ("#5", "");
 				}
 
-			if (KKTSupport.IsSet (Flags, UserManualsFlags.DocumentsContainMarks))
+			if (Flags.HasFlag (UserManualsFlags.DocumentsContainMarks))
 				{
 				text = text.Replace ("#C", ";" + RDLocale.RN + "• Отсканировать код маркировки");
 				}

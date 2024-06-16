@@ -733,66 +733,56 @@ namespace RD_AAOW
 			{
 			get
 				{
-				KassArrayDB::RD_AAOW.FNLifeFlags flags =
-					KassArrayDB::RD_AAOW.KKTSupport.SetFlag (0, KassArrayDB::RD_AAOW.FNLifeFlags.FN15, FNLife13.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.FNExactly13, kb.FNNumbers.IsFNExactly13 (FNLifeSN.Text));
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.GenericTax, GenericTaxFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Goods, GoodsFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Season, SeasonFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Agents, AgentsFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Excise, ExciseFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Autonomous, AutonomousFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.FFD12, FFD12Flag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.GamblingAndLotteries, GamblingLotteryFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.PawnsAndInsurance, PawnInsuranceFlag.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.MarkGoods, MarkGoodsFlag.Checked);
+				KassArrayDB::RD_AAOW.FNLifeFlags flags = 0;
 
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.FNLifeFlags.MarkFN,
-					!kb.FNNumbers.IsFNKnown (FNLifeSN.Text) || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text));
+				if (FNLife13.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.FN15;
+				if (kb.FNNumbers.IsFNExactly13 (FNLifeSN.Text))
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.FNExactly13;
+				if (GenericTaxFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.GenericTax;
+				if (GoodsFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.Goods;
+				if (SeasonFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.Season;
+				if (AgentsFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.Agents;
+				if (ExciseFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.Excise;
+				if (AutonomousFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.Autonomous;
+				if (FFD12Flag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.FFD12;
+				if (GamblingLotteryFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.GamblingAndLotteries;
+				if (PawnInsuranceFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.PawnsAndInsurance;
+				if (MarkGoodsFlag.Checked)
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.MarkGoods;
+
+				if (!kb.FNNumbers.IsFNKnown (FNLifeSN.Text) || kb.FNNumbers.IsFNCompatibleWithFFD12 (FNLifeSN.Text))
+					flags |= KassArrayDB::RD_AAOW.FNLifeFlags.MarkFN;
 				// Признак распознанного ЗН ФН
 
 				return flags;
 				}
 			set
 				{
-				FNLife13.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.FN15);
+				FNLife13.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.FN15);
 				FNLife36.Checked = !FNLife13.Checked;
 				// .Exactly13 – вспомогательный нехранимый флаг
-				GenericTaxFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.GenericTax);
+				GenericTaxFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.GenericTax);
 				OtherTaxFlag.Checked = !GenericTaxFlag.Checked;
-				GoodsFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Goods);
+				GoodsFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.Goods);
 				ServicesFlag.Checked = !GoodsFlag.Checked;
-				SeasonFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Season);
-				AgentsFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Agents);
-				ExciseFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Excise);
-				AutonomousFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.Autonomous);
-				FFD12Flag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.FFD12);
-				GamblingLotteryFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.GamblingAndLotteries);
-				PawnInsuranceFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.PawnsAndInsurance);
-				MarkGoodsFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.FNLifeFlags.MarkGoods);
+				SeasonFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.Season);
+				AgentsFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.Agents);
+				ExciseFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.Excise);
+				AutonomousFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.Autonomous);
+				FFD12Flag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.FFD12);
+				GamblingLotteryFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.GamblingAndLotteries);
+				PawnInsuranceFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.PawnsAndInsurance);
+				MarkGoodsFlag.Checked = value.HasFlag (KassArrayDB::RD_AAOW.FNLifeFlags.MarkGoods);
 				// .MarkFN – вспомогательный нехранимый флаг
 				}
 			}
@@ -1066,36 +1056,33 @@ namespace RD_AAOW
 			{
 			get
 				{
-				KassArrayDB::RD_AAOW.UserManualsFlags flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (0,
-					KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument,
-					MoreThanOneItemPerDocument.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices,
-					ProductBaseContainsPrices.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords,
-					CashiersHavePasswords.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices,
-					BaseContainsServices.Checked);
-				flags = KassArrayDB::RD_AAOW.KKTSupport.SetFlag (flags,
-					KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks,
-					DocumentsContainMarks.Checked);
+				KassArrayDB::RD_AAOW.UserManualsFlags flags = 0;
+
+				if (MoreThanOneItemPerDocument.Checked)
+					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument;
+				if (ProductBaseContainsPrices.Checked)
+					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices;
+				if (CashiersHavePasswords.Checked)
+					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords;
+				if (BaseContainsServices.Checked)
+					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices;
+				if (DocumentsContainMarks.Checked)
+					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks;
 
 				return flags;
 				}
 			set
 				{
-				MoreThanOneItemPerDocument.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument);
-				ProductBaseContainsPrices.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices);
-				CashiersHavePasswords.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords);
-				BaseContainsServices.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices);
-				DocumentsContainMarks.Checked = KassArrayDB::RD_AAOW.KKTSupport.IsSet (value,
-					KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks);
+				MoreThanOneItemPerDocument.Checked =
+					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument);
+				ProductBaseContainsPrices.Checked =
+					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices);
+				CashiersHavePasswords.Checked =
+					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords);
+				BaseContainsServices.Checked =
+					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices);
+				DocumentsContainMarks.Checked =
+					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks);
 				}
 			}
 

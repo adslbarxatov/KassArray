@@ -2,11 +2,11 @@
 using System.IO;
 
 #if ANDROID
-	using Android.Graphics;
-	using Android.OS;
-	using Android.Print;
-	using Android.Print.Pdf;
-	using Android.Runtime;
+using Android.Graphics;
+using Android.OS;
+using Android.Print;
+using Android.Print.Pdf;
+using Android.Runtime;
 #else
 	using System.Drawing;
 	using System.Drawing.Printing;
@@ -152,31 +152,31 @@ namespace RD_AAOW
 			uint length = GetFNLifeLength (Flags);
 
 			// Нельзя игнорировать
-			if (IsSet (Flags, FNLifeFlags.GenericTax) && !IsSet (Flags, FNLifeFlags.FN15) &&
-				IsSet (Flags, FNLifeFlags.Goods) ||
+			if (Flags.HasFlag (FNLifeFlags.GenericTax) && !Flags.HasFlag (FNLifeFlags.FN15) &&
+				Flags.HasFlag (FNLifeFlags.Goods) ||
 
 				// Невозможные варианты
-				IsSet (Flags, FNLifeFlags.FFD12) && !IsSet (Flags, FNLifeFlags.MarkFN) ||
+				Flags.HasFlag (FNLifeFlags.FFD12) && !Flags.HasFlag (FNLifeFlags.MarkFN) ||
 
-				!IsSet (Flags, FNLifeFlags.Goods) && (IsSet (Flags, FNLifeFlags.Excise) ||
-				IsSet (Flags, FNLifeFlags.MarkGoods)) ||
+				!Flags.HasFlag (FNLifeFlags.Goods) && (Flags.HasFlag (FNLifeFlags.Excise) ||
+				Flags.HasFlag (FNLifeFlags.MarkGoods)) ||
 
-				IsSet (Flags, FNLifeFlags.Goods) && IsSet (Flags, FNLifeFlags.GamblingAndLotteries) ||
+				Flags.HasFlag (FNLifeFlags.Goods) && Flags.HasFlag (FNLifeFlags.GamblingAndLotteries) ||
 
-				IsSet (Flags, FNLifeFlags.MarkGoods) && !IsSet (Flags, FNLifeFlags.FFD12))
+				Flags.HasFlag (FNLifeFlags.MarkGoods) && !Flags.HasFlag (FNLifeFlags.FFD12))
 				{
 				res = FNLifeInacceptableSign;
 				}
 
 			// Определение нежелательных вариантов
-			else if (!IsSet (Flags, FNLifeFlags.GenericTax) && IsSet (Flags, FNLifeFlags.FN15) &&
-				!IsSet (Flags, FNLifeFlags.Season) && !IsSet (Flags, FNLifeFlags.Agents) &&
-				!IsSet (Flags, FNLifeFlags.Excise) && !IsSet (Flags, FNLifeFlags.Autonomous) ||
+			else if (!Flags.HasFlag (FNLifeFlags.GenericTax) && Flags.HasFlag (FNLifeFlags.FN15) &&
+				!Flags.HasFlag (FNLifeFlags.Season) && !Flags.HasFlag (FNLifeFlags.Agents) &&
+				!Flags.HasFlag (FNLifeFlags.Excise) && !Flags.HasFlag (FNLifeFlags.Autonomous) ||
 
-				!IsSet (Flags, FNLifeFlags.FN15) && IsSet (Flags, FNLifeFlags.FFD12) &&
-				IsSet (Flags, FNLifeFlags.Excise) ||
+				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.FFD12) &&
+				Flags.HasFlag (FNLifeFlags.Excise) ||
 
-				!IsSet (Flags, FNLifeFlags.FN15) && IsSet (Flags, FNLifeFlags.Autonomous))
+				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.Autonomous))
 				{
 				res = FNLifeUnwelcomeSign;
 				}
@@ -190,32 +190,32 @@ namespace RD_AAOW
 			// Определение срока жизни
 			uint length = 1110u;
 
-			if ((IsSet (Flags, FNLifeFlags.GamblingAndLotteries) || IsSet (Flags, FNLifeFlags.PawnsAndInsurance)) &&
-				IsSet (Flags, FNLifeFlags.FFD12) && IsSet (Flags, FNLifeFlags.FN15) ||
-				IsSet (Flags, FNLifeFlags.Excise) && IsSet (Flags, FNLifeFlags.FFD12))
+			if ((Flags.HasFlag (FNLifeFlags.GamblingAndLotteries) || Flags.HasFlag (FNLifeFlags.PawnsAndInsurance)) &&
+				Flags.HasFlag (FNLifeFlags.FFD12) && Flags.HasFlag (FNLifeFlags.FN15) ||
+				Flags.HasFlag (FNLifeFlags.Excise) && Flags.HasFlag (FNLifeFlags.FFD12))
 				{
 				length = 410u;
 				}
 
-			else if (IsSet (Flags, FNLifeFlags.Autonomous))
+			else if (Flags.HasFlag (FNLifeFlags.Autonomous))
 				{
-				if (IsSet (Flags, FNLifeFlags.FN15) || IsSet (Flags, FNLifeFlags.FFD12) &&
-					IsSet (Flags, FNLifeFlags.Goods) && IsSet (Flags, FNLifeFlags.GenericTax))
+				if (Flags.HasFlag (FNLifeFlags.FN15) || Flags.HasFlag (FNLifeFlags.FFD12) &&
+					Flags.HasFlag (FNLifeFlags.Goods) && Flags.HasFlag (FNLifeFlags.GenericTax))
 					length = 410u;
 				else
 					length = 560u;
 				}
 
-			else if (!IsSet (Flags, FNLifeFlags.FN15) && IsSet (Flags, FNLifeFlags.GenericTax) &&
-				(IsSet (Flags, FNLifeFlags.Goods) || IsSet (Flags, FNLifeFlags.Agents) &&
-				IsSet (Flags, FNLifeFlags.FFD12)))
+			else if (!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.GenericTax) &&
+				(Flags.HasFlag (FNLifeFlags.Goods) || Flags.HasFlag (FNLifeFlags.Agents) &&
+				Flags.HasFlag (FNLifeFlags.FFD12)))
 				{
 				length = 560u;
 				}
 
-			else if (IsSet (Flags, FNLifeFlags.FN15))
+			else if (Flags.HasFlag (FNLifeFlags.FN15))
 				{
-				length = IsSet (Flags, FNLifeFlags.FNExactly13) ? 410u : 470u;
+				length = Flags.HasFlag (FNLifeFlags.FNExactly13) ? 410u : 470u;
 				}
 
 			return length;
@@ -843,12 +843,27 @@ namespace RD_AAOW
 		/// Метод выводит на печать руководство пользователя
 		/// </summary>
 		/// <param name="TextForPrinting">Текст для печати</param>
-		/// <param name="PrintingManager">Дескриптор сервиса управления печатью</param>
 		/// <param name="ForCashier">Флаг сокращённого варианта руководства (для кассира)</param>
-		public static void PrintManual (string TextForPrinting, PrintManager PrintingManager, bool ForCashier)
+		public static void PrintManual (string TextForPrinting, bool ForCashier)
 			{
-			PrintingManager.Print ("Manual.pdf", new CustomPrintDocumentAdapter (TextForPrinting, ForCashier), null);
+			pm.Print ("Manual.pdf", new CustomPrintDocumentAdapter (TextForPrinting, ForCashier), null);
 			}
+
+		/// <summary>
+		/// Возвращает или задаёт текущий менеджер печати
+		/// </summary>
+		public static PrintManager ActPrintManager
+			{
+			get
+				{
+				return pm;
+				}
+			set
+				{
+				pm = value;
+				}
+			}
+		private static PrintManager pm;
 
 #else
 
@@ -1100,7 +1115,7 @@ namespace RD_AAOW
 
 #endif
 
-		/// <summary>
+		/*/// <summary>
 		/// Метод проверяет указанный флаг на установку
 		/// </summary>
 		/// <param name="FlagsSet">Регистр флагов</param>
@@ -1150,7 +1165,7 @@ namespace RD_AAOW
 				return FlagsSet | Flag;
 
 			return FlagsSet & ~Flag;
-			}
+			}*/
 
 #if !ANDROID
 
@@ -1178,7 +1193,7 @@ namespace RD_AAOW
 		private PrintedPdfDocument document;
 		private int pagesCount;
 		private int pageNumber;
-		private Paint p;
+		private Android.Graphics.Paint p;
 		private StringReader printStream;
 		private string text, name;
 
@@ -1220,9 +1235,9 @@ namespace RD_AAOW
 			pdb.SetPageCount (pagesCount);
 
 			// Настройка кисти
-			p = new Paint ();
-			p.Color = Color.Black;
-			p.SetStyle (Paint.Style.Fill);
+			p = new Android.Graphics.Paint ();
+			p.Color = Android.Graphics.Color.Black;
+			p.SetStyle (Android.Graphics.Paint.Style.Fill);
 			p.StrokeWidth = 1.0f;
 			p.Dither = false;
 			p.SetTypeface (Typeface.Monospace);

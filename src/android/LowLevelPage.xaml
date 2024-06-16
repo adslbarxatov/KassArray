@@ -1,43 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.LowLevelPage">
 
-	<StackLayout>
-		<Label x:Name="HeaderLabel" />
+	<ScrollView>
+		<StackLayout>
 
-		<ScrollView>
-			<StackLayout>
+			<Label x:Name="ProtocolLabel" />
+			<Button x:Name="ProtocolButton" />
 
-				<Label x:Name="ProtocolLabel" />
-				<Button x:Name="ProtocolButton" />
+			<Label x:Name="CommandLabel" />
+			<Button x:Name="CommandButton" />
 
-				<Label x:Name="CommandLabel" />
-				<Button x:Name="CommandButton" />
+			<Label x:Name="CommandSearchLabel" />
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Editor x:Name="CommandSearchText" VerticalOptions="Center" />
+				<Button x:Name="CommandSearchButton" VerticalOptions="Center" />
+				<Button x:Name="CommandClearButton" VerticalOptions="Center" />
+			</StackLayout>
 
-				<Label x:Name="CommandSearchLabel" />
-				<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-					<Editor x:Name="CommandSearchText" VerticalOptions="Center" />
-					<Button x:Name="CommandSearchButton" VerticalOptions="Center" />
-					<Button x:Name="CommandClearButton" VerticalOptions="Center" />
-				</StackLayout>
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
 
-				<Label x:Name="CommandCodeLabel" />
-				<Button x:Name="CommandCodeButton" />
+			<Label />
+			<Label x:Name="CommandCodeLabel" />
+			<Button x:Name="CommandCodeButton" />
 
-				<Label x:Name="LowLevelHelpLabel" />
+			<Label x:Name="LowLevelHelpLabel" />
 
-				<Label x:Name="CommandDescrLabel" />
-				<Label x:Name="CommandDescr" />
+			<Label x:Name="CommandDescrLabel" />
+			<Label x:Name="CommandDescr" />
 
-				<Label />
+			<Label />
 
-			</StackLayout>
-		</ScrollView>
-
-	</StackLayout>
+		</StackLayout>
+	</ScrollView>
 </ContentPage>
     

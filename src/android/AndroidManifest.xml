@@ -1,17 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- texttokkt.huawei -->
-<!-- texttokkt.xiaomi -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="601408" android:versionName="4.3">
+	android:installLocation="internalOnly" android:versionCode="601523" android:versionName="5.7">
 
-	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33" />
+	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission android:name="android.permission.BIND_JOB_SERVICE" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	
 	<application android:label="KassArray" android:icon="@drawable/launcher_foreground">
+		<service android:label="KassArray" android:name="com.RD_AAOW.TextToKKT"
+				 android:foregroundServiceType="specialUse" android:exported="true">
+			<property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+				android:value="Only for faster application call and its quick access"/>
+		</service>
+		
 		<receiver android:name="com.RD_AAOW.KassArrayBoot" android:label="KassArrayBoot" android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />

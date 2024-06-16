@@ -1,13 +1,10 @@
-﻿using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-
-namespace RD_AAOW
+﻿namespace RD_AAOW
 	{
 	/// <summary>
-	/// Класс описывает страницу получения инструкций пользователя
+	/// Класс описывает страницу инструкций пользователя
 	/// </summary>
 	[XamlCompilation (XamlCompilationOptions.Compile)]
-	public partial class UserManualsPage:ContentPage
+	public partial class UserManualsPage: ContentPage
 		{
 		/// <summary>
 		/// Конструктор. Запускает страницу
@@ -15,17 +12,6 @@ namespace RD_AAOW
 		public UserManualsPage ()
 			{
 			InitializeComponent ();
-			}
-
-		/// <summary>
-		/// Переопределение для кнопки возврата
-		/// </summary>
-		protected override bool OnBackButtonPressed ()
-			{
-			App app = (App)App.Current;
-			app.CallHeadersPage ();
-
-			return true;
 			}
 		}
 	}
