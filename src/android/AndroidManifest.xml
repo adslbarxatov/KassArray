@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="601523" android:versionName="5.7">
+	android:installLocation="internalOnly" android:versionCode="601524" android:versionName="5.7.5">
 
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
 
@@ -14,6 +14,7 @@
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	
 	<application android:label="KassArray" android:icon="@drawable/launcher_foreground">
+		
 		<service android:label="KassArray" android:name="com.RD_AAOW.TextToKKT"
 				 android:foregroundServiceType="specialUse" android:exported="true">
 			<property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
@@ -24,7 +25,9 @@
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 				<action android:name="android.intent.action.QUICKBOOT_POWERON" />
+				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</receiver>
+		
 	</application>
 </manifest>

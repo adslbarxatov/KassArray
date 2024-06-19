@@ -195,6 +195,8 @@ namespace RD_AAOW
 			uiPages.Add (ApplyPageSettings (new ConvertorsUCPage (), "ConvertorsUCPage",
 				"Конвертор символов Unicode", uiColors[cvuPage][cBack], true));
 
+			// С отступом
+			menuLayout.Children.Add (new Label ());
 			uiPages.Add (ApplyPageSettings (new AboutPage (), "AboutPage",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				uiColors[aabPage][cBack], true));
@@ -993,7 +995,6 @@ namespace RD_AAOW
 			b.TextColor = AndroidSupport.MasterTextColor;
 			b.Margin = b.Padding = new Thickness (1);
 
-			/*b.CommandParameter = page;*/
 			uiButtons.Add (b);
 			menuLayout.Children.Add (b);
 

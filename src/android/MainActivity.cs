@@ -55,7 +55,10 @@ namespace RD_AAOW
 
 			// Запуск независимо от разрешения
 			if (mainService == null)
+				{
 				mainService = new Intent (this, typeof (MainService));
+				mainService.SetPackage (this.PackageName);
+				}
 			AndroidSupport.StopRequested = false;
 
 			// Для Android 12 и выше запуск службы возможен только здесь
@@ -98,7 +101,10 @@ namespace RD_AAOW
 			{
 			// Перезапуск, если была остановлена (независимо от разрешения)
 			if (mainService == null)
+				{
 				mainService = new Intent (this, typeof (MainService));
+				mainService.SetPackage (this.PackageName);
+				}
 			AndroidSupport.StopRequested = false;
 
 			// Нет смысла запускать сервис, если он не был закрыт приложением.
@@ -128,6 +134,8 @@ namespace RD_AAOW
 		Exported = true)]
 	public class MainService: Service
 		{
+		private const int notServiceID = 4420;
+
 		// Идентификаторы процесса
 		private Handler handler;
 		private Action runnable;
@@ -136,13 +144,15 @@ namespace RD_AAOW
 		// Дескрипторы уведомлений
 		private NotificationCompat.Builder notBuilder;
 		private NotificationManager notManager;
-		private const int notServiceID = 4420;
+		/*private const int notServiceID = 4420;*/
 		private NotificationCompat.BigTextStyle notTextStyle;
 
 		private Intent masterIntent;
 		private PendingIntent masterPendingIntent;
 
-		private BroadcastReceiver[] bcReceivers = new BroadcastReceiver[2];
+		/*private BroadcastReceiver[] bcReceivers = new BroadcastReceiver[2];*/
+		private BroadcastReceiver[] bcReceivers =
+			new BroadcastReceiver[AndroidSupport.IntentFiltersForBootReceiver.Length];
 
 		private const uint frameLength = 2500;  // ms
 
@@ -219,10 +229,14 @@ namespace RD_AAOW
 				notBuilder.SetChannelId (ProgramDescription.AssemblyMainName.ToLower ());
 				}
 
-			// Инициализация сообщений
-			notBuilder.SetCategory ("msg");		// Категория "сообщение"
-			notBuilder.SetColor (0x80FFC0);		// Оттенок заголовков оповещений
-			notBuilder.SetOngoing (true);		// Android 13 и новее: не позволяет закрыть оповещение вручную
+			// Категория "сообщение"
+			notBuilder.SetCategory ("msg");
+
+			// Оттенок заголовков оповещений
+			notBuilder.SetColor (0x80FFC0);
+
+			// Android 13 и новее: не позволяет закрыть оповещение вручную
+			notBuilder.SetOngoing (true);
 
 			// Android 12 и новее: требует немедленного отображения оповещения
 			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
@@ -239,7 +253,9 @@ namespace RD_AAOW
 			notBuilder.SetTicker (ProgramDescription.AssemblyMainName);
 
 			// Настройка видимости для стартового сообщения
-			notBuilder.SetDefaults (0);         // Для служебного сообщения
+			
+			// Для служебного сообщения
+			notBuilder.SetDefaults (0);
 			notBuilder.SetPriority (!AndroidSupport.IsForegroundAvailable ? (int)NotificationPriority.Default :
 				(int)NotificationPriority.High);
 
@@ -255,7 +271,10 @@ namespace RD_AAOW
 
 			// Прикрепление ссылки для перехода в основное приложение
 			masterIntent = new Intent (this, typeof (NotificationLink));
-			masterPendingIntent = PendingIntent.GetService (this, 0, masterIntent, PendingIntentFlags.Immutable);
+			masterIntent.SetPackage (this.PackageName);
+
+			masterPendingIntent = PendingIntent.GetService (this, notServiceID, masterIntent,
+				PendingIntentFlags.Immutable);
 			notBuilder.SetContentIntent (masterPendingIntent);
 
 			// Стартовое сообщение
@@ -270,10 +289,16 @@ namespace RD_AAOW
 				}
 
 			// Запуск петли
-			this.RegisterReceiver (bcReceivers[0] = new BootReceiver (),
+			/*this.RegisterReceiver (bcReceivers[0] = new BootReceiver (),
 				new IntentFilter (Intent.ActionBootCompleted));
 			this.RegisterReceiver (bcReceivers[1] = new BootReceiver (),
-				new IntentFilter ("android.intent.action.QUICKBOOT_POWERON"));
+				new IntentFilter ("android.intent.action.QUICKBOOT_POWERON"));*/
+			for (int i = 0; i < AndroidSupport.IntentFiltersForBootReceiver.Length; i++)
+				{
+				bcReceivers[i] = new BootReceiver ();
+				this.RegisterReceiver (bcReceivers[i], new IntentFilter (AndroidSupport.IntentFiltersForBootReceiver[i]),
+					ReceiverFlags.Exported);
+				}
 
 			handler.PostDelayed (runnable, frameLength);
 			isStarted = true;
@@ -326,9 +351,12 @@ namespace RD_AAOW
 	/// </summary>
 	[Service (Name = "com.RD_AAOW.KassArrayLink",
 		Label = "KassArrayLink",
+		ForegroundServiceType = ForegroundService.TypeDataSync,
 		Exported = true)]
 	public class NotificationLink: JobIntentService
 		{
+		private const int notServiceID = 4420;
+
 		/// <summary>
 		/// Конструктор (заглушка)
 		/// </summary>
@@ -367,9 +395,10 @@ namespace RD_AAOW
 			if (mainActivity == null)
 				{
 				mainActivity = new Intent (this, typeof (MainActivity));
-				mainActivity.PutExtra ("Tab", 0);
+				/*mainActivity.PutExtra ("Tab", 0);*/
+				mainActivity.SetPackage (this.PackageName);
 				}
-			PendingIntent.GetActivity (this, 0, mainActivity,
+			PendingIntent.GetActivity (this, notServiceID, mainActivity,
 				PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable).Send ();   // Android S+ req
 			}
 		private Intent mainActivity;
@@ -391,11 +420,24 @@ namespace RD_AAOW
 			if (!AppSettings.AllowServiceToStart || (intent == null))
 				return;
 
-			if (intent.Action.Equals (Intent.ActionBootCompleted, StringComparison.CurrentCultureIgnoreCase) ||
-				intent.Action.Equals (Intent.ActionReboot, StringComparison.CurrentCultureIgnoreCase))
+			/*if (intent.Action.Equals (Intent.ActionBootCompleted, StringComparison.CurrentCultureIgnoreCase) ||
+				intent.Action.Equals (Intent.ActionReboot, StringComparison.CurrentCultureIgnoreCase))*/
+			bool received = false;
+			for (int i = 0; i < AndroidSupport.IntentFiltersForBootReceiver.Length; i++)
+				if (intent.Action.Equals (AndroidSupport.IntentFiltersForBootReceiver[i],
+					StringComparison.CurrentCultureIgnoreCase))
+					{
+					received = true;
+					break;
+					}
+
+			if (received)
 				{
 				if (mainService == null)
+					{
 					mainService = new Intent (context, typeof (MainService));
+					mainService.SetPackage (AppInfo.PackageName);
+					}
 				AndroidSupport.StopRequested = false;
 
 				if (AndroidSupport.IsForegroundAvailable)
