@@ -330,7 +330,7 @@ namespace RD_AAOW
 			get
 				{
 #if ANDROID
-				string res = "Моделей ККТ в реестре" + RDLocale.RN +
+				string res = "Моделей ККТ в реестре ФНС" + RDLocale.RN +
 					"(на " + ProgramDescription.AssemblyLastUpdate + "): " +
 					(registryStats[0] - registryStats[ffdNames.Length + 2]).ToString () + RDLocale.RNRN;
 				res += "Из них поддерживают:" + RDLocale.RN;
@@ -343,7 +343,7 @@ namespace RD_AAOW
 					names.Count.ToString () + RDLocale.RN;
 				res += "  из них – точно: " + registryStats[ffdNames.Length + 1];
 #else
-				string res = "\tМоделей ККТ в реестре" + RDLocale.RN +
+				string res = "\tМоделей ККТ в реестре ФНС" + RDLocale.RN +
 					"\t(на " + ProgramDescription.AssemblyLastUpdate + "):\t" +
 					(registryStats[0] - registryStats[ffdNames.Length + 2]).ToString () + RDLocale.RNRN;
 				res += "\tИз них поддерживают:" + RDLocale.RN;

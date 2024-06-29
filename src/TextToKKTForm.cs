@@ -142,6 +142,7 @@ namespace RD_AAOW
 			OFDDNSNameK.Text = KassArrayDB::RD_AAOW.OFD.OKPSite;
 			OFDIPK.Text = KassArrayDB::RD_AAOW.OFD.OKPIP;
 			OFDPortK.Text = KassArrayDB::RD_AAOW.OFD.OKPPort;
+			CDNSite.Text = KassArrayDB::RD_AAOW.OFD.CDNSite;
 			LoadOFDParameters ();
 
 			LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;
@@ -426,7 +427,7 @@ namespace RD_AAOW
 			string status = "";
 			try
 				{
-				status = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.StatusFilePath,
+				status = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.CreateStatusFileName (null),
 					RDGenerics.GetEncoding (RDEncodings.UTF8));
 				}
 			catch { }
@@ -724,6 +725,14 @@ namespace RD_AAOW
 			{
 			if (e.KeyCode == Keys.Return)
 				FNFindSN_Click (null, null);
+			}
+
+		// Статистика по базе ЗН ККТ
+		private void FNLifeStats_Click (object sender, EventArgs e)
+			{
+			this.TopMost = false;
+			RDGenerics.MessageBox (RDMessageTypes.Information_Left, kb.FNNumbers.RegistryStats);
+			this.TopMost = TopFlag.Checked;
 			}
 
 		/// <summary>
@@ -1068,6 +1077,8 @@ namespace RD_AAOW
 					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices;
 				if (DocumentsContainMarks.Checked)
 					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks;
+				if (BaseContainsSingleItem.Checked)
+					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.BaseContainsSingleItem;
 
 				return flags;
 				}
@@ -1083,6 +1094,8 @@ namespace RD_AAOW
 					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices);
 				DocumentsContainMarks.Checked =
 					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks);
+				BaseContainsSingleItem.Checked =
+					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.BaseContainsSingleItem);
 				}
 			}
 

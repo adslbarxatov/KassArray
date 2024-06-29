@@ -149,7 +149,7 @@ namespace RD_AAOW
 #if ANDROID
 					resultText += ((idx++ % 5 != 0) ? "    " : RDLocale.RN);
 #else
-					resultText += ((idx++ % 5 != 0) ? RDLocale.T : RDLocale.RN);
+					resultText += ((idx++ % 5 != 0) ? "\t" : RDLocale.RN);
 #endif
 				else
 					resultText += resText[i];

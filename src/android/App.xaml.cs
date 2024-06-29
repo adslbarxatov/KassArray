@@ -53,9 +53,6 @@ namespace RD_AAOW
 
 		#region Переменные страниц
 
-		/*private ContentPage headers Page, kktCodes Page, errors Page, about Page, connectors Page,
-			ofd Page, fnLife Page, rnm Page, lowLevel Page, userManuals Page, tags Page, barCodes Page,
-			convertorsSN Page, convertorsUC Page, convertorsHT Page;*/
 		private List<ContentPage> uiPages = new List<ContentPage> ();
 
 		private Label kktCodesHelpLabel, kktCodesErrorLabel, kktCodesResultText,
@@ -88,7 +85,7 @@ namespace RD_AAOW
 			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
 			allowService, extendedMode,
 			moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords, baseContainsServices,
-			documentsContainMarks;
+			documentsContainMarks, productBaseContainsSingleItem;
 
 		private DatePicker fnLifeStartDate;
 
@@ -329,7 +326,7 @@ namespace RD_AAOW
 				false, uiColors[usgPage][cField], null, false);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "PricesLabel",
-				"В базе товаров есть цены", RDLabelTypes.DefaultLeft);
+				"В номенклатуре есть цены", RDLabelTypes.DefaultLeft);
 			productBaseContainsPrices = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "PricesSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
@@ -339,13 +336,18 @@ namespace RD_AAOW
 				false, uiColors[usgPage][cField], null, false);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "ServicesLabel",
-				"В базе ККТ содержатся услуги", RDLabelTypes.DefaultLeft);
+				"В номенклатуре содержатся услуги", RDLabelTypes.DefaultLeft);
 			baseContainsServices = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "ServicesSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "MarksLabel",
 				"Среди товаров есть маркированные (ТМТ)", RDLabelTypes.DefaultLeft);
 			documentsContainMarks = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "MarksSwitch",
+				false, uiColors[usgPage][cField], null, false);
+
+			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "SingleItemLabel",
+				"Номенклатурная позиция – единственная", RDLabelTypes.DefaultLeft);
+			productBaseContainsSingleItem = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "SingleItemSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
 			UserManualFlags = (UserManualsFlags)AppSettings.UserManualFlags;
@@ -355,6 +357,7 @@ namespace RD_AAOW
 			cashiersHavePasswords.Toggled += UserManualsFlags_Clicked;
 			baseContainsServices.Toggled += UserManualsFlags_Clicked;
 			documentsContainMarks.Toggled += UserManualsFlags_Clicked;
+			productBaseContainsSingleItem.Toggled += UserManualsFlags_Clicked;
 
 			UserManualsKKTButton_Clicked (null, null);
 
@@ -580,6 +583,9 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", RDLabelTypes.Tip);
 
+			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "RegistryStats",
+				"Статистика реестра ФН", uiColors[fnlPage][cField], FNStats_Clicked, false);
+
 			//
 			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "Clear",
 				RDDefaultButtons.Delete, uiColors[fnlPage][cField], FNLifeClear_Clicked);
@@ -713,6 +719,11 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDNalogSiteLabel",
 				"Сайт ФНС:", RDLabelTypes.HeaderLeft);
 			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDNalogSite", OFD.FNSSite,
+				uiColors[ofdPage][cField], Field_Clicked, true);
+
+			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "CDNSiteLabel",
+				"CDN-площадка ЦРПТ:", RDLabelTypes.HeaderLeft);
+			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "CDNSite", OFD.CDNSite,
 				uiColors[ofdPage][cField], Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDHelpLabel",
@@ -1453,6 +1464,13 @@ namespace RD_AAOW
 				fnLifeSerial.Text = sig;
 			}
 
+		// Статистика по базе ЗН ФН
+		private async void FNStats_Clicked (object sender, EventArgs e)
+			{
+			await AndroidSupport.ShowMessage (kb.FNNumbers.RegistryStats,
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
+			}
+
 		/// <summary>
 		/// Возвращает или задаёт состав флагов для расчёта срока жизни ФН
 		/// </summary>
@@ -1830,6 +1848,8 @@ namespace RD_AAOW
 					flags |= UserManualsFlags.ProductBaseContainsServices;
 				if (documentsContainMarks.IsToggled)
 					flags |= UserManualsFlags.DocumentsContainMarks;
+				if (productBaseContainsSingleItem.IsToggled)
+					flags |= UserManualsFlags.BaseContainsSingleItem;
 
 				return flags;
 				}
@@ -1840,6 +1860,7 @@ namespace RD_AAOW
 				cashiersHavePasswords.IsToggled = value.HasFlag (UserManualsFlags.CashiersHavePasswords);
 				baseContainsServices.IsToggled = value.HasFlag (UserManualsFlags.ProductBaseContainsServices);
 				documentsContainMarks.IsToggled = value.HasFlag (UserManualsFlags.DocumentsContainMarks);
+				productBaseContainsSingleItem.IsToggled = value.HasFlag (UserManualsFlags.BaseContainsSingleItem);
 				}
 			}
 

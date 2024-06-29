@@ -110,16 +110,16 @@ namespace RD_AAOW
 						case 1:
 						case 2:
 							op = op.Replace ("• &1", "#1• ");
-							op = op.Replace ("&2", "Ввести код #6");
-							op = op.Replace ("&02", "ввести код #6");
+							op = op.Replace ("&2", "#6");
+							op = op.Replace ("&02", "#06");
 							op = op.Replace ("&A", "для закрытия чека");
 							break;
 
 						case 3:
 						case 4:
 							op = op.Replace ("• &1", "#1• Закрыть чек согласно способу оплаты");
-							op = op.Replace ("&2", "Ввести код #6");
-							op = op.Replace ("&02", "ввести код #6");
+							op = op.Replace ("&2", "#6");
+							op = op.Replace ("&02", "#06");
 							op = op.Replace ("&3", "Отсканировать штрих-код товара");
 
 							if (i == 4)
@@ -237,7 +237,16 @@ namespace RD_AAOW
 
 			if (ManualType <= 4)
 				{
-				text = text.Replace ("#6", goods ? "товара" : "услуги");
+				if (Flags.HasFlag (UserManualsFlags.BaseContainsSingleItem))
+					{
+					text = text.Replace ("#6", "[1]");
+					text = text.Replace ("#06", "[1]");
+					}
+				else
+					{
+					text = text.Replace ("#6", "Ввести код " + (goods ? "товара" : "услуги"));
+					text = text.Replace ("#06", "ввести код " + (goods ? "товара" : "услуги"));
+					}
 				}
 
 			if (Flags.HasFlag (UserManualsFlags.CashiersHavePasswords))

@@ -5,6 +5,42 @@ using System.IO;
 namespace RD_AAOW
 	{
 	/// <summary>
+	/// Флаги-описатели моделей ФН
+	/// </summary>
+	public enum FNSerialFlags
+		{
+		/// <summary>
+		/// ФН-1
+		/// </summary>
+		None = 0x00,
+
+		/// <summary>
+		/// ФН-1.1 и выше (включает замещение 13-месячных 15-месячными)
+		/// </summary>
+		FN11 = 0x01,
+
+		/// <summary>
+		/// ФН на 36 месяцев
+		/// </summary>
+		FN36 = 0x02,
+
+		/// <summary>
+		/// ФН-М (неполные 1.2)
+		/// </summary>
+		FNM = 0x04,
+
+		/// <summary>
+		/// ФН-1.2 (полные 1.2)
+		/// </summary>
+		FN12 = 0x08,
+
+		/// <summary>
+		/// Модель ФН неизвестна приложению
+		/// </summary>
+		UnknownFN = 0x80,
+		}
+
+	/// <summary>
 	/// Класс предоставляет сведения о моделях ФН
 	/// </summary>
 	public class FNSerial
@@ -13,32 +49,16 @@ namespace RD_AAOW
 		private List<string> names = new List<string> ();
 		private List<string> serials = new List<string> ();
 		private List<FNSerialFlags> flags = new List<FNSerialFlags> ();
+		private List<UInt16> addresses = new List<UInt16> ();
+		private List<bool> isAllowed = new List<bool> ();
 
-		/// <summary>
-		/// Флаги-описатели моделей ФН
-		/// </summary>
-		private enum FNSerialFlags
-			{
-			/// <summary>
-			/// ФН-1.1 и выше (включает замещение 13-месячных 15-месячными)
-			/// </summary>
-			FN11 = 0x01,
-
-			/// <summary>
-			/// ФН на 36 месяцев
-			/// </summary>
-			FN36 = 0x02,
-
-			/// <summary>
-			/// ФН-М (неполные 1.2)
-			/// </summary>
-			FNM = 0x04,
-
-			/// <summary>
-			/// ФН-1.2 (полные 1.2)
-			/// </summary>
-			FN12 = 0x08,
-			}
+		private uint[] registryStats = new uint[] {
+			0,	// В реестре
+			0,	// Из них - 36
+			0,	// Известные серии ЗН
+			0,	// Точно известные серии ЗН
+			0,	// Серии ЗН, для которых доступно чтение
+			};
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -65,12 +85,30 @@ namespace RD_AAOW
 					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 					// Имя протокола
-					if (values.Length != 3)
+					if (values.Length != 5)
 						continue;
+					registryStats[2]++;
 
+					bool newOne = !names.Contains (values[1]);
 					names.Add (values[1]);
 					serials.Add (values[0]);
-					flags.Add ((FNSerialFlags)uint.Parse (values[2], RDGenerics.HexNumberStyle));
+					isAllowed.Add (values[2] == "A");
+					flags.Add ((FNSerialFlags)uint.Parse (values[3], RDGenerics.HexNumberStyle));
+					addresses.Add (UInt16.Parse (values[4], RDGenerics.HexNumberStyle));
+
+					// Статистика
+					if (isAllowed[isAllowed.Count - 1] && newOne)
+						{
+						registryStats[0]++;
+						if (flags[flags.Count - 1].HasFlag (FNSerialFlags.FN36))
+							registryStats[1]++;
+						}
+
+					if (!serials[serials.Count - 1].Contains ("?"))
+						registryStats[3]++;
+
+					if (addresses[addresses.Count - 1] != 0)
+						registryStats[4]++;
 					}
 				}
 			catch
@@ -89,21 +127,19 @@ namespace RD_AAOW
 		/// <returns>Модель ФН</returns>
 		public string GetFNName (string FNSerialNumber)
 			{
-			for (int i = 0; i < names.Count; i++)
-				if (FNSerialNumber.StartsWith (serials[i]))
-					{
-					string res = names[i];
-					if ((flags[i] & FNSerialFlags.FN36) != 0)
-						res += ", 36";
-					else if ((flags[i] & FNSerialFlags.FN11) != 0)
-						res += ", 15";
-					else
-						res += ", 13";
+			int i = GetFNIndex (FNSerialNumber);
+			if (i < 0)
+				return "неизвестная модель ФН";
 
-					return res + " месяцев";
-					}
+			string res = names[i];
+			if ((flags[i] & FNSerialFlags.FN36) != 0)
+				res += ", 36";
+			else if ((flags[i] & FNSerialFlags.FN11) != 0)
+				res += ", 15";
+			else
+				res += ", 13";
 
-			return "неизвестная модель ФН";
+			return res + " месяцев";
 			}
 
 		/// <summary>
@@ -130,18 +166,21 @@ namespace RD_AAOW
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNCompatibleWithFFD12 (string FNSerialNumber)
 			{
-			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM | FNSerialFlags.FN12) > 0;
+			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM) > 0;
 			}
 
 		// Проверяет флаги ФН. Возвращает +1 при установленном флаге, –1 при снятом флаге,
 		// 0 при отсутствии ФН в базе
 		private int CheckFNState (string SN, FNSerialFlags Flags)
 			{
+			// Признаки отсутствия ФН в базе
 			int i = GetFNIndex (SN);
 			if (i < 0)
 				return 0;
+			if (addresses[i] == 0)
+				return 0;
 
-			return ((flags[i] & Flags) != 0) ? 1 : -1;
+			return (flags[i].HasFlag (Flags) ? 1 : -1);
 			}
 
 		/// <summary>
@@ -159,8 +198,12 @@ namespace RD_AAOW
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNAllowed (string FNSerialNumber)
 			{
-			// Условный признак
-			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM) > 0;
+			/*return CheckFNState (FNSerialNumber, FNSerialFlags.FNM) > 0;*/
+			int i = GetFNIndex (FNSerialNumber);
+			if (i < 0)
+				return false;
+
+			return isAllowed[i];
 			}
 
 		/// <summary>
@@ -214,5 +257,66 @@ namespace RD_AAOW
 		/// </summary>
 		public const string FNIsNotAcceptableMessage = RDLocale.RN +
 			"(выбранный ФН неприменим с указанными параметрами)";
+
+		/// <summary>
+		/// Метод возвращает флаги ФН по его заводскому номеру
+		/// </summary>
+		/// <param name="FNSerialNumber">Заводской номер ФН</param>
+		public Byte GetFNFlags (string FNSerialNumber)
+			{
+			int i = GetFNIndex (FNSerialNumber);
+			if (i < 0)
+				return (Byte)FNSerialFlags.UnknownFN;
+
+			return (Byte)flags[i];
+			}
+
+		/// <summary>
+		/// Метод возвращает адрес чтения данных из ФН по его заводскому номеру
+		/// </summary>
+		/// <param name="FNSerialNumber">Заводской номер ФН</param>
+		public UInt16 GetFNAddress (string FNSerialNumber)
+			{
+			int i = GetFNIndex (FNSerialNumber);
+			if (i < 0)
+				return 0x0200;
+
+			return addresses[i];
+			}
+
+		/// <summary>
+		/// Возвращает статистику по базе ЗН ФН
+		/// </summary>
+		public string RegistryStats
+			{
+			get
+				{
+#if ANDROID
+				string res = "Моделей ФН в реестре ФНС" + RDLocale.RN +
+					"(на " + ProgramDescription.AssemblyLastUpdate + "): " +
+					registryStats[0].ToString () + RDLocale.RN;
+				res += "  из них – на 36 месяцев: " +
+					registryStats[1].ToString () + RDLocale.RNRN;
+
+				res += "Известно сигнатур ЗН: " +
+					registryStats[2].ToString () + RDLocale.RN;
+				res += "  из них – точно: " + registryStats[3] + RDLocale.RN;
+				res += "  из них чтение доступно для: " + registryStats[4];
+#else
+				string res = "\tМоделей ФН в реестре ФНС" + RDLocale.RN +
+					"\t(на " + ProgramDescription.AssemblyLastUpdate + "):\t" +
+					registryStats[0].ToString () + RDLocale.RN;
+				res += "\t  из них – на 36 месяцев:\t" +
+					registryStats[1].ToString () + RDLocale.RNRN;
+
+				res += "\tИзвестно сигнатур ЗН:\t" +
+					registryStats[2].ToString () + RDLocale.RN;
+				res += "\t  из них – точно:\t\t" + registryStats[3] + RDLocale.RN;
+				res += "\t  из них чтение доступно для:\t" + registryStats[4];
+#endif
+
+				return res;
+				}
+			}
 		}
 	}

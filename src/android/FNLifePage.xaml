@@ -20,6 +20,8 @@
 			</StackLayout>
 			<Label x:Name="FNLifeModelLabel" />
 
+			<Button x:Name="RegistryStats" HorizontalOptions="Center" />
+
 			<!-- Зона указания параметров -->
 			<Label />
 			<Label x:Name="SetUserParameters" />

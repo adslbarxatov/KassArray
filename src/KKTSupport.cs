@@ -2,11 +2,11 @@
 using System.IO;
 
 #if ANDROID
-using Android.Graphics;
-using Android.OS;
-using Android.Print;
-using Android.Print.Pdf;
-using Android.Runtime;
+	using Android.Graphics;
+	using Android.OS;
+	using Android.Print;
+	using Android.Print.Pdf;
+	using Android.Runtime;
 #else
 	using System.Drawing;
 	using System.Drawing.Printing;
@@ -102,19 +102,24 @@ namespace RD_AAOW
 		MoreThanOneItemPerDocument = 0x02,
 
 		/// <summary>
-		/// База товаров содержит цены
+		/// Номенклатура содержит цены
 		/// </summary>
 		ProductBaseContainsPrices = 0x04,
 
 		/// <summary>
-		/// База товаров содержит услуги
+		/// Номенклатура содержит услуги
 		/// </summary>
 		ProductBaseContainsServices = 0x08,
 
 		/// <summary>
-		/// База товаров содержит услуги
+		/// Номенклатура содержит маркированные товары
 		/// </summary>
 		DocumentsContainMarks = 0x10,
+
+		/// <summary>
+		/// Номенклатура содержит единственное наименование
+		/// </summary>
+		BaseContainsSingleItem = 0x20,
 
 		/// <summary>
 		/// Руководство для кассира
@@ -1115,69 +1120,89 @@ namespace RD_AAOW
 
 #endif
 
-		/*/// <summary>
-		/// Метод проверяет указанный флаг на установку
-		/// </summary>
-		/// <param name="FlagsSet">Регистр флагов</param>
-		/// <param name="Flag">Значение, требующее проверки</param>
-		/// <returns>Возвращает true, если флаг установлен</returns>
-		public static bool IsSet (FNLifeFlags FlagsSet, FNLifeFlags Flag)
-			{
-			return (FlagsSet & Flag) != 0;
-			}
-
-		/// <summary>
-		/// Метод проверяет указанный флаг на установку
-		/// </summary>
-		/// <param name="FlagsSet">Регистр флагов</param>
-		/// <param name="Flag">Значение, требующее проверки</param>
-		/// <returns>Возвращает true, если флаг установлен</returns>
-		public static bool IsSet (UserManualsFlags FlagsSet, UserManualsFlags Flag)
-			{
-			return (FlagsSet & Flag) != 0;
-			}
-
-		/// <summary>
-		/// Метод устанавливает указанный флаг в регистре в заданное значение
-		/// </summary>
-		/// <param name="FlagsSet">Регистр флагов</param>
-		/// <param name="Flag">Значение, требующее установки</param>
-		/// <param name="Value">Новое значение</param>
-		/// <returns>Возвращает обновлённый регистр флагов</returns>
-		public static FNLifeFlags SetFlag (FNLifeFlags FlagsSet, FNLifeFlags Flag, bool Value)
-			{
-			if (Value)
-				return FlagsSet | Flag;
-
-			return FlagsSet & ~Flag;
-			}
-
-		/// <summary>
-		/// Метод устанавливает указанный флаг в регистре в заданное значение
-		/// </summary>
-		/// <param name="FlagsSet">Регистр флагов</param>
-		/// <param name="Flag">Значение, требующее установки</param>
-		/// <param name="Value">Новое значение</param>
-		/// <returns>Возвращает обновлённый регистр флагов</returns>
-		public static UserManualsFlags SetFlag (UserManualsFlags FlagsSet, UserManualsFlags Flag, bool Value)
-			{
-			if (Value)
-				return FlagsSet | Flag;
-
-			return FlagsSet & ~Flag;
-			}*/
-
 #if !ANDROID
 
-		/// <summary>
+		/*/// <summary>
 		/// Возвращает путь к файлу статуса ФН
 		/// </summary>
-		public static string StatusFilePath = RDGenerics.AppStartupPath + "KassArrayStatus.dat";
+		public static string StatusFilePath = RDGenerics.AppStartupPath + "KassArrayStatus.dat";*/
 
 		/// <summary>
 		/// Возвращает имя настройки, хранящей флаг переопределения действия кнопки закрытия окна
 		/// </summary>
 		public const string OverrideCloseButtonPar = "OCB";
+
+		// Общие сигнатуры
+
+		/// <summary>
+		/// Сигнатура заводского номера ФН в статусе
+		/// </summary>
+		public const string FNSerialSignature = "Заводской номер ФН: ";
+
+		/// <summary>
+		/// Сигнатура заводского номера ККТ в статусе
+		/// </summary>
+		public const string KKTSerialSignature = "Заводской номер ККТ: ";
+
+		/// <summary>
+		/// Сигнатура ИНН ОФД в статусе
+		/// </summary>
+		public const string OFDINNSignature = "ИНН ОФД: ";
+
+		/// <summary>
+		/// Сигнатура ИНН пользователя в статусе
+		/// </summary>
+		public const string UserINNSignature = "ИНН пользователя: ";
+
+		/// <summary>
+		/// Сигнатура регистрационного номера в статусе
+		/// </summary>
+		public const string RNMSignature = "Регистрационный номер ККТ: ";
+
+		/// <summary>
+		/// Сигнатура наименования пользователя в статусе
+		/// </summary>
+		public const string UserSignature = "Пользователь: ";
+
+		/// <summary>
+		/// Сигнатура адреса расчёта пользователя в статусе
+		/// </summary>
+		public const string UserAddressSignature = "Адрес расчёта: ";
+
+		/// <summary>
+		/// Сигнатура места расчёта пользователя в статусе
+		/// </summary>
+		public const string UserPlaceSignature = "Место расчёта: ";
+
+		/// <summary>
+		/// Сигнатура статуса ФН, запрошенного напрямую (не из файла)
+		/// </summary>
+		public const string StatusSignature = "Статус ФН";
+
+		/// <summary>
+		/// Метод формирует путь к файлу статуса, включая в него уникальный идентификатор
+		/// </summary>
+		/// <param name="UID">Идентификатор статуса (обычно это ЗН ФН).
+		/// Если null, метод возвращает путь к стандартному файлу хранения текущего считанного статуса</param>
+		/// <returns></returns>
+		public static string CreateStatusFileName (string UID)
+			{
+			// Контроль директории
+			if (!Directory.Exists (statusesDirectory))
+				try
+					{
+					Directory.CreateDirectory (statusesDirectory);
+					}
+				catch
+					{
+					return null;
+					}
+
+			// Формирование имени
+			return statusesDirectory + "\\" + (string.IsNullOrWhiteSpace (UID) ? "KassArrayStatus" : UID)
+				+ ".dat";
+			}
+		private static string statusesDirectory = RDGenerics.AppStartupPath + "CachedStatuses";
 
 #endif
 		}

@@ -36,6 +36,11 @@
 					<Switch x:Name="MarksSwitch" VerticalOptions="Center" />
 					<Label x:Name="MarksLabel" VerticalOptions="Center" />
 				</StackLayout>
+
+				<StackLayout Orientation="Horizontal">
+					<Switch x:Name="SingleItemSwitch" VerticalOptions="Center" />
+					<Label x:Name="SingleItemLabel" VerticalOptions="Center" />
+				</StackLayout>
 			</FlexLayout>
 
 			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
