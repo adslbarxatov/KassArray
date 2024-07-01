@@ -57,7 +57,7 @@ namespace RD_AAOW
 			if (mainService == null)
 				{
 				mainService = new Intent (this, typeof (MainService));
-				mainService.SetPackage (this.PackageName);
+				mainService.SetPackage (ProgramDescription.PackageName);
 				}
 			AndroidSupport.StopRequested = false;
 
@@ -103,7 +103,7 @@ namespace RD_AAOW
 			if (mainService == null)
 				{
 				mainService = new Intent (this, typeof (MainService));
-				mainService.SetPackage (this.PackageName);
+				mainService.SetPackage (ProgramDescription.PackageName);
 				}
 			AndroidSupport.StopRequested = false;
 
@@ -144,13 +144,11 @@ namespace RD_AAOW
 		// Дескрипторы уведомлений
 		private NotificationCompat.Builder notBuilder;
 		private NotificationManager notManager;
-		/*private const int notServiceID = 4420;*/
 		private NotificationCompat.BigTextStyle notTextStyle;
 
 		private Intent masterIntent;
 		private PendingIntent masterPendingIntent;
 
-		/*private BroadcastReceiver[] bcReceivers = new BroadcastReceiver[2];*/
 		private BroadcastReceiver[] bcReceivers =
 			new BroadcastReceiver[AndroidSupport.IntentFiltersForBootReceiver.Length];
 
@@ -271,7 +269,7 @@ namespace RD_AAOW
 
 			// Прикрепление ссылки для перехода в основное приложение
 			masterIntent = new Intent (this, typeof (NotificationLink));
-			masterIntent.SetPackage (this.PackageName);
+			masterIntent.SetPackage (ProgramDescription.PackageName);
 
 			masterPendingIntent = PendingIntent.GetService (this, notServiceID, masterIntent,
 				PendingIntentFlags.Immutable);
@@ -289,10 +287,6 @@ namespace RD_AAOW
 				}
 
 			// Запуск петли
-			/*this.RegisterReceiver (bcReceivers[0] = new BootReceiver (),
-				new IntentFilter (Intent.ActionBootCompleted));
-			this.RegisterReceiver (bcReceivers[1] = new BootReceiver (),
-				new IntentFilter ("android.intent.action.QUICKBOOT_POWERON"));*/
 			for (int i = 0; i < AndroidSupport.IntentFiltersForBootReceiver.Length; i++)
 				{
 				bcReceivers[i] = new BootReceiver ();
@@ -395,8 +389,7 @@ namespace RD_AAOW
 			if (mainActivity == null)
 				{
 				mainActivity = new Intent (this, typeof (MainActivity));
-				/*mainActivity.PutExtra ("Tab", 0);*/
-				mainActivity.SetPackage (this.PackageName);
+				mainActivity.SetPackage (ProgramDescription.PackageName);
 				}
 			PendingIntent.GetActivity (this, notServiceID, mainActivity,
 				PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable).Send ();   // Android S+ req
@@ -420,8 +413,6 @@ namespace RD_AAOW
 			if (!AppSettings.AllowServiceToStart || (intent == null))
 				return;
 
-			/*if (intent.Action.Equals (Intent.ActionBootCompleted, StringComparison.CurrentCultureIgnoreCase) ||
-				intent.Action.Equals (Intent.ActionReboot, StringComparison.CurrentCultureIgnoreCase))*/
 			bool received = false;
 			for (int i = 0; i < AndroidSupport.IntentFiltersForBootReceiver.Length; i++)
 				if (intent.Action.Equals (AndroidSupport.IntentFiltersForBootReceiver[i],
@@ -436,7 +427,7 @@ namespace RD_AAOW
 				if (mainService == null)
 					{
 					mainService = new Intent (context, typeof (MainService));
-					mainService.SetPackage (AppInfo.PackageName);
+					mainService.SetPackage (ProgramDescription.PackageName);
 					}
 				AndroidSupport.StopRequested = false;
 

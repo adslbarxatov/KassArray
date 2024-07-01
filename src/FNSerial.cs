@@ -198,7 +198,6 @@ namespace RD_AAOW
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNAllowed (string FNSerialNumber)
 			{
-			/*return CheckFNState (FNSerialNumber, FNSerialFlags.FNM) > 0;*/
 			int i = GetFNIndex (FNSerialNumber);
 			if (i < 0)
 				return false;

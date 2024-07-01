@@ -1091,8 +1091,6 @@ namespace RD_AAOW
 			AndroidSupport.AppIsRunning = false;
 
 			// Сохранение настроек
-			/*AppSettings.CurrentTab = (uint)((CarouselPage)MainPage).Children.IndexOf
-				(((CarouselPage)MainPage).CurrentPage);*/
 			AppSettings.CurrentTab = (uint)uiPages.IndexOf ((ContentPage)AndroidSupport.MasterPage.CurrentPage);
 
 			// ca.KKTForErrors	// Обновляется в коде программы

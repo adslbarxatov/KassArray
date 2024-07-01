@@ -1122,11 +1122,6 @@ namespace RD_AAOW
 
 #if !ANDROID
 
-		/*/// <summary>
-		/// Возвращает путь к файлу статуса ФН
-		/// </summary>
-		public static string StatusFilePath = RDGenerics.AppStartupPath + "KassArrayStatus.dat";*/
-
 		/// <summary>
 		/// Возвращает имя настройки, хранящей флаг переопределения действия кнопки закрытия окна
 		/// </summary>
