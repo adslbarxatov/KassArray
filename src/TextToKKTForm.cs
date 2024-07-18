@@ -704,7 +704,9 @@ namespace RD_AAOW
 		// Копирование срока действия ФН
 		private void FNLifeResult_Click (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (fnLifeResult);
+			this.TopMost = false;
+			RDGenerics.SendToClipboard (fnLifeResult, true);
+			this.TopMost = TopFlag.Checked;
 			}
 
 		// Очистка полей
@@ -922,17 +924,23 @@ namespace RD_AAOW
 		// Копирование в буфер обмена
 		private void OFDDNSName_Click (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (((Button)sender).Text);
+			this.TopMost = false;
+			RDGenerics.SendToClipboard (((Button)sender).Text, true);
+			this.TopMost = TopFlag.Checked;
 			}
 
 		private void OFDNameCopy_Click (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (OFDNamesList.Text.Replace ('«', '\"').Replace ('»', '\"'));
+			this.TopMost = false;
+			RDGenerics.SendToClipboard (OFDNamesList.Text.Replace ('«', '\"').Replace ('»', '\"'), true);
+			this.TopMost = TopFlag.Checked;
 			}
 
 		private void OFDINNCopy_Click (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (OFDINN.Text);
+			this.TopMost = false;
+			RDGenerics.SendToClipboard (OFDINN.Text, true);
+			this.TopMost = TopFlag.Checked;
 			}
 
 		// Поиск по названию ОФД
