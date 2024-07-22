@@ -83,9 +83,8 @@ namespace RD_AAOW
 
 		private Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
 			fnLifeExcise, fnLifeAutonomous, fnLifeFFD12, fnLifeGambling, fnLifePawn, fnLifeMarkGoods,
-			allowService, extendedMode,
-			moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords, baseContainsServices,
-			documentsContainMarks, productBaseContainsSingleItem;
+			extendedMode, moreThanOneItemPerDocument, productBaseContainsPrices, cashiersHavePasswords,
+			baseContainsServices, documentsContainMarks, productBaseContainsSingleItem;
 
 		private DatePicker fnLifeStartDate;
 
@@ -135,7 +134,7 @@ namespace RD_AAOW
 			// Переход в статус запуска для отмены вызова из оповещения
 			AndroidSupport.AppIsRunning = true;
 
-			// Переопределение цветов для закрытых функций
+			/*// Переопределение цветов для закрытых функций
 			if (!AppSettings.EnableExtendedMode) // Уровень 1
 				{
 				uiColors[codPage][cField] = AndroidSupport.DefaultGreyColors[2];
@@ -147,7 +146,7 @@ namespace RD_AAOW
 					AndroidSupport.DefaultGreyColors[2];
 				uiColors[tlvPage][cBack] = uiColors[llvPage][cBack] = uiColors[conPage][cBack] =
 					AndroidSupport.DefaultGreyColors[3];
-				}
+				}*/
 
 			// Общая конструкция страниц приложения
 			MainPage = new MasterPage ();
@@ -169,19 +168,19 @@ namespace RD_AAOW
 
 			uiPages.Add (ApplyPageSettings (new TagsPage (), "TagsPage",
 				"TLV-теги", uiColors[tlvPage][cBack], true));
-			uiPages[tlvPage].IsEnabled = AppSettings.EnableExtendedMode; // Уровень 2
+			uiButtons[tlvPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 2
 
 			uiPages.Add (ApplyPageSettings (new LowLevelPage (), "LowLevelPage",
 				"Команды нижнего уровня", uiColors[llvPage][cBack], true));
-			uiPages[llvPage].IsEnabled = AppSettings.EnableExtendedMode;   // Уровень 2
+			uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 2
 
 			uiPages.Add (ApplyPageSettings (new KKTCodesPage (), "KKTCodesPage",
 				"Перевод текста в коды ККТ", uiColors[codPage][cBack], true));
-			uiPages[codPage].IsEnabled = AppSettings.EnableExtendedMode;   // Уровень 1
+			uiButtons[codPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 1
 
 			uiPages.Add (ApplyPageSettings (new ConnectorsPage (), "ConnectorsPage",
 				"Разъёмы", uiColors[conPage][cBack], true));
-			uiPages[conPage].IsEnabled = AppSettings.EnableExtendedMode; // Уровень 2
+			uiButtons[conPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 2
 
 			uiPages.Add (ApplyPageSettings (new BarCodesPage (), "BarCodesPage",
 				"Штрих-коды", uiColors[bcdPage][cBack], true));
@@ -201,49 +200,6 @@ namespace RD_AAOW
 			AndroidSupport.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
 
 			#region Страница «оглавления»
-
-			AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "AllowServiceLabel",
-				"Оставить службу активной после выхода", RDLabelTypes.DefaultLeft);
-			allowService = AndroidSupport.ApplySwitchSettings (uiPages[hdrPage], "AllowService", false,
-				uiColors[hdrPage][cField], AllowService_Toggled, AppSettings.AllowServiceToStart);
-
-			Label allowServiceTip;
-			Button allowServiceButton;
-			if (!flags.HasFlag (RDAppStartupFlags.CanShowNotifications))
-				{
-				allowService.IsEnabled = false;
-				allowServiceTip = AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "AllowServiceTip",
-					RDLocale.GetDefaultText (RDLDefaultTexts.Message_NotificationPermission), RDLabelTypes.ErrorTip);
-
-				allowServiceButton = AndroidSupport.ApplyButtonSettings (uiPages[hdrPage], "AllowServiceButton",
-					RDLocale.GetDefaultText (RDLDefaultTexts.Button_GoTo), uiColors[hdrPage][cField],
-					CallAppSettings, false);
-				allowServiceButton.HorizontalOptions = LayoutOptions.Center;
-				}
-			else if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
-				{
-				allowServiceTip = AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "AllowServiceTip",
-					"Если закреплённое оповещение " + ProgramDescription.AssemblyMainName +
-					" отсутствует в верхней части экрана, эта опция потребует перезапуска приложения." + RDLocale.RNRN +
-					"В Android 12 и выше отсутствует адекватная реализация перехода к приложению " +
-					"при нажатии на оповещение. Поэтому для возвращения в приложение необходимо будет запустить " +
-					"его заново. Оповещение в данной версии ОС лишь помогает ускорить его запуск" + RDLocale.RN,
-					RDLabelTypes.Tip);
-
-				allowServiceButton = AndroidSupport.ApplyButtonSettings (uiPages[hdrPage], "AllowServiceButton",
-					" ", uiColors[hdrPage][cField], null, false);
-				allowServiceButton.IsVisible = false;
-				}
-			else
-				{
-				allowServiceTip = AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "AllowServiceTip",
-					" ", RDLabelTypes.Tip);
-				allowServiceTip.IsVisible = false;
-
-				allowServiceButton = AndroidSupport.ApplyButtonSettings (uiPages[hdrPage], "AllowServiceButton",
-					" ", uiColors[hdrPage][cField], null, false);
-				allowServiceButton.IsVisible = false;
-				}
 
 			AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "ExtendedModeLabel",
 				"Режим сервис-инженера", RDLabelTypes.DefaultLeft);
@@ -612,7 +568,7 @@ namespace RD_AAOW
 			#region Страница заводских и регистрационных номеров
 
 			AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "SNLabel",
-				"ЗН или\nмодель ККТ:", RDLabelTypes.HeaderLeft);
+				"ЗН или" + RDLocale.RN + "модель ККТ:", RDLabelTypes.HeaderLeft);
 			rnmKKTSN = AndroidSupport.ApplyEditorSettings (uiPages[rnmPage], "SN",
 				uiColors[rnmPage][cField], Keyboard.Default, kb.KKTNumbers.MaxSerialNumberLength,
 				AppSettings.KKTSerial, RNM_TextChanged, true);
@@ -913,7 +869,7 @@ namespace RD_AAOW
 				" ", RDLabelTypes.FieldMonotype, uiColors[cvsPage][cField]);
 			ConvNumber_TextChanged (null, null);
 
-			const string convHelp = "Шестнадцатеричные числа следует начинать с символов “0x”";
+			const string convHelp = "Шестнадцатеричные числа следует"+RDLocale.RN+"начинать с символов “0x”";
 			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvHelpLabel", convHelp, RDLabelTypes.Tip);
 
 			#endregion
@@ -946,8 +902,8 @@ namespace RD_AAOW
 			ConvCode_TextChanged (null, null);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvHelpLabel",
-				convHelp + "." + RDLocale.RN + "Нажатие кнопки с символом Unicode копирует его в буфер обмена",
-				RDLabelTypes.Tip);
+				convHelp + "." + RDLocale.RN + "Нажатие кнопки с символом Unicode" + RDLocale.RN +
+				"копирует его в буфер обмена", RDLabelTypes.Tip);
 
 			#endregion
 
@@ -1039,13 +995,7 @@ namespace RD_AAOW
 		// Отправка значения кнопки в буфер
 		private void Field_Clicked (object sender, EventArgs e)
 			{
-			SendToClipboard (((Button)sender).Text);
-			}
-
-		private void SendToClipboard (string Value)
-			{
-			RDGenerics.SendToClipboard (Value);
-			AndroidSupport.ShowBalloon ("Скопировано в буфер обмена", true);
+			RDGenerics.SendToClipboard (((Button)sender).Text, true);
 			}
 
 		// Выбор элемента содержания
@@ -1054,12 +1004,6 @@ namespace RD_AAOW
 			int idx = uiButtons.IndexOf ((Button)sender);
 			if (idx >= 0)
 				AndroidSupport.SetCurrentPage (uiPages[idx + 1], uiColors[idx + 1][0]);
-			}
-
-		// Включение / выключение фоновой службы
-		private void AllowService_Toggled (object sender, ToggledEventArgs e)
-			{
-			AppSettings.AllowServiceToStart = allowService.IsToggled;
 			}
 
 		// Включение / выключение режима сервис-инженера
@@ -1084,9 +1028,9 @@ namespace RD_AAOW
 		/// </summary>
 		protected override void OnSleep ()
 			{
-			// Переключение состояния
+			/*// Переключение состояния
 			if (!allowService.IsToggled)
-				AndroidSupport.StopRequested = true;
+				AndroidSupport.StopRequested = true;*/
 
 			AndroidSupport.AppIsRunning = false;
 
@@ -1134,12 +1078,6 @@ namespace RD_AAOW
 			AndroidSupport.AppIsRunning = true;
 			}
 
-		// Вызов настроек приложения (для Android 12 и выше)
-		private void CallAppSettings (object sender, EventArgs e)
-			{
-			AndroidSupport.CallAppSettings ();
-			}
-
 		#endregion
 
 		#region Коды ошибок ККТ
@@ -1181,6 +1119,7 @@ namespace RD_AAOW
 					AppSettings.ErrorCode = errorSearchText.Text;
 					errorsResultText.Text = codes[j] + ": " + res;
 
+					AndroidSupport.HideKeyboard (errorSearchText);
 					return;
 					}
 				}
@@ -1189,6 +1128,7 @@ namespace RD_AAOW
 			errorsResultText.Text = "(описание ошибки не найдено)";
 			}
 
+		// Очистка полей
 		private void Errors_Clear (object sender, EventArgs e)
 			{
 			errorSearchText.Text = "";
@@ -1205,7 +1145,7 @@ namespace RD_AAOW
 			kktCodesErrorLabel.IsVisible = kktCodesResultText.Text.Contains (KKTCodes.EmptyCode);
 
 			kktCodesLengthLabel.Text = "Длина: " + codesSourceText.Text.Length.ToString ();
-			kktCodesCenterButton.IsEnabled = (codesSourceText.Text.Length > 0) &&
+			kktCodesCenterButton.IsVisible = (codesSourceText.Text.Length > 0) &&
 				(codesSourceText.Text.Length <= kb.CodeTables.GetKKTStringLength (AppSettings.KKTForCodes));
 			}
 
@@ -1324,6 +1264,7 @@ namespace RD_AAOW
 
 			lastCommandSearchOffset++;
 			for (int i = 0; i < codes.Count; i++)
+				{
 				if (codes[(i + lastCommandSearchOffset) % codes.Count].ToLower ().Contains (text))
 					{
 					lastCommandSearchOffset = (i + lastCommandSearchOffset) % codes.Count;
@@ -1335,10 +1276,14 @@ namespace RD_AAOW
 						(uint)lastCommandSearchOffset, false);
 					lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol,
 						(uint)lastCommandSearchOffset, true);
+
+					AndroidSupport.HideKeyboard (commandSearchText);
 					return;
 					}
+				}
 			}
 
+		// Очистка полей
 		private void Command_Clear (object sender, EventArgs e)
 			{
 			commandSearchText.Text = "";
@@ -1445,7 +1390,7 @@ namespace RD_AAOW
 		// Копирование срока жизни ФН
 		private void FNLifeResultCopy (object sender, EventArgs e)
 			{
-			SendToClipboard (fnLifeResultDate);
+			RDGenerics.SendToClipboard (fnLifeResultDate, true);
 			}
 
 		// Очистка полей
@@ -1459,7 +1404,10 @@ namespace RD_AAOW
 			{
 			string sig = kb.FNNumbers.FindSignatureByName (fnLifeSerial.Text);
 			if (sig != "")
+				{
 				fnLifeSerial.Text = sig;
+				AndroidSupport.HideKeyboard (fnLifeSerial);
+				}
 			}
 
 		// Статистика по базе ЗН ФН
@@ -1621,7 +1569,10 @@ namespace RD_AAOW
 			{
 			string sig = kb.KKTNumbers.FindSignatureByName (rnmKKTSN.Text);
 			if (sig != "")
+				{
 				rnmKKTSN.Text = sig;
+				AndroidSupport.HideKeyboard (rnmKKTSN);
+				}
 			}
 
 		// Статистика по базе ЗН ККТ
@@ -1671,7 +1622,7 @@ namespace RD_AAOW
 				return;
 
 			ofdNameButton.Text = list[res];
-			SendToClipboard (list[res].Replace ('«', '\"').Replace ('»', '\"'));
+			RDGenerics.SendToClipboard (list[res].Replace ('«', '\"').Replace ('»', '\"'), true);
 
 			string s = kb.Ofd.GetOFDINNByName (ofdNameButton.Text);
 			if (s != "")
@@ -1691,6 +1642,7 @@ namespace RD_AAOW
 
 			lastOFDSearchOffset++;
 			for (int i = 0; i < codes.Count; i++)
+				{
 				if (codes[(i + lastOFDSearchOffset) % codes.Count].ToLower ().Contains (text))
 					{
 					lastOFDSearchOffset = (i + lastOFDSearchOffset) % codes.Count;
@@ -1701,8 +1653,10 @@ namespace RD_AAOW
 						AppSettings.OFDINN = ofdINN.Text = s;
 
 					OFDINN_TextChanged (null, null);
+					AndroidSupport.HideKeyboard (ofdSearchText);
 					return;
 					}
+				}
 			}
 
 		// Очистка полей
@@ -1875,6 +1829,8 @@ namespace RD_AAOW
 				tlvTypeLabel.Text = kb.Tags.LastType;
 				tlvValuesLabel.Text = kb.Tags.LastValuesSet;
 				tlvObligationLabel.Text = kb.Tags.LastObligation;
+
+				AndroidSupport.HideKeyboard (tlvTag);	// Мешает просмотру текста
 				}
 			else
 				{
@@ -1981,6 +1937,7 @@ namespace RD_AAOW
 					lastConnSearchOffset = j;
 
 					CableTypeButton_Clicked (null, null);
+					AndroidSupport.HideKeyboard (connSearchText);
 					return;
 					}
 				}
@@ -1991,6 +1948,7 @@ namespace RD_AAOW
 				cableDescriptionText.Text = "";
 			}
 
+		// Очистка полей
 		private void Conn_Clear (object sender, EventArgs e)
 			{
 			connSearchText.Text = "";
@@ -2054,7 +2012,7 @@ namespace RD_AAOW
 		// Копирование символа в буфер
 		private void CopyCharacter_Click (object sender, EventArgs e)
 			{
-			SendToClipboard (convCodeSymbolField.Text.Trim ());
+			RDGenerics.SendToClipboard (convCodeSymbolField.Text.Trim (), true);
 			}
 
 		// Сброс полей ввода

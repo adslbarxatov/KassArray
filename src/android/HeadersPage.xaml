@@ -18,13 +18,13 @@
 			<Label />
 			<Label x:Name="SettingsLabel" />
 
-			<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
+			<!--<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
 				<Switch x:Name="AllowService" VerticalOptions="Center" />
 				<Label x:Name="AllowServiceLabel" VerticalOptions="Center" />
 			</StackLayout>
 
 			<Label x:Name="AllowServiceTip" />
-			<Button x:Name="AllowServiceButton" />
+			<Button x:Name="AllowServiceButton" />-->
 
 			<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
 				<Switch x:Name="ExtendedMode" VerticalOptions="Center" />

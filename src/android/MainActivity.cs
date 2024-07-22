@@ -49,6 +49,7 @@ namespace RD_AAOW
 			// Отмена темы для splash screen
 			base.SetTheme (Microsoft.Maui.Controls.Resource.Style.MainTheme);
 
+#if FORE_SVC
 			// Получение списка доступных прав
 			RDAppStartupFlags flags = AndroidSupport.GetAppStartupFlags (RDAppStartupFlags.CanShowNotifications |
 				RDAppStartupFlags.Huawei);
@@ -57,7 +58,7 @@ namespace RD_AAOW
 			if (mainService == null)
 				{
 				mainService = new Intent (this, typeof (MainService));
-				mainService.SetPackage (ProgramDescription.PackageName);
+				mainService.SetPackage (this.PackageName);
 				}
 			AndroidSupport.StopRequested = false;
 
@@ -69,6 +70,7 @@ namespace RD_AAOW
 				else
 					StartService (mainService);
 				}
+#endif
 
 			// Запрет на переход в ждущий режим
 			this.Window.AddFlags (WindowManagerFlags.KeepScreenOn);
@@ -79,6 +81,8 @@ namespace RD_AAOW
 			// Инициализация и запуск
 			base.OnCreate (savedInstanceState);
 			}
+
+#if FORE_SVC
 		private Intent mainService;
 
 		/// <summary>
@@ -103,7 +107,7 @@ namespace RD_AAOW
 			if (mainService == null)
 				{
 				mainService = new Intent (this, typeof (MainService));
-				mainService.SetPackage (ProgramDescription.PackageName);
+				mainService.SetPackage (this.PackageName);
 				}
 			AndroidSupport.StopRequested = false;
 
@@ -123,7 +127,11 @@ namespace RD_AAOW
 
 			base.OnResume ();
 			}
+
+#endif
 		}
+
+#if FORE_SVC
 
 	/// <summary>
 	/// Класс описывает фоновую службу приложения
@@ -134,8 +142,6 @@ namespace RD_AAOW
 		Exported = true)]
 	public class MainService: Service
 		{
-		private const int notServiceID = 4420;
-
 		// Идентификаторы процесса
 		private Handler handler;
 		private Action runnable;
@@ -149,8 +155,10 @@ namespace RD_AAOW
 		private Intent masterIntent;
 		private PendingIntent masterPendingIntent;
 
+#if BOOT_REC
 		private BroadcastReceiver[] bcReceivers =
 			new BroadcastReceiver[AndroidSupport.IntentFiltersForBootReceiver.Length];
+#endif
 
 		private const uint frameLength = 2500;  // ms
 
@@ -190,8 +198,10 @@ namespace RD_AAOW
 				masterIntent.Dispose ();
 				masterPendingIntent.Dispose ();
 
+#if BOOT_REC
 				foreach (BroadcastReceiver br in bcReceivers)
 					this.UnregisterReceiver (br);
+#endif
 
 				// Глушение (и отправка события destroy)
 				StopSelf ();
@@ -234,7 +244,7 @@ namespace RD_AAOW
 			notBuilder.SetColor (0x80FFC0);
 
 			// Android 13 и новее: не позволяет закрыть оповещение вручную
-			notBuilder.SetOngoing (true);
+			/*notBuilder.SetOngoing (true);*/
 
 			// Android 12 и новее: требует немедленного отображения оповещения
 			if (!AndroidSupport.IsForegroundStartableFromResumeEvent)
@@ -269,15 +279,15 @@ namespace RD_AAOW
 
 			// Прикрепление ссылки для перехода в основное приложение
 			masterIntent = new Intent (this, typeof (NotificationLink));
-			masterIntent.SetPackage (ProgramDescription.PackageName);
+			masterIntent.SetPackage (this.PackageName);
 
-			masterPendingIntent = PendingIntent.GetService (this, notServiceID, masterIntent,
+			masterPendingIntent = PendingIntent.GetService (this, ProgramDescription.NotServiceID, masterIntent,
 				PendingIntentFlags.Immutable);
 			notBuilder.SetContentIntent (masterPendingIntent);
 
 			// Стартовое сообщение
 			Android.App.Notification notification = notBuilder.Build ();
-			StartForeground (notServiceID, notification, ForegroundService.TypeSpecialUse);
+			StartForeground (ProgramDescription.NotServiceID, notification, ForegroundService.TypeSpecialUse);
 
 			// Перенастройка для основного режима
 			if (!AndroidSupport.IsForegroundAvailable)
@@ -287,12 +297,14 @@ namespace RD_AAOW
 				}
 
 			// Запуск петли
+#if BOOT_REC
 			for (int i = 0; i < AndroidSupport.IntentFiltersForBootReceiver.Length; i++)
 				{
 				bcReceivers[i] = new BootReceiver ();
 				this.RegisterReceiver (bcReceivers[i], new IntentFilter (AndroidSupport.IntentFiltersForBootReceiver[i]),
 					ReceiverFlags.Exported);
 				}
+#endif
 
 			handler.PostDelayed (runnable, frameLength);
 			isStarted = true;
@@ -307,7 +319,7 @@ namespace RD_AAOW
 			{
 			// Освобождение ресурсов, которые нельзя освободить в таймере
 			handler.RemoveCallbacks (runnable);
-			notManager.Cancel (notServiceID);
+			notManager.Cancel (ProgramDescription.NotServiceID);
 			if (AndroidSupport.IsForegroundAvailable)
 				notManager.DeleteNotificationChannel (ProgramDescription.AssemblyMainName.ToLower ());
 			notManager.Dispose ();
@@ -349,8 +361,6 @@ namespace RD_AAOW
 		Exported = true)]
 	public class NotificationLink: JobIntentService
 		{
-		private const int notServiceID = 4420;
-
 		/// <summary>
 		/// Конструктор (заглушка)
 		/// </summary>
@@ -389,14 +399,17 @@ namespace RD_AAOW
 			if (mainActivity == null)
 				{
 				mainActivity = new Intent (this, typeof (MainActivity));
-				mainActivity.SetPackage (ProgramDescription.PackageName);
+				mainActivity.SetPackage (this.PackageName);
 				}
-			PendingIntent.GetActivity (this, notServiceID, mainActivity,
+			PendingIntent.GetActivity (this, ProgramDescription.NotServiceID, mainActivity,
 				PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable).Send ();   // Android S+ req
 			}
 		private Intent mainActivity;
 		}
 
+#endif
+
+#if BOOT_REC
 	/// <summary>
 	/// Класс описывает приёмник события окончания загрузки ОС
 	/// </summary>
@@ -439,4 +452,5 @@ namespace RD_AAOW
 			}
 		private Intent mainService;
 		}
+#endif
 	}

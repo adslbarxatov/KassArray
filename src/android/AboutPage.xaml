@@ -1,44 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RD_AAOW.AboutPage">
 
-	<StackLayout>
-		<Label x:Name="HeaderLabel" />
+	<ScrollView>
+		<StackLayout>
+			<Label x:Name="AboutLabel" />
 
-		<ScrollView>
-			<StackLayout>
-				<Label x:Name="AboutLabel" />
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
 
-				<Button x:Name="ManualsButton" HorizontalOptions="Center" />
-				<Button x:Name="HelpButton" HorizontalOptions="Center" />
+			<Button x:Name="ManualsButton" HorizontalOptions="Center" />
+			<Button x:Name="HelpButton" HorizontalOptions="Center" />
 
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="9" />
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#606060" Margin="9" />
 
-				<Label x:Name="GenericSettingsLabel" />
-				<Label x:Name="RestartTipLabel" />
+			<Label />
+			<Label x:Name="GenericSettingsLabel" />
+			<Label x:Name="RestartTipLabel" />
 
-				<StackLayout Orientation="Horizontal">
-					<Label x:Name="FontSizeLabel" VerticalOptions="Center" />
+			<StackLayout Orientation="Horizontal">
+				<Label x:Name="FontSizeLabel" VerticalOptions="Center" />
 
-					<Button x:Name="FontSizeInc" VerticalOptions="Center" />
-					<Label x:Name="FontSizeField" VerticalOptions="Center" />
-					<Button x:Name="FontSizeDec" VerticalOptions="Center" />
-				</StackLayout>
-
-				<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="9" />
-
-				<Label x:Name="HelpTextLabel" />
-
-				<Label />
-
+				<Button x:Name="FontSizeInc" VerticalOptions="Center" />
+				<Label x:Name="FontSizeField" VerticalOptions="Center" />
+				<Button x:Name="FontSizeDec" VerticalOptions="Center" />
 			</StackLayout>
-		</ScrollView>
 
-	</StackLayout>
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="9" />
+
+			<Label />
+			<Label x:Name="HelpHeaderLabel" />
+			<Label x:Name="HelpTextLabel" />
+
+			<Label />
+
+		</StackLayout>
+	</ScrollView>
 </ContentPage>
