@@ -332,14 +332,14 @@ namespace RD_AAOW
 			{
 			string res = Source;
 
-			// Отдельная подмена для ссылок на таблицы
+			/*// Отдельная подмена для ссылок на таблицы
 			if (res.Contains ("TABLE"))
 				{
 				int i = res.IndexOf ("TABLE");
 				res = res.Replace ("TABLE", "");
 				uint v = uint.Parse (res.Substring (i));
 				res = res.Substring (0, i) + " (значения приведены в таблице " + v.ToString () + ")";
-				}
+				}*/
 
 			// Простые замены
 			if (res == "BOOL")
