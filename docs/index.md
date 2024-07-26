@@ -6,7 +6,7 @@
 ### Содержание страницы
 
 - [Общие сведения об инструменте KassArray](#kassarray)
-- [Видеоруководство к инструменту](https://youtube.com/watch?v=25BYSySdAJk)
+- [Видеоруководство к инструменту](https://youtube.com/watch?v=CViBZpQx9MY)
 - [Быстрые руководства по распространённым операциям](https://adslbarxatov.github.io/KassArray/quick)
 - [Ссылки для загрузки](https://adslbarxatov.github.io/DPArray/ru#kassarray)
 
