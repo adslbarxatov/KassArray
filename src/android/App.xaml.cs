@@ -134,20 +134,6 @@ namespace RD_AAOW
 			// Переход в статус запуска для отмены вызова из оповещения
 			AndroidSupport.AppIsRunning = true;
 
-			/*// Переопределение цветов для закрытых функций
-			if (!AppSettings.EnableExtendedMode) // Уровень 1
-				{
-				uiColors[codPage][cField] = AndroidSupport.DefaultGreyColors[2];
-				uiColors[codPage][cBack] = AndroidSupport.DefaultGreyColors[3];
-				}
-			if (!AppSettings.EnableExtendedMode) // Уровень 2
-				{
-				uiColors[tlvPage][cField] = uiColors[llvPage][cField] = uiColors[conPage][cField] =
-					AndroidSupport.DefaultGreyColors[2];
-				uiColors[tlvPage][cBack] = uiColors[llvPage][cBack] = uiColors[conPage][cBack] =
-					AndroidSupport.DefaultGreyColors[3];
-				}*/
-
 			// Общая конструкция страниц приложения
 			MainPage = new MasterPage ();
 
@@ -443,9 +429,12 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpHeaderLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				RDLabelTypes.HeaderLeft);
-			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpTextLabel",
+			/*AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpTextLabel",
 				RDGenerics.GetEncoding (RDEncodings.UTF8).
-				GetString (RD_AAOW.Properties.Resources.KassArray_ru_ru_dph), RDLabelTypes.SmallLeft);
+				GetString (RD_AAOW.Properties.Resources.KassArray_ru_ru_dph), RDLabelTypes.SmallLeft);*/
+			Label htl = AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpTextLabel",
+				AndroidSupport.GetAppHelpText (), RDLabelTypes.SmallLeft);
+			htl.TextType = TextType.Html;
 
 			FontSizeButton_Clicked (null, null);
 
