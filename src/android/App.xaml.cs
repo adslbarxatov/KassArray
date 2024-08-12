@@ -123,8 +123,7 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
-			RDAppStartupFlags flags = AndroidSupport.GetAppStartupFlags (RDAppStartupFlags.CanShowNotifications |
-				RDAppStartupFlags.Huawei);
+			RDAppStartupFlags flags = AndroidSupport.GetAppStartupFlags (RDAppStartupFlags.DisableXPUN);
 
 			kb = new KnowledgeBase ();
 
@@ -926,7 +925,7 @@ namespace RD_AAOW
 			#endregion
 
 			// Обязательное принятие Политики и EULA
-			AcceptPolicy (flags.HasFlag (RDAppStartupFlags.Huawei));
+			AcceptPolicy (flags.HasFlag (RDAppStartupFlags.DisableXPUN));
 			}
 
 		// Локальный оформитель страниц приложения
@@ -958,10 +957,10 @@ namespace RD_AAOW
 			}
 
 		// Контроль принятия Политики и EULA
-		private async void AcceptPolicy (bool Huawei)
+		private async void AcceptPolicy (bool DisableXPUN)
 			{
 			// Контроль XPUN
-			if (!Huawei)
+			if (!DisableXPUN)
 				await AndroidSupport.XPUNLoop ();
 
 			// Политика
