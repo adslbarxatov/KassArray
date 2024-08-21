@@ -35,6 +35,11 @@ namespace RD_AAOW
 		FN12 = 0x08,
 
 		/// <summary>
+		/// ФН-1.2 с поддержкой частичной продажи
+		/// </summary>
+		FNPS = 0x10,
+
+		/// <summary>
 		/// Модель ФН неизвестна приложению
 		/// </summary>
 		UnknownFN = 0x80,
