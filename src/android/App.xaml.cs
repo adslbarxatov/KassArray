@@ -133,7 +133,8 @@ namespace RD_AAOW
 			// Переход в статус запуска для отмены вызова из оповещения
 			AndroidSupport.AppIsRunning = true;
 
-			// Общая конструкция страниц приложения
+			#region Общая конструкция страниц приложения
+
 			MainPage = new MasterPage ();
 
 			uiPages.Add (ApplyPageSettings (new HeadersPage (), "HeadersPage",
@@ -181,6 +182,8 @@ namespace RD_AAOW
 			uiPages.Add (ApplyPageSettings (new AboutPage (), "AboutPage",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				uiColors[aabPage][cBack], true));
+
+			#endregion
 
 			AndroidSupport.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
 
@@ -428,9 +431,6 @@ namespace RD_AAOW
 			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpHeaderLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				RDLabelTypes.HeaderLeft);
-			/*AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpTextLabel",
-				RDGenerics.GetEncoding (RDEncodings.UTF8).
-				GetString (RD_AAOW.Properties.Resources.KassArray_ru_ru_dph), RDLabelTypes.SmallLeft);*/
 			Label htl = AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpTextLabel",
 				AndroidSupport.GetAppHelpText (), RDLabelTypes.SmallLeft);
 			htl.TextType = TextType.Html;
@@ -1016,10 +1016,7 @@ namespace RD_AAOW
 		/// </summary>
 		protected override void OnSleep ()
 			{
-			/*// Переключение состояния
-			if (!allowService.IsToggled)
-				AndroidSupport.StopRequested = true;*/
-
+			// Переключение состояния
 			AndroidSupport.AppIsRunning = false;
 
 			// Сохранение настроек
@@ -1979,6 +1976,7 @@ namespace RD_AAOW
 				}
 
 			convNumberField.Text = ((uint)res).ToString ();
+			AndroidSupport.HideKeyboard (convNumberField);
 			}
 
 		private void ConvCode_TextChanged (object sender, EventArgs e)
@@ -1995,6 +1993,7 @@ namespace RD_AAOW
 
 			string[] res = DataConvertors.GetSymbolDescription (convCodeField.Text, (short)(plus ? 1 : -1));
 			convCodeField.Text = res[2];
+			AndroidSupport.HideKeyboard (convCodeField);
 			}
 
 		// Копирование символа в буфер
@@ -2020,6 +2019,7 @@ namespace RD_AAOW
 			convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
 				(RDEncodings)(AppSettings.EncodingForConvertor % encodingModesCount),
 				AppSettings.EncodingForConvertor >= encodingModesCount);
+			AndroidSupport.HideKeyboard (convTextField);
 			}
 
 		// Преобразование текста в hex-данные
@@ -2028,6 +2028,7 @@ namespace RD_AAOW
 			convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
 				(RDEncodings)(AppSettings.EncodingForConvertor % encodingModesCount),
 				AppSettings.EncodingForConvertor >= encodingModesCount);
+			AndroidSupport.HideKeyboard (convHexField);
 			}
 
 		// Очистка вкладки преобразования данных
