@@ -289,6 +289,34 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
+		/// Возвращает доступные переопределяющие базовые адреса чтения ФН
+		/// </summary>
+		public static UInt16[] OverrideAddresses
+			{
+			get
+				{
+				return overrideAddresses;
+				}
+			}
+		private static UInt16[] overrideAddresses = new ushort[] {
+			0x0400,
+			0x0500,
+			0x0600,
+			0x0700,
+			0x0800,
+			0x0900,
+			0x0A00,
+			0x0B00,
+			0x0C00,
+			0x0D00,
+			0x0E00,
+			0x0F00,
+			0x1000,
+			0x1100,
+			0x1200,
+			};
+
+		/// <summary>
 		/// Возвращает статистику по базе ЗН ФН
 		/// </summary>
 		public string RegistryStats

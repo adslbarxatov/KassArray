@@ -126,12 +126,19 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод возвращает список названий ОФД
 		/// </summary>
-		public List<string> GetOFDNames ()
+		/// <param name="EnabledOnly">Флаг указывает на возвращение только активных ОФД</param>
+		public List<string> GetOFDNames (bool EnabledOnly)
 			{
-			return new List<string> (names);
+			/*return new List<string> (names);*/
+			List<string> res = new List<string> ();
+			for (int i = 0; i < names.Count; i++)
+				if (!EnabledOnly || string.IsNullOrWhiteSpace (disabledMessages[i]))
+					res.Add (names[i]);
+
+			return res;
 			}
 
-		/// <summary>
+		/*/// <summary>
 		/// Метод возвращает данные ОФД в необработанном виде
 		/// </summary>
 		public List<string> GetOFDData ()
@@ -146,7 +153,7 @@ namespace RD_AAOW
 				res.Add (inn[i]);
 
 			return res;
-			}
+			}*/
 
 		/// <summary>
 		/// Метод возвращает список ИНН ОФД

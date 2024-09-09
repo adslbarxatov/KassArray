@@ -135,7 +135,10 @@ namespace RD_AAOW
 		private static string MakePower (ulong Value)
 			{
 			string res = Value.ToString ();
-			res = res.Replace ('0', '⁰');
+			for (int i = 0; i < powers.Length; i++)
+				res = res.Replace (powers[i][0], powers[i][1]);
+
+			/*res = res.Replace ('0', '⁰');
 			res = res.Replace ('1', '¹');
 			res = res.Replace ('2', '²');
 			res = res.Replace ('3', '³');
@@ -144,8 +147,21 @@ namespace RD_AAOW
 			res = res.Replace ('6', '⁶');
 			res = res.Replace ('7', '⁷');
 			res = res.Replace ('8', '⁸');
-			return res.Replace ('9', '⁹');
+			return res.Replace ('9', '⁹');*/
+			return res;
 			}
+		private static char[][] powers = new char[][] {
+			new char[] { '0', '⁰' },
+			new char[] { '1', '¹' },
+			new char[] { '2', '²' },
+			new char[] { '3', '³' },
+			new char[] { '4', '⁴' },
+			new char[] { '5', '⁵' },
+			new char[] { '6', '⁶' },
+			new char[] { '7', '⁷' },
+			new char[] { '8', '⁸' },
+			new char[] { '9', '⁹' },
+			};
 
 		/// <summary>
 		/// Метод формирует полное описание указанного символа Unicode

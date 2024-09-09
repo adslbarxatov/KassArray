@@ -96,7 +96,7 @@ namespace RD_AAOW
 			FNLifeStartDate.Value = DateTime.Now;
 
 			OFDNamesList.Items.Add ("Неизвестный ОФД");
-			OFDNamesList.Items.AddRange (kb.Ofd.GetOFDNames ().ToArray ());
+			OFDNamesList.Items.AddRange (kb.Ofd.GetOFDNames (false).ToArray ());
 			OFDNamesList.SelectedIndex = 0;
 
 			CableType.Items.AddRange (kb.Plugs.GetCablesNames ().ToArray ());
@@ -946,7 +946,7 @@ namespace RD_AAOW
 		// Поиск по названию ОФД
 		private void OFDFindButton_Click (object sender, EventArgs e)
 			{
-			List<string> codes = kb.Ofd.GetOFDNames ();
+			List<string> codes = kb.Ofd.GetOFDNames (false);
 			codes.AddRange (kb.Ofd.GetOFDINNs ());
 
 			string text = OFDSearchText.Text.ToLower ();
