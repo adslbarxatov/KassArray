@@ -10,7 +10,7 @@ using AndroidX.Core.App;
 namespace RD_AAOW
 	{
 	[Activity (Label = "KassArray",
-		Icon = "@drawable/launcher_foreground",
+		Icon = "@drawable/icon",
 		Theme = "@style/SplashTheme",
 		MainLauncher = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]

@@ -1598,7 +1598,7 @@ namespace RD_AAOW
 		private async void OFDName_Clicked (object sender, EventArgs e)
 			{
 			// Запрос ОФД по имени
-			List<string> list = kb.Ofd.GetOFDNames ();
+			List<string> list = kb.Ofd.GetOFDNames (false);
 
 			// Установка результата
 			int res = await AndroidSupport.ShowList ("Выберите название ОФД:",
@@ -1620,7 +1620,7 @@ namespace RD_AAOW
 		// Поиск по названию ОФД
 		private void OFD_Find (object sender, EventArgs e)
 			{
-			List<string> codes = kb.Ofd.GetOFDNames ();
+			List<string> codes = kb.Ofd.GetOFDNames (false);
 			codes.AddRange (kb.Ofd.GetOFDINNs ());
 
 			string text = ofdSearchText.Text.ToLower ();

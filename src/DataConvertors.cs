@@ -138,16 +138,6 @@ namespace RD_AAOW
 			for (int i = 0; i < powers.Length; i++)
 				res = res.Replace (powers[i][0], powers[i][1]);
 
-			/*res = res.Replace ('0', '⁰');
-			res = res.Replace ('1', '¹');
-			res = res.Replace ('2', '²');
-			res = res.Replace ('3', '³');
-			res = res.Replace ('4', '⁴');
-			res = res.Replace ('5', '⁵');
-			res = res.Replace ('6', '⁶');
-			res = res.Replace ('7', '⁷');
-			res = res.Replace ('8', '⁸');
-			return res.Replace ('9', '⁹');*/
 			return res;
 			}
 		private static char[][] powers = new char[][] {

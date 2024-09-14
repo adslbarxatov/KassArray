@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="601539" android:versionName="5.9.1">
+	android:installLocation="internalOnly" android:versionCode="601540" android:versionName="5.10.1">
 
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
-	<application android:label="KassArray" android:icon="@drawable/launcher_foreground" />
+	<application android:label="KassArray" android:icon="@drawable/icon" />
 
 	<queries>
 		<intent>
