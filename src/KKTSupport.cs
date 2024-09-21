@@ -1175,6 +1175,11 @@ namespace RD_AAOW
 		public const string StatusSignature = "Статус ФН";
 
 		/// <summary>
+		/// Сигнатура регистрации ФН (статус, запрошенный любым способом)
+		/// </summary>
+		public const string RegistrationSignature = "Регистрация";
+
+		/// <summary>
 		/// Метод формирует путь к файлу статуса, включая в него уникальный идентификатор
 		/// </summary>
 		/// <param name="UID">Идентификатор статуса (обычно это ЗН ФН).
@@ -1195,7 +1200,7 @@ namespace RD_AAOW
 
 			// Формирование имени
 			return statusesDirectory + "\\" + (string.IsNullOrWhiteSpace (UID) ? "KassArrayStatus" : UID)
-				+ ".dat";
+				+ ".fss";
 			}
 		private static string statusesDirectory = RDGenerics.AppStartupPath + "CachedStatuses";
 
