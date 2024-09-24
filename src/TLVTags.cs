@@ -155,12 +155,13 @@ namespace RD_AAOW
 		public TLVTags ()
 			{
 			// Получение файлов
+			var enc = RDGenerics.GetEncoding (RDEncodings.UTF8);
 #if !ANDROID
-			string tlv = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.TLVTags);
-			string obl = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.Obligation);
+			string tlv = enc.GetString (RD_AAOW.Properties.KassArrayDB.TLVTags);
+			string obl = enc.GetString (RD_AAOW.Properties.KassArrayDB.Obligation);
 #else
-			string tlv = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.TLVTags);
-			string obl = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Obligation);
+			string tlv = enc.GetString (RD_AAOW.Properties.Resources.TLVTags);
+			string obl = enc.GetString (RD_AAOW.Properties.Resources.Obligation);
 #endif
 			StringReader tlvSR = new StringReader (tlv);
 			StringReader oblSR = new StringReader (obl);
