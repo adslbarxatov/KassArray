@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls;
+using System.ComponentModel;
 
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
 namespace RD_AAOW
@@ -154,19 +155,19 @@ namespace RD_AAOW
 
 			uiPages.Add (ApplyPageSettings (new TagsPage (), "TagsPage",
 				"TLV-теги", uiColors[tlvPage][cBack], true));
-			uiButtons[tlvPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 2
+			uiButtons[tlvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
 			uiPages.Add (ApplyPageSettings (new LowLevelPage (), "LowLevelPage",
 				"Команды нижнего уровня", uiColors[llvPage][cBack], true));
-			uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 2
+			uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
 			uiPages.Add (ApplyPageSettings (new KKTCodesPage (), "KKTCodesPage",
 				"Перевод текста в коды ККТ", uiColors[codPage][cBack], true));
-			uiButtons[codPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 1
+			uiButtons[codPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 1
 
 			uiPages.Add (ApplyPageSettings (new ConnectorsPage (), "ConnectorsPage",
 				"Разъёмы", uiColors[conPage][cBack], true));
-			uiButtons[conPage - 1].IsVisible = AppSettings.EnableExtendedMode;	// Уровень 2
+			uiButtons[conPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
 			uiPages.Add (ApplyPageSettings (new BarCodesPage (), "BarCodesPage",
 				"Штрих-коды", uiColors[bcdPage][cBack], true));
@@ -262,7 +263,7 @@ namespace RD_AAOW
 				"<...> – индикация на экране, [...] – клавиши ККТ." + RDLocale.RN +
 				"Нажатие на заголовки разделов позволяет добавить или скрыть их в видимой и печатной " +
 				"версиях этой инструкции",
-				RDLabelTypes.Tip);
+				RDLabelTypes.TipCenter);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "OneItemLabel",
 				"В чеках бывает более одной позиции", RDLabelTypes.DefaultLeft);
@@ -416,7 +417,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "RestartTipLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Message_RestartRequired),
-				RDLabelTypes.Tip);
+				RDLabelTypes.TipCenter);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "FontSizeLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_InterfaceFontSize),
@@ -525,7 +526,8 @@ namespace RD_AAOW
 				uiColors[fnlPage][cField], FNLifeResultCopy, true);
 			fnLifeResult.LineBreakMode = LineBreakMode.WordWrap;
 			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeHelpLabel",
-				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена", RDLabelTypes.Tip);
+				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена",
+				RDLabelTypes.TipCenter);
 
 			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "RegistryStats",
 				"Статистика реестра ФН", uiColors[fnlPage][cField], FNStats_Clicked, false);
@@ -598,7 +600,8 @@ namespace RD_AAOW
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
 				AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "RNMAbout",
 					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
-					"РНМ их можно указать вручную – остальные будут достроены программой", RDLabelTypes.Tip);
+					"РНМ их можно указать вручную – остальные будут достроены программой",
+					RDLabelTypes.TipLeft);
 
 			AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "Clear",
 				RDDefaultButtons.Delete, uiColors[rnmPage][cField], RNMClear_Clicked);
@@ -671,7 +674,8 @@ namespace RD_AAOW
 				uiColors[ofdPage][cField], Field_Clicked, true);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDHelpLabel",
-				"Нажатие кнопок копирует их подписи в буфер обмена", RDLabelTypes.Tip);
+				"Нажатие кнопок копирует их подписи в буфер обмена",
+				RDLabelTypes.TipCenter);
 
 			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "Clear",
 				RDDefaultButtons.Delete, uiColors[ofdPage][cField], OFDClear_Clicked);
@@ -760,7 +764,8 @@ namespace RD_AAOW
 				RDLabelTypes.Field, uiColors[llvPage][cField]);
 
 			AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
-				"Нажатие кнопки копирует команду в буфер обмена", RDLabelTypes.Tip);
+				"Нажатие кнопки копирует команду в буфер обмена",
+				RDLabelTypes.TipCenter);
 
 			commandSearchText = AndroidSupport.ApplyEditorSettings (uiPages[llvPage], "CommandSearchText",
 				uiColors[llvPage][cField], Keyboard.Default, 30, "", null, true);
@@ -823,7 +828,7 @@ namespace RD_AAOW
 				TextAlignment.Center;
 
 			cableDescriptionText = AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableDescription",
-				" ", RDLabelTypes.Tip);
+				" ", RDLabelTypes.TipLeft);
 
 			connSearchText = AndroidSupport.ApplyEditorSettings (uiPages[conPage], "ConnSearchText",
 				uiColors[conPage][cField], Keyboard.Default, 30, "", null, true);
@@ -857,8 +862,8 @@ namespace RD_AAOW
 				" ", RDLabelTypes.FieldMonotype, uiColors[cvsPage][cField]);
 			ConvNumber_TextChanged (null, null);
 
-			const string convHelp = "Шестнадцатеричные числа следует"+RDLocale.RN+"начинать с символов “0x”";
-			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvHelpLabel", convHelp, RDLabelTypes.Tip);
+			const string convHelp = "Шестнадцатеричные числа следует" + RDLocale.RN + "начинать с символов “0x”";
+			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvHelpLabel", convHelp, RDLabelTypes.TipLeft);
 
 			#endregion
 
@@ -891,7 +896,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvHelpLabel",
 				convHelp + "." + RDLocale.RN + "Нажатие кнопки с символом Unicode" + RDLocale.RN +
-				"копирует его в буфер обмена", RDLabelTypes.Tip);
+				"копирует его в буфер обмена", RDLabelTypes.TipLeft);
 
 			#endregion
 
@@ -1296,7 +1301,7 @@ namespace RD_AAOW
 			}
 
 		// Изменение параметров пользователя и даты
-		private void FnLifeStartDate_DateSelected (object sender, DateChangedEventArgs e)
+		private void FnLifeStartDate_DateSelected (object sender, PropertyChangedEventArgs e)
 			{
 			FnLife13_Toggled (null, null);
 			}
@@ -1815,7 +1820,7 @@ namespace RD_AAOW
 				tlvValuesLabel.Text = kb.Tags.LastValuesSet;
 				tlvObligationLabel.Text = kb.Tags.LastObligation;
 
-				AndroidSupport.HideKeyboard (tlvTag);	// Мешает просмотру текста
+				AndroidSupport.HideKeyboard (tlvTag);   // Мешает просмотру текста
 				}
 			else
 				{
