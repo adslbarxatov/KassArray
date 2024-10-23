@@ -863,7 +863,7 @@ namespace RD_AAOW
 			ConvNumber_TextChanged (null, null);
 
 			const string convHelp = "Шестнадцатеричные числа следует" + RDLocale.RN + "начинать с символов “0x”";
-			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvHelpLabel", convHelp, RDLabelTypes.TipLeft);
+			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvHelpLabel", convHelp, RDLabelTypes.TipCenter);
 
 			#endregion
 
@@ -896,7 +896,7 @@ namespace RD_AAOW
 
 			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvHelpLabel",
 				convHelp + "." + RDLocale.RN + "Нажатие кнопки с символом Unicode" + RDLocale.RN +
-				"копирует его в буфер обмена", RDLabelTypes.TipLeft);
+				"копирует его в буфер обмена", RDLabelTypes.TipCenter);
 
 			#endregion
 
