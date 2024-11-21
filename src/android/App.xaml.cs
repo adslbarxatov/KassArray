@@ -70,12 +70,12 @@ namespace RD_AAOW
 		private List<Button> operationTextButtons = new List<Button> ();
 		private const string operationButtonSignature = " (скрыто)";
 
-		private Button kktCodesKKTButton, fnLifeResult, cableTypeButton, kktCodesCenterButton,
+		private Button kktCodesKKTButton, fnLifeDate, cableTypeButton, kktCodesCenterButton,
 			errorsKKTButton, userManualsKKTButton, userManualsPrintButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdINN,
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate, convCodeSymbolField,
-			encodingButton;
+			encodingButton, fnLifeStatus;
 		private List<Button> uiButtons = new List<Button> ();
 
 		private Editor codesSourceText, errorSearchText, commandSearchText, ofdSearchText,
@@ -104,8 +104,11 @@ namespace RD_AAOW
 		private int lastOFDSearchOffset = 0;
 		private int lastConnSearchOffset = 0;
 
-		// Дата срока жизни ФН (в чистом виде)
-		private string fnLifeResultDate = "";
+		/*// Дата срока жизни ФН (в чистом виде)
+		private string fnLifeResultDate = "";*/
+
+		// Сообщение о применимости модели ФН
+		private string fnLifeMessage = "";
 
 		// Число режимов преобразования
 		private uint encodingModesCount;
@@ -522,9 +525,14 @@ namespace RD_AAOW
 			//
 			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeResultLabel",
 				"Результат:", RDLabelTypes.HeaderLeft);
-			fnLifeResult = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeResult", "",
-				uiColors[fnlPage][cField], FNLifeResultCopy, true);
-			fnLifeResult.LineBreakMode = LineBreakMode.WordWrap;
+
+			fnLifeDate = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeDate", "",
+				uiColors[fnlPage][cField], FNLifeDateCopy, true);
+			/*fnLifeDate.LineBreakMode = LineBreakMode.WordWrap;*/
+			fnLifeStatus = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeStatus", "",
+				uiColors[fnlPage][cField], FNLifeStatusClick, true);
+			/*fnLifeStatus.LineBreakMode = LineBreakMode.WordWrap;*/
+
 			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена",
 				RDLabelTypes.TipCenter);
@@ -1325,42 +1333,79 @@ namespace RD_AAOW
 				fnLifeGoodsLabel.Text = "товары";
 
 			// Расчёт срока
-			string res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, FNLifeEvFlags);
+			FNLifeResult res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, FNLifeEvFlags);
 
-			fnLifeResult.Text = "ФН прекратит работу ";
-			if (res.Contains (KKTSupport.FNLifeInacceptableSign))
+			/*fnLifeResult.Text = "ФН прекратит работу ";
+			if (res.Contains (KKTSupport.FNLifeInacceptableSign))*/
+			fnLifeDate.Text = res.DeadLine;
+			switch (res.Status)
 				{
-				fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
-				fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+				case FNLifeStatus.Inacceptable:
+					/*fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);*/
+					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					fnLifeStatus.TextColor = fnLifeDate.TextColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
-				fnLifeResultDate = res.Substring (1);
-				fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotAcceptableMessage);
-				}
-			else if (res.Contains (KKTSupport.FNLifeUnwelcomeSign))
-				{
-				fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
-				fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+					/*fnLifeResultDate = res.Substring (1);
+					fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotAcceptableMessage);*/
+					fnLifeMessage = FNSerial.FNIsNotAcceptableMessage;
+					break;
 
-				fnLifeResultDate = res.Substring (1);
-				fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotRecommendedMessage);
-				}
-			else
-				{
-				fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
-				fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+				case FNLifeStatus.Unwelcome:
+					/*else if (res.Contains (KKTSupport.FNLifeUnwelcomeSign))
+					fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+					fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);*/
+					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+					fnLifeStatus.TextColor = fnLifeDate.TextColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
 
-				fnLifeResultDate = res;
-				fnLifeResult.Text += res;
+					/*fnLifeResultDate = res.Substring (1);
+					fnLifeResult.Text += (fnLifeResultDate + FNSerial.FNIsNotRecommendedMessage);*/
+					fnLifeMessage = FNSerial.FNIsNotRecommendedMessage;
+					break;
+
+				case FNLifeStatus.Acceptable:
+				default:
+					/*else
+					fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+					fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);*/
+					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+					fnLifeStatus.TextColor = fnLifeDate.TextColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+
+					/*fnLifeResultDate = res;
+					fnLifeResult.Text += res;*/
+					fnLifeMessage = FNSerial.FNIsAcceptableMessage;
+					break;
+
+				case FNLifeStatus.StronglyUnwelcome:
+					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+					fnLifeStatus.TextColor = fnLifeDate.TextColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
+
+					fnLifeMessage = FNSerial.FNIsStronglyUnwelcomeMessage;
+					break;
 				}
 
 			if (kb.FNNumbers.IsFNKnown (fnLifeSerial.Text))
 				{
 				if (!kb.FNNumbers.IsFNAllowed (fnLifeSerial.Text))
 					{
-					fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
-					fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+					/*fnLifeResult.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					fnLifeResult.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);*/
+					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					fnLifeStatus.TextColor = fnLifeDate.TextColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
-					fnLifeResult.Text += FNSerial.FNIsNotAllowedMessage;
+					/*fnLifeResult.Text += FNSerial.FNIsNotAllowedMessage;*/
+					fnLifeMessage += (RDLocale.RN + FNSerial.FNIsNotAllowedMessage);
+
 					fnLifeModelLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					fnLifeModelLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 					}
@@ -1378,9 +1423,15 @@ namespace RD_AAOW
 			}
 
 		// Копирование срока жизни ФН
-		private void FNLifeResultCopy (object sender, EventArgs e)
+		private void FNLifeDateCopy (object sender, EventArgs e)
 			{
-			RDGenerics.SendToClipboard (fnLifeResultDate, true);
+			RDGenerics.SendToClipboard (fnLifeDate.Text, true);
+			}
+
+		// Сообщение о применимости модели ФН
+		private async void FNLifeStatusClick (object sender, EventArgs e)
+			{
+			await AndroidSupport.ShowMessage (fnLifeMessage, RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 			}
 
 		// Очистка полей

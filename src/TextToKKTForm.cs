@@ -21,8 +21,11 @@ namespace RD_AAOW
 		// Дескриптор иконки в трее
 		private NotifyIcon ni = new NotifyIcon ();
 
-		// Рассчитанный срок жизни ФН
-		private string fnLifeResult = "";
+		/*// Рассчитанный срок жизни ФН
+		private string fnLifeResult = "";*/
+
+		// Сообщение о применимости ФН
+		private string fnLifeMessage = "";
 
 		// Ссылки на текущие смещения в списках поиска
 		private int lastErrorSearchOffset = 0;
@@ -659,35 +662,59 @@ namespace RD_AAOW
 		// Изменение параметров, влияющих на срок жизни ФН
 		private void FNLifeStartDate_ValueChanged (object sender, EventArgs e)
 			{
-			string res = KassArrayDB::RD_AAOW.KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLifeEvFlags);
+			KassArrayDB::RD_AAOW.FNLifeResult res =
+				KassArrayDB::RD_AAOW.KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLifeEvFlags);
 
-			FNLifeResult.Text = "ФН прекратит работу ";
-			if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeInacceptableSign))
+			/*FNLifeResult.Text = "ФН прекратит работу ";
+			if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeInacceptableSign))*/
+			FNLifeDate.Text = res.DeadLine;
+			switch (res.Status)
 				{
-				FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
-				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage);
-				}
-			else if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeUnwelcomeSign))
-				{
-				FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
-				fnLifeResult = res.Substring (1);
-				FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage);
-				}
-			else
-				{
-				FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
-				fnLifeResult = res;
-				FNLifeResult.Text += res;
+				case KassArrayDB::RD_AAOW.FNLifeStatus.Inacceptable:
+					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+					/*fnLifeResult = res.Substring (1);
+					FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage);*/
+					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage;
+					break;
+
+				/*else if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeUnwelcomeSign))*/
+				case KassArrayDB::RD_AAOW.FNLifeStatus.Unwelcome:
+					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+					/*FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+					fnLifeResult = res.Substring (1);
+					FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage);*/
+					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage;
+					break;
+
+				/*else*/
+				case KassArrayDB::RD_AAOW.FNLifeStatus.Acceptable:
+				default:
+					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsAcceptableMessage;
+					/*FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+					fnLifeResult = res;
+					FNLifeResult.Text += res;*/
+					break;
+
+				case KassArrayDB::RD_AAOW.FNLifeStatus.StronglyUnwelcome:
+					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
+					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsStronglyUnwelcomeMessage;
+					break;
 				}
 
 			if (kb.FNNumbers.IsFNKnown (FNLifeSN.Text))
 				{
 				if (!kb.FNNumbers.IsFNAllowed (FNLifeSN.Text))
 					{
-					FNLifeResult.ForeColor = Color.FromArgb (255, 0, 0);
+					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
+						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
-					FNLifeResult.Text += KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage;
+					/*FNLifeResult.Text += KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage;*/
+					fnLifeMessage += (RDLocale.RN + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage);
 					FNLifeName.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					}
 				else
@@ -702,10 +729,18 @@ namespace RD_AAOW
 			}
 
 		// Копирование срока действия ФН
-		private void FNLifeResult_Click (object sender, EventArgs e)
+		private void FNLifeDate_Click (object sender, EventArgs e)
 			{
 			this.TopMost = false;
-			RDGenerics.SendToClipboard (fnLifeResult, true);
+			RDGenerics.SendToClipboard (FNLifeDate.Text, true);
+			this.TopMost = TopFlag.Checked;
+			}
+
+		// Отображение сообщения о применимости ФН
+		private void FNLifeStatus_Click (object sender, EventArgs e)
+			{
+			this.TopMost = false;
+			RDGenerics.MessageBox (RDMessageTypes.Information_Left, fnLifeMessage);
 			this.TopMost = TopFlag.Checked;
 			}
 

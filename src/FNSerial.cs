@@ -174,18 +174,23 @@ namespace RD_AAOW
 			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM) > 0;
 			}
 
-		// Проверяет флаги ФН. Возвращает +1 при установленном флаге, –1 при снятом флаге,
-		// 0 при отсутствии ФН в базе
+		// Проверяет флаги ФН. Возвращает:
+		// +1 при установленном флаге,
+		// –1 при снятом флаге,
+		// 0 при отсутствии ФН в базе,
+		// +/– 2 при установленном / снятом флаге и отсутствии базового адреса чтения
 		private int CheckFNState (string SN, FNSerialFlags Flags)
 			{
 			// Признаки отсутствия ФН в базе
 			int i = GetFNIndex (SN);
 			if (i < 0)
 				return 0;
-			if (addresses[i] == 0)
-				return 0;
 
-			return (flags[i].HasFlag (Flags) ? 1 : -1);
+			int v = 1;
+			if (addresses[i] == 0)
+				return v = 2;
+
+			return (flags[i].HasFlag (Flags) ? v : -v);
 			}
 
 		/// <summary>
@@ -248,19 +253,33 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает сообщение об исключении ФН из реестра ФНС
 		/// </summary>
-		public const string FNIsNotAllowedMessage = RDLocale.RN + "(выбранный ФН исключён из реестра ФНС)";
+		public const string FNIsNotAllowedMessage = "• Выбранный ФН исключён из реестра ФНС";
 
 		/// <summary>
 		/// Возвращает сообщение о том, что указанный ФН не рекомендуется использовать при указаных параметрах
 		/// </summary>
-		public const string FNIsNotRecommendedMessage = RDLocale.RN +
-			"(не рекомендуется использовать выбранный ФН с указанными параметрами)";
+		public const string FNIsNotRecommendedMessage =
+			"• Не рекомендуется использовать выбранный ФН с указанными параметрами";
 
 		/// <summary>
 		/// Возвращает сообщение о том, что указанный ФН неприменим при указаных параметрах
 		/// </summary>
-		public const string FNIsNotAcceptableMessage = RDLocale.RN +
-			"(выбранный ФН неприменим с указанными параметрами)";
+		public const string FNIsNotAcceptableMessage =
+			"• Выбранный ФН неприменим с указанными параметрами";
+
+		/// <summary>
+		/// Возвращает сообщение о том, что указанный ФН может быть использован при указаных параметрах,
+		/// но существуют сомнения в соответствии описания паспорта ФН и реального поведения устройства
+		/// </summary>
+		public const string FNIsStronglyUnwelcomeMessage =
+			"• Выбранный ФН, согласно паспорту, может быть использован с указанными параметрами, " +
+			"но мы пока не можем это проверить";
+
+		/// <summary>
+		/// Возвращает сообщение о том, что указанный может быть использован при указаных параметрах
+		/// </summary>
+		public const string FNIsAcceptableMessage =
+			"• Выбранный ФН может быть использован с указанными параметрами";
 
 		/// <summary>
 		/// Метод возвращает флаги ФН по его заводскому номеру

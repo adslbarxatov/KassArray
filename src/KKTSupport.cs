@@ -128,11 +128,78 @@ namespace RD_AAOW
 		}
 
 	/// <summary>
+	/// Доступные результаты оценки применимости ФН с указанными параметрами регистрации и сроком жизни
+	/// </summary>
+	public enum FNLifeStatus
+		{
+		/// <summary>
+		/// ФН может быть использован с указанными параметрами
+		/// </summary>
+		Acceptable,
+
+		/// <summary>
+		/// ФН может быть использован, но не рекомендуется к применению с указанными параметрами
+		/// </summary>
+		Unwelcome,
+
+		/// <summary>
+		/// ФН не поддерживает использование с указанными параметрами
+		/// </summary>
+		Inacceptable,
+
+		/// <summary>
+		/// ФН допускает использование с указанными параметрами, но данная информация не проверена на практике
+		/// </summary>
+		StronglyUnwelcome
+		}
+
+	/// <summary>
+	/// Класс описывает результат оценки срока жизни ФН и его применимости
+	/// </summary>
+	public class FNLifeResult
+		{
+		/// <summary>
+		/// Возвращает результат оценки применимости ФН с указанными параметрами регистрации и сроком жизни
+		/// </summary>
+		public FNLifeStatus Status
+			{
+			get
+				{
+				return status;
+				}
+			}
+		private FNLifeStatus status;
+
+		/// <summary>
+		/// Срок жизни ФН
+		/// </summary>
+		public string DeadLine
+			{
+			get
+				{
+				return deadLine.ToString ("dd.MM.yyyy");
+				}
+			}
+		private DateTime deadLine;
+
+		/// <summary>
+		/// Конструктор. Инициализирует экземпляр результата оценки
+		/// </summary>
+		/// <param name="PDeadLine">Рассчитанный срок жизни ФН</param>
+		/// <param name="PStatus">Результат оценки применимости</param>
+		public FNLifeResult (DateTime PDeadLine, FNLifeStatus PStatus)
+			{
+			deadLine = PDeadLine;
+			status = PStatus;
+			}
+		}
+
+	/// <summary>
 	/// Класс описывает вспомогательные методы
 	/// </summary>
 	public static class KKTSupport
 		{
-		/// <summary>
+		/*/// <summary>
 		/// Признак неприменимости ФН с указанными параметрами
 		/// </summary>
 		public const string FNLifeInacceptableSign = "!";
@@ -140,7 +207,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Признак нежелательности использования ФН с указанными параметрами
 		/// </summary>
-		public const string FNLifeUnwelcomeSign = "?";
+		public const string FNLifeUnwelcomeSign = "?";*/
 
 		/// <summary>
 		/// Метод формирует дату истечения срока эксплуатации ФН с указанными параметрами
@@ -150,18 +217,24 @@ namespace RD_AAOW
 		/// <returns>Возвращает строку с датой;
 		/// может возвращать признаки недопустимости или нежелательности применения
 		/// указанной модели с заданными параметрами</returns>
-		public static string GetFNLifeEndDate (DateTime StartDate, FNLifeFlags Flags)
+		public static FNLifeResult GetFNLifeEndDate (DateTime StartDate, FNLifeFlags Flags)
 			{
 			// Определение недопустимых вариантов
-			string res = "";
+			FNLifeStatus res = FNLifeStatus.Acceptable;
 			uint length = GetFNLifeLength (Flags);
 
 			// Нельзя игнорировать
 			if (Flags.HasFlag (FNLifeFlags.GenericTax) && !Flags.HasFlag (FNLifeFlags.FN15) &&
-				Flags.HasFlag (FNLifeFlags.Goods) ||
+				Flags.HasFlag (FNLifeFlags.Goods))
+				{
+				if (Flags.HasFlag (FNLifeFlags.FFD12) && Flags.HasFlag (FNLifeFlags.MarkFN))
+					res = FNLifeStatus.StronglyUnwelcome;
+				else
+					res = FNLifeStatus.Inacceptable;
+				}
 
-				// Невозможные варианты
-				Flags.HasFlag (FNLifeFlags.FFD12) && !Flags.HasFlag (FNLifeFlags.MarkFN) ||
+			// Невозможные варианты
+			else if (Flags.HasFlag (FNLifeFlags.FFD12) && !Flags.HasFlag (FNLifeFlags.MarkFN) ||
 
 				!Flags.HasFlag (FNLifeFlags.Goods) && (Flags.HasFlag (FNLifeFlags.Excise) ||
 				Flags.HasFlag (FNLifeFlags.MarkGoods)) ||
@@ -170,7 +243,7 @@ namespace RD_AAOW
 
 				Flags.HasFlag (FNLifeFlags.MarkGoods) && !Flags.HasFlag (FNLifeFlags.FFD12))
 				{
-				res = FNLifeInacceptableSign;
+				res = FNLifeStatus.Inacceptable;
 				}
 
 			// Определение нежелательных вариантов
@@ -178,16 +251,17 @@ namespace RD_AAOW
 				!Flags.HasFlag (FNLifeFlags.Season) && !Flags.HasFlag (FNLifeFlags.Agents) &&
 				!Flags.HasFlag (FNLifeFlags.Excise) && !Flags.HasFlag (FNLifeFlags.Autonomous) ||
 
-				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.FFD12) &&
+				!Flags.HasFlag (FNLifeFlags.FN15) && /*Flags.HasFlag (FNLifeFlags.FFD12) &&*/
 				Flags.HasFlag (FNLifeFlags.Excise) ||
 
 				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.Autonomous))
 				{
-				res = FNLifeUnwelcomeSign;
+				res = FNLifeStatus.Unwelcome;
 				}
 
 			// Результат
-			return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");
+			/*return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");*/
+			return new FNLifeResult (StartDate.AddDays (length), res);
 			}
 
 		private static uint GetFNLifeLength (FNLifeFlags Flags)
@@ -197,7 +271,8 @@ namespace RD_AAOW
 
 			if ((Flags.HasFlag (FNLifeFlags.GamblingAndLotteries) || Flags.HasFlag (FNLifeFlags.PawnsAndInsurance)) &&
 				Flags.HasFlag (FNLifeFlags.FFD12) && Flags.HasFlag (FNLifeFlags.FN15) ||
-				Flags.HasFlag (FNLifeFlags.Excise) && Flags.HasFlag (FNLifeFlags.FFD12))
+				Flags.HasFlag (FNLifeFlags.Excise) && Flags.HasFlag (FNLifeFlags.FFD12) ||
+				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.Excise))	// Новое условие
 				{
 				length = 410u;
 				}
