@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.RD_AAOW.TextToKKT"
-	android:installLocation="internalOnly" android:versionCode="601601" android:versionName="6.0">
+	android:installLocation="internalOnly" android:versionCode="601602" android:versionName="6.0">
 
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
 

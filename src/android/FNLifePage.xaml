@@ -90,7 +90,7 @@
 			<!-- Результат -->
 			<Label />
 			<Label x:Name="FNLifeResultLabel" />
-			<StackLayout HorizontalOptions="Center">
+			<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
 				<Button x:Name="FNLifeDate" VerticalOptions="Center" />
 				<Button x:Name="FNLifeStatus" VerticalOptions="Center" />
 			</StackLayout>

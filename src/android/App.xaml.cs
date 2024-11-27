@@ -529,7 +529,7 @@ namespace RD_AAOW
 			fnLifeDate = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeDate", "",
 				uiColors[fnlPage][cField], FNLifeDateCopy, true);
 			/*fnLifeDate.LineBreakMode = LineBreakMode.WordWrap;*/
-			fnLifeStatus = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeStatus", "",
+			fnLifeStatus = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeStatus", "?",
 				uiColors[fnlPage][cField], FNLifeStatusClick, true);
 			/*fnLifeStatus.LineBreakMode = LineBreakMode.WordWrap;*/
 
