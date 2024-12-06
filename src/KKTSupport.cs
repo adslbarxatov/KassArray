@@ -94,37 +94,42 @@ namespace RD_AAOW
 		/// <summary>
 		/// Кассиры работают с паролями
 		/// </summary>
-		CashiersHavePasswords = 0x01,
+		CashiersHavePasswords = 0x0001,
 
 		/// <summary>
 		/// В чеках может быть более одной позиции
 		/// </summary>
-		MoreThanOneItemPerDocument = 0x02,
+		MoreThanOneItemPerDocument = 0x0002,
 
 		/// <summary>
 		/// Номенклатура содержит цены
 		/// </summary>
-		ProductBaseContainsPrices = 0x04,
+		ProductBaseContainsPrices = 0x0004,
 
 		/// <summary>
 		/// Номенклатура содержит услуги
 		/// </summary>
-		ProductBaseContainsServices = 0x08,
+		ProductBaseContainsServices = 0x0008,
 
 		/// <summary>
 		/// Номенклатура содержит маркированные товары
 		/// </summary>
-		DocumentsContainMarks = 0x10,
+		DocumentsContainMarks = 0x0010,
 
 		/// <summary>
 		/// Номенклатура содержит единственное наименование
 		/// </summary>
-		BaseContainsSingleItem = 0x20,
+		BaseContainsSingleItem = 0x0020,
+
+		/// <summary>
+		/// Необходимо добавить пользовательский логотип в печатное руководство
+		/// </summary>
+		AddManualLogo = 0x0040,
 
 		/// <summary>
 		/// Руководство для кассира
 		/// </summary>
-		GuideForCashier = 0x80,
+		GuideForCashier = 0x8000,
 		}
 
 	/// <summary>
@@ -199,16 +204,6 @@ namespace RD_AAOW
 	/// </summary>
 	public static class KKTSupport
 		{
-		/*/// <summary>
-		/// Признак неприменимости ФН с указанными параметрами
-		/// </summary>
-		public const string FNLifeInacceptableSign = "!";
-
-		/// <summary>
-		/// Признак нежелательности использования ФН с указанными параметрами
-		/// </summary>
-		public const string FNLifeUnwelcomeSign = "?";*/
-
 		/// <summary>
 		/// Метод формирует дату истечения срока эксплуатации ФН с указанными параметрами
 		/// </summary>
@@ -251,8 +246,7 @@ namespace RD_AAOW
 				!Flags.HasFlag (FNLifeFlags.Season) && !Flags.HasFlag (FNLifeFlags.Agents) &&
 				!Flags.HasFlag (FNLifeFlags.Excise) && !Flags.HasFlag (FNLifeFlags.Autonomous) ||
 
-				!Flags.HasFlag (FNLifeFlags.FN15) && /*Flags.HasFlag (FNLifeFlags.FFD12) &&*/
-				Flags.HasFlag (FNLifeFlags.Excise) ||
+				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.Excise) ||
 
 				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.Autonomous))
 				{
@@ -260,7 +254,6 @@ namespace RD_AAOW
 				}
 
 			// Результат
-			/*return res + StartDate.AddDays (length).ToString ("dd.MM.yyyy");*/
 			return new FNLifeResult (StartDate.AddDays (length), res);
 			}
 
@@ -952,6 +945,7 @@ namespace RD_AAOW
 		private static int charactersPerLine;      // Зависимое значение
 		private static PrinterTypes internalPrinterType;
 		private static uint pageNumber;
+		private static bool addManualLogo;
 
 		private static Font printFont;             // Зависимое значение
 		private static Brush printBrush = new SolidBrush (Color.FromArgb (0, 0, 0));
@@ -1037,6 +1031,11 @@ namespace RD_AAOW
 			return null;
 			}
 
+		/// <summary>
+		/// Возвращает имя файла логотипа для добавления в руководство пользователя
+		/// </summary>
+		public const string ManualLogoFileName = "ManualLogo.p";
+
 		// Обработчик событий принтера
 		private static bool IsA4
 			{
@@ -1104,7 +1103,19 @@ namespace RD_AAOW
 #if UMPRINT
 				if (IsA4)
 					ev.Graphics.DrawImage (Properties.KassArrayDB.KAQR, ev.PageBounds.Width -
-						leftMargin - 50, topMargin);
+						leftMargin - Properties.KassArrayDB.KAQR.Width / 12, topMargin);
+
+				if (addManualLogo && (internalPrinterType == PrinterTypes.ManualA4))
+					{
+					try
+						{
+						Bitmap b = (Bitmap)Image.FromFile (RDGenerics.AppStartupPath + ManualLogoFileName);
+						ev.Graphics.DrawImage (b, ev.PageBounds.Width - leftMargin - b.Width / 12,
+							Properties.KassArrayDB.KAQR.Height / 12 + 30 + topMargin);
+						b.Dispose ();
+						}
+					catch { }
+					}
 #endif
 				}
 
@@ -1168,7 +1179,11 @@ namespace RD_AAOW
 		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, ulong Sections,
 			UserManualsFlags Flags)
 			{
-			bool forCashier = (Flags & UserManualsFlags.GuideForCashier) != 0;
+			bool forCashier = Flags.HasFlag ( UserManualsFlags.GuideForCashier);
+#if !ANDROID
+			addManualLogo = Flags.HasFlag (UserManualsFlags.AddManualLogo);
+#endif
+
 			string text = "Инструкция к ККТ " + Manuals.GetKKTList ()[(int)ManualNumber] +
 				" (" + (forCashier ? "для кассиров" : "полная") + ")";
 			text = text.PadLeft ((ManualA4CharPerLine - text.Length) / 2 + text.Length);

@@ -21,9 +21,6 @@ namespace RD_AAOW
 		// Дескриптор иконки в трее
 		private NotifyIcon ni = new NotifyIcon ();
 
-		/*// Рассчитанный срок жизни ФН
-		private string fnLifeResult = "";*/
-
 		// Сообщение о применимости ФН
 		private string fnLifeMessage = "";
 
@@ -35,6 +32,9 @@ namespace RD_AAOW
 
 		// Число режимов преобразования
 		private uint encodingModesCount;
+
+		// Пересчитанная ширина логотипа для руководств пользователя
+		private int manualLogoWidth = 1200;
 
 		/// <summary>
 		/// Ключ командной строки, используемый при автозапуске для скрытия главного окна приложения
@@ -202,6 +202,8 @@ namespace RD_AAOW
 			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled =
 				PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;   // Уровень 2
 			CodesTab.Enabled = AppSettings.EnableExtendedMode;  // Уровень 1
+			AddManualLogo.Visible = ManualLogo.Visible = AppSettings.EnableExtendedMode &&
+				!RDGenerics.StartedFromMSStore;
 
 			if (AppSettings.EnableExtendedMode) // Уровень 2
 				{
@@ -261,7 +263,7 @@ namespace RD_AAOW
 				}
 			else
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Question_Left, AppSettings.NoExtendedModeMessage);
+				RDGenerics.MessageBox (RDMessageTypes.Question_Center, AppSettings.NoExtendedModeMessage);
 				AppSettings.EnableExtendedMode = false;
 				}
 
@@ -665,38 +667,26 @@ namespace RD_AAOW
 			KassArrayDB::RD_AAOW.FNLifeResult res =
 				KassArrayDB::RD_AAOW.KKTSupport.GetFNLifeEndDate (FNLifeStartDate.Value, FNLifeEvFlags);
 
-			/*FNLifeResult.Text = "ФН прекратит работу ";
-			if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeInacceptableSign))*/
 			FNLifeDate.Text = res.DeadLine;
 			switch (res.Status)
 				{
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Inacceptable:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
-					/*fnLifeResult = res.Substring (1);
-					FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage);*/
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage;
 					break;
 
-				/*else if (res.StartsWith (KassArrayDB::RD_AAOW.KKTSupport.FNLifeUnwelcomeSign))*/
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Unwelcome:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
-					/*FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
-					fnLifeResult = res.Substring (1);
-					FNLifeResult.Text += (fnLifeResult + KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage);*/
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage;
 					break;
 
-				/*else*/
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Acceptable:
 				default:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsAcceptableMessage;
-					/*FNLifeResult.ForeColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
-					fnLifeResult = res;
-					FNLifeResult.Text += res;*/
 					break;
 
 				case KassArrayDB::RD_AAOW.FNLifeStatus.StronglyUnwelcome:
@@ -713,7 +703,6 @@ namespace RD_AAOW
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
-					/*FNLifeResult.Text += KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage;*/
 					fnLifeMessage += (RDLocale.RN + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage);
 					FNLifeName.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					}
@@ -1077,7 +1066,7 @@ namespace RD_AAOW
 			{
 			// Сборка задания на печать
 			KassArrayDB::RD_AAOW.UserManualsFlags flags = UserManualFlags;
-			if (((Button)sender).Name.Contains ("Cashier"))
+			if (((Button)sender).Name == PrintUserManualForCashier.Name)
 				flags |= KassArrayDB::RD_AAOW.UserManualsFlags.GuideForCashier;
 
 			string text = KassArrayDB::RD_AAOW.KKTSupport.BuildUserManual (kb.UserGuides,
@@ -1101,6 +1090,49 @@ namespace RD_AAOW
 			AppSettings.UserManualSectionsState = (uint)sections;
 			}
 
+		// Выбор лого для руководства пользователя
+		private void SetUserManualLogo (object sender, EventArgs e)
+			{
+			// Попытка загрузки исходного изображения
+			if (OFDialog.ShowDialog () != DialogResult.OK)
+				return;
+
+			Bitmap b;
+			try
+				{
+				b = (Bitmap)Image.FromFile (OFDialog.FileName);
+				}
+			catch
+				{
+				RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
+					"Выбранный файл недоступен или не является поддерживаемым файлом изображения");
+				return;
+				}
+
+			// Преобразование и сохранение
+			Bitmap b2 = new Bitmap (b, manualLogoWidth, manualLogoWidth * b.Height / b.Width);
+			b2.SetResolution (1000, 1000);
+			b.Dispose ();
+
+			try
+				{
+				b2.Save (RDGenerics.AppStartupPath + KassArrayDB::RD_AAOW.KKTSupport.ManualLogoFileName,
+					System.Drawing.Imaging.ImageFormat.Png);
+				}
+			catch
+				{
+				RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
+					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.Message_SaveFailure_Fmt),
+					KassArrayDB::RD_AAOW.KKTSupport.ManualLogoFileName));
+				b2.Dispose ();
+				return;
+				}
+			b2.Dispose ();
+
+			// Успешно
+			RDGenerics.MessageBox (RDMessageTypes.Success_Center, "Логотип успешно добавлен", 1000);
+			}
+
 		/// <summary>
 		/// Возвращает или задаёт состав флагов для руководства пользователя
 		/// </summary>
@@ -1122,6 +1154,8 @@ namespace RD_AAOW
 					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks;
 				if (BaseContainsSingleItem.Checked)
 					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.BaseContainsSingleItem;
+				if (AddManualLogo.Checked)
+					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.AddManualLogo;
 
 				return flags;
 				}
@@ -1139,6 +1173,8 @@ namespace RD_AAOW
 					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks);
 				BaseContainsSingleItem.Checked =
 					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.BaseContainsSingleItem);
+				AddManualLogo.Checked =
+					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.AddManualLogo);
 				}
 			}
 
