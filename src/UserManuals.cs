@@ -135,7 +135,9 @@ namespace RD_AAOW
 						case 7:
 							op = "Если требуется «отменить» чек, который уже " +
 								"был закрыт, выполняется возврат:" + RDLocale.RN + op +
-								";" + RDLocale.RN + "• Дальнейшие действия совпадают с действиями при продаже";
+								";" + RDLocale.RN + "• Выполнить действия, описанные " +
+								"в разделе «" + operationTypes[1] + "» или «" + operationTypes[2] + "» (в зависимости " +
+								"от способа расчёта)";
 							break;
 
 						case 8:
@@ -170,6 +172,7 @@ namespace RD_AAOW
 					op = op.Replace ("&7", "#4");
 					op = op.Replace ("&8", "#5");
 					op = op.Replace ("???", "(требует уточнения)");
+					op = op.Replace ("&9", "На дисплее – ");
 
 					if (op.StartsWith ("• -"))
 						op = "(не предусмотрено)";
@@ -211,7 +214,7 @@ namespace RD_AAOW
 				{
 				if (Flags.HasFlag (UserManualsFlags.MoreThanOneItemPerDocument))
 					{
-					text = text.Replace ("#1", "↑ (повторить эти действия для всех " +
+					text = text.Replace ("#1", "↑ (повторить описанные действия для всех " +
 						(goods ? "товаров" : "услуг") + " в чеке);" + RDLocale.RN);
 					}
 				else
@@ -239,8 +242,8 @@ namespace RD_AAOW
 				{
 				if (Flags.HasFlag (UserManualsFlags.BaseContainsSingleItem))
 					{
-					text = text.Replace ("#6", "[1]");
-					text = text.Replace ("#06", "[1]");
+					text = text.Replace ("#6", "Нажать [1]");
+					text = text.Replace ("#06", "нажать [1]");
 					}
 				else
 					{
@@ -270,6 +273,11 @@ namespace RD_AAOW
 
 			return text;
 			}
+
+		/// <summary>
+		/// Возвращает подсказку, отображаемую перед разделами руководства пользователя
+		/// </summary>
+		public const string UserManualsTip = "<...> – индикация на дисплее, [...] – клавиши ККТ";
 		}
 
 	/// <summary>

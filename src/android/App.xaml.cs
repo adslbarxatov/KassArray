@@ -263,7 +263,7 @@ namespace RD_AAOW
 			userManualsPrintButton.HeightRequest = userManualsPrintButton.FontSize * 2.0;
 
 			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "HelpLabel",
-				"<...> – индикация на экране, [...] – клавиши ККТ." + RDLocale.RN +
+				UserManuals.UserManualsTip + RDLocale.RN +
 				"Нажатие на заголовки разделов позволяет добавить или скрыть их в видимой и печатной " +
 				"версиях этой инструкции",
 				RDLabelTypes.TipCenter);
@@ -528,10 +528,12 @@ namespace RD_AAOW
 
 			fnLifeDate = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeDate", "",
 				uiColors[fnlPage][cField], FNLifeDateCopy, true);
-			/*fnLifeDate.LineBreakMode = LineBreakMode.WordWrap;*/
 			fnLifeStatus = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeStatus", "?",
 				uiColors[fnlPage][cField], FNLifeStatusClick, true);
-			/*fnLifeStatus.LineBreakMode = LineBreakMode.WordWrap;*/
+
+			// Применение параметров, которые не могут быть рассчитаны при инициализации
+			fnLifeStatus.WidthRequest = fnLifeStatus.HeightRequest =
+				fnLifeDate.HeightRequest = 10 * AndroidSupport.MasterFontSize / 3;
 
 			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена",
@@ -977,20 +979,19 @@ namespace RD_AAOW
 				await AndroidSupport.XPUNLoop ();
 
 			// Политика
-			if (RDGenerics.GetAppRegistryValue (firstStartRegKey) == "")
-				{
-				await AndroidSupport.PolicyLoop ();
+			if (RDGenerics.GetAppRegistryValue (firstStartRegKey) != "")
+				return;
 
-				// Только после принятия
-				RDGenerics.SetAppRegistryValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
+			await AndroidSupport.PolicyLoop ();
 
-				await AndroidSupport.ShowMessage ("Вас приветствует " + ProgramDescription.AssemblyMainName +
-					" – " + ProgramDescription.AssemblyDescription + RDLocale.RNRN +
-					"На этой странице находится перечень функций приложения, который позволяет перейти " +
-					"к нужному разделу. Вернуться сюда можно с помощью кнопки «Назад»",
+			// Только после принятия
+			RDGenerics.SetAppRegistryValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
 
-					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
-				}
+			await AndroidSupport.ShowMessage ("Вас приветствует " + ProgramDescription.AssemblyMainName +
+				" – " + ProgramDescription.AssemblyDescription + RDLocale.RNRN +
+				"На этой странице находится перечень функций приложения, который позволяет перейти " +
+				"к нужному разделу. Вернуться сюда можно с помощью кнопки «Назад»",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 			}
 
 		// Отправка значения кнопки в буфер

@@ -121,10 +121,14 @@ namespace RD_AAOW
 		/// </summary>
 		BaseContainsSingleItem = 0x0020,
 
+#if !ANDROID
+
 		/// <summary>
 		/// Необходимо добавить пользовательский логотип в печатное руководство
 		/// </summary>
 		AddManualLogo = 0x0040,
+
+#endif
 
 		/// <summary>
 		/// Руководство для кассира
@@ -1111,7 +1115,7 @@ namespace RD_AAOW
 						{
 						Bitmap b = (Bitmap)Image.FromFile (RDGenerics.AppStartupPath + ManualLogoFileName);
 						ev.Graphics.DrawImage (b, ev.PageBounds.Width - leftMargin - b.Width / 12,
-							Properties.KassArrayDB.KAQR.Height / 12 + 30 + topMargin);
+							ev.PageBounds.Height - topMargin - b.Height/12);
 						b.Dispose ();
 						}
 					catch { }
@@ -1188,7 +1192,7 @@ namespace RD_AAOW
 				" (" + (forCashier ? "для кассиров" : "полная") + ")";
 			text = text.PadLeft ((ManualA4CharPerLine - text.Length) / 2 + text.Length);
 
-			string tmp = "(<> – индикация на дисплее, [] – кнопки клавиатуры)";
+			string tmp = UserManuals.UserManualsTip;
 			tmp = tmp.PadLeft ((ManualA4CharPerLine - tmp.Length) / 2 + tmp.Length);
 			text += (RDLocale.RN + tmp);
 
@@ -1385,7 +1389,7 @@ namespace RD_AAOW
 			document.WriteTo (osi);
 
 			osi.Close ();
-			javaStream.Close ();
+			/*javaStream.Close ();*/
 
 			// Завершено
 			printStream.Close ();

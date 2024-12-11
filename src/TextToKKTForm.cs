@@ -161,6 +161,7 @@ namespace RD_AAOW
 			KKTListForManuals.Items.AddRange (kb.UserGuides.GetKKTList ());
 			KKTListForManuals.SelectedIndex = (int)AppSettings.KKTForManuals;
 			UserManualFlags = (KassArrayDB::RD_AAOW.UserManualsFlags)AppSettings.UserManualFlags;
+			UserManualsTipLabel.Text = KassArrayDB::RD_AAOW.UserManuals.UserManualsTip;
 
 			if (AppSettings.EnableExtendedMode) // Уровень 1
 				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationTypes);
@@ -1131,6 +1132,7 @@ namespace RD_AAOW
 
 			// Успешно
 			RDGenerics.MessageBox (RDMessageTypes.Success_Center, "Логотип успешно добавлен", 1000);
+			AddManualLogo.Checked = true;
 			}
 
 		/// <summary>
