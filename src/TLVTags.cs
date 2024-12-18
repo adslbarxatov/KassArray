@@ -323,7 +323,7 @@ namespace RD_AAOW
 			res = res.Replace ("OFD", "оператора фискальных данных");
 			res = res.Replace ("INC1", "Псевдотег, инкапсулирующий");
 			res = res.Replace ("INC2", "в выгрузке архива ФН");
-			res = res.Replace ("OLD", "[устарел]");
+			res = res.Replace ("OLD", "[упразднён]");
 
 			return TagNumber.ToString () + " (0x" + TagNumber.ToString ("X4") + "): " + res;
 			}
