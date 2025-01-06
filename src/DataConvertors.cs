@@ -1,9 +1,146 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 
 namespace RD_AAOW
 	{
+	/// <summary>
+	/// Класс предоставляет справочник описаний для блоков символов Unicode
+	/// </summary>
+	public class UnicodeDescriptor
+		{
+		// Списки
+		private List<ulong> lefts = new List<ulong> ();
+		private List<ulong> rights = new List<ulong> ();
+		private List<string> descriptions = new List<string> ();
+
+		/// <summary>
+		/// Конструктор. Выполняет загрузку справочника
+		/// </summary>
+		public UnicodeDescriptor ()
+			{
+			// Получение файла
+			var enc = RDGenerics.GetEncoding (RDEncodings.UTF8);
+#if !ANDROID
+			string ud = enc.GetString (RD_AAOW.Properties.KassArrayDB.Unicodes);
+#else
+			string ud = enc.GetString (RD_AAOW.Properties.Resources.Unicodes);
+#endif
+			StringReader udSR = new StringReader (ud);
+
+
+			// Загрузка
+			char[] udSplitter = new char[] { '\t' };
+			string s;
+			while ((s = udSR.ReadLine ()) != null)
+				{
+				string[] values = s.Split (udSplitter, StringSplitOptions.RemoveEmptyEntries);
+				switch (values.Length)
+					{
+					default:
+						continue;
+
+					case 2:
+						if (values[1] == "*")
+							descriptions.Add ("(неиспользуемый блок)");
+						else
+							descriptions.Add (values[1]);
+
+						lefts.Add (ulong.Parse (values[0], NumberStyles.HexNumber));
+						rights.Add (0);
+						/*rights.Add (ulong.Parse (values[2], NumberStyles.HexNumber));*/
+						break;
+
+					case 1:
+						rights[rights.Count - 1] = ulong.Parse (values[0], NumberStyles.HexNumber);
+						break;
+					}
+				}
+
+			// Готово. Протягивание правых краёв диапазонов
+			udSR.Close ();
+			for (int i = descriptions.Count - 2; i >= 0; i--)
+				rights[i] = lefts[i + 1] - 1;
+
+			/*// !!! КОПИЯ !!!
+			FileStream FSO = new FileStream ("Unicodes.new", FileMode.Create);
+			StreamWriter SWO = new StreamWriter (FSO, RDGenerics.GetEncoding (RDEncodings.UTF8));
+
+			for (int i = 0; i < descriptions.Count; i++)
+				{
+				if (descriptions[i].StartsWith ("("))
+					SWO.Write (lefts[i].ToString ("X6") + "\t*\n");
+				else
+					SWO.Write (lefts[i].ToString ("X6") + "\t" +
+						descriptions[i] + "\n");
+				}
+
+			SWO.Close ();
+			FSO.Close ();*/
+			}
+
+		/// <summary>
+		/// Возвращает максимальное допустимое значение для конвертора Unicode
+		/// </summary>
+		public ulong MaxValue
+			{
+			get
+				{
+				return rights[rights.Count - 1];
+				}
+			}
+
+		/// <summary>
+		/// Метод запрашивает описание блока, в который входит указанный символ
+		/// </summary>
+		/// <param name="UnicodeCharacter">Код символа Unicode</param>
+		/// <returns>Описание блока Unicode</returns>
+		public string GetDescription (ulong UnicodeCharacter)
+			{
+			if (UnicodeCharacter > MaxValue)
+				return "(символ вне диапазона Unicode)";
+
+			int i;
+			for (i = 0; i < descriptions.Count; i++)
+				if ((UnicodeCharacter >= lefts[i]) && (UnicodeCharacter <= rights[i]))
+					break;
+
+			return descriptions[i];
+			}
+
+		/// <summary>
+		/// Метод возвращает начало диапазона Unicode по его описанию
+		/// </summary>
+		/// <param name="Description">Описание блока или его фрагмент</param>
+		/// <returns>Возвращает true в случае обнаружения</returns>
+		public ulong FindRange (string Description)
+			{
+			// Защита
+			if (string.IsNullOrWhiteSpace (Description))
+				return 0;
+			string description = Description.ToLower ();
+
+			// Поиск по описанию
+			lastIndex++;
+			int i;
+			for (i = 0; i < descriptions.Count; i++)
+				if (descriptions[(i + lastIndex) % descriptions.Count].ToLower ().Contains (description))
+					{
+					i = lastIndex = (i + lastIndex) % descriptions.Count;
+					break;
+					}
+
+			// Проверка
+			if ((i < 0) || (i >= descriptions.Count))
+				return 0;
+
+			// Найдено
+			return lefts[i];
+			}
+		private int lastIndex = 0;
+		}
+
 	/// <summary>
 	/// Класс обеспечивает доступ к функционалу преобразования числовых и символьных данных
 	/// </summary>
@@ -158,8 +295,12 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="Symbol">Символ Unicode или его числовой код</param>
 		/// <param name="Increment">Приращение к коду символа</param>
-		/// <returns>Возвращает символ и его описание в виде двухэлементного вектора</returns>
-		public static string[] GetSymbolDescription (string Symbol, short Increment)
+		/// <param name="UD">Инициализированный справочник описаний символов Unicode</param>
+		/// <returns>Возвращает массив из трёх строк:
+		/// - сам символ
+		/// - его полное описание
+		/// - шестнадцатеричное представление его кода</returns>
+		public static string[] GetSymbolDescription (string Symbol, short Increment, UnicodeDescriptor UD)
 			{
 			// Защита
 			string[] answer = new string[] { " ", "(введите символ или его код)", "0" };
@@ -187,7 +328,7 @@ namespace RD_AAOW
 				n = 0;
 			else
 				n = (ulong)((long)n + Increment);
-			if (n > 0x10FFFF)
+			if (n > UD.MaxValue)
 				return answer;
 
 			byte[] ch = new byte[]{
@@ -199,9 +340,10 @@ namespace RD_AAOW
 			answer[0] = RDGenerics.GetEncoding (RDEncodings.Unicode32).GetString (ch);
 
 			// Сборка описания
-			answer[1] = "Символ: U+" + n.ToString ("X4") + RDLocale.RN + "HTML:   &#" + n.ToString () + ";";
+			answer[1] = "Символ: U+" + n.ToString ("X6") + RDLocale.RN + "HTML:   &#" + n.ToString () + ";";
 			answer[1] += (RDLocale.RN + "Класс:  " + CharUnicodeInfo.GetUnicodeCategory (answer[0][0]).ToString ());
-			answer[2] = "0x" + n.ToString ("X4");
+			answer[1] += (RDLocale.RN + "Блок:   " + UD.GetDescription (n));
+			answer[2] = "0x" + n.ToString ("X6");
 			return answer;
 			}
 

@@ -37,38 +37,39 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			int line = 0;
-			try
+
+			/*tr y
+				{*/
+			// Чтение кодов
+			while (line < buf.Length)
 				{
+				// Чтение названия
+				names.Add (buf[line++]);
+
 				// Чтение кодов
-				while (line < buf.Length)
+				codes.Add (new List<int> ());
+
+				for (int i = 0; i < 0x100; i++)
 					{
-					// Чтение названия
-					names.Add (buf[line++]);
-
-					// Чтение кодов
-					codes.Add (new List<int> ());
-
-					for (int i = 0; i < 0x100; i++)
-						{
-						if (i < 32)
-							codes[codes.Count - 1].Add (-1);
-						else
-							codes[codes.Count - 1].Add (int.Parse (buf[line++]));
-						}
-
-					// Чтение представления и примечания
-					presentations.Add (buf[line++]);
-					descriptions.Add (buf[line++]);
+					if (i < 32)
+						codes[codes.Count - 1].Add (-1);
+					else
+						codes[codes.Count - 1].Add (int.Parse (buf[line++]));
 					}
 
-				if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
-					(descriptions.Count != presentations.Count))
-					throw new Exception ("KKT codes reading failure, point 1");
+				// Чтение представления и примечания
+				presentations.Add (buf[line++]);
+				descriptions.Add (buf[line++]);
 				}
-			catch
-				{
-				throw new Exception ("KKT codes reading failure, point 2, line " + line.ToString ());
-				}
+
+			if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
+				(descriptions.Count != presentations.Count))
+				throw new Exception ("KKT codes reading failure, point 1");
+			/*}
+		catch
+			{
+			throw new Exception ("KKT codes reading failure, point 2, line " + line.ToString ());
+			}*/
 			}
 
 		// Метод возвращает код указанного символа

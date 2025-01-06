@@ -23,27 +23,27 @@ namespace RD_AAOW
 		/// <summary>
 		/// Флаг указывает на выбор ФН на 13/15 месяцев вместо 36
 		/// </summary>
-		FN15 = 0x0001,
+		FN15 = 0x00001,
 
 		/// <summary>
 		/// Флаг указывает на выбор ФН на 13 месяцев вместо 15
 		/// </summary>
-		FNExactly13 = 0x0002,
+		FNExactly13 = 0x00002,
 
 		/// <summary>
 		/// Флаг указыввает на применение ОСН
 		/// </summary>
-		GenericTax = 0x0010,
+		GenericTax = 0x00010,
 
 		/// <summary>
 		/// Флаг указывает на режим товаров вместо услуг
 		/// </summary>
-		Goods = 0x0020,
+		Goods = 0x00020,
 
 		/// <summary>
 		/// Флаг указывает на сезонный режим работы
 		/// </summary>
-		Season = 0x0040,
+		Season = 0x00040,
 
 		/// <summary>
 		/// Флаг указывает на агентскую схему работы
@@ -53,37 +53,42 @@ namespace RD_AAOW
 		/// <summary>
 		/// Флаг указывает на наличие подакцизных товаров
 		/// </summary>
-		Excise = 0x0100,
+		Excise = 0x00100,
 
 		/// <summary>
 		/// Флаг указывает на работу без передачи данных
 		/// </summary>
-		Autonomous = 0x0200,
+		Autonomous = 0x00200,
 
 		/// <summary>
 		/// Флаг ФФД 1.2
 		/// </summary>
-		FFD12 = 0x0400,
+		FFD12 = 0x00400,
 
 		/// <summary>
-		/// Флаг ФН с аппаратной поддержкой маркировки
+		/// Флаг ФН с любой поддержкой ФФД 1.2
 		/// </summary>
-		MarkFN = 0x0800,
+		FFD12Compatible = 0x00800,
 
 		/// <summary>
 		/// Флаг торговли маркированными товарами
 		/// </summary>
-		MarkGoods = 0x1000,
+		MarkGoods = 0x01000,
 
 		/// <summary>
 		/// Флаг азартных игр и лотерей
 		/// </summary>
-		GamblingAndLotteries = 0x2000,
+		GamblingAndLotteries = 0x02000,
 
 		/// <summary>
 		/// Флаг ломбардной деятельности и страхования
 		/// </summary>
-		PawnsAndInsurance = 0x4000,
+		PawnsAndInsurance = 0x04000,
+
+		/// <summary>
+		/// Флаг ФН с полной поддержкой ФФД 1.2
+		/// </summary>
+		FFD12FullSupport = 0x08000,
 		}
 
 	/// <summary>
@@ -226,14 +231,14 @@ namespace RD_AAOW
 			if (Flags.HasFlag (FNLifeFlags.GenericTax) && !Flags.HasFlag (FNLifeFlags.FN15) &&
 				Flags.HasFlag (FNLifeFlags.Goods))
 				{
-				if (Flags.HasFlag (FNLifeFlags.FFD12) && Flags.HasFlag (FNLifeFlags.MarkFN))
-					res = FNLifeStatus.StronglyUnwelcome;
+				if (/*Flags.HasFlag (FNLifeFlags.FFD12) &&*/ Flags.HasFlag (FNLifeFlags.FFD12FullSupport))	// Проверено
+					res = FNLifeStatus.Unwelcome;
 				else
 					res = FNLifeStatus.Inacceptable;
 				}
 
 			// Невозможные варианты
-			else if (Flags.HasFlag (FNLifeFlags.FFD12) && !Flags.HasFlag (FNLifeFlags.MarkFN) ||
+			else if (Flags.HasFlag (FNLifeFlags.FFD12) && !Flags.HasFlag (FNLifeFlags.FFD12Compatible) ||
 
 				!Flags.HasFlag (FNLifeFlags.Goods) && (Flags.HasFlag (FNLifeFlags.Excise) ||
 				Flags.HasFlag (FNLifeFlags.MarkGoods)) ||
@@ -443,6 +448,12 @@ namespace RD_AAOW
 
 			return RNMFirstPart.PadLeft (10, '0') + crc.ToString ().PadLeft (6, '0');
 			}
+
+		/// <summary>
+		/// Возвращает подсказку по генерации регистрационного номера ККТ
+		/// </summary>
+		public const string RNMTip = "Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
+			"РНМ их можно указать вручную – остальные будут достроены программой";
 
 		/// <summary>
 		/// Метод-преобразователь символов в коды CP1251
@@ -1299,6 +1310,88 @@ namespace RD_AAOW
 		private static string statusesDirectory = RDGenerics.AppStartupPath + "CachedStatuses";
 
 #endif
+
+		/// <summary>
+		/// Метод получает поисковый критерий в зависимости от условий, с которыми он был запрошен
+		/// </summary>
+		/// <param name="ButtonName">Имя кнопки, с помощью которой вызван метод:
+		/// - при наличии в имени слова Next метод использует заданный ранее критерий;
+		/// - при наличии в имени слова Buffer метод извлечёт критерий из буфера обмена;
+		/// - в остальных случаях будет отображено окно ввода критерия</param>
+		/// <param name="OldCriteria">Старое значение критерия</param>
+		/// <param name="InputCaption">Комментарий к окну ввода критерия</param>
+		/// <param name="MaxInputLength">Максимальная длина строки критерия</param>
+		/// <returns>Возвращает две строки:
+		/// - строка с новым поисковым критерием
+		/// - строка результатов обработки:
+		///   I - необходимо увеличить поисковое смещение
+		///   Z - необходимо обнулить поисковое смещение
+		///   C - ввод был отменён</returns>
+		public static
+#if ANDROID
+			async Task<string[]>
+#else
+			string[]
+#endif
+		ObtainSearchCriteria (string ButtonName, string OldCriteria, string InputCaption, uint MaxInputLength)
+			{
+			string search;
+			string[] res = new string[] { "", "" };
+
+			if (ButtonName.Contains ("Next"))
+				{
+				search = res[0] = OldCriteria;
+				res[1] = "I";
+				}
+
+			else if (ButtonName.Contains ("Buffer"))
+				{
+#if ANDROID
+				search = await RDGenerics.GetFromClipboard ();
+#else
+				search = RDGenerics.GetFromClipboard ();
+#endif
+
+				if (search.Length > MaxInputLength)
+					search = search.Substring (0, (int)MaxInputLength);
+				if (!string.IsNullOrWhiteSpace (search))
+					{
+					res[0] = search;
+					res[1] = "I";
+					}
+				else
+					{
+					res[0] = OldCriteria;
+					res[1] = "C";
+					}
+				}
+
+			else
+				{
+#if ANDROID
+				search = await AndroidSupport.ShowInput ("Поиск", InputCaption,
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find),
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
+					MaxInputLength, Keyboard.Default);
+#else
+				search = RDGenerics.MessageBox (InputCaption, true, MaxInputLength, OldCriteria);
+#endif
+
+				if (!string.IsNullOrWhiteSpace (search))
+					{
+					res[0] = search;
+					res[1] = "Z";
+					}
+				else
+					{
+					res[0] = OldCriteria;
+					res[1] = "C";
+					}
+				}
+
+			return res;
+			}
+
 		}
 
 #if ANDROID
@@ -1389,7 +1482,6 @@ namespace RD_AAOW
 			document.WriteTo (osi);
 
 			osi.Close ();
-			/*javaStream.Close ();*/
 
 			// Завершено
 			printStream.Close ();

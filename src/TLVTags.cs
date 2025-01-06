@@ -174,69 +174,69 @@ namespace RD_AAOW
 			string[] tlvValues,
 				oblValues = oblSR.ReadLine ().Split (oblSplitter, StringSplitOptions.RemoveEmptyEntries);
 
-			try
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = tlvSR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = tlvSR.ReadLine ()) != null)
+				tlvValues = str.Split (tlvSplitter, StringSplitOptions.RemoveEmptyEntries);
+
+				// Описания тегов
+				if (tlvValues.Length >= 3)
 					{
-					tlvValues = str.Split (tlvSplitter, StringSplitOptions.RemoveEmptyEntries);
+					// Список команд
+					tags.Add (uint.Parse (tlvValues[0]));
+					descriptions.Add (BuildDescription (tlvValues[1], tags[tags.Count - 1]));
+					types.Add (BuildType (tlvValues[2]));
 
-					// Описания тегов
-					if (tlvValues.Length >= 3)
-						{
-						// Список команд
-						tags.Add (uint.Parse (tlvValues[0]));
-						descriptions.Add (BuildDescription (tlvValues[1], tags[tags.Count - 1]));
-						types.Add (BuildType (tlvValues[2]));
-
-						if (tlvValues.Length > 3)
-							links.Add (int.Parse (tlvValues[3]) - 1);
-						else
-							links.Add (-1);
-
-						oblIndices.Add (new List<int> ());
-
-						// Разбор списка обязательности
-						while ((oblValues.Length == 8) && (uint.Parse (oblValues[1]) == tags[tags.Count - 1]))
-							{
-							uint type = uint.Parse (oblValues[0]);
-							oblFFDVersions.Add ((TLVTags_FFDVersions)(type / 100));
-							oblDocTypes.Add ((TLVTags_DocumentTypes)(type % 100));
-
-							oblPrintObligations.Add ((TLVTags_ObligationStates)uint.Parse (oblValues[2]));
-							oblPrintConditions.Add ((oblValues[3] == "-") ? "" : oblValues[3]);
-							oblVirtualObligations.Add ((TLVTags_ObligationStates)uint.Parse (oblValues[4]));
-							oblVirtualConditions.Add ((oblValues[5] == "-") ? "" : oblValues[5]);
-							oblTables.Add (oblValues[6]);
-							oblParents.Add ((oblValues[7] == "-") ? "" : oblValues[7]);
-
-							oblIndices[oblIndices.Count - 1].Add (oblFFDVersions.Count - 1);
-							if ((str = oblSR.ReadLine ()) == null)
-								break;
-							oblValues = str.Split (oblSplitter, StringSplitOptions.RemoveEmptyEntries);
-							}
-						}
-
-					// Описания значений тегов
-					else if (tlvValues.Length == 2)
-						{
-						if (int.Parse (tlvValues[0]) > possibleValues.Count)
-							possibleValues.Add ("");
-
-						possibleValues[possibleValues.Count - 1] += (tlvValues[1] + RDLocale.RN);
-						}
-
-					// Пропуски
+					if (tlvValues.Length > 3)
+						links.Add (int.Parse (tlvValues[3]) - 1);
 					else
+						links.Add (-1);
+
+					oblIndices.Add (new List<int> ());
+
+					// Разбор списка обязательности
+					while ((oblValues.Length == 8) && (uint.Parse (oblValues[1]) == tags[tags.Count - 1]))
 						{
-						continue;
+						uint type = uint.Parse (oblValues[0]);
+						oblFFDVersions.Add ((TLVTags_FFDVersions)(type / 100));
+						oblDocTypes.Add ((TLVTags_DocumentTypes)(type % 100));
+
+						oblPrintObligations.Add ((TLVTags_ObligationStates)uint.Parse (oblValues[2]));
+						oblPrintConditions.Add ((oblValues[3] == "-") ? "" : oblValues[3]);
+						oblVirtualObligations.Add ((TLVTags_ObligationStates)uint.Parse (oblValues[4]));
+						oblVirtualConditions.Add ((oblValues[5] == "-") ? "" : oblValues[5]);
+						oblTables.Add (oblValues[6]);
+						oblParents.Add ((oblValues[7] == "-") ? "" : oblValues[7]);
+
+						oblIndices[oblIndices.Count - 1].Add (oblFFDVersions.Count - 1);
+						if ((str = oblSR.ReadLine ()) == null)
+							break;
+						oblValues = str.Split (oblSplitter, StringSplitOptions.RemoveEmptyEntries);
 						}
 					}
+
+				// Описания значений тегов
+				else if (tlvValues.Length == 2)
+					{
+					if (int.Parse (tlvValues[0]) > possibleValues.Count)
+						possibleValues.Add ("");
+
+					possibleValues[possibleValues.Count - 1] += (tlvValues[1] + RDLocale.RN);
+					}
+
+				// Пропуски
+				else
+					{
+					continue;
+					}
 				}
-			catch
-				{
-				throw new Exception ("TLV tags data reading failure, point 1");
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("TLV tags data reading failure, point 1");
+			}*/
 
 			// Завершено
 			tlvSR.Close ();
@@ -305,6 +305,28 @@ namespace RD_AAOW
 			return true;
 			}
 		private int lastIndex = 0;
+
+		/// <summary>
+		/// Метод возвращает название поддерживаемой версии ФФД по её коду
+		/// </summary>
+		/// <param name="Version">Поддерживаемая версия ФФД</param>
+		public string GetFFDName (TLVTags_FFDVersions Version)
+			{
+			switch (Version)
+				{
+				case TLVTags_FFDVersions.FFD_105:
+					return "Для ФФД 1.05";
+
+				case TLVTags_FFDVersions.FFD_110:
+					return "Для ФФД 1.1";
+
+				case TLVTags_FFDVersions.FFD_120:
+					return "Для ФФД 1.2";
+
+				default:
+					return "";
+				}
+			}
 
 		// Метод распаковывает текст описания
 		private string BuildDescription (string Source, uint TagNumber)

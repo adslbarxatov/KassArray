@@ -100,30 +100,30 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { ';' };
 
-			try
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
-					{
-					string[] values = str.Split (splitters);
+				string[] values = str.Split (splitters);
 
-					// Описания тегов
-					if (values.Length < 3)
-						continue;
+				// Описания тегов
+				if (values.Length < 3)
+					continue;
 
-					rangeStart.Add (uint.Parse (values[0]));
-					if (values[1] == "")
-						rangeEnd.Add (rangeStart[rangeStart.Count - 1]);
-					else
-						rangeEnd.Add (uint.Parse (values[1]));
-					descriptions.Add (values[2]);
-					country.Add (values.Length == 3);
-					}
+				rangeStart.Add (uint.Parse (values[0]));
+				if (values[1] == "")
+					rangeEnd.Add (rangeStart[rangeStart.Count - 1]);
+				else
+					rangeEnd.Add (uint.Parse (values[1]));
+				descriptions.Add (values[2]);
+				country.Add (values.Length == 3);
 				}
-			catch
-				{
-				throw new Exception ("Barcodes data reading failure, point 1");
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("Barcodes data reading failure, point 1");
+			}*/
 
 			// Завершено
 			SR.Close ();

@@ -33,36 +33,36 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { ';' };
 
-			try
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
+				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+
+				// Имя протокола
+				if (values.Length == 1)
 					{
-					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+					names.Add (new List<string> ());
+					commands.Add (new List<string> ());
+					descriptions.Add (new List<string> ());
 
-					// Имя протокола
-					if (values.Length == 1)
-						{
-						names.Add (new List<string> ());
-						commands.Add (new List<string> ());
-						descriptions.Add (new List<string> ());
+					protocols.Add (values[0]);
+					}
 
-						protocols.Add (values[0]);
-						}
-
-					// Список команд
-					else if (values.Length == 3)
-						{
-						names[names.Count - 1].Add (values[0]);
-						commands[commands.Count - 1].Add (values[1]);
-						descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", RDLocale.RN));
-						}
+				// Список команд
+				else if (values.Length == 3)
+					{
+					names[names.Count - 1].Add (values[0]);
+					commands[commands.Count - 1].Add (values[1]);
+					descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", RDLocale.RN));
 					}
 				}
-			catch
-				{
-				throw new Exception ("Low level commands data reading failure, point 1");
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("Low level commands data reading failure, point 1");
+			}*/
 
 			// Завершено
 			SR.Close ();

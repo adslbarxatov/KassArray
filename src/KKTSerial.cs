@@ -43,67 +43,67 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { '\t' };
 
-			try
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
+				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+
+				// Защита
+				if (values.Length < 2)
+					continue;
+				registryStats[0]++;
+
+				FFDSupportStates state = FFDSupportStates.None;
+				for (int i = 0; i < ffdNames.Length; i++)
 					{
-					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-
-					// Защита
-					if (values.Length < 2)
-						continue;
-					registryStats[0]++;
-
-					FFDSupportStates state = FFDSupportStates.None;
-					for (int i = 0; i < ffdNames.Length; i++)
+					switch (values[1][i])
 						{
-						switch (values[1][i])
-							{
-							case '1':
-								state |= (FFDSupportStates)(1 << i);
-								registryStats[1 + i]++;
-								break;
+						case '1':
+							state |= (FFDSupportStates)(1 << i);
+							registryStats[1 + i]++;
+							break;
 
-							case '0':
-								state |= (FFDSupportStates)((1 << i) << 4);
-								break;
+						case '0':
+							state |= (FFDSupportStates)((1 << i) << 4);
+							break;
 
-							case '+':
-								state |= (FFDSupportStates)((1 << i) << 8);
-								break;
-							}
-						}
-
-					// Протокол
-					if (values.Length < 6)
-						continue;
-
-					// Список команд
-					names.Add (values[0]);
-					serialLengths.Add (uint.Parse (values[3]));
-					if (maxSNLength < serialLengths[serialLengths.Count - 1])
-						maxSNLength = serialLengths[serialLengths.Count - 1];
-
-					serialSamples.Add (values[4]);
-					serialOffsets.Add (uint.Parse (values[5]));
-					ffdSupport.Add (state);
-
-					if (values[2] == "1")
-						{
-						serialConfirmed.Add (true);
-						registryStats[1 + ffdNames.Length]++;
-						}
-					else
-						{
-						serialConfirmed.Add (false);
+						case '+':
+							state |= (FFDSupportStates)((1 << i) << 8);
+							break;
 						}
 					}
+
+				// Протокол
+				if (values.Length < 6)
+					continue;
+
+				// Список команд
+				names.Add (values[0]);
+				serialLengths.Add (uint.Parse (values[3]));
+				if (maxSNLength < serialLengths[serialLengths.Count - 1])
+					maxSNLength = serialLengths[serialLengths.Count - 1];
+
+				serialSamples.Add (values[4]);
+				serialOffsets.Add (uint.Parse (values[5]));
+				ffdSupport.Add (state);
+
+				if (values[2] == "1")
+					{
+					serialConfirmed.Add (true);
+					registryStats[1 + ffdNames.Length]++;
+					}
+				else
+					{
+					serialConfirmed.Add (false);
+					}
 				}
-			catch
-				{
-				throw new Exception ("KKT serial numbers data reading failure, point 1");
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("KKT serial numbers data reading failure, point 1");
+			}*/
 
 			// Завершено
 			SR.Close ();
@@ -116,16 +116,16 @@ namespace RD_AAOW
 #endif
 			SR = new StringReader (buf);
 
-			try
-				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
-					regions.Add (str == "-" ? "" : str);
-				}
-			catch
-				{
-				throw new Exception ("KKT serial numbers data reading failure, point 2");
-				}
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
+				regions.Add (str == "-" ? "" : str);
+			/*}
+		catch
+			{
+			throw new Exception ("KKT serial numbers data reading failure, point 2");
+			}*/
 
 			// Завершено
 			SR.Close ();

@@ -38,38 +38,38 @@ namespace RD_AAOW
 			uint line = 0;
 			string str;
 
-			try
+			/*tr y
+				{*/
+			// Чтение кодов
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение кодов
-				while ((str = SR.ReadLine ()) != null)
+				// Обработка строки
+				line++;
+				string[] values = str.Split (splitters, StringSplitOptions.None);
+
+				switch (values.Length)
 					{
-					// Обработка строки
-					line++;
-					string[] values = str.Split (splitters, StringSplitOptions.None);
+					case 1:
+						errors.Add (new List<KKTError> ());
+						names.Add (values[0]);
+						break;
 
-					switch (values.Length)
-						{
-						case 1:
-							errors.Add (new List<KKTError> ());
-							names.Add (values[0]);
-							break;
+					case 2:
+						errors[errors.Count - 1].Add (new KKTError (values[0], values[1]));
+						break;
 
-						case 2:
-							errors[errors.Count - 1].Add (new KKTError (values[0], values[1]));
-							break;
+					case 3:
+						continue;
 
-						case 3:
-							continue;
-
-						default:
-							break;
-						}
+					default:
+						break;
 					}
 				}
-			catch
-				{
-				throw new Exception ("Error codes reading failure, point 1, line " + line.ToString ());
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("Error codes reading failure, point 1, line " + line.ToString ());
+			}*/
 
 			// Завершено
 			SR.Close ();

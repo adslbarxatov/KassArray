@@ -39,47 +39,47 @@ namespace RD_AAOW
 			char[] splitters = new char[] { '\t' };
 			bool connectors = true;
 
-			try
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
+				// Переключение
+				if (string.IsNullOrWhiteSpace (str))
 					{
-					// Переключение
-					if (string.IsNullOrWhiteSpace (str))
-						{
-						connectors = false;
-						continue;
-						}
-
-					// Чтение разъёмов
-					if (connectors)
-						{
-						connectorsNames.Add (str.Substring (3));
-						connectorsDescriptions.Add (SR.ReadLine ());
-						continue;
-						}
-
-					// Чтение кабелей
-					cablesNames.Add (str);
-
-					string[] values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-					cablesLeftSides.Add (values[0]);
-					cablesLeftDescriptions.Add (uint.Parse (values[1]));
-
-					values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-					cablesRightSides.Add (values[0]);
-					cablesRightDescriptions.Add (uint.Parse (values[1]));
-
-					cablesLeftPins.Add (SR.ReadLine ().Replace ("\t", " | "));
-					cablesRightPins.Add (SR.ReadLine ().Replace ("\t", " | "));
-
-					SR.ReadLine ();
+					connectors = false;
+					continue;
 					}
+
+				// Чтение разъёмов
+				if (connectors)
+					{
+					connectorsNames.Add (str.Substring (3));
+					connectorsDescriptions.Add (SR.ReadLine ());
+					continue;
+					}
+
+				// Чтение кабелей
+				cablesNames.Add (str);
+
+				string[] values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+				cablesLeftSides.Add (values[0]);
+				cablesLeftDescriptions.Add (uint.Parse (values[1]));
+
+				values = SR.ReadLine ().Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+				cablesRightSides.Add (values[0]);
+				cablesRightDescriptions.Add (uint.Parse (values[1]));
+
+				cablesLeftPins.Add (SR.ReadLine ().Replace ("\t", " | "));
+				cablesRightPins.Add (SR.ReadLine ().Replace ("\t", " | "));
+
+				SR.ReadLine ();
 				}
-			catch
-				{
-				throw new Exception ("Connectors data reading failure, point 1");
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("Connectors data reading failure, point 1");
+			}*/
 
 			// Завершено
 			SR.Close ();

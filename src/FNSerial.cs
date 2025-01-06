@@ -82,44 +82,44 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { '\t' };
 
-			try
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
+				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+
+				// Имя протокола
+				if (values.Length != 5)
+					continue;
+				registryStats[2]++;
+
+				bool newOne = !names.Contains (values[1]);
+				names.Add (values[1]);
+				serials.Add (values[0]);
+				isAllowed.Add (values[2] == "A");
+				flags.Add ((FNSerialFlags)uint.Parse (values[3], RDGenerics.HexNumberStyle));
+				addresses.Add (UInt16.Parse (values[4], RDGenerics.HexNumberStyle));
+
+				// Статистика
+				if (isAllowed[isAllowed.Count - 1] && newOne)
 					{
-					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-
-					// Имя протокола
-					if (values.Length != 5)
-						continue;
-					registryStats[2]++;
-
-					bool newOne = !names.Contains (values[1]);
-					names.Add (values[1]);
-					serials.Add (values[0]);
-					isAllowed.Add (values[2] == "A");
-					flags.Add ((FNSerialFlags)uint.Parse (values[3], RDGenerics.HexNumberStyle));
-					addresses.Add (UInt16.Parse (values[4], RDGenerics.HexNumberStyle));
-
-					// Статистика
-					if (isAllowed[isAllowed.Count - 1] && newOne)
-						{
-						registryStats[0]++;
-						if (flags[flags.Count - 1].HasFlag (FNSerialFlags.FN36))
-							registryStats[1]++;
-						}
-
-					if (!serials[serials.Count - 1].Contains ("?"))
-						registryStats[3]++;
-
-					if (addresses[addresses.Count - 1] != 0)
-						registryStats[4]++;
+					registryStats[0]++;
+					if (flags[flags.Count - 1].HasFlag (FNSerialFlags.FN36))
+						registryStats[1]++;
 					}
+
+				if (!serials[serials.Count - 1].Contains ("?"))
+					registryStats[3]++;
+
+				if (addresses[addresses.Count - 1] != 0)
+					registryStats[4]++;
 				}
-			catch
-				{
-				throw new Exception ("FN serial numbers data reading failure, point 1");
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("FN serial numbers data reading failure, point 1");
+			}*/
 
 			// Завершено
 			SR.Close ();
@@ -166,12 +166,21 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Возвращает флаг, указывающий на поддержку ФФД 1.2 моделью ФН, соответствующей указанному ЗН
+		/// Возвращает флаг, указывающий на общую поддержку ФФД 1.2 моделью ФН, соответствующей указанному ЗН
 		/// </summary>
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
 		public bool IsFNCompatibleWithFFD12 (string FNSerialNumber)
 			{
 			return CheckFNState (FNSerialNumber, FNSerialFlags.FNM) > 0;
+			}
+
+		/// <summary>
+		/// Возвращает флаг, указывающий на полную поддержку ФФД 1.2 моделью ФН, соответствующей указанному ЗН
+		/// </summary>
+		/// <param name="FNSerialNumber">Заводской номер ФН</param>
+		public bool IsFNCompletelySupportsFFD12 (string FNSerialNumber)
+			{
+			return CheckFNState (FNSerialNumber, FNSerialFlags.FNPS) > 0;
 			}
 
 		// Проверяет флаги ФН. Возвращает:
@@ -259,13 +268,13 @@ namespace RD_AAOW
 		/// Возвращает сообщение о том, что указанный ФН не рекомендуется использовать при указаных параметрах
 		/// </summary>
 		public const string FNIsNotRecommendedMessage =
-			"• Не рекомендуется использовать выбранный ФН с указанными параметрами";
+			"• Использование выбранного ФН с указанными параметрами возможно, но не рекомендуется";
 
 		/// <summary>
 		/// Возвращает сообщение о том, что указанный ФН неприменим при указаных параметрах
 		/// </summary>
 		public const string FNIsNotAcceptableMessage =
-			"• Выбранный ФН неприменим с указанными параметрами";
+			"• Выбранный ФН невозможно использовать с указанными параметрами";
 
 		/// <summary>
 		/// Возвращает сообщение о том, что указанный ФН может быть использован при указаных параметрах,
@@ -279,7 +288,7 @@ namespace RD_AAOW
 		/// Возвращает сообщение о том, что указанный может быть использован при указаных параметрах
 		/// </summary>
 		public const string FNIsAcceptableMessage =
-			"• Выбранный ФН может быть использован с указанными параметрами";
+			"• Выбранный ФН может быть использован с указанными параметрами без ограничений";
 
 		/// <summary>
 		/// Метод возвращает флаги ФН по его заводскому номеру

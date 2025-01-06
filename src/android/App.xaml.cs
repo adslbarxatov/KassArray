@@ -609,9 +609,9 @@ namespace RD_AAOW
 
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
 				AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "RNMAbout",
-					"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
-					"РНМ их можно указать вручную – остальные будут достроены программой",
-					RDLabelTypes.TipLeft);
+					/*"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
+					"РНМ их можно указать вручную – остальные будут достроены программой"*/
+					KKTSupport.RNMTip, RDLabelTypes.TipLeft);
 
 			AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "Clear",
 				RDDefaultButtons.Delete, uiColors[rnmPage][cField], RNMClear_Clicked);

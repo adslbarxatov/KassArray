@@ -126,6 +126,18 @@
 		private Connectors conn;
 
 		/// <summary>
+		/// Возвращает справочник описаний символов Unicode
+		/// </summary>
+		public UnicodeDescriptor Unicodes
+			{
+			get
+				{
+				return ud;
+				}
+			}
+		private UnicodeDescriptor ud;
+
+		/// <summary>
 		/// Конструктор. Инициализирует базу знаний
 		/// </summary>
 		public KnowledgeBase ()
@@ -140,6 +152,7 @@
 			tlvt = new TLVTags ();
 			barc = new BarCodes ();
 			conn = new Connectors ();
+			ud = new UnicodeDescriptor ();
 			}
 		}
 	}

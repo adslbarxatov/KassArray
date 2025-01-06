@@ -10,20 +10,21 @@ namespace RD_AAOW
 	public class OFD
 		{
 		// Переменные
-		private List<string> names = new List<string> (),
-			inn = new List<string> (),
+		private List<string> names = new List<string> ();
+		private List<string> inn = new List<string> ();
 
-			dnsNames = new List<string> (),
-			ip = new List<string> (),
-			ports = new List<string> (),
-			emails = new List<string> (),
-			links = new List<string> (),
+		private List<string> dnsNames = new List<string> ();
+		private List<string> ip = new List<string> ();
+		private List<string> ports = new List<string> ();
+		private List<string> emails = new List<string> ();
+		private List<string> links = new List<string> ();
 
-			dnsNamesM = new List<string> (),
-			ipM = new List<string> (),
-			portsM = new List<string> (),
+		private List<string> dnsNamesM = new List<string> ();
+		private List<string> ipM = new List<string> ();
+		private List<string> portsM = new List<string> ();
 
-			disabledMessages = new List<string> ();
+		private List<string> disabledMessages = new List<string> ();
+
 		private const string notFound = "[не найдено]";
 		private const string notFoundFlag = "?";
 		private const string equivalentFlag = "=";
@@ -71,53 +72,53 @@ namespace RD_AAOW
 			char[] splitters = new char[] { '\t' };
 			uint line = 0;
 
-			try
+			/*tr y
+				{*/
+			// Чтение параметров
+			while ((str = SR.ReadLine ()) != null)
 				{
-				// Чтение параметров
-				while ((str = SR.ReadLine ()) != null)
-					{
-					line++;
-					string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-					if (values.Length != 11)
-						continue;
+				line++;
+				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+				if (values.Length != 11)
+					continue;
 
-					inn.Add (values[0]);
-					names.Add (values[1]);
+				inn.Add (values[0]);
+				names.Add (values[1]);
 
-					dnsNames.Add (values[2] == notFoundFlag ? notFound : values[2]);
-					ip.Add (values[3] == notFoundFlag ? notFound : values[3]);
-					ports.Add (values[4] == notFoundFlag ? "[???]" : values[4]);
-					emails.Add (values[5] == notFoundFlag ? notFound : values[5]);
-					links.Add (values[6] == notFoundFlag ? notFound : values[6]);
+				dnsNames.Add (values[2] == notFoundFlag ? notFound : values[2]);
+				ip.Add (values[3] == notFoundFlag ? notFound : values[3]);
+				ports.Add (values[4] == notFoundFlag ? "[???]" : values[4]);
+				emails.Add (values[5] == notFoundFlag ? notFound : values[5]);
+				links.Add (values[6] == notFoundFlag ? notFound : values[6]);
 
-					if (values[7] == notFoundFlag)
-						dnsNamesM.Add (notFound);
-					else if (values[7] == equivalentFlag)
-						dnsNamesM.Add (dnsNames[dnsNames.Count - 1]);
-					else
-						dnsNamesM.Add (values[7]);
+				if (values[7] == notFoundFlag)
+					dnsNamesM.Add (notFound);
+				else if (values[7] == equivalentFlag)
+					dnsNamesM.Add (dnsNames[dnsNames.Count - 1]);
+				else
+					dnsNamesM.Add (values[7]);
 
-					if (values[8] == notFoundFlag)
-						ipM.Add (notFound);
-					else if (values[8] == equivalentFlag)
-						ipM.Add (ip[ip.Count - 1]);
-					else
-						ipM.Add (values[8]);
+				if (values[8] == notFoundFlag)
+					ipM.Add (notFound);
+				else if (values[8] == equivalentFlag)
+					ipM.Add (ip[ip.Count - 1]);
+				else
+					ipM.Add (values[8]);
 
-					if (values[9] == notFoundFlag)
-						portsM.Add ("[???]");
-					else if (values[9] == equivalentFlag)
-						portsM.Add (ports[ports.Count - 1]);
-					else
-						portsM.Add (values[9]);
+				if (values[9] == notFoundFlag)
+					portsM.Add ("[???]");
+				else if (values[9] == equivalentFlag)
+					portsM.Add (ports[ports.Count - 1]);
+				else
+					portsM.Add (values[9]);
 
-					disabledMessages.Add ((values[10] == "-") ? "" : values[10]);
-					}
+				disabledMessages.Add ((values[10] == "-") ? "" : values[10]);
 				}
-			catch
-				{
-				throw new Exception ("OFD data reading failure, point 1");
-				}
+			/*}
+		catch
+			{
+			throw new Exception ("OFD data reading failure, point 1");
+			}*/
 
 			// Завершено
 			SR.Close ();
