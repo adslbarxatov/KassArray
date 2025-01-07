@@ -1372,7 +1372,7 @@ namespace RD_AAOW
 				search = await AndroidSupport.ShowInput ("Поиск", InputCaption,
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find),
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
-					MaxInputLength, Keyboard.Default);
+					MaxInputLength, Keyboard.Default, OldCriteria);
 #else
 				search = RDGenerics.MessageBox (InputCaption, true, MaxInputLength, OldCriteria);
 #endif

@@ -9,11 +9,11 @@
 			<Label x:Name="SelectionLabel" />
 			<Button x:Name="KKTButton" />
 
-			<Label x:Name="SearchLabel" />
+			<Label />
 			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-				<Editor x:Name="ErrorSearchText" VerticalOptions="Center" />
-				<Button x:Name="ErrorSearchButton" VerticalOptions="Center" />
-				<Button x:Name="ErrorClearButton" VerticalOptions="Center" />
+				<Button x:Name="ErrorFindButton" VerticalOptions="Center" />
+				<Button x:Name="ErrorFindNextButton" VerticalOptions="Center" />
+				<Button x:Name="ErrorFindBufferButton" VerticalOptions="Center" />
 			</StackLayout>
 
 			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 

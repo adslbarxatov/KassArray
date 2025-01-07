@@ -300,7 +300,7 @@ namespace RD_AAOW
 		/// - сам символ
 		/// - его полное описание
 		/// - шестнадцатеричное представление его кода</returns>
-		public static string[] GetSymbolDescription (string Symbol, short Increment, UnicodeDescriptor UD)
+		public static string[] GetSymbolDescription (string Symbol, long Increment, UnicodeDescriptor UD)
 			{
 			// Защита
 			string[] answer = new string[] { " ", "(введите символ или его код)", "0" };

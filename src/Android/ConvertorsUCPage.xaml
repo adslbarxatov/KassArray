@@ -6,10 +6,10 @@
 	<ScrollView>
 		<StackLayout>
 
-			<StackLayout Orientation="Horizontal">
-				<Label x:Name="ConvCodeLabel" VerticalOptions="Center" />
-				<Editor x:Name="ConvCodeField" VerticalOptions="Center" />
+			<Label x:Name="ConvCodeLabel" />
+			<Editor x:Name="ConvCodeField" HorizontalTextAlignment="Center" />
 
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 				<Button x:Name="ConvCodeInc" VerticalOptions="Center" />
 				<Button x:Name="ConvCodeDec" VerticalOptions="Center" />
 				<Button x:Name="ConvCodeClear" VerticalOptions="Center" />
@@ -24,6 +24,14 @@
 			<Label x:Name="ConvCodeResultLabel" />
 			<Button x:Name="ConvCodeSymbolField" HorizontalOptions="Center" />
 			<Label x:Name="ConvCodeResultField" />
+
+			<Label />
+
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Button x:Name="ConvCodeFindButton" VerticalOptions="Center" />
+				<Button x:Name="ConvCodeFindNextButton" VerticalOptions="Center" />
+				<Button x:Name="ConvCodeFindBufferButton" VerticalOptions="Center" />
+			</StackLayout>
 
 			<Label />
 

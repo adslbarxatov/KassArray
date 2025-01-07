@@ -10,11 +10,10 @@
 			<Label x:Name="OFDNameLabel" />
 			<Button x:Name="OFDName" />
 
-			<Label x:Name="OFDSearchLabel" />
 			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-				<Editor x:Name="OFDSearchText" VerticalOptions="Center" />
-				<Button x:Name="OFDSearchButton" VerticalOptions="Center" />
-				<Button x:Name="Clear" VerticalOptions="Center" />
+				<Button x:Name="OFDFindButton" VerticalOptions="Center" />
+				<Button x:Name="OFDFindNextButton" VerticalOptions="Center" />
+				<Button x:Name="OFDFindBufferButton" VerticalOptions="Center" />
 			</StackLayout>
 
 			<Label x:Name="OFDHelpLabel" />

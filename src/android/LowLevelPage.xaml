@@ -12,11 +12,10 @@
 			<Label x:Name="CommandLabel" />
 			<Button x:Name="CommandButton" />
 
-			<Label x:Name="CommandSearchLabel" />
 			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-				<Editor x:Name="CommandSearchText" VerticalOptions="Center" />
-				<Button x:Name="CommandSearchButton" VerticalOptions="Center" />
-				<Button x:Name="CommandClearButton" VerticalOptions="Center" />
+				<Button x:Name="CommandFindButton" VerticalOptions="Center" />
+				<Button x:Name="CommandFindNextButton" VerticalOptions="Center" />
+				<Button x:Name="CommandFindBufferButton" VerticalOptions="Center" />
 			</StackLayout>
 
 			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 

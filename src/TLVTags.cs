@@ -249,7 +249,11 @@ namespace RD_AAOW
 		/// <param name="Tag">Номер тега или фрагмент описания</param>
 		/// <param name="FFD">Версия ФФД для определения обязательности</param>
 		/// <returns>Возвращает true в случае обнаружения</returns>
-		public bool FindTag (string Tag, TLVTags_FFDVersions FFD)
+		public bool FindTag (string Tag
+#if !ANDROID
+			, TLVTags_FFDVersions FFD
+#endif
+			)
 			{
 			// Защита
 			if (string.IsNullOrWhiteSpace (Tag))

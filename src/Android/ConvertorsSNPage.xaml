@@ -6,10 +6,10 @@
 	<ScrollView>
 		<StackLayout>
 
-			<StackLayout Orientation="Horizontal">
-				<Label x:Name="ConvNumberLabel" VerticalOptions="Center" />
-				<Editor x:Name="ConvNumberField" VerticalOptions="Center" />
+			<Label x:Name="ConvNumberLabel" />
+			<Editor x:Name="ConvNumberField" HorizontalTextAlignment="Center" />
 
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 				<Button x:Name="ConvNumberInc" VerticalOptions="Center" />
 				<Button x:Name="ConvNumberDec" VerticalOptions="Center" />
 				<Button x:Name="ConvNumberClear" VerticalOptions="Center" />

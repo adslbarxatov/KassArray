@@ -10,9 +10,9 @@
 			<Button x:Name="CableTypeButton" />
 
 			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-				<Editor x:Name="ConnSearchText" VerticalOptions="Center" />
-				<Button x:Name="ConnSearchButton" VerticalOptions="Center" />
-				<Button x:Name="ConnClearButton" VerticalOptions="Center" />
+				<Button x:Name="ConnFindButton" VerticalOptions="Center" />
+				<Button x:Name="ConnFindNextButton" VerticalOptions="Center" />
+				<Button x:Name="ConnFindBufferButton" VerticalOptions="Center" />
 			</StackLayout>
 
 			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 

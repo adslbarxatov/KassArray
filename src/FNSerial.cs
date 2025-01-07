@@ -82,8 +82,6 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { '\t' };
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
@@ -115,11 +113,6 @@ namespace RD_AAOW
 				if (addresses[addresses.Count - 1] != 0)
 					registryStats[4]++;
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("FN serial numbers data reading failure, point 1");
-			}*/
 
 			// Завершено
 			SR.Close ();
@@ -178,7 +171,7 @@ namespace RD_AAOW
 		/// Возвращает флаг, указывающий на полную поддержку ФФД 1.2 моделью ФН, соответствующей указанному ЗН
 		/// </summary>
 		/// <param name="FNSerialNumber">Заводской номер ФН</param>
-		public bool IsFNCompletelySupportsFFD12 (string FNSerialNumber)
+		public bool IsFNCompletelySupportingFFD12 (string FNSerialNumber)
 			{
 			return CheckFNState (FNSerialNumber, FNSerialFlags.FNPS) > 0;
 			}
@@ -249,8 +242,10 @@ namespace RD_AAOW
 			string model = FNModel.ToLower ();
 			int i;
 			for (i = 0; i < names.Count; i++)
+				{
 				if (names[i].ToLower ().Contains (model))
 					break;
+				}
 
 			if (i >= names.Count)
 				return "";
