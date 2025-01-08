@@ -190,7 +190,7 @@ namespace RD_AAOW
 
 			int v = 1;
 			if (addresses[i] == 0)
-				return v = 2;
+				v = 2;
 
 			return (flags[i].HasFlag (Flags) ? v : -v);
 			}
