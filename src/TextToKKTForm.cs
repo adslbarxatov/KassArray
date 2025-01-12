@@ -167,13 +167,13 @@ namespace RD_AAOW
 
 			KKTListForManuals.Items.AddRange (kb.UserGuides.GetKKTList ());
 			KKTListForManuals.SelectedIndex = (int)AppSettings.KKTForManuals;
-			UserManualFlags = (KassArrayDB::RD_AAOW.UserManualsFlags)AppSettings.UserManualFlags;
-			UserManualsTipLabel.Text = KassArrayDB::RD_AAOW.UserManuals.UserManualsTip;
+			UserManualFlags = (KassArrayDB::RD_AAOW.UserGuidesFlags)AppSettings.UserGuidesFlags;
+			UserManualsTipLabel.Text = KassArrayDB::RD_AAOW.UserGuides.UserManualsTip;
 
 			if (AppSettings.EnableExtendedMode) // Уровень 1
-				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationTypes);
+				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserGuides.OperationTypes (false));
 			else
-				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserManuals.OperationsForCashiers);
+				OperationsListForManuals.Items.AddRange (KassArrayDB::RD_AAOW.UserGuides.OperationTypes (true));
 
 			try
 				{
@@ -190,12 +190,6 @@ namespace RD_AAOW
 
 			CableType.SelectedIndex = (int)AppSettings.CableType;
 
-			/*TLV_FFDCombo.Items.Add ("ФФД 1.05");
-			TLV_FFDCombo.Items.Add ("ФФД 1.1");
-			TLV_FFDCombo.Items.Add ("ФФД 1.2");
-			TLV_FFDCombo.SelectedIndex = (int)AppSettings.FFDForTLV;*/
-
-			/*TLVFind.Text = AppSettings.TLVData;*/
 			TLV_ObligationBase.Text = KassArrayDB::RD_AAOW.TLVTags.ObligationBase;
 			TLVButton_Click (TLVFindNextButton, null);
 
@@ -385,7 +379,7 @@ namespace RD_AAOW
 
 			AppSettings.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			AppSettings.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
-			AppSettings.UserManualFlags = (uint)UserManualFlags;
+			AppSettings.UserGuidesFlags = (uint)UserManualFlags;
 			/*AppSettings.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;*/
 
 			AppSettings.ConversionNumber = ConvNumber.Text;
@@ -1222,25 +1216,28 @@ namespace RD_AAOW
 		// Выбор модели аппарата
 		private void KKTListForManuals_SelectedIndexChanged (object sender, EventArgs e)
 			{
+			if (OperationsListForManuals.SelectedIndex < 0)
+				return;
 			byte idx = (byte)OperationsListForManuals.SelectedIndex;
 
-			var sections = (KassArrayDB::RD_AAOW.UserManualsSections)AppSettings.UserManualSectionsState;
-			AddToPrint.Checked = sections.HasFlag ((KassArrayDB::RD_AAOW.UserManualsSections)(1u << idx));
+			/*var sections = (KassArrayDB::RD_AAOW.UserManualsSections)AppSettings.UserManualSectionsState;
+			AddToPrint.Checked = sections.HasFlag ((KassArrayDB::RD_AAOW.UserManualsSections)(1u << idx));*/
+			AddToPrint.Checked = ((AppSettings.UserGuidesSectionsState & (1u << idx)) != 0);
 
-			UMOperationText.Text = kb.UserGuides.GetManual ((uint)KKTListForManuals.SelectedIndex, idx,
-				UserManualFlags);
+			UMOperationText.Text = kb.UserGuides.GetGuide ((uint)KKTListForManuals.SelectedIndex,
+				(KassArrayDB::RD_AAOW.UserGuidesTypes)idx, UserManualFlags);
 			}
 
 		// Печать инструкции
 		private void PrintUserManual_Click (object sender, EventArgs e)
 			{
 			// Сборка задания на печать
-			KassArrayDB::RD_AAOW.UserManualsFlags flags = UserManualFlags;
+			KassArrayDB::RD_AAOW.UserGuidesFlags flags = UserManualFlags;
 			if (((Button)sender).Name == PrintUserManualForCashier.Name)
-				flags |= KassArrayDB::RD_AAOW.UserManualsFlags.GuideForCashier;
+				flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.GuideForCashier;
 
-			string text = KassArrayDB::RD_AAOW.KKTSupport.BuildUserManual (kb.UserGuides,
-				(uint)KKTListForManuals.SelectedIndex, AppSettings.UserManualSectionsState, flags);
+			string text = KassArrayDB::RD_AAOW.KKTSupport.BuildUserGuide (kb.UserGuides,
+				(uint)KKTListForManuals.SelectedIndex, AppSettings.UserGuidesSectionsState, flags);
 
 			// Печать
 			KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4);
@@ -1249,15 +1246,15 @@ namespace RD_AAOW
 		// Выбор компонентов инструкции
 		private void AddToPrint_CheckedChanged (object sender, EventArgs e)
 			{
-			var sections = (KassArrayDB::RD_AAOW.UserManualsSections)AppSettings.UserManualSectionsState;
-			var idx = (KassArrayDB::RD_AAOW.UserManualsSections)(1u << OperationsListForManuals.SelectedIndex);
+			uint sections = AppSettings.UserGuidesSectionsState;
+			uint idx = (1u << (byte)OperationsListForManuals.SelectedIndex);
 
 			if (AddToPrint.Checked)
 				sections |= idx;
 			else
 				sections &= ~idx;
 
-			AppSettings.UserManualSectionsState = (uint)sections;
+			AppSettings.UserGuidesSectionsState = sections;
 			}
 
 		// Выбор лого для руководства пользователя
@@ -1307,45 +1304,45 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает или задаёт состав флагов для руководства пользователя
 		/// </summary>
-		private KassArrayDB::RD_AAOW.UserManualsFlags UserManualFlags
+		private KassArrayDB::RD_AAOW.UserGuidesFlags UserManualFlags
 			{
 			get
 				{
-				KassArrayDB::RD_AAOW.UserManualsFlags flags = 0;
+				KassArrayDB::RD_AAOW.UserGuidesFlags flags = 0;
 
 				if (MoreThanOneItemPerDocument.Checked)
-					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument;
+					flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.MoreThanOneItemPerDocument;
 				if (ProductBaseContainsPrices.Checked)
-					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices;
+					flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.ProductBaseContainsPrices;
 				if (CashiersHavePasswords.Checked)
-					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords;
+					flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.CashiersHavePasswords;
 				if (BaseContainsServices.Checked)
-					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices;
+					flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.ProductBaseContainsServices;
 				if (DocumentsContainMarks.Checked)
-					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks;
+					flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.DocumentsContainMarks;
 				if (BaseContainsSingleItem.Checked)
-					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.BaseContainsSingleItem;
+					flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.BaseContainsSingleItem;
 				if (AddManualLogo.Checked)
-					flags |= KassArrayDB::RD_AAOW.UserManualsFlags.AddManualLogo;
+					flags |= KassArrayDB::RD_AAOW.UserGuidesFlags.AddManualLogo;
 
 				return flags;
 				}
 			set
 				{
 				MoreThanOneItemPerDocument.Checked =
-					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.MoreThanOneItemPerDocument);
+					value.HasFlag (KassArrayDB::RD_AAOW.UserGuidesFlags.MoreThanOneItemPerDocument);
 				ProductBaseContainsPrices.Checked =
-					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsPrices);
+					value.HasFlag (KassArrayDB::RD_AAOW.UserGuidesFlags.ProductBaseContainsPrices);
 				CashiersHavePasswords.Checked =
-					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.CashiersHavePasswords);
+					value.HasFlag (KassArrayDB::RD_AAOW.UserGuidesFlags.CashiersHavePasswords);
 				BaseContainsServices.Checked =
-					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.ProductBaseContainsServices);
+					value.HasFlag (KassArrayDB::RD_AAOW.UserGuidesFlags.ProductBaseContainsServices);
 				DocumentsContainMarks.Checked =
-					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.DocumentsContainMarks);
+					value.HasFlag (KassArrayDB::RD_AAOW.UserGuidesFlags.DocumentsContainMarks);
 				BaseContainsSingleItem.Checked =
-					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.BaseContainsSingleItem);
+					value.HasFlag (KassArrayDB::RD_AAOW.UserGuidesFlags.BaseContainsSingleItem);
 				AddManualLogo.Checked =
-					value.HasFlag (KassArrayDB::RD_AAOW.UserManualsFlags.AddManualLogo);
+					value.HasFlag (KassArrayDB::RD_AAOW.UserGuidesFlags.AddManualLogo);
 				}
 			}
 

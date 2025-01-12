@@ -4,9 +4,105 @@ using System.IO;
 namespace RD_AAOW
 	{
 	/// <summary>
+	/// Поддерживаемые секции в разделе пользовательских инструкций
+	/// </summary>
+	public enum UserGuidesTypes
+		{
+		/// <summary>
+		/// Открытие смены
+		/// </summary>
+		SessionOpen,
+
+		/// <summary>
+		/// Продажа за наличные
+		/// </summary>
+		SellForCash,
+
+		/// <summary>
+		/// Продажа по карте
+		/// </summary>
+		SellForCard,
+
+		/// <summary>
+		/// Продажа по штрих-коду
+		/// </summary>
+		SellWithBarcode,
+
+		/// <summary>
+		/// Продажа с количеством
+		/// </summary>
+		SellWithQuantity,
+
+		/// <summary>
+		/// Продажа с электронным чеком
+		/// </summary>
+		SellWithSMS,
+
+		/// <summary>
+		/// Аннулирование
+		/// </summary>
+		Annulment,
+
+		/// <summary>
+		/// Возврат
+		/// </summary>
+		Reverse,
+
+		/// <summary>
+		/// Внесение наличных
+		/// </summary>
+		CashDeposit,
+
+		/// <summary>
+		/// Закрытие смены
+		/// </summary>
+		SessionClose,
+
+		/// <summary>
+		/// Коррекция даты
+		/// </summary>
+		DateCrorrection,
+
+		/// <summary>
+		/// Коррекция времени
+		/// </summary>
+		TimeCorrection,
+
+		/// <summary>
+		/// Тест связи с сетью интернет
+		/// </summary>
+		ConnectionTest,
+
+		/// <summary>
+		/// Автотест / информация о ККТ
+		/// </summary>
+		Autotest,
+
+		/// <summary>
+		/// Запрос состояния ФН
+		/// </summary>
+		FiscalStorageStatus,
+
+		/// <summary>
+		/// Запрос реквизитов регистраций
+		/// </summary>
+		RegistrationsRequest,
+
+		/// <summary>
+		/// Техобнуление
+		/// </summary>
+		SystemReset,
+
+		/// <summary>
+		/// Закрытие архива ФН
+		/// </summary>
+		FiscalStorageClose,
+		}
+
+	/// <summary>
 	/// Класс обеспечивает доступ к инструкциям по работе с ККТ
 	/// </summary>
-	public class UserManuals
+	public class UserGuides
 		{
 		// Переменные
 		private List<string> names = new List<string> ();
@@ -15,15 +111,27 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает список операций, для которых доступны инструкции
 		/// </summary>
-		public static string[] OperationTypes
+		/// <param name="ForCashiers">Флаг возврата операций, доступных для кассира</param>
+		public static string[] OperationTypes (bool ForCashiers)
 			{
-			get
-				{
-				return operationTypes;
-				}
+			if (ForCashiers)
+				return new string[] {
+					operationTypes[(int)UserGuidesTypes.SessionOpen],
+					operationTypes[(int)UserGuidesTypes.SellForCash],
+					operationTypes[(int)UserGuidesTypes.SellForCard],
+					operationTypes[(int)UserGuidesTypes.SellWithBarcode],
+					operationTypes[(int)UserGuidesTypes.SellWithQuantity],
+					operationTypes[(int)UserGuidesTypes.SellWithSMS],
+					operationTypes[(int)UserGuidesTypes.Annulment],
+					operationTypes[(int)UserGuidesTypes.Reverse],
+					operationTypes[(int)UserGuidesTypes.CashDeposit],
+					operationTypes[(int)UserGuidesTypes.SessionClose],
+					};
+
+			return operationTypes;
 			}
 
-		/// <summary>
+		/*/// <summary>
 		/// Возвращает список операций, допустимых для кассира (неспециалиста)
 		/// </summary>
 		public static string[] OperationsForCashiers
@@ -31,18 +139,29 @@ namespace RD_AAOW
 			get
 				{
 				return new string[] {
-					operationTypes[0],
-					operationTypes[1],
-					operationTypes[2],
-					operationTypes[3],
-					operationTypes[4],
-					operationTypes[5],
-					operationTypes[6],
-					operationTypes[7],
-					operationTypes[8],
+					operationTypes[(int)UserGuidesTypes.SessionOpen],
+					operationTypes[(int)UserGuidesTypes.SellForCash],
+					operationTypes[(int)UserGuidesTypes.SellForCard],
+					operationTypes[(int)UserGuidesTypes.SellWithBarcode],
+					operationTypes[(int)UserGuidesTypes.SellWithQuantity],
+					operationTypes[(int)UserGuidesTypes.SellWithSMS],
+					operationTypes[(int)UserGuidesTypes.Annulment],
+					operationTypes[(int)UserGuidesTypes.Reverse],
+					operationTypes[(int)UserGuidesTypes.CashDeposit],
+					operationTypes[(int)UserGuidesTypes.SessionClose],
 					};
 				}
-			}
+			}*/
+
+		/// <summary>
+		/// Возвращает рекомендуемое начальное состояние разделов руководства пользователя
+		/// </summary>
+		public const uint GuidesSectionsInitialState = 0x0FED7;
+
+		/// <summary>
+		/// Возвращает рекомендуемое начальное состояние флагов формирования руководства пользователя
+		/// </summary>
+		public const uint GuidesFlagsInitialState = 0x02;
 
 		private static string[] operationTypes = new string[] {
 			"Открытие смены",
@@ -53,22 +172,23 @@ namespace RD_AAOW
 			"Продажа с электронным чеком",
 			"Аннулирование",
 			"Возврат",						// 7, 0x???D?
+			"Внесение",
 			"Закрытие смены",
 
 			"Коррекция даты",
-			"Коррекция времени",
-			"Тест связи с сетью интернет",	// 11, 0x??F??
+			"Коррекция времени",			// 11, 0x??E??
+			"Тест связи с сетью интернет",
 			"Автотест / информация о ККТ",
 			"Запрос состояния ФН",
-			"Запрос реквизитов регистраций",
-			"Техобнуление",					// 15, 0x?7???
-			"Закрытие архива ФН",			// 16, 0x0????
+			"Запрос реквизитов регистраций",// 15, 0x?F???
+			"Техобнуление",
+			"Закрытие архива ФН",			// 17, 0x0????
 			};
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
-		public UserManuals ()
+		public UserGuides ()
 			{
 			// Получение файлов
 #if !ANDROID
@@ -97,42 +217,47 @@ namespace RD_AAOW
 					{
 					operations[i].Add ("• " + SR.ReadLine ().Replace ("|", RDLocale.RN + "• "));
 					string op = operations[i][operations[i].Count - 1];
+					UserGuidesTypes type = (UserGuidesTypes)i;
 
 					// Выборочные подстановки
-					switch (i)
+					switch (type)
 						{
-						case 0:
+						case UserGuidesTypes.SessionOpen:
 							op = op.Replace ("&B", "для открытия смены");
 							op = op.Replace ("• !", "!");
 							op = op.Replace ("• " + RDLocale.RN, RDLocale.RN);
 							break;
 
-						case 1:
-						case 2:
+						case UserGuidesTypes.SellForCash:
+						case UserGuidesTypes.SellForCard:
 							op = op.Replace ("• &1", "#1• ");
 							op = op.Replace ("&2", "#6");
 							op = op.Replace ("&02", "#06");
 							op = op.Replace ("&A", "для закрытия чека");
 							break;
 
-						case 3:
-						case 4:
+						case UserGuidesTypes.SellWithBarcode:
+						case UserGuidesTypes.SellWithQuantity:
 							op = op.Replace ("• &1", "#1• Закрыть чек согласно способу оплаты");
 							op = op.Replace ("&2", "#6");
 							op = op.Replace ("&02", "#06");
 							op = op.Replace ("&3", "Отсканировать штрих-код товара");
 
-							if (i == 4)
+							if (type == UserGuidesTypes.SellWithQuantity)
 								op = "Действие выполняется для всех позиций, " +
 									"в которых количество не равно единице:" + RDLocale.RN + op;
 							break;
 
-						case 6:
+						case UserGuidesTypes.SellWithSMS:
+							op = op.Replace ("• !", "!");
+							break;
+
+						case UserGuidesTypes.Annulment:
 							op = "Если требуется «отменить» чек, который ещё " +
 								"не был закрыт, выполняется аннулирование:" + RDLocale.RN + op;
 							break;
 
-						case 7:
+						case UserGuidesTypes.Reverse:
 							op = "Если требуется «отменить» чек, который уже " +
 								"был закрыт, выполняется возврат:" + RDLocale.RN + op +
 								";" + RDLocale.RN + "• Выполнить действия, описанные " +
@@ -140,22 +265,27 @@ namespace RD_AAOW
 								"от способа расчёта)";
 							break;
 
-						case 8:
+						case UserGuidesTypes.CashDeposit:
+							op = "Если ККТ сообщает о недостатке наличных для возврата, следует " +
+								"выполнить внесение:" + RDLocale.RN + op;
+							break;
+
+						case UserGuidesTypes.SessionClose:
 							op += ";" + RDLocale.RN + "• Дождаться снятия отчёта";
 							break;
 
-						case 9:
-						case 10:
+						case UserGuidesTypes.DateCrorrection:
+						case UserGuidesTypes.TimeCorrection:
 							if (!op.StartsWith ("• ("))
 								op = "! Необходимо предварительно закрыть смену;" + RDLocale.RN + op;
 							break;
 
-						case 15:
+						case UserGuidesTypes.SystemReset:
 							op = "! Необходимо убедиться, что сохранены все важные настройки;" +
 								RDLocale.RN + op;
 							break;
 
-						case 16:
+						case UserGuidesTypes.FiscalStorageClose:
 							if (!op.StartsWith ("• ("))
 								op =
 									"! Необходимо убедиться, что смена закрыта, а дата в ККТ позволяет закрыть архив;" +
@@ -198,21 +328,21 @@ namespace RD_AAOW
 		/// Возвращает инструкцию по указанному типу операции
 		/// </summary>
 		/// <param name="KKTType">Тип ККТ</param>
-		/// <param name="ManualType">Операция</param>
+		/// <param name="GuideType">Операция</param>
 		/// <param name="Flags">Флаги, определающие состав руководства</param>
-		public string GetManual (uint KKTType, uint ManualType, UserManualsFlags Flags)
+		public string GetGuide (uint KKTType, UserGuidesTypes GuideType, UserGuidesFlags Flags)
 			{
 			if (KKTType >= names.Count)
 				return "";
 
-			if (ManualType >= operationTypes.Length)
-				return names[(int)KKTType];
+			/*if (ManualType >= operationTypes.Length)
+				return names[(int)KKTType];*/
 
-			string text = operations[(int)ManualType][(int)KKTType];
-			bool goods = !Flags.HasFlag (UserManualsFlags.ProductBaseContainsServices);
-			if ((ManualType >= 1) && (ManualType <= 4))
+			string text = operations[(int)GuideType][(int)KKTType];
+			bool goods = !Flags.HasFlag (UserGuidesFlags.ProductBaseContainsServices);
+			if ((GuideType >= UserGuidesTypes.SellForCash) && (GuideType <= UserGuidesTypes.SellWithQuantity))
 				{
-				if (Flags.HasFlag (UserManualsFlags.MoreThanOneItemPerDocument))
+				if (Flags.HasFlag (UserGuidesFlags.MoreThanOneItemPerDocument))
 					{
 					text = text.Replace ("#1", "↑ (повторить описанные действия для всех " +
 						(goods ? "товаров" : "услуг") + " в чеке);" + RDLocale.RN);
@@ -222,7 +352,7 @@ namespace RD_AAOW
 					text = text.Replace ("#1", "");
 					}
 
-				if (Flags.HasFlag (UserManualsFlags.ProductBaseContainsPrices))
+				if (Flags.HasFlag (UserGuidesFlags.ProductBaseContainsPrices))
 					{
 					int left = text.IndexOf ("#3");
 					if (left >= 0)
@@ -238,9 +368,9 @@ namespace RD_AAOW
 					}
 				}
 
-			if (ManualType <= 4)
+			if (GuideType <= UserGuidesTypes.SellWithQuantity)
 				{
-				if (Flags.HasFlag (UserManualsFlags.BaseContainsSingleItem))
+				if (Flags.HasFlag (UserGuidesFlags.BaseContainsSingleItem))
 					{
 					text = text.Replace ("#6", "Нажать [1]");
 					text = text.Replace ("#06", "нажать [1]");
@@ -252,7 +382,7 @@ namespace RD_AAOW
 					}
 				}
 
-			if (Flags.HasFlag (UserManualsFlags.CashiersHavePasswords))
+			if (Flags.HasFlag (UserGuidesFlags.CashiersHavePasswords))
 				{
 				text = text.Replace ("#4", "ввести пароль кассира, если он задан, ");
 				text = text.Replace ("#5", "Ввести пароль кассира в случае запроса;" + RDLocale.RN + "• ");
@@ -262,7 +392,7 @@ namespace RD_AAOW
 				text = text.Replace ("#4", "").Replace ("#5", "");
 				}
 
-			if (Flags.HasFlag (UserManualsFlags.DocumentsContainMarks))
+			if (Flags.HasFlag (UserGuidesFlags.DocumentsContainMarks))
 				{
 				text = text.Replace ("#C", ";" + RDLocale.RN + "• Отсканировать код маркировки");
 				}
@@ -280,7 +410,7 @@ namespace RD_AAOW
 		public const string UserManualsTip = "<...> – индикация на дисплее, [...] – клавиши ККТ";
 		}
 
-	/// <summary>
+	/*/// <summary>
 	/// Возможные секции руководства пользователя
 	/// </summary>
 	public enum UserManualsSections
@@ -369,5 +499,5 @@ namespace RD_AAOW
 		/// Закрытие архива ФН
 		/// </summary>
 		ArchiveClose = 0x10000,
-		}
+		}*/
 	}

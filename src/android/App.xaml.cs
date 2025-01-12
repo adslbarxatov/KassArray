@@ -190,7 +190,7 @@ namespace RD_AAOW
 
 			#endregion
 
-			AndroidSupport.SetMasterPage (/*Windows[0].Page*/ MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
+			AndroidSupport.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
 
 			#region Страница «оглавления»
 
@@ -215,13 +215,16 @@ namespace RD_AAOW
 			Label ut = AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "SelectionLabel", "Модель ККТ:",
 				RDLabelTypes.HeaderLeft);
 			userManualLayout = (StackLayout)uiPages[usgPage].FindByName ("UserManualLayout");
-			int operationsCount = AppSettings.EnableExtendedMode ? UserManuals.OperationTypes.Length :
-				UserManuals.OperationsForCashiers.Length;   // Уровень 1
+			/*int operationsCount = AppSettings.EnableExtendedMode ? UserManuals.OperationTypes.Length :
+				UserManuals.OperationsForCashiers.Length;   // Уровень 1*/
+			int operationsCount = UserGuides.OperationTypes (!AppSettings.EnableExtendedMode).Length;
 
-			UserManualsSections sections = (UserManualsSections)AppSettings.UserManualSectionsState;
+			/*UserManualsSections sections = (UserManualsSections)AppSettings.UserManualSectionsState;*/
+			uint sections = AppSettings.UserGuidesSectionsState;
 			for (int i = 0; i < operationsCount; i++)
 				{
-				bool sectionEnabled = sections.HasFlag ((UserManualsSections)(1u << i));
+				/*bool sectionEnabled = sections.HasFlag ((UserManualsSections)(1u << i));*/
+				bool sectionEnabled = ((sections & (1u << i)) != 0);
 
 				Button bh = new Button ();
 				bh.BackgroundColor = uiColors[usgPage][cBack];
@@ -232,7 +235,7 @@ namespace RD_AAOW
 				bh.IsVisible = true;
 				bh.Margin = ut.Margin;
 				bh.Padding = new Thickness (6, 0);
-				bh.Text = UserManuals.OperationTypes[i] +
+				bh.Text = UserGuides.OperationTypes (false)[i] +
 					(sectionEnabled ? "" : operationButtonSignature);
 				bh.TextColor = ut.TextColor;
 				bh.HeightRequest = bh.FontSize * 1.5;
@@ -264,7 +267,7 @@ namespace RD_AAOW
 			userManualsPrintButton.HeightRequest = userManualsPrintButton.FontSize * 2.0;
 
 			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "HelpLabel",
-				UserManuals.UserManualsTip + RDLocale.RN +
+				UserGuides.UserManualsTip + RDLocale.RN +
 				"Нажатие на заголовки разделов позволяет добавить или скрыть их в видимой и печатной " +
 				"версиях этой инструкции",
 				RDLabelTypes.TipCenter);
@@ -299,7 +302,7 @@ namespace RD_AAOW
 			productBaseContainsSingleItem = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "SingleItemSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
-			UserManualFlags = (UserManualsFlags)AppSettings.UserManualFlags;
+			UserManualFlags = (UserGuidesFlags)AppSettings.UserGuidesFlags;
 
 			moreThanOneItemPerDocument.Toggled += UserManualsFlags_Clicked;
 			productBaseContainsPrices.Toggled += UserManualsFlags_Clicked;
@@ -958,6 +961,8 @@ namespace RD_AAOW
 				"Символ Unicode:", RDLabelTypes.HeaderLeft);
 			convCodeResultField = AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeResultField",
 				"", RDLabelTypes.FieldMonotype, uiColors[cvuPage][cField]);
+			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeDescrLabel",
+				"Описание символа:", RDLabelTypes.HeaderLeft);
 
 			convCodeSymbolField = AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeSymbolField",
 				" ", uiColors[cvuPage][cField], CopyCharacter_Click, true);
@@ -1126,7 +1131,7 @@ namespace RD_AAOW
 			AppSettings.ConversionText = convTextField.Text;
 			//ca.EncodingForConvertor	// -||-
 
-			AppSettings.UserManualFlags = (uint)UserManualFlags;
+			AppSettings.UserGuidesFlags = (uint)UserManualFlags;
 			}
 
 		/// <summary>
@@ -1969,12 +1974,15 @@ namespace RD_AAOW
 
 			for (int i = 0; i < operationTextLabels.Count; i++)
 				{
-				var sections = (UserManualsSections)AppSettings.UserManualSectionsState;
-				bool state = sections.HasFlag ((UserManualsSections)(1u << i));
+				/*var sections = (UserManualsSections)AppSettings.UserManualSectionsState;*/
+				uint sections = AppSettings.UserGuidesSectionsState;
+				/*bool state = sections.HasFlag ((UserManualsSections)(1u << i));*/
+				bool state = ((sections & (1u << i)) != 0);
 
-				operationTextButtons[i].Text = UserManuals.OperationTypes[i] + (state ?
+				operationTextButtons[i].Text = UserGuides.OperationTypes(false)[i] + (state ?
 					"" : operationButtonSignature);
-				operationTextLabels[i].Text = kb.UserGuides.GetManual ((uint)res, (uint)i, UserManualFlags);
+				operationTextLabels[i].Text = kb.UserGuides.GetGuide ((uint)res, (UserGuidesTypes)i,
+					UserManualFlags);
 				operationTextLabels[i].IsVisible = state;
 				}
 			}
@@ -1996,12 +2004,12 @@ namespace RD_AAOW
 				}
 
 			// Печать
-			UserManualsFlags flags = UserManualFlags;
+			UserGuidesFlags flags = UserManualFlags;
 			if (res == 0)
-				flags |= UserManualsFlags.GuideForCashier;
+				flags |= UserGuidesFlags.GuideForCashier;
 
-			string text = KKTSupport.BuildUserManual (kb.UserGuides, AppSettings.KKTForManuals,
-				AppSettings.UserManualSectionsState, flags);
+			string text = KKTSupport.BuildUserGuide (kb.UserGuides, AppSettings.KKTForManuals,
+				AppSettings.UserGuidesSectionsState, flags);
 			KKTSupport.PrintManual (text, res == 0);
 			}
 
@@ -2009,16 +2017,17 @@ namespace RD_AAOW
 		private void OperationTextButton_Clicked (object sender, EventArgs e)
 			{
 			byte idx = (byte)operationTextButtons.IndexOf ((Button)sender);
-			bool state = !!operationTextButtons[idx].Text.Contains (operationButtonSignature);
-			UserManualsSections sections = (UserManualsSections)AppSettings.UserManualSectionsState;
+			bool state = operationTextButtons[idx].Text.Contains (operationButtonSignature);
+			/*UserManualsSections sections = (UserManualsSections)AppSettings.UserManualSectionsState;*/
+			uint sections = AppSettings.UserGuidesSectionsState;
 
 			if (state)
-				sections |= (UserManualsSections)(1u << idx);
+				sections |= /*(UserManualsSections)*/(1u << idx);
 			else
-				sections &= ~(UserManualsSections)(1u << idx);
-			AppSettings.UserManualSectionsState = (uint)sections;
+				sections &= ~/*(UserManualsSections)*/(1u << idx);
+			AppSettings.UserGuidesSectionsState = (uint)sections;
 
-			operationTextButtons[idx].Text = UserManuals.OperationTypes[idx] +
+			operationTextButtons[idx].Text = UserGuides.OperationTypes(false)[idx] +
 				(state ? "" : operationButtonSignature);
 			operationTextLabels[idx].IsVisible = state;
 			}
@@ -2026,35 +2035,35 @@ namespace RD_AAOW
 		/// <summary>
 		/// Возвращает или задаёт состав флагов для руководства пользователя
 		/// </summary>
-		private UserManualsFlags UserManualFlags
+		private UserGuidesFlags UserManualFlags
 			{
 			get
 				{
-				UserManualsFlags flags = 0;
+				UserGuidesFlags flags = 0;
 
 				if (moreThanOneItemPerDocument.IsToggled)
-					flags |= UserManualsFlags.MoreThanOneItemPerDocument;
+					flags |= UserGuidesFlags.MoreThanOneItemPerDocument;
 				if (productBaseContainsPrices.IsToggled)
-					flags |= UserManualsFlags.ProductBaseContainsPrices;
+					flags |= UserGuidesFlags.ProductBaseContainsPrices;
 				if (cashiersHavePasswords.IsToggled)
-					flags |= UserManualsFlags.CashiersHavePasswords;
+					flags |= UserGuidesFlags.CashiersHavePasswords;
 				if (baseContainsServices.IsToggled)
-					flags |= UserManualsFlags.ProductBaseContainsServices;
+					flags |= UserGuidesFlags.ProductBaseContainsServices;
 				if (documentsContainMarks.IsToggled)
-					flags |= UserManualsFlags.DocumentsContainMarks;
+					flags |= UserGuidesFlags.DocumentsContainMarks;
 				if (productBaseContainsSingleItem.IsToggled)
-					flags |= UserManualsFlags.BaseContainsSingleItem;
+					flags |= UserGuidesFlags.BaseContainsSingleItem;
 
 				return flags;
 				}
 			set
 				{
-				moreThanOneItemPerDocument.IsToggled = value.HasFlag (UserManualsFlags.MoreThanOneItemPerDocument);
-				productBaseContainsPrices.IsToggled = value.HasFlag (UserManualsFlags.ProductBaseContainsPrices);
-				cashiersHavePasswords.IsToggled = value.HasFlag (UserManualsFlags.CashiersHavePasswords);
-				baseContainsServices.IsToggled = value.HasFlag (UserManualsFlags.ProductBaseContainsServices);
-				documentsContainMarks.IsToggled = value.HasFlag (UserManualsFlags.DocumentsContainMarks);
-				productBaseContainsSingleItem.IsToggled = value.HasFlag (UserManualsFlags.BaseContainsSingleItem);
+				moreThanOneItemPerDocument.IsToggled = value.HasFlag (UserGuidesFlags.MoreThanOneItemPerDocument);
+				productBaseContainsPrices.IsToggled = value.HasFlag (UserGuidesFlags.ProductBaseContainsPrices);
+				cashiersHavePasswords.IsToggled = value.HasFlag (UserGuidesFlags.CashiersHavePasswords);
+				baseContainsServices.IsToggled = value.HasFlag (UserGuidesFlags.ProductBaseContainsServices);
+				documentsContainMarks.IsToggled = value.HasFlag (UserGuidesFlags.DocumentsContainMarks);
+				productBaseContainsSingleItem.IsToggled = value.HasFlag (UserGuidesFlags.BaseContainsSingleItem);
 				}
 			}
 

@@ -389,6 +389,9 @@ enum TLVTags
 			sprintf (dest, "%s  Документов за смену: %s\r\n", dest, src); \
 			break;
 
+	// Ставки НДС, применённые при формировании чека (1115)
+	NDSItemsAll = 0x045B,
+		
 	// Номер первого непереданного документа (1116)
 	FirstUnsentDocumentNumber = 0x045C,
 
@@ -398,6 +401,12 @@ enum TLVTags
 	// Количество чеков и БСО за смену (1118)
 	InSessionBlanksCount = 0x045E,
 
+	// Отдельная ставка НДС, применённая при формировании чека (1119)
+	NDSItemSingle = 0x045F,
+		
+	// Сумма НДС (1120)
+	NDSItemSumma = 0x0460,
+		
 	// Флаг режима лотерей (1126)
 	LotteryFlag = 0x0466,
 
@@ -627,6 +636,18 @@ enum TLVTags
 				strcat (dest, GetExtendedRegOptions (src));\
 			break;
 
+	// Дробное количество маркированного товара (1291)
+	FractionalQuantity = 0x050B,
+		
+	// Дробная часть предмета расчёта, отображаемая в чеке (1292)
+	FractionalPrintableValue = 0x050C,
+		
+	// Числитель дробного количества (1293)
+	FractionalNumerator = 0x050D,
+		
+	// Знаменатель дробного количества (1294)
+	FractionalDenominator = 0x050E,
+		
 	// Типы кодов маркировки (1300 - 1309, 1320 - 1325)
 	MarkCode_Unknown = 0x0514,
 	MarkCode_EAN8 = 0x0515,
@@ -731,6 +752,8 @@ enum TLVTags
 	// ФП сообщения
 	FNA12Signature = 300,
 	FNASignature = 301,
+
+	// Упразднены FNArc версии 3.1.1.6, но могут присутствовать в файлах выгрузок
 
 	// Заголовок выгрузки данных регистрации
 	FNARegistrationProtocol = 304,

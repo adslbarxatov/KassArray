@@ -94,7 +94,7 @@ namespace RD_AAOW
 	/// <summary>
 	/// Доступные настроечные флаги для руководств пользователя
 	/// </summary>
-	public enum UserManualsFlags
+	public enum UserGuidesFlags
 		{
 		/// <summary>
 		/// Кассиры работают с паролями
@@ -1186,29 +1186,29 @@ namespace RD_AAOW
 		/// <summary>
 		/// Метод формирует руководство пользователя для ККТ
 		/// </summary>
-		/// <param name="Manuals">Активный экземпляр оператора руководств ККТ</param>
-		/// <param name="ManualNumber">Номер руководства</param>
+		/// <param name="Guides">Активный экземпляр оператора руководств ККТ</param>
+		/// <param name="GuideNumber">Номер руководства</param>
 		/// <param name="Flags">Флаги формирования руководства</param>
 		/// <param name="Sections">Список разрешённых секций руководства пользователя</param>
 		/// <returns>Возвращает инструкцию пользователя</returns>
-		public static string BuildUserManual (UserManuals Manuals, uint ManualNumber, ulong Sections,
-			UserManualsFlags Flags)
+		public static string BuildUserGuide (UserGuides Guides, uint GuideNumber, uint Sections,
+			UserGuidesFlags Flags)
 			{
-			bool forCashier = Flags.HasFlag ( UserManualsFlags.GuideForCashier);
+			bool forCashier = Flags.HasFlag (UserGuidesFlags.GuideForCashier);
 #if !ANDROID
-			addManualLogo = Flags.HasFlag (UserManualsFlags.AddManualLogo);
+			addManualLogo = Flags.HasFlag (UserGuidesFlags.AddManualLogo);
 #endif
 
-			string text = "Инструкция к ККТ " + Manuals.GetKKTList ()[(int)ManualNumber] +
+			string text = "Инструкция к ККТ " + Guides.GetKKTList ()[(int)GuideNumber] +
 				" (" + (forCashier ? "для кассиров" : "полная") + ")";
 			text = text.PadLeft ((ManualA4CharPerLine - text.Length) / 2 + text.Length);
 
-			string tmp = UserManuals.UserManualsTip;
+			string tmp = UserGuides.UserManualsTip;
 			tmp = tmp.PadLeft ((ManualA4CharPerLine - tmp.Length) / 2 + tmp.Length);
 			text += (RDLocale.RN + tmp);
 
-			string[] operations = UserManuals.OperationTypes;
-			uint operationsCount = forCashier ? (uint)UserManuals.OperationsForCashiers.Length :
+			string[] operations = UserGuides.OperationTypes (false);
+			uint operationsCount = forCashier ? (uint)UserGuides.OperationTypes (true).Length :
 				(uint)operations.Length;
 
 			for (int i = 0; i < operationsCount; i++)
@@ -1217,7 +1217,7 @@ namespace RD_AAOW
 					continue;
 
 				text += ((i != 0 ? RDLocale.RN : "") + RDLocale.RNRN + operations[i] + RDLocale.RNRN);
-				text += Manuals.GetManual (ManualNumber, (uint)i, Flags);
+				text += Guides.GetGuide (GuideNumber, (UserGuidesTypes)i, Flags);
 				}
 
 			return text;

@@ -56,14 +56,14 @@
 		/// <summary>
 		/// Возвращает оператор руководств пользователя ККТ
 		/// </summary>
-		public UserManuals UserGuides
+		public UserGuides UserGuides
 			{
 			get
 				{
-				return um;
+				return ug;
 				}
 			}
-		private UserManuals um;
+		private UserGuides ug;
 
 		/// <summary>
 		/// Возвращает оператор заводских номеров ККТ
@@ -146,7 +146,7 @@
 			kkte = new KKTErrorsList ();
 			ofd = new OFD ();
 			ll = new LowLevel ();
-			um = new UserManuals ();
+			ug = new UserGuides ();
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
 			tlvt = new TLVTags ();

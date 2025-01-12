@@ -6,6 +6,12 @@
 	<ScrollView>
 		<StackLayout>
 
+			<Label x:Name="ConvCodeResultLabel" />
+			<Button x:Name="ConvCodeSymbolField" HorizontalOptions="Center" />
+
+			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
+					WidthRequest="200" Color="#505050" Margin="6" />
+
 			<Label x:Name="ConvCodeLabel" />
 			<Editor x:Name="ConvCodeField" HorizontalTextAlignment="Center" />
 
@@ -21,8 +27,7 @@
 					WidthRequest="200" Color="#505050" Margin="6" />
 
 			<Label />
-			<Label x:Name="ConvCodeResultLabel" />
-			<Button x:Name="ConvCodeSymbolField" HorizontalOptions="Center" />
+			<Label x:Name="ConvCodeDescrLabel" />
 			<Label x:Name="ConvCodeResultField" />
 
 			<Label />
