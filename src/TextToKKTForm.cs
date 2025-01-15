@@ -26,7 +26,7 @@ namespace RD_AAOW
 
 		// Ссылки на текущие смещения в списках поиска
 		private int lastErrorSearchOffset = 0;
-		private const uint maxErrorSearchLength = 20;
+		/*private const uint maxErrorSearchLength = 20;*/
 
 		private int lastOFDSearchOffset = 0;
 		private int lastLowLevelSearchOffset = 0;
@@ -77,7 +77,7 @@ namespace RD_AAOW
 
 			if (KassArrayDB::ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Error_Center,
+				RDInterface.MessageBox (RDMessageTypes.Error_Center,
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
 					ProgramDescription.KassArrayDLLs[0]));
 
@@ -267,21 +267,19 @@ namespace RD_AAOW
 		// Включение / выключение режима сервис-инженера
 		private void ExtendedMode_CheckedChanged (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
 
 			if (ExtendedMode.Checked)
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Error_Left, AppSettings.ExtendedModeMessage);
+				RDInterface.MessageBox (RDMessageTypes.Error_Left, AppSettings.ExtendedModeMessage);
 				AppSettings.EnableExtendedMode = true;
 				}
 			else
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Question_Center, AppSettings.NoExtendedModeMessage);
+				RDInterface.MessageBox (RDMessageTypes.Question_Center, AppSettings.NoExtendedModeMessage);
 				AppSettings.EnableExtendedMode = false;
 				}
 
-			/*this.Top Most = TopFlag.Checked;*/
 			TMSet (true);
 			}
 
@@ -392,10 +390,8 @@ namespace RD_AAOW
 		// Отображение справки
 		private void BHelp_Clicked (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
-			RDGenerics.ShowAbout (false);
-			/*this.Top Most = TopFlag.Checked;*/
+			RDInterface.ShowAbout (false);
 			TMSet (true);
 			}
 
@@ -460,11 +456,9 @@ namespace RD_AAOW
 
 			if (string.IsNullOrWhiteSpace (status))
 				{
-				/*this.Top Most = false;*/
 				TMSet (false);
-				RDGenerics.MessageBox (RDMessageTypes.Information_Center,
+				RDInterface.MessageBox (RDMessageTypes.Information_Center,
 					"Статус ФН ещё не запрашивался или содержит не все требуемые поля", 2000);
-				/*this.Top Most = TopFlag.Checked;*/
 				TMSet (true);
 
 				return;
@@ -715,39 +709,6 @@ namespace RD_AAOW
 		#region Срок жизни ФН
 
 		// Поиск номера ФН
-		/*private void FNLifeSN_TextChanged (object sender, EventArgs e)
-			{
-			// Получение описания
-			if (!string.IsNullOrWhiteSpace (FNLifeSN.Text))
-				FNLifeName.Text = kb.FNNumbers.GetFNName (FNLifeSN.Text);
-			else
-				FNLifeName.Text = "(введите ЗН ФН)";
-
-			// Определение длины ключа
-			if (!kb.FNNumbers.IsFNKnown (FNLifeSN.Text))
-				{
-				FNLife36.Enabled = FNLife13.Enabled = true;
-				}
-			else
-				{
-				if (kb.FNNumbers.IsNotFor36Months (FNLifeSN.Text))
-					{
-					FNLife13.Enabled = true;
-					FNLife13.Checked = true;
-					FNLife36.Enabled = false;
-					}
-				else
-					{
-					FNLife36.Enabled = true;
-					FNLife36.Checked = true;
-					FNLife13.Enabled = false;
-					}
-				}
-
-			// Принудительное изменение
-			FNLifeStartDate_ValueChanged (null, null);
-			}*/
-
 		private void FNLife_Search (object sender, EventArgs e)
 			{
 			// Определение запроса
@@ -816,26 +777,26 @@ namespace RD_AAOW
 				{
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Inacceptable:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage;
 					break;
 
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Unwelcome:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.WarningText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage;
 					break;
 
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Acceptable:
 				default:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsAcceptableMessage;
 					break;
 
 				case KassArrayDB::RD_AAOW.FNLifeStatus.StronglyUnwelcome:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsStronglyUnwelcomeMessage;
 					break;
 				}
@@ -845,19 +806,19 @@ namespace RD_AAOW
 				if (!kb.FNNumbers.IsFNAllowed (AppSettings.FNSerial))
 					{
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
 					fnLifeMessage += (RDLocale.RN + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage);
-					FNLifeName.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					FNLifeName.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					}
 				else
 					{
-					FNLifeName.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+					FNLifeName.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 					}
 				}
 			else
 				{
-				FNLifeName.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				FNLifeName.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 				}
 			}
 
@@ -874,20 +835,16 @@ namespace RD_AAOW
 		// Отображение сообщения о применимости ФН
 		private void FNLifeStatus_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
-			RDGenerics.MessageBox (RDMessageTypes.Information_Left, fnLifeMessage);
-			/*this.Top Most = TopFlag.Checked;*/
+			RDInterface.MessageBox (RDMessageTypes.Information_Left, fnLifeMessage);
 			TMSet (true);
 			}
 
 		// Статистика по базе ЗН ККТ
 		private void FNLifeStats_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
-			RDGenerics.MessageBox (RDMessageTypes.Information_Left, kb.FNNumbers.RegistryStats);
-			/*this.Top Most = TopFlag.Checked;*/
+			RDInterface.MessageBox (RDMessageTypes.Information_Left, kb.FNNumbers.RegistryStats);
 			TMSet (true);
 			}
 
@@ -1005,11 +962,11 @@ namespace RD_AAOW
 			RegionLabel.Text = "";
 			int checkINN = KassArrayDB::RD_AAOW.KKTSupport.CheckINN (RNMUserINN.Text);
 			if (checkINN < 0)
-				RNMUserINN.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				RNMUserINN.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 			else if (checkINN == 0)
-				RNMUserINN.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+				RNMUserINN.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 			else
-				RNMUserINN.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+				RNMUserINN.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.WarningMessage);
 			// Не ошибка
 
 			RegionLabel.Text = kb.KKTNumbers.GetRegionName (RNMUserINN.Text);
@@ -1021,12 +978,12 @@ namespace RD_AAOW
 			{
 			// РН
 			if (RNMValue.Text.Length < 10)
-				RNMValue.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				RNMValue.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 			else if (KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (RNMUserINN.Text, AppSettings.KKTSerial,
 				RNMValue.Text.Substring (0, 10)) == RNMValue.Text)
-				RNMValue.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+				RNMValue.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 			else
-				RNMValue.BackColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+				RNMValue.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 			}
 
 		// Генерация регистрационного номера
@@ -1043,17 +1000,15 @@ namespace RD_AAOW
 					AppSettings.KKTSerial, RNMValue.Text.Substring (0, 10));
 
 			if (string.IsNullOrWhiteSpace (RNMValue.Text))
-				RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
 					"Убедитесь, что заводской номер ККТ и ИНН заполнены корректно", 2000);
 			}
 
 		// Статистика по базе ЗН ККТ
 		private void RNMStats_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
-			RDGenerics.MessageBox (RDMessageTypes.Information_Left, kb.KKTNumbers.RegistryStats);
-			/*this.Top Most = TopFlag.Checked;*/
+			RDInterface.MessageBox (RDMessageTypes.Information_Left, kb.KKTNumbers.RegistryStats);
 			TMSet (true);
 			}
 
@@ -1271,7 +1226,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
 					"Выбранный файл недоступен или не является поддерживаемым файлом изображения");
 				return;
 				}
@@ -1288,7 +1243,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				RDGenerics.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.Message_SaveFailure_Fmt),
 					KassArrayDB::RD_AAOW.KKTSupport.ManualLogoFileName));
 				b2.Dispose ();
@@ -1297,7 +1252,7 @@ namespace RD_AAOW
 			b2.Dispose ();
 
 			// Успешно
-			RDGenerics.MessageBox (RDMessageTypes.Success_Center, "Логотип успешно добавлен", 1000);
+			RDInterface.MessageBox (RDMessageTypes.Success_Center, "Логотип успешно добавлен", 1000);
 			AddManualLogo.Checked = true;
 			}
 

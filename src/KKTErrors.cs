@@ -38,8 +38,6 @@ namespace RD_AAOW
 			uint line = 0;
 			string str;
 
-			/*tr y
-				{*/
 			// Чтение кодов
 			while ((str = SR.ReadLine ()) != null)
 				{
@@ -65,11 +63,6 @@ namespace RD_AAOW
 						break;
 					}
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("Error codes reading failure, point 1, line " + line.ToString ());
-			}*/
 
 			// Завершено
 			SR.Close ();

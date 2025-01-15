@@ -72,8 +72,6 @@ namespace RD_AAOW
 			char[] splitters = new char[] { '\t' };
 			uint line = 0;
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
@@ -114,11 +112,6 @@ namespace RD_AAOW
 
 				disabledMessages.Add ((values[10] == "-") ? "" : values[10]);
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("OFD data reading failure, point 1");
-			}*/
 
 			// Завершено
 			SR.Close ();

@@ -43,8 +43,6 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { '\t' };
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
@@ -99,11 +97,6 @@ namespace RD_AAOW
 					serialConfirmed.Add (false);
 					}
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("KKT serial numbers data reading failure, point 1");
-			}*/
 
 			// Завершено
 			SR.Close ();
@@ -116,16 +109,9 @@ namespace RD_AAOW
 #endif
 			SR = new StringReader (buf);
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				regions.Add (str == "-" ? "" : str);
-			/*}
-		catch
-			{
-			throw new Exception ("KKT serial numbers data reading failure, point 2");
-			}*/
 
 			// Завершено
 			SR.Close ();

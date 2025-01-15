@@ -131,28 +131,6 @@ namespace RD_AAOW
 			return operationTypes;
 			}
 
-		/*/// <summary>
-		/// Возвращает список операций, допустимых для кассира (неспециалиста)
-		/// </summary>
-		public static string[] OperationsForCashiers
-			{
-			get
-				{
-				return new string[] {
-					operationTypes[(int)UserGuidesTypes.SessionOpen],
-					operationTypes[(int)UserGuidesTypes.SellForCash],
-					operationTypes[(int)UserGuidesTypes.SellForCard],
-					operationTypes[(int)UserGuidesTypes.SellWithBarcode],
-					operationTypes[(int)UserGuidesTypes.SellWithQuantity],
-					operationTypes[(int)UserGuidesTypes.SellWithSMS],
-					operationTypes[(int)UserGuidesTypes.Annulment],
-					operationTypes[(int)UserGuidesTypes.Reverse],
-					operationTypes[(int)UserGuidesTypes.CashDeposit],
-					operationTypes[(int)UserGuidesTypes.SessionClose],
-					};
-				}
-			}*/
-
 		/// <summary>
 		/// Возвращает рекомендуемое начальное состояние разделов руководства пользователя
 		/// </summary>
@@ -335,9 +313,6 @@ namespace RD_AAOW
 			if (KKTType >= names.Count)
 				return "";
 
-			/*if (ManualType >= operationTypes.Length)
-				return names[(int)KKTType];*/
-
 			string text = operations[(int)GuideType][(int)KKTType];
 			bool goods = !Flags.HasFlag (UserGuidesFlags.ProductBaseContainsServices);
 			if ((GuideType >= UserGuidesTypes.SellForCash) && (GuideType <= UserGuidesTypes.SellWithQuantity))
@@ -409,95 +384,4 @@ namespace RD_AAOW
 		/// </summary>
 		public const string UserManualsTip = "<...> – индикация на дисплее, [...] – клавиши ККТ";
 		}
-
-	/*/// <summary>
-	/// Возможные секции руководства пользователя
-	/// </summary>
-	public enum UserManualsSections
-		{
-		/// <summary>
-		/// Открытие смены
-		/// </summary>
-		SessionOpen = 0x00001,
-
-		/// <summary>
-		/// Продажа за наличные
-		/// </summary>
-		Cash = 0x00002,
-
-		/// <summary>
-		/// Продажа безналичными
-		/// </summary>
-		Cashless = 0x00004,
-
-		/// <summary>
-		/// Продажа со штрихкодом
-		/// </summary>
-		Barcode = 0x00008,
-
-		/// <summary>
-		/// Продажа с количеством
-		/// </summary>
-		Quantity = 0x00010,
-
-		/// <summary>
-		/// Электронный чек
-		/// </summary>
-		ElectronicDoc = 0x00020,
-
-		/// <summary>
-		/// Аннулирование
-		/// </summary>
-		Cancellation = 0x00040,
-
-		/// <summary>
-		/// Возврат
-		/// </summary>
-		Reverse = 0x00080,
-
-		/// <summary>
-		/// Закрытие смены
-		/// </summary>
-		SessionClose = 0x00100,
-
-		/// <summary>
-		/// Коррекция даты
-		/// </summary>
-		DateCorrection = 0x00200,
-
-		/// <summary>
-		/// Коррекция времени
-		/// </summary>
-		TimeCorrection = 0x00400,
-
-		/// <summary>
-		/// Тест связи с сетью интернет
-		/// </summary>
-		InternetTest = 0x00800,
-
-		/// <summary>
-		/// Автотест / информация о ККТ
-		/// </summary>
-		Autotest = 0x01000,
-
-		/// <summary>
-		/// Запрос состояния ФН
-		/// </summary>
-		FNState = 0x02000,
-
-		/// <summary>
-		/// Запрос реквизитов регистраций
-		/// </summary>
-		RegistrationInfo = 0x04000,
-
-		/// <summary>
-		/// Техобнуление
-		/// </summary>
-		FactoryReset = 0x08000,
-
-		/// <summary>
-		/// Закрытие архива ФН
-		/// </summary>
-		ArchiveClose = 0x10000,
-		}*/
 	}

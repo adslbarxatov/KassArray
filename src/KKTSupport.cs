@@ -231,7 +231,7 @@ namespace RD_AAOW
 			if (Flags.HasFlag (FNLifeFlags.GenericTax) && !Flags.HasFlag (FNLifeFlags.FN15) &&
 				Flags.HasFlag (FNLifeFlags.Goods))
 				{
-				if (/*Flags.HasFlag (FNLifeFlags.FFD12) &&*/ Flags.HasFlag (FNLifeFlags.FFD12FullSupport))	// Проверено
+				if (Flags.HasFlag (FNLifeFlags.FFD12FullSupport))	// Проверено
 					res = FNLifeStatus.Unwelcome;
 				else
 					res = FNLifeStatus.Inacceptable;
@@ -1369,12 +1369,12 @@ namespace RD_AAOW
 			else
 				{
 #if ANDROID
-				search = await AndroidSupport.ShowInput ("Поиск", InputCaption,
+				search = await RDInterface.ShowInput ("Поиск", InputCaption,
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find),
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
 					MaxInputLength, Keyboard.Default, OldCriteria);
 #else
-				search = RDGenerics.MessageBox (InputCaption, true, MaxInputLength, OldCriteria);
+				search = RDInterface.MessageBox (InputCaption, true, MaxInputLength, OldCriteria);
 #endif
 
 				if (!string.IsNullOrWhiteSpace (search))

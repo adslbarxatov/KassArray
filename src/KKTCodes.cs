@@ -38,8 +38,6 @@ namespace RD_AAOW
 			// Формирование массива 
 			int line = 0;
 
-			/*tr y
-				{*/
 			// Чтение кодов
 			while (line < buf.Length)
 				{
@@ -62,14 +60,9 @@ namespace RD_AAOW
 				descriptions.Add (buf[line++]);
 				}
 
-			if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
+			/*if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
 				(descriptions.Count != presentations.Count))
-				throw new Exception ("KKT codes reading failure, point 1");
-			/*}
-		catch
-			{
-			throw new Exception ("KKT codes reading failure, point 2, line " + line.ToString ());
-			}*/
+				throw new Exception ("KKT codes reading failure, point 1");*/
 			}
 
 		// Метод возвращает код указанного символа

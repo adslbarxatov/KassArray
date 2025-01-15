@@ -39,8 +39,6 @@ namespace RD_AAOW
 			char[] splitters = new char[] { '\t' };
 			bool connectors = true;
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
@@ -75,11 +73,6 @@ namespace RD_AAOW
 
 				SR.ReadLine ();
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("Connectors data reading failure, point 1");
-			}*/
 
 			// Завершено
 			SR.Close ();

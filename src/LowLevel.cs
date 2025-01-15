@@ -33,8 +33,6 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { ';' };
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
@@ -58,11 +56,6 @@ namespace RD_AAOW
 					descriptions[descriptions.Count - 1].Add (values[2].Replace ("|", RDLocale.RN));
 					}
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("Low level commands data reading failure, point 1");
-			}*/
 
 			// Завершено
 			SR.Close ();

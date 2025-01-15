@@ -49,7 +49,6 @@ namespace RD_AAOW
 
 						lefts.Add (ulong.Parse (values[0], NumberStyles.HexNumber));
 						rights.Add (0);
-						/*rights.Add (ulong.Parse (values[2], NumberStyles.HexNumber));*/
 						break;
 
 					case 1:
@@ -62,22 +61,6 @@ namespace RD_AAOW
 			udSR.Close ();
 			for (int i = descriptions.Count - 2; i >= 0; i--)
 				rights[i] = lefts[i + 1] - 1;
-
-			/*// !!! КОПИЯ !!!
-			FileStream FSO = new FileStream ("Unicodes.new", FileMode.Create);
-			StreamWriter SWO = new StreamWriter (FSO, RDGenerics.GetEncoding (RDEncodings.UTF8));
-
-			for (int i = 0; i < descriptions.Count; i++)
-				{
-				if (descriptions[i].StartsWith ("("))
-					SWO.Write (lefts[i].ToString ("X6") + "\t*\n");
-				else
-					SWO.Write (lefts[i].ToString ("X6") + "\t" +
-						descriptions[i] + "\n");
-				}
-
-			SWO.Close ();
-			FSO.Close ();*/
 			}
 
 		/// <summary>

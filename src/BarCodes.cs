@@ -100,8 +100,6 @@ namespace RD_AAOW
 			string str;
 			char[] splitters = new char[] { ';' };
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
@@ -119,11 +117,6 @@ namespace RD_AAOW
 				descriptions.Add (values[2]);
 				country.Add (values.Length == 3);
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("Barcodes data reading failure, point 1");
-			}*/
 
 			// Завершено
 			SR.Close ();

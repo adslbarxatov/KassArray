@@ -174,8 +174,6 @@ namespace RD_AAOW
 			string[] tlvValues,
 				oblValues = oblSR.ReadLine ().Split (oblSplitter, StringSplitOptions.RemoveEmptyEntries);
 
-			/*tr y
-				{*/
 			// Чтение параметров
 			while ((str = tlvSR.ReadLine ()) != null)
 				{
@@ -232,11 +230,6 @@ namespace RD_AAOW
 					continue;
 					}
 				}
-			/*}
-		catch
-			{
-			throw new Exception ("TLV tags data reading failure, point 1");
-			}*/
 
 			// Завершено
 			tlvSR.Close ();
