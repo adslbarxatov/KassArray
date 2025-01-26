@@ -59,10 +59,6 @@ namespace RD_AAOW
 				presentations.Add (buf[line++]);
 				descriptions.Add (buf[line++]);
 				}
-
-			/*if ((codes.Count != names.Count) || (names.Count != descriptions.Count) ||
-				(descriptions.Count != presentations.Count))
-				throw new Exception ("KKT codes reading failure, point 1");*/
 			}
 
 		// Метод возвращает код указанного символа

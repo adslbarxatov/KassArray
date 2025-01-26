@@ -68,7 +68,9 @@ namespace RD_AAOW
 			aboutFontSizeField;
 		private List<Label> operationTextLabels = new List<Label> ();
 		private List<Button> operationTextButtons = new List<Button> ();
-		private const string operationButtonSignature = " (скрыто)";
+		/*private const string operationButtonSignature = " (скрыто)";*/
+		private const string operationButtonSignatureShow = "🖨 ";
+		private const string operationButtonSignatureHide = "🚫 ";
 
 		private Button kktCodesKKTButton, fnLifeDate, cableTypeButton, kktCodesCenterButton,
 			errorsKKTButton, userManualsKKTButton, userManualsPrintButton,
@@ -78,8 +80,7 @@ namespace RD_AAOW
 			encodingButton, fnLifeStatus, sampleNextButton;
 		private List<Button> uiButtons = new List<Button> ();
 
-		private Editor codesSourceText, /*errorSearchText, commandSearchText, ofdSearchText,
-			fnLifeSerial, tlvTag, rnmKKTSN,*/ rnmINN, rnmRNM, /*connSearchText,*/
+		private Editor codesSourceText, rnmINN, rnmRNM,
 			barcodeField, convNumberField, convCodeField, convHexField, convTextField;
 
 		private Switch fnLife13, fnLifeGenericTax, fnLifeGoods, fnLifeSeason, fnLifeAgents,
@@ -104,9 +105,6 @@ namespace RD_AAOW
 		private int lastOFDSearchOffset = 0;
 		private int lastConnSearchOffset = 0;
 
-		/*// Дата срока жизни ФН (в чистом виде)
-		private string fnLifeResultDate = "";*/
-
 		// Сообщение о применимости модели ФН
 		private string fnLifeMessage = "";
 
@@ -127,7 +125,7 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
-			RDAppStartupFlags flags = AndroidSupport.GetAppStartupFlags (RDAppStartupFlags.DisableXPUN);
+			RDAppStartupFlags flags = RDGenerics.GetAppStartupFlags (RDAppStartupFlags.DisableXPUN);
 
 			kb = new KnowledgeBase ();
 
@@ -135,12 +133,11 @@ namespace RD_AAOW
 				RDLocale.CurrentLanguage = RDLanguages.ru_ru;
 
 			// Переход в статус запуска для отмены вызова из оповещения
-			AndroidSupport.AppIsRunning = true;
+			RDGenerics.AppIsRunning = true;
 
 			#region Общая конструкция страниц приложения
 
 			MainPage = new MasterPage ();
-			/*Windows[0].Page = new MasterPage ();*/
 
 			uiPages.Add (ApplyPageSettings (new HeadersPage (), "HeadersPage",
 				"Разделы приложения", uiColors[hdrPage][0], false));
@@ -190,40 +187,36 @@ namespace RD_AAOW
 
 			#endregion
 
-			AndroidSupport.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
+			RDInterface.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
 
 			#region Страница «оглавления»
 
-			AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "ExtendedModeLabel",
+			RDInterface.ApplyLabelSettings (uiPages[hdrPage], "ExtendedModeLabel",
 				"Режим сервис-инженера", RDLabelTypes.DefaultLeft);
-			extendedMode = AndroidSupport.ApplySwitchSettings (uiPages[hdrPage], "ExtendedMode", false,
+			extendedMode = RDInterface.ApplySwitchSettings (uiPages[hdrPage], "ExtendedMode", false,
 				uiColors[hdrPage][cField], ExtendedMode_Toggled, AppSettings.EnableExtendedMode);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "FunctionsLabel",
+			RDInterface.ApplyLabelSettings (uiPages[hdrPage], "FunctionsLabel",
 				"Разделы приложения", RDLabelTypes.HeaderCenter);
-			AndroidSupport.ApplyLabelSettings (uiPages[hdrPage], "SettingsLabel",
+			RDInterface.ApplyLabelSettings (uiPages[hdrPage], "SettingsLabel",
 				"Настройки", RDLabelTypes.HeaderCenter);
 
 			if (AppSettings.CurrentTab <= aabPage)
-				AndroidSupport.SetCurrentPage (uiPages[(int)AppSettings.CurrentTab],
+				RDInterface.SetCurrentPage (uiPages[(int)AppSettings.CurrentTab],
 					uiColors[(int)AppSettings.CurrentTab][cBack]);
 
 			#endregion
 
 			#region Страница инструкций
 
-			Label ut = AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "SelectionLabel", "Модель ККТ:",
+			Label ut = RDInterface.ApplyLabelSettings (uiPages[usgPage], "SelectionLabel", "Модель ККТ:",
 				RDLabelTypes.HeaderLeft);
 			userManualLayout = (StackLayout)uiPages[usgPage].FindByName ("UserManualLayout");
-			/*int operationsCount = AppSettings.EnableExtendedMode ? UserManuals.OperationTypes.Length :
-				UserManuals.OperationsForCashiers.Length;   // Уровень 1*/
 			int operationsCount = UserGuides.OperationTypes (!AppSettings.EnableExtendedMode).Length;
 
-			/*UserManualsSections sections = (UserManualsSections)AppSettings.UserManualSectionsState;*/
 			uint sections = AppSettings.UserGuidesSectionsState;
 			for (int i = 0; i < operationsCount; i++)
 				{
-				/*bool sectionEnabled = sections.HasFlag ((UserManualsSections)(1u << i));*/
 				bool sectionEnabled = ((sections & (1u << i)) != 0);
 
 				Button bh = new Button ();
@@ -235,8 +228,10 @@ namespace RD_AAOW
 				bh.IsVisible = true;
 				bh.Margin = ut.Margin;
 				bh.Padding = new Thickness (6, 0);
-				bh.Text = UserGuides.OperationTypes (false)[i] +
-					(sectionEnabled ? "" : operationButtonSignature);
+				/*bh.Text = UserGuides.OperationTypes (false)[i] +
+					(sectionEnabled ? "" : operationButtonSignature);*/
+				bh.Text = (sectionEnabled ? operationButtonSignatureShow : operationButtonSignatureHide) +
+					UserGuides.OperationTypes (false)[i];
 				bh.TextColor = ut.TextColor;
 				bh.HeightRequest = bh.FontSize * 1.5;
 
@@ -249,7 +244,8 @@ namespace RD_AAOW
 				lt.IsVisible = sectionEnabled;
 				lt.Margin = lt.Padding = ut.Margin;
 				lt.Text = "   ";
-				lt.TextColor = AndroidSupport.MasterTextColor;
+				/*lt.TextColor = RDInterface.MasterTextColor;*/
+				lt.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
 
 				operationTextButtons.Add (bh);
 				userManualLayout.Children.Add (operationTextButtons[operationTextButtons.Count - 1]);
@@ -257,49 +253,49 @@ namespace RD_AAOW
 				userManualLayout.Children.Add (operationTextLabels[operationTextLabels.Count - 1]);
 				}
 
-			userManualsKKTButton = AndroidSupport.ApplyButtonSettings (uiPages[usgPage], "KKTButton",
+			userManualsKKTButton = RDInterface.ApplyButtonSettings (uiPages[usgPage], "KKTButton",
 				"   ", uiColors[usgPage][cField], UserManualsKKTButton_Clicked, true);
-			userManualsPrintButton = AndroidSupport.ApplyButtonSettings (uiPages[usgPage], "PrintButton",
+			userManualsPrintButton = RDInterface.ApplyButtonSettings (uiPages[usgPage], "PrintButton",
 				"В файл / на печать", uiColors[usgPage][cField], PrintManual_Clicked, false);
 			userManualsPrintButton.FontSize -= 2.0;
 			userManualsPrintButton.Margin = new Thickness (0);
 			userManualsPrintButton.Padding = new Thickness (3, 0);
 			userManualsPrintButton.HeightRequest = userManualsPrintButton.FontSize * 2.0;
 
-			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "HelpLabel",
+			RDInterface.ApplyLabelSettings (uiPages[usgPage], "HelpLabel",
 				UserGuides.UserManualsTip + RDLocale.RN +
 				"Нажатие на заголовки разделов позволяет добавить или скрыть их в видимой и печатной " +
 				"версиях этой инструкции",
 				RDLabelTypes.TipCenter);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "OneItemLabel",
+			RDInterface.ApplyLabelSettings (uiPages[usgPage], "OneItemLabel",
 				"В чеках бывает более одной позиции", RDLabelTypes.DefaultLeft);
-			moreThanOneItemPerDocument = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "OneItemSwitch",
+			moreThanOneItemPerDocument = RDInterface.ApplySwitchSettings (uiPages[usgPage], "OneItemSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "PricesLabel",
+			RDInterface.ApplyLabelSettings (uiPages[usgPage], "PricesLabel",
 				"В номенклатуре есть цены", RDLabelTypes.DefaultLeft);
-			productBaseContainsPrices = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "PricesSwitch",
+			productBaseContainsPrices = RDInterface.ApplySwitchSettings (uiPages[usgPage], "PricesSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "PasswordsLabel",
+			RDInterface.ApplyLabelSettings (uiPages[usgPage], "PasswordsLabel",
 				"Кассиры пользуются паролями", RDLabelTypes.DefaultLeft);
-			cashiersHavePasswords = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "PasswordsSwitch",
+			cashiersHavePasswords = RDInterface.ApplySwitchSettings (uiPages[usgPage], "PasswordsSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "ServicesLabel",
+			RDInterface.ApplyLabelSettings (uiPages[usgPage], "ServicesLabel",
 				"В номенклатуре содержатся услуги", RDLabelTypes.DefaultLeft);
-			baseContainsServices = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "ServicesSwitch",
+			baseContainsServices = RDInterface.ApplySwitchSettings (uiPages[usgPage], "ServicesSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "MarksLabel",
+			RDInterface.ApplyLabelSettings (uiPages[usgPage], "MarksLabel",
 				"Среди товаров есть маркированные (ТМТ)", RDLabelTypes.DefaultLeft);
-			documentsContainMarks = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "MarksSwitch",
+			documentsContainMarks = RDInterface.ApplySwitchSettings (uiPages[usgPage], "MarksSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[usgPage], "SingleItemLabel",
+			RDInterface.ApplyLabelSettings (uiPages[usgPage], "SingleItemLabel",
 				"Номенклатурная позиция – единственная", RDLabelTypes.DefaultLeft);
-			productBaseContainsSingleItem = AndroidSupport.ApplySwitchSettings (uiPages[usgPage], "SingleItemSwitch",
+			productBaseContainsSingleItem = RDInterface.ApplySwitchSettings (uiPages[usgPage], "SingleItemSwitch",
 				false, uiColors[usgPage][cField], null, false);
 
 			UserManualFlags = (UserGuidesFlags)AppSettings.UserGuidesFlags;
@@ -317,7 +313,7 @@ namespace RD_AAOW
 
 			#region Страница кодов символов ККТ
 
-			AndroidSupport.ApplyLabelSettings (uiPages[codPage], "SelectionLabel", "Модель ККТ:",
+			RDInterface.ApplyLabelSettings (uiPages[codPage], "SelectionLabel", "Модель ККТ:",
 				RDLabelTypes.HeaderLeft);
 
 			string kktTypeName;
@@ -332,40 +328,40 @@ namespace RD_AAOW
 				}
 			kktCodesOftenTexts.AddRange (AppSettings.CodesOftenTexts);
 
-			kktCodesKKTButton = AndroidSupport.ApplyButtonSettings (uiPages[codPage], "KKTButton",
+			kktCodesKKTButton = RDInterface.ApplyButtonSettings (uiPages[codPage], "KKTButton",
 				kktTypeName, uiColors[codPage][cField], CodesKKTButton_Clicked, true);
-			AndroidSupport.ApplyLabelSettings (uiPages[codPage], "SourceTextLabel",
+			RDInterface.ApplyLabelSettings (uiPages[codPage], "SourceTextLabel",
 				"Исходный текст:", RDLabelTypes.HeaderLeft);
 
-			codesSourceText = AndroidSupport.ApplyEditorSettings (uiPages[codPage], "SourceText",
+			codesSourceText = RDInterface.ApplyEditorSettings (uiPages[codPage], "SourceText",
 				uiColors[codPage][cField], Keyboard.Default, 72, AppSettings.CodesText, SourceText_TextChanged, true);
 			codesSourceText.HorizontalOptions = LayoutOptions.Fill;
 
-			AndroidSupport.ApplyLabelSettings (uiPages[codPage], "ResultTextLabel", "Коды ККТ:",
+			RDInterface.ApplyLabelSettings (uiPages[codPage], "ResultTextLabel", "Коды ККТ:",
 				RDLabelTypes.HeaderLeft);
 
-			kktCodesErrorLabel = AndroidSupport.ApplyLabelSettings (uiPages[codPage], "ErrorLabel",
+			kktCodesErrorLabel = RDInterface.ApplyLabelSettings (uiPages[codPage], "ErrorLabel",
 				"Часть введённых символов не поддерживается данной ККТ", RDLabelTypes.ErrorTip);
 
-			kktCodesResultText = AndroidSupport.ApplyLabelSettings (uiPages[codPage], "ResultText", " ",
+			kktCodesResultText = RDInterface.ApplyLabelSettings (uiPages[codPage], "ResultText", " ",
 				RDLabelTypes.FieldMonotype, uiColors[codPage][cField]);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[codPage], "HelpTextLabel", "Пояснения к вводу:",
+			RDInterface.ApplyLabelSettings (uiPages[codPage], "HelpTextLabel", "Пояснения к вводу:",
 				RDLabelTypes.HeaderLeft);
-			kktCodesHelpLabel = AndroidSupport.ApplyLabelSettings (uiPages[codPage], "HelpText",
+			kktCodesHelpLabel = RDInterface.ApplyLabelSettings (uiPages[codPage], "HelpText",
 				kb.CodeTables.GetKKTTypeDescription (AppSettings.KKTForCodes), RDLabelTypes.Field,
 				uiColors[codPage][cField]);
 
-			AndroidSupport.ApplyButtonSettings (uiPages[codPage], "ClearText",
+			RDInterface.ApplyButtonSettings (uiPages[codPage], "ClearText",
 				RDDefaultButtons.Delete, uiColors[codPage][cField], CodesClear_Clicked);
-			AndroidSupport.ApplyButtonSettings (uiPages[codPage], "SelectSavedText",
+			RDInterface.ApplyButtonSettings (uiPages[codPage], "SelectSavedText",
 				"Выбрать", uiColors[codPage][cField], CodesLineGet_Clicked, false);
 
-			kktCodesLengthLabel = AndroidSupport.ApplyLabelSettings (uiPages[codPage], "LengthLabel",
+			kktCodesLengthLabel = RDInterface.ApplyLabelSettings (uiPages[codPage], "LengthLabel",
 				"Длина:", RDLabelTypes.HeaderLeft);
-			kktCodesCenterButton = AndroidSupport.ApplyButtonSettings (uiPages[codPage], "CenterText",
+			kktCodesCenterButton = RDInterface.ApplyButtonSettings (uiPages[codPage], "CenterText",
 				"Центрировать", uiColors[codPage][cField], TextToConvertCenter_Click, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[codPage], "RememberText",
+			RDInterface.ApplyButtonSettings (uiPages[codPage], "RememberText",
 				"Запомнить", uiColors[codPage][cField], TextToConvertRemember_Click, false);
 
 			SourceText_TextChanged (null, null);    // Протягивание кодов
@@ -374,10 +370,8 @@ namespace RD_AAOW
 
 			#region Страница ошибок
 
-			AndroidSupport.ApplyLabelSettings (uiPages[errPage], "SelectionLabel",
+			RDInterface.ApplyLabelSettings (uiPages[errPage], "SelectionLabel",
 				"Модель ККТ:", RDLabelTypes.HeaderLeft);
-			/*AndroidSupport.ApplyLabelSettings (uiPages[errPage], "SearchLabel",
-				"Поиск ошибки по коду или фрагменту описания:", RDLabelTypes.HeaderLeft);*/
 
 			try
 				{
@@ -388,29 +382,21 @@ namespace RD_AAOW
 				kktTypeName = kb.Errors.GetKKTTypeNames ()[0];
 				AppSettings.KKTForErrors = 0;
 				}
-			errorsKKTButton = AndroidSupport.ApplyButtonSettings (uiPages[errPage], "KKTButton",
+			errorsKKTButton = RDInterface.ApplyButtonSettings (uiPages[errPage], "KKTButton",
 				kktTypeName, uiColors[errPage][cField], ErrorsKKTButton_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[errPage], "ResultTextLabel",
+			RDInterface.ApplyLabelSettings (uiPages[errPage], "ResultTextLabel",
 				"Описание ошибки:", RDLabelTypes.HeaderLeft);
 
-			errorsResultText = AndroidSupport.ApplyLabelSettings (uiPages[errPage], "ResultText",
+			errorsResultText = RDInterface.ApplyLabelSettings (uiPages[errPage], "ResultText",
 				"", RDLabelTypes.Field, uiColors[errPage][cField]);
-			/*errorSearchText = AndroidSupport.ApplyEditorSettings (uiPages[errPage], "ErrorSearchText",
-				uiColors[errPage][cField], Keyboard.Default, 30, AppSettings.ErrorCode, null, true);
-			Errors_Find (null, null);
 
-			AndroidSupport.ApplyButtonSettings (uiPages[errPage], "ErrorSearchButton",
-				RDDefaultButtons.Find, uiColors[errPage][cField], Errors_Find);
-			AndroidSupport.ApplyButtonSettings (uiPages[errPage], "ErrorClearButton",
-				RDDefaultButtons.Delete, uiColors[errPage][cField], Errors_Clear);*/
-
-			AndroidSupport.ApplyButtonSettings (uiPages[errPage], "ErrorFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[errPage], "ErrorFindButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[errPage][cField],
 				ErrorFind_Clicked, false);
-			sampleNextButton = AndroidSupport.ApplyButtonSettings (uiPages[errPage], "ErrorFindNextButton",
+			sampleNextButton = RDInterface.ApplyButtonSettings (uiPages[errPage], "ErrorFindNextButton",
 				NextButton, uiColors[errPage][cField], ErrorFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[errPage], "ErrorFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[errPage], "ErrorFindBufferButton",
 				BufferButton, uiColors[errPage][cField], ErrorFind_Clicked, false);
 			ErrorFind_Clicked (sampleNextButton, null);
 
@@ -418,38 +404,38 @@ namespace RD_AAOW
 
 			#region Страница "О программе"
 
-			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "AboutLabel",
+			RDInterface.ApplyLabelSettings (uiPages[aabPage], "AboutLabel",
 				RDGenerics.AppAboutLabelText, RDLabelTypes.AppAbout);
 
-			AndroidSupport.ApplyButtonSettings (uiPages[aabPage], "ManualsButton",
+			RDInterface.ApplyButtonSettings (uiPages[aabPage], "ManualsButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_ReferenceMaterials),
 				uiColors[aabPage][cField], ReferenceButton_Click, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[aabPage], "HelpButton",
+			RDInterface.ApplyButtonSettings (uiPages[aabPage], "HelpButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_HelpSupport),
 				uiColors[aabPage][cField], HelpButton_Click, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "GenericSettingsLabel",
+			RDInterface.ApplyLabelSettings (uiPages[aabPage], "GenericSettingsLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_GenericSettings),
 				RDLabelTypes.HeaderLeft);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "RestartTipLabel",
+			RDInterface.ApplyLabelSettings (uiPages[aabPage], "RestartTipLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Message_RestartRequired),
 				RDLabelTypes.TipCenter);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "FontSizeLabel",
+			RDInterface.ApplyLabelSettings (uiPages[aabPage], "FontSizeLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_InterfaceFontSize),
 				RDLabelTypes.DefaultLeft);
-			AndroidSupport.ApplyButtonSettings (uiPages[aabPage], "FontSizeInc",
+			RDInterface.ApplyButtonSettings (uiPages[aabPage], "FontSizeInc",
 				RDDefaultButtons.Increase, uiColors[aabPage][cField], FontSizeButton_Clicked);
-			AndroidSupport.ApplyButtonSettings (uiPages[aabPage], "FontSizeDec",
+			RDInterface.ApplyButtonSettings (uiPages[aabPage], "FontSizeDec",
 				RDDefaultButtons.Decrease, uiColors[aabPage][cField], FontSizeButton_Clicked);
-			aboutFontSizeField = AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "FontSizeField",
+			aboutFontSizeField = RDInterface.ApplyLabelSettings (uiPages[aabPage], "FontSizeField",
 				" ", RDLabelTypes.DefaultCenter);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpHeaderLabel",
+			RDInterface.ApplyLabelSettings (uiPages[aabPage], "HelpHeaderLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				RDLabelTypes.HeaderLeft);
-			Label htl = AndroidSupport.ApplyLabelSettings (uiPages[aabPage], "HelpTextLabel",
-				AndroidSupport.GetAppHelpText (), RDLabelTypes.SmallLeft);
+			Label htl = RDInterface.ApplyLabelSettings (uiPages[aabPage], "HelpTextLabel",
+				RDGenerics.GetAppHelpText (), RDLabelTypes.SmallLeft);
 			htl.TextType = TextType.Html;
 
 			FontSizeButton_Clicked (null, null);
@@ -458,114 +444,102 @@ namespace RD_AAOW
 
 			#region Страница определения срока жизни ФН
 
-			/*AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "SetModelLabel",
-				"ЗН, номинал или модель ФН:", RDLabelTypes.HeaderLeft);
-			fnLifeSerial = AndroidSupport.ApplyEditorSettings (uiPages[fnlPage], "FNLifeSerial",
-				uiColors[fnlPage][cField], Keyboard.Default, 16, AppSettings.FNSerial,
-				FNLifeSerial_TextChanged, true);
-			fnLifeSerial.Margin = new Thickness (0);*/
-			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindButton",
 				"Найти модель ФН", uiColors[fnlPage][cField],
 				FNLifeFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindBufferButton",
 				BufferButton, uiColors[fnlPage][cField], FNLifeFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNResetButton",
+			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNResetButton",
 				RDDefaultButtons.Delete, uiColors[fnlPage][cField], FNLife_Reset);
 
-			fnLife13 = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLife13", true,
+			fnLife13 = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLife13", true,
 				uiColors[fnlPage][cField], FnLife13_Toggled, false);
-			fnLifeLabel = AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeLabel",
+			fnLifeLabel = RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeLabel",
 				"", RDLabelTypes.DefaultLeft);
 
 			//
-			fnLifeModelLabel = AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeModelLabel",
+			fnLifeModelLabel = RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeModelLabel",
 				"", RDLabelTypes.Semaphore);
 
 			//
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "SetUserParameters",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "SetUserParameters",
 				"Значимые параметры:", RDLabelTypes.HeaderLeft);
 
-			fnLifeGenericTax = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeGenericTax", true,
+			fnLifeGenericTax = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeGenericTax", true,
 				uiColors[fnlPage][cField], null, false);
-			fnLifeGenericTaxLabel = AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeGenericTaxLabel",
+			fnLifeGenericTaxLabel = RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeGenericTaxLabel",
 				"", RDLabelTypes.DefaultLeft);
 
-			fnLifeGoods = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeGoods", true,
+			fnLifeGoods = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeGoods", true,
 				uiColors[fnlPage][cField], null, false);
-			fnLifeGoodsLabel = AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeGoodsLabel",
+			fnLifeGoodsLabel = RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeGoodsLabel",
 				"", RDLabelTypes.DefaultLeft);
 
-			fnLifeSeason = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeSeason", false,
+			fnLifeSeason = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeSeason", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeSeasonLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeSeasonLabel",
 				"Сезонная\nторговля", RDLabelTypes.DefaultLeft);
 
-			fnLifeAgents = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeAgents", false,
+			fnLifeAgents = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeAgents", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeAgentsLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeAgentsLabel",
 				"Платёжный\n(суб)агент", RDLabelTypes.DefaultLeft);
 
-			fnLifeExcise = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeExcise", false,
+			fnLifeExcise = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeExcise", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeExciseLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeExciseLabel",
 				"Подакцизные\nтовары", RDLabelTypes.DefaultLeft);
 
-			fnLifeAutonomous = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeAutonomous", false,
+			fnLifeAutonomous = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeAutonomous", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeAutonomousLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeAutonomousLabel",
 				"Автономный\nрежим", RDLabelTypes.DefaultLeft);
 
-			fnLifeFFD12 = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeFFD12", false,
+			fnLifeFFD12 = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeFFD12", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeFFD12Label",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeFFD12Label",
 				"ФФД 1.1, 1.2", RDLabelTypes.DefaultLeft);
 
-			fnLifeGambling = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeGambling", false,
+			fnLifeGambling = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeGambling", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeGamblingLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeGamblingLabel",
 				"Азартные игры\nи лотереи", RDLabelTypes.DefaultLeft);
 
-			fnLifePawn = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifePawn", false,
+			fnLifePawn = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifePawn", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifePawnLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifePawnLabel",
 				"Ломбарды\nи страхование", RDLabelTypes.DefaultLeft);
 
-			fnLifeMarkGoods = AndroidSupport.ApplySwitchSettings (uiPages[fnlPage], "FNLifeMarkGoods", false,
+			fnLifeMarkGoods = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLifeMarkGoods", false,
 				uiColors[fnlPage][cField], null, false);
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeMarkGoodsLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeMarkGoodsLabel",
 				"Маркированные\nтовары", RDLabelTypes.DefaultLeft);
 
 			//
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "SetDate",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "SetDate",
 				"Дата фискализации:", RDLabelTypes.DefaultLeft);
-			fnLifeStartDate = AndroidSupport.ApplyDatePickerSettings (uiPages[fnlPage], "FNLifeStartDate",
+			fnLifeStartDate = RDInterface.ApplyDatePickerSettings (uiPages[fnlPage], "FNLifeStartDate",
 				uiColors[fnlPage][cField], FnLifeStartDate_DateSelected);
 
 			//
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeResultLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeResultLabel",
 				"Результат:", RDLabelTypes.HeaderLeft);
 
-			fnLifeDate = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeDate", "",
+			fnLifeDate = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNLifeDate", "",
 				uiColors[fnlPage][cField], FNLifeDateCopy, true);
-			fnLifeStatus = AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "FNLifeStatus", "?",
+			fnLifeStatus = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNLifeStatus", "?",
 				uiColors[fnlPage][cField], FNLifeStatusClick, true);
 
 			// Применение параметров, которые не могут быть рассчитаны при инициализации
 			fnLifeStatus.WidthRequest = fnLifeStatus.HeightRequest =
-				fnLifeDate.HeightRequest = 10 * AndroidSupport.MasterFontSize / 3;
+				fnLifeDate.HeightRequest = 10 * RDInterface.MasterFontSize / 3;
 
-			AndroidSupport.ApplyLabelSettings (uiPages[fnlPage], "FNLifeHelpLabel",
+			RDInterface.ApplyLabelSettings (uiPages[fnlPage], "FNLifeHelpLabel",
 				"Нажатие кнопки копирует дату окончания срока жизни в буфер обмена",
 				RDLabelTypes.TipCenter);
 
-			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "RegistryStats",
+			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "RegistryStats",
 				"Статистика реестра ФН", uiColors[fnlPage][cField], FNStats_Clicked, false);
-
-			/*//
-			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "Clear",
-				RDDefaultButtons.Delete, uiColors[fnlPage][cField], FNLifeClear_Clicked);
-			AndroidSupport.ApplyButtonSettings (uiPages[fnlPage], "Find",
-				RDDefaultButtons.Find, uiColors[fnlPage][cField], FNLifeFind_ Clicked);*/
 
 			// Применение всех названий
 			FNLifeEvFlags = (FNLifeFlags)AppSettings.FNLifeEvFlags;
@@ -586,63 +560,52 @@ namespace RD_AAOW
 
 			#region Страница заводских и регистрационных номеров
 
-			/*AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "SNLabel",
-				"ЗН или" + RDLocale.RN + "модель ККТ:", RDLabelTypes.HeaderLeft);
-			rnmKKTSN = AndroidSupport.ApplyEditorSettings (uiPages[rnmPage], "SN",
-				uiColors[rnmPage][cField], Keyboard.Default, kb.KKTNumbers.MaxSerialNumberLength,
-				AppSettings.KKTSerial, RNM_TextChanged, true);*/
-			AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "RNMFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindButton",
 				"Найти модель ККТ", uiColors[rnmPage][cField],
 				RNMSerial_Search, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "RNMFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindBufferButton",
 				BufferButton, uiColors[rnmPage][cField], RNMSerial_Search, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "RNMResetButton",
+			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMResetButton",
 				RDDefaultButtons.Delete, uiColors[rnmPage][cField], RNMClear_Clicked);
 
-			rnmKKTTypeLabel = AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "TypeLabel",
+			rnmKKTTypeLabel = RDInterface.ApplyLabelSettings (uiPages[rnmPage], "TypeLabel",
 				"", RDLabelTypes.Semaphore);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "INNLabel",
+			RDInterface.ApplyLabelSettings (uiPages[rnmPage], "INNLabel",
 				"ИНН пользователя:", RDLabelTypes.HeaderLeft);
-			rnmINN = AndroidSupport.ApplyEditorSettings (uiPages[rnmPage], "INN",
+			rnmINN = RDInterface.ApplyEditorSettings (uiPages[rnmPage], "INN",
 				uiColors[rnmPage][cField], Keyboard.Numeric, 12, AppSettings.UserINN,
 				RNMINNUpdate, true);
 
-			rnmINNCheckLabel = AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "INNCheckLabel", "",
+			rnmINNCheckLabel = RDInterface.ApplyLabelSettings (uiPages[rnmPage], "INNCheckLabel", "",
 				RDLabelTypes.Semaphore);
 
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
-				AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "RNMLabel",
+				RDInterface.ApplyLabelSettings (uiPages[rnmPage], "RNMLabel",
 					"Регистрационный номер для проверки или произвольное число для генерации:",
 					RDLabelTypes.HeaderLeft);
 			else
-				AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "RNMLabel",
+				RDInterface.ApplyLabelSettings (uiPages[rnmPage], "RNMLabel",
 					"Регистрационный номер для проверки:", RDLabelTypes.HeaderLeft);
 
-			rnmRNM = AndroidSupport.ApplyEditorSettings (uiPages[rnmPage], "RNM",
+			rnmRNM = RDInterface.ApplyEditorSettings (uiPages[rnmPage], "RNM",
 				uiColors[rnmPage][cField], Keyboard.Numeric, 16, AppSettings.RNMKKT,
 				RNMRNMUpdate, true);
 
-			rnmRNMCheckLabel = AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "RNMCheckLabel", "",
+			rnmRNMCheckLabel = RDInterface.ApplyLabelSettings (uiPages[rnmPage], "RNMCheckLabel", "",
 				RDLabelTypes.Semaphore);
 
-			rnmGenerate = AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "RNMGenerate",
+			rnmGenerate = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMGenerate",
 				"Сгенерировать", uiColors[rnmPage][cField], RNMGenerate_Clicked, false);
 			rnmGenerate.IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
-			AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "RegistryStats",
+			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RegistryStats",
 				"Статистика реестра ККТ", uiColors[rnmPage][cField], RNMStats_Clicked, false);
 
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
-				AndroidSupport.ApplyLabelSettings (uiPages[rnmPage], "RNMAbout",
+				RDInterface.ApplyLabelSettings (uiPages[rnmPage], "RNMAbout",
 					KKTSupport.RNMTip, RDLabelTypes.TipLeft);
 
-			/*AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "Clear",
-				RDDefaultButtons.Delete, uiColors[rnmPage][cField], RNMClear_Clicked);
-			AndroidSupport.ApplyButtonSettings (uiPages[rnmPage], "Find",
-				RDDefaultButtons.Find, uiColors[rnmPage][cField], RNMFind_Clicked);*/
-
-			/*RNM_TextChanged (null, null);   // Применение значений*/
 			RNMSerial_Search (sampleNextButton, null);
 			RNMINNUpdate (null, null);
 
@@ -650,87 +613,76 @@ namespace RD_AAOW
 
 			#region Страница настроек ОФД
 
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDFindButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[ofdPage][cField],
 				OFDFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDFindNextButton",
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDFindNextButton",
 				NextButton, uiColors[ofdPage][cField], OFDFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDFindBufferButton",
 				BufferButton, uiColors[ofdPage][cField], OFDFind_Clicked, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDINNLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDINNLabel",
 				"ИНН ОФД:", RDLabelTypes.HeaderLeft);
-			ofdINN = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDINN",
+			ofdINN = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDINN",
 				AppSettings.OFDINN, uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDNameLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDNameLabel",
 				"Название:", RDLabelTypes.HeaderLeft);
-			/*AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDSearchLabel",
-				"Поиск по ИНН или фрагменту названия:", RDLabelTypes.HeaderLeft);*/
-			ofdNameButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDName",
+			ofdNameButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDName",
 				"- Выберите или введите ИНН -", uiColors[ofdPage][cField], OFDName_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameLabel",
 				"Адрес ОФД:", RDLabelTypes.HeaderLeft);
-			ofdDNSNameButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSName",
+			ofdDNSNameButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSName",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
-			ofdIPButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDIP",
+			ofdIPButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDIP",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
-			ofdPortButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDPort",
+			ofdPortButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPort",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameMLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameMLabel",
 				"Адрес ИСМ:", RDLabelTypes.HeaderLeft);
-			ofdDNSNameMButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSNameM",
+			ofdDNSNameMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSNameM",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
-			ofdIPMButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDIPM",
+			ofdIPMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDIPM",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
-			ofdPortMButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDPortM",
+			ofdPortMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPortM",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameKLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameKLabel",
 				"Адрес ОКП (стандартный):", RDLabelTypes.HeaderLeft);
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSNameK", OFD.OKPSite,
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSNameK", OFD.OKPSite,
 				uiColors[ofdPage][cField], Field_Clicked, true);
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDIPK", OFD.OKPIP,
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDIPK", OFD.OKPIP,
 				uiColors[ofdPage][cField], Field_Clicked, true);
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDPortK", OFD.OKPPort,
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPortK", OFD.OKPPort,
 				uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDEmailLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDEmailLabel",
 				"E-mail отправителя чеков:", RDLabelTypes.HeaderLeft);
-			ofdEmailButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDEmail",
+			ofdEmailButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDEmail",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDSiteLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDSiteLabel",
 				"Сайт ОФД:", RDLabelTypes.HeaderLeft);
-			ofdSiteButton = AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDSite",
+			ofdSiteButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDSite",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDNalogSiteLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDNalogSiteLabel",
 				"Сайт ФНС:", RDLabelTypes.HeaderLeft);
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDNalogSite", OFD.FNSSite,
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDNalogSite", OFD.FNSSite,
 				uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "CDNSiteLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "CDNSiteLabel",
 				"CDN-площадка ЦРПТ:", RDLabelTypes.HeaderLeft);
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "CDNSite", OFD.CDNSite,
+			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "CDNSite", OFD.CDNSite,
 				uiColors[ofdPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDHelpLabel",
+			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена",
 				RDLabelTypes.TipCenter);
 
-			/*AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "Clear",
-				RDDefaultButtons.Delete, uiColors[ofdPage][cField], OFDClear_Clicked);
-
-			ofdSearchText = AndroidSupport.ApplyEditorSettings (uiPages[ofdPage], "OFDSearchText",
-				uiColors[ofdPage][cField], Keyboard.Default, 30, "", null, true);
-
-			AndroidSupport.ApplyButtonSettings (uiPages[ofdPage], "OFDSearchButton",
-				RDDefaultButtons.Find, uiColors[ofdPage][cField], OFD_Find);*/
-
-			ofdDisabledLabel = AndroidSupport.ApplyLabelSettings (uiPages[ofdPage], "OFDDisabledLabel",
+			ofdDisabledLabel = RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDisabledLabel",
 				"Аннулирован", RDLabelTypes.ErrorTip);
 			ofdDisabledLabel.IsVisible = false;
 
@@ -740,44 +692,35 @@ namespace RD_AAOW
 
 			#region Страница TLV-тегов
 
-			/*AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVSearchLabel",
-				"Поиск по номеру или фрагменту описания:", RDLabelTypes.HeaderLeft);
-			tlvTag = AndroidSupport.ApplyEditorSettings (uiPages[tlvPage], "TLVSearchText",
-				uiColors[tlvPage][cField], Keyboard.Default, 20, AppSettings.TLVData, null, true);
-
-			AndroidSupport.ApplyButtonSettings (uiPages[tlvPage], "TLVSearchButton",
-				RDDefaultButtons.Find, uiColors[tlvPage][cField], TLVFind_Clicked);
-			AndroidSupport.ApplyButtonSettings (uiPages[tlvPage], "TLVClearButton",
-				RDDefaultButtons.Delete, uiColors[tlvPage][cField], TLVClear_Clicked);*/
-			AndroidSupport.ApplyButtonSettings (uiPages[tlvPage], "TLVFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindButton",
 				"Найти тег", uiColors[tlvPage][cField],	TLVFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[tlvPage], "TLVFindNextButton",
+			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindNextButton",
 				NextButton, uiColors[tlvPage][cField], TLVFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[tlvPage], "TLVFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindBufferButton",
 				BufferButton, uiColors[tlvPage][cField], TLVFind_Clicked, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVDescriptionLabel",
+			RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVDescriptionLabel",
 				"Описание тега:", RDLabelTypes.HeaderLeft);
-			tlvDescriptionLabel = AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVDescription",
+			tlvDescriptionLabel = RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVDescription",
 				"", RDLabelTypes.Field, uiColors[tlvPage][cField]);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVTypeLabel", "Тип тега:",
+			RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVTypeLabel", "Тип тега:",
 				RDLabelTypes.HeaderLeft);
-			tlvTypeLabel = AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVType",
+			tlvTypeLabel = RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVType",
 				"", RDLabelTypes.Field, uiColors[tlvPage][cField]);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVValuesLabel",
+			RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVValuesLabel",
 				"Возможные значения тега:", RDLabelTypes.HeaderLeft);
-			tlvValuesLabel = AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVValues",
+			tlvValuesLabel = RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVValues",
 				"", RDLabelTypes.Field, uiColors[tlvPage][cField]);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVObligationLabel",
+			RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVObligationLabel",
 				"Обязательность:", RDLabelTypes.HeaderLeft);
-			tlvObligationLabel = AndroidSupport.ApplyLabelSettings (uiPages[tlvPage], "TLVObligation",
+			tlvObligationLabel = RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVObligation",
 				"", RDLabelTypes.Field, uiColors[tlvPage][cField]);
 			tlvObligationLabel.TextType = TextType.Html;
 
-			AndroidSupport.ApplyButtonSettings (uiPages[tlvPage], "TLVObligationHelpLabel",
+			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVObligationHelpLabel",
 				TLVTags.ObligationBase, uiColors[tlvPage][cField], TLVObligationBase_Click, false);
 
 			TLVFind_Clicked (sampleNextButton, null);
@@ -786,71 +729,61 @@ namespace RD_AAOW
 
 			#region Страница команд нижнего уровня
 
-			AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "CommandFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[llvPage][cField],
 				LowLevelFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "CommandFindNextButton",
+			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindNextButton",
 				NextButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "CommandFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindBufferButton",
 				BufferButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "ProtocolLabel",
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "ProtocolLabel",
 				"Протокол:", RDLabelTypes.HeaderLeft);
-			lowLevelProtocol = AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "ProtocolButton",
+			lowLevelProtocol = RDInterface.ApplyButtonSettings (uiPages[llvPage], "ProtocolButton",
 				kb.LLCommands.GetProtocolsNames ()[(int)AppSettings.LowLevelProtocol],
 				uiColors[llvPage][cField], LowLevelProtocol_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "CommandLabel",
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandLabel",
 				"Команда:", RDLabelTypes.HeaderLeft);
-			lowLevelCommand = AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "CommandButton",
+			lowLevelCommand = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandButton",
 				kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol)[(int)AppSettings.LowLevelCode],
 				uiColors[llvPage][cField], LowLevelCommandCodeButton_Clicked, true);
 
-			/*AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "CommandSearchLabel",
-				"Поиск по описанию команды:", RDLabelTypes.HeaderLeft);*/
-			AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "CommandCodeLabel",
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandCodeLabel",
 				"Код команды:", RDLabelTypes.HeaderLeft);
-			lowLevelCommandCode = AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "CommandCodeButton",
+			lowLevelCommandCode = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandCodeButton",
 				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, false),
 				uiColors[llvPage][cField], Field_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "CommandDescrLabel",
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescrLabel",
 				"Пояснение:", RDLabelTypes.HeaderLeft);
 
-			lowLevelCommandDescr = AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "CommandDescr",
+			lowLevelCommandDescr = RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescr",
 				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true),
 				RDLabelTypes.Field, uiColors[llvPage][cField]);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена",
 				RDLabelTypes.TipCenter);
-
-			/*commandSearchText = AndroidSupport.ApplyEditorSettings (uiPages[llvPage], "CommandSearchText",
-				uiColors[llvPage][cField], Keyboard.Default, 30, "", null, true);
-
-			AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "CommandSearchButton",
-				RDDefaultButtons.Find, uiColors[llvPage][cField], Command_Find);
-			AndroidSupport.ApplyButtonSettings (uiPages[llvPage], "CommandClearButton",
-				RDDefaultButtons.Delete, uiColors[llvPage][cField], Command_Clear);*/
 
 			#endregion
 
 			#region Страница штрих-кодов
 
-			AndroidSupport.ApplyLabelSettings (uiPages[bcdPage], "BarcodeFieldLabel",
+			RDInterface.ApplyLabelSettings (uiPages[bcdPage], "BarcodeFieldLabel",
 				"Данные штрих-кода:", RDLabelTypes.HeaderLeft);
-			barcodeField = AndroidSupport.ApplyEditorSettings (uiPages[bcdPage], "BarcodeField",
+			barcodeField = RDInterface.ApplyEditorSettings (uiPages[bcdPage], "BarcodeField",
 				uiColors[bcdPage][cField], Keyboard.Default, BarCodes.MaxSupportedDataLength,
 				AppSettings.BarcodeData, BarcodeText_TextChanged, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[bcdPage], "BarcodeDescriptionLabel",
+			RDInterface.ApplyLabelSettings (uiPages[bcdPage], "BarcodeDescriptionLabel",
 				"Описание штрих-кода:", RDLabelTypes.HeaderLeft);
-			barcodeDescriptionLabel = AndroidSupport.ApplyLabelSettings (uiPages[bcdPage], "BarcodeDescription",
+			barcodeDescriptionLabel = RDInterface.ApplyLabelSettings (uiPages[bcdPage], "BarcodeDescription",
 				"", RDLabelTypes.Field, uiColors[bcdPage][cField]);
 
-			AndroidSupport.ApplyButtonSettings (uiPages[bcdPage], "Clear",
+			RDInterface.ApplyButtonSettings (uiPages[bcdPage], "Clear",
 				RDDefaultButtons.Delete, uiColors[bcdPage][cField], BarcodeClear_Clicked);
-			AndroidSupport.ApplyButtonSettings (uiPages[bcdPage], "GetFromClipboard",
+			RDInterface.ApplyButtonSettings (uiPages[bcdPage], "GetFromClipboard",
 				RDDefaultButtons.Copy, uiColors[bcdPage][cField], BarcodeGet_Clicked);
 
 			BarcodeText_TextChanged (null, null);
@@ -859,49 +792,42 @@ namespace RD_AAOW
 
 			#region Страница распиновок
 
-			AndroidSupport.ApplyButtonSettings (uiPages[conPage], "ConnFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[conPage], "ConnFindButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[conPage][cField],
 				ConnFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[conPage], "ConnFindNextButton",
+			RDInterface.ApplyButtonSettings (uiPages[conPage], "ConnFindNextButton",
 				NextButton, uiColors[conPage][cField], ConnFind_Clicked, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[conPage], "ConnFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[conPage], "ConnFindBufferButton",
 				BufferButton, uiColors[conPage][cField], ConnFind_Clicked, false);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableLabel",
+			RDInterface.ApplyLabelSettings (uiPages[conPage], "CableLabel",
 				"Тип кабеля:", RDLabelTypes.HeaderLeft);
-			cableTypeButton = AndroidSupport.ApplyButtonSettings (uiPages[conPage], "CableTypeButton",
+			cableTypeButton = RDInterface.ApplyButtonSettings (uiPages[conPage], "CableTypeButton",
 				kb.Plugs.GetCablesNames ()[(int)AppSettings.CableType], uiColors[conPage][cField],
 				CableTypeButton_Clicked, true);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableDescriptionLabel",
+			RDInterface.ApplyLabelSettings (uiPages[conPage], "CableDescriptionLabel",
 				"Сопоставление контактов:", RDLabelTypes.HeaderLeft);
-			cableLeftSideText = AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableLeftSide",
+			cableLeftSideText = RDInterface.ApplyLabelSettings (uiPages[conPage], "CableLeftSide",
 				" ", RDLabelTypes.DefaultLeft);
 			cableLeftSideText.HorizontalTextAlignment = TextAlignment.Center;
 			cableLeftSideText.HorizontalOptions = LayoutOptions.Center;
 
-			cableLeftPinsText = AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableLeftPins",
+			cableLeftPinsText = RDInterface.ApplyLabelSettings (uiPages[conPage], "CableLeftPins",
 				" ", RDLabelTypes.FieldMonotype, uiColors[conPage][cField]);
 
-			cableRightSideText = AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableRightSide",
+			cableRightSideText = RDInterface.ApplyLabelSettings (uiPages[conPage], "CableRightSide",
 				" ", RDLabelTypes.DefaultLeft);
 			cableRightSideText.HorizontalTextAlignment = TextAlignment.Center;
 			cableRightSideText.HorizontalOptions = LayoutOptions.Center;
 
-			cableRightPinsText = AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableRightPins",
+			cableRightPinsText = RDInterface.ApplyLabelSettings (uiPages[conPage], "CableRightPins",
 				" ", RDLabelTypes.FieldMonotype, uiColors[conPage][cField]);
 			cableLeftPinsText.HorizontalTextAlignment = cableRightPinsText.HorizontalTextAlignment =
 				TextAlignment.Center;
 
-			cableDescriptionText = AndroidSupport.ApplyLabelSettings (uiPages[conPage], "CableDescription",
+			cableDescriptionText = RDInterface.ApplyLabelSettings (uiPages[conPage], "CableDescription",
 				" ", RDLabelTypes.TipLeft);
-
-			/*connSearchText = AndroidSupport.ApplyEditorSettings (uiPages[conPage], "ConnSearchText",
-				uiColors[conPage][cField], Keyboard.Default, 30, "", null, true);
-			AndroidSupport.ApplyButtonSettings (uiPages[conPage], "ConnSearchButton",
-				RDDefaultButtons.Find, uiColors[conPage][cField], Conn_Find);
-			AndroidSupport.ApplyButtonSettings (uiPages[conPage], "ConnClearButton",
-				RDDefaultButtons.Delete, uiColors[conPage][cField], Conn_Clear);*/
 
 			CableTypeButton_Clicked (null, null);
 
@@ -909,67 +835,67 @@ namespace RD_AAOW
 
 			#region Страница конвертора систем счисления
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvNumberLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvsPage], "ConvNumberLabel",
 				"Число:", RDLabelTypes.HeaderLeft);
-			convNumberField = AndroidSupport.ApplyEditorSettings (uiPages[cvsPage], "ConvNumberField",
+			convNumberField = RDInterface.ApplyEditorSettings (uiPages[cvsPage], "ConvNumberField",
 				uiColors[cvsPage][cField], Keyboard.Default, 10, AppSettings.ConversionNumber,
 				ConvNumber_TextChanged, true);
 
-			AndroidSupport.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberInc",
+			RDInterface.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberInc",
 				RDDefaultButtons.Increase, uiColors[cvsPage][cField], ConvNumberAdd_Click);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberDec",
+			RDInterface.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberDec",
 				RDDefaultButtons.Decrease, uiColors[cvsPage][cField], ConvNumberAdd_Click);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberClear",
+			RDInterface.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberClear",
 				RDDefaultButtons.Delete, uiColors[cvsPage][cField], ConvNumberClear_Click);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvNumberResultLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvsPage], "ConvNumberResultLabel",
 				"Представление:", RDLabelTypes.HeaderLeft);
-			convNumberResultField = AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvNumberResultField",
+			convNumberResultField = RDInterface.ApplyLabelSettings (uiPages[cvsPage], "ConvNumberResultField",
 				" ", RDLabelTypes.FieldMonotype, uiColors[cvsPage][cField]);
 			ConvNumber_TextChanged (null, null);
 
 			const string convHelp = "Шестнадцатеричные числа следует" + RDLocale.RN + "начинать с символов “0x”";
-			AndroidSupport.ApplyLabelSettings (uiPages[cvsPage], "ConvHelpLabel", convHelp, RDLabelTypes.TipCenter);
+			RDInterface.ApplyLabelSettings (uiPages[cvsPage], "ConvHelpLabel", convHelp, RDLabelTypes.TipCenter);
 
 			#endregion
 
 			#region Страница конвертора символов Unicode
 
-			AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindButton",
+			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindButton",
 				"Найти блок", uiColors[cvuPage][cField], ConvCodeFind_Click, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindNextButton",
+			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindNextButton",
 				NextButton, uiColors[cvuPage][cField], ConvCodeFind_Click, false);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindBufferButton",
+			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindBufferButton",
 				BufferButton, uiColors[cvuPage][cField], ConvCodeFind_Click, false);
 
 			encodingModesCount = (uint)(DataConvertors.AvailableEncodings.Length / 2);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeLabel",
 				"Код символа или символ:", RDLabelTypes.HeaderLeft);
-			convCodeField = AndroidSupport.ApplyEditorSettings (uiPages[cvuPage], "ConvCodeField",
+			convCodeField = RDInterface.ApplyEditorSettings (uiPages[cvuPage], "ConvCodeField",
 				uiColors[cvuPage][cField], Keyboard.Default, 10, AppSettings.ConversionCode,
 				ConvCode_TextChanged, true);
 
-			AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeInc",
+			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeInc",
 				RDDefaultButtons.Increase, uiColors[cvuPage][cField], ConvCodeAdd_Click);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeDec",
+			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeDec",
 				RDDefaultButtons.Decrease, uiColors[cvuPage][cField], ConvCodeAdd_Click);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeClear",
+			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeClear",
 				RDDefaultButtons.Delete, uiColors[cvuPage][cField], ConvCodeClear_Click);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeResultLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeResultLabel",
 				"Символ Unicode:", RDLabelTypes.HeaderLeft);
-			convCodeResultField = AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeResultField",
+			convCodeResultField = RDInterface.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeResultField",
 				"", RDLabelTypes.FieldMonotype, uiColors[cvuPage][cField]);
-			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeDescrLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeDescrLabel",
 				"Описание символа:", RDLabelTypes.HeaderLeft);
 
-			convCodeSymbolField = AndroidSupport.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeSymbolField",
+			convCodeSymbolField = RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeSymbolField",
 				" ", uiColors[cvuPage][cField], CopyCharacter_Click, true);
 			convCodeSymbolField.FontSize *= 5;
 			ConvCode_TextChanged (null, null);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvuPage], "ConvHelpLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvuPage], "ConvHelpLabel",
 				convHelp + "." + RDLocale.RN + "Нажатие кнопки с символом Unicode" + RDLocale.RN +
 				"копирует его в буфер обмена", RDLabelTypes.TipCenter);
 
@@ -977,28 +903,28 @@ namespace RD_AAOW
 
 			#region Страница конвертора двоичных данных
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvhPage], "HexLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvhPage], "HexLabel",
 				"Данные (hex или BASE64):", RDLabelTypes.HeaderLeft);
-			convHexField = AndroidSupport.ApplyEditorSettings (uiPages[cvhPage], "HexField",
+			convHexField = RDInterface.ApplyEditorSettings (uiPages[cvhPage], "HexField",
 				uiColors[cvhPage][cField], Keyboard.Default, 500, AppSettings.ConversionHex, null, true);
 			convHexField.HorizontalOptions = LayoutOptions.Fill;
 
-			AndroidSupport.ApplyButtonSettings (uiPages[cvhPage], "HexToTextButton",
+			RDInterface.ApplyButtonSettings (uiPages[cvhPage], "HexToTextButton",
 				RDDefaultButtons.Down, uiColors[cvhPage][cField], ConvertHexToText_Click);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvhPage], "TextToHexButton",
+			RDInterface.ApplyButtonSettings (uiPages[cvhPage], "TextToHexButton",
 				RDDefaultButtons.Up, uiColors[cvhPage][cField], ConvertTextToHex_Click);
-			AndroidSupport.ApplyButtonSettings (uiPages[cvhPage], "ClearButton",
+			RDInterface.ApplyButtonSettings (uiPages[cvhPage], "ClearButton",
 				RDDefaultButtons.Delete, uiColors[cvhPage][cField], ClearConvertText_Click);
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvhPage], "TextLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvhPage], "TextLabel",
 				"Данные (текст):", RDLabelTypes.HeaderLeft);
-			convTextField = AndroidSupport.ApplyEditorSettings (uiPages[cvhPage], "TextField",
+			convTextField = RDInterface.ApplyEditorSettings (uiPages[cvhPage], "TextField",
 				uiColors[cvhPage][cField], Keyboard.Default, 250, AppSettings.ConversionText, null, true);
 			convTextField.HorizontalOptions = LayoutOptions.Fill;
 
-			AndroidSupport.ApplyLabelSettings (uiPages[cvhPage], "EncodingLabel",
+			RDInterface.ApplyLabelSettings (uiPages[cvhPage], "EncodingLabel",
 				"Кодировка:", RDLabelTypes.HeaderLeft);
-			encodingButton = AndroidSupport.ApplyButtonSettings (uiPages[cvhPage], "EncodingButton",
+			encodingButton = RDInterface.ApplyButtonSettings (uiPages[cvhPage], "EncodingButton",
 				" ", uiColors[cvhPage][cField], EncodingButton_Clicked, true);
 			EncodingButton_Clicked (null, null);
 
@@ -1013,7 +939,7 @@ namespace RD_AAOW
 			Color PageBackColor, bool AddToMenu)
 			{
 			// Инициализация страницы
-			ContentPage page = AndroidSupport.ApplyPageSettings (CreatedPage, PageName, PageTitle, PageBackColor);
+			ContentPage page = RDInterface.ApplyPageSettings (CreatedPage, PageName, PageTitle, PageBackColor);
 
 			// Добавление в содержание
 			if (!AddToMenu)
@@ -1026,8 +952,9 @@ namespace RD_AAOW
 			b.TextTransform = TextTransform.None;
 
 			b.FontAttributes = FontAttributes.None;
-			b.FontSize = 5 * AndroidSupport.MasterFontSize / 4;
-			b.TextColor = AndroidSupport.MasterTextColor;
+			b.FontSize = 5 * RDInterface.MasterFontSize / 4;
+			/*b.TextColor = RDInterface.MasterTextColor;*/
+			b.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
 			b.Margin = b.Padding = new Thickness (1);
 
 			uiButtons.Add (b);
@@ -1041,18 +968,18 @@ namespace RD_AAOW
 			{
 			// Контроль XPUN
 			if (!DisableXPUN)
-				await AndroidSupport.XPUNLoop ();
+				await RDInterface.XPUNLoop ();
 
 			// Политика
 			if (RDGenerics.GetAppRegistryValue (firstStartRegKey) != "")
 				return;
 
-			await AndroidSupport.PolicyLoop ();
+			await RDInterface.PolicyLoop ();
 
 			// Только после принятия
 			RDGenerics.SetAppRegistryValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
 
-			await AndroidSupport.ShowMessage ("Вас приветствует " + ProgramDescription.AssemblyMainName +
+			await RDInterface.ShowMessage ("Вас приветствует " + ProgramDescription.AssemblyMainName +
 				" – " + ProgramDescription.AssemblyDescription + RDLocale.RNRN +
 				"На этой странице находится перечень функций приложения, который позволяет перейти " +
 				"к нужному разделу. Вернуться сюда можно с помощью кнопки «Назад»",
@@ -1070,7 +997,7 @@ namespace RD_AAOW
 			{
 			int idx = uiButtons.IndexOf ((Button)sender);
 			if (idx >= 0)
-				AndroidSupport.SetCurrentPage (uiPages[idx + 1], uiColors[idx + 1][0]);
+				RDInterface.SetCurrentPage (uiPages[idx + 1], uiColors[idx + 1][0]);
 			}
 
 		// Включение / выключение режима сервис-инженера
@@ -1078,13 +1005,13 @@ namespace RD_AAOW
 			{
 			if (extendedMode.IsToggled)
 				{
-				await AndroidSupport.ShowMessage (AppSettings.ExtendedModeMessage,
+				await RDInterface.ShowMessage (AppSettings.ExtendedModeMessage,
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 				AppSettings.EnableExtendedMode = true;
 				}
 			else
 				{
-				await AndroidSupport.ShowMessage (AppSettings.NoExtendedModeMessage,
+				await RDInterface.ShowMessage (AppSettings.NoExtendedModeMessage,
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 				AppSettings.EnableExtendedMode = false;
 				}
@@ -1096,18 +1023,14 @@ namespace RD_AAOW
 		protected override void OnSleep ()
 			{
 			// Переключение состояния
-			AndroidSupport.AppIsRunning = false;
+			RDGenerics.AppIsRunning = false;
 
 			// Сохранение настроек
-			AppSettings.CurrentTab = (uint)uiPages.IndexOf ((ContentPage)AndroidSupport.MasterPage.CurrentPage);
+			AppSettings.CurrentTab = (uint)uiPages.IndexOf ((ContentPage)RDInterface.MasterPage.CurrentPage);
 
 			// ca.KKTForErrors	// Обновляется в коде программы
-			/*// ca.ErrorCode		// -||-*/
 
-			/*AppSettings.FNSerial = fnLifeSerial.Text;*/
 			AppSettings.FNLifeEvFlags = (uint)FNLifeEvFlags;
-
-			/*AppSettings.KKTSerial = rnmKKTSN.Text;*/
 			AppSettings.UserINN = rnmINN.Text;
 			AppSettings.RNMKKT = rnmRNM.Text;
 
@@ -1123,8 +1046,6 @@ namespace RD_AAOW
 			AppSettings.BarcodeData = barcodeField.Text;
 			//ca.CableType		// -||-
 
-			/*AppSettings.TLVData = tlvTag.Text;*/
-
 			AppSettings.ConversionNumber = convNumberField.Text;
 			AppSettings.ConversionCode = convCodeField.Text;
 			AppSettings.ConversionHex = convHexField.Text;
@@ -1139,7 +1060,7 @@ namespace RD_AAOW
 		/// </summary>
 		protected override void OnResume ()
 			{
-			AndroidSupport.AppIsRunning = true;
+			RDGenerics.AppIsRunning = true;
 			}
 
 		#endregion
@@ -1153,14 +1074,13 @@ namespace RD_AAOW
 			List<string> list = kb.Errors.GetKKTTypeNames ();
 
 			// Установка модели
-			int res = await AndroidSupport.ShowList ("Выберите модель ККТ:",
+			int res = await RDInterface.ShowList ("Выберите модель ККТ:",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
 
 			errorsKKTButton.Text = list[res];
 			AppSettings.KKTForErrors = (uint)res;
-			/*Errors_Find (null, null);*/
 			ErrorFind_Clicked (sampleNextButton, null);
 			}
 
@@ -1194,9 +1114,7 @@ namespace RD_AAOW
 
 			// 
 			List<string> codes = kb.Errors.GetErrorCodesList (AppSettings.KKTForErrors);
-			/*string text = errorSearchText.Text.ToLower ();
 
-			lastErrorSearchOffset++;*/
 			for (int i = 0; i < codes.Count; i++)
 				{
 				int j = (i + lastErrorSearchOffset) % codes.Count;
@@ -1207,10 +1125,8 @@ namespace RD_AAOW
 					code.Contains ("?") && search[0].Contains (code.Replace ("?", "")))
 					{
 					lastErrorSearchOffset = (i + lastErrorSearchOffset) % codes.Count;
-					/*AppSettings.ErrorCode = errorSearchText.Text;*/
 					errorsResultText.Text = codes[j] + ": " + res;
 
-					/*AndroidSupport.HideKeyboard (errorSearchText);*/
 					return;
 					}
 				}
@@ -1218,12 +1134,6 @@ namespace RD_AAOW
 			// Код не найден
 			errorsResultText.Text = "(описание ошибки не найдено)";
 			}
-
-		/*// Очистка полей
-		private void Errors_Clear (object sender, EventArgs e)
-			{
-			errorSearchText.Text = "";
-			}*/
 
 		#endregion
 
@@ -1247,7 +1157,7 @@ namespace RD_AAOW
 			List<string> list = kb.CodeTables.GetKKTTypeNames ();
 
 			// Установка модели
-			int res = await AndroidSupport.ShowList ("Выберите модель ККТ:",
+			int res = await RDInterface.ShowList ("Выберите модель ККТ:",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
@@ -1271,7 +1181,7 @@ namespace RD_AAOW
 			List<string> items = new List<string> (kktCodesOftenTexts);
 			items.Add ("[из буфера обмена]");
 
-			int res = await AndroidSupport.ShowList ("Доступные варианты:",
+			int res = await RDInterface.ShowList ("Доступные варианты:",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), items);
 			if (res < 0)
 				return;
@@ -1312,7 +1222,7 @@ namespace RD_AAOW
 			List<string> list = kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol);
 			int res = 0;
 			if (e != null)
-				res = await AndroidSupport.ShowList ("Выберите команду:",
+				res = await RDInterface.ShowList ("Выберите команду:",
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 			// Установка результата
@@ -1335,7 +1245,7 @@ namespace RD_AAOW
 			List<string> list = kb.LLCommands.GetProtocolsNames ();
 
 			// Установка результата
-			int res = await AndroidSupport.ShowList ("Выберите протокол:",
+			int res = await RDInterface.ShowList ("Выберите протокол:",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
@@ -1364,9 +1274,7 @@ namespace RD_AAOW
 				lastCommandSearchOffset = 0;
 
 			List<string> codes = kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol);
-			/*string text = commandSearchText.Text.ToLower ();
 
-			lastCommandSearchOffset++;*/
 			for (int i = 0; i < codes.Count; i++)
 				{
 				if (codes[(i + lastCommandSearchOffset) % codes.Count].ToLower ().Contains (search[0]))
@@ -1381,38 +1289,16 @@ namespace RD_AAOW
 					lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol,
 						(uint)lastCommandSearchOffset, true);
 
-					/*AndroidSupport.HideKeyboard (commandSearchText);*/
 					return;
 					}
 				}
 			}
-
-		/*// Очистка полей
-		private void Command_Clear (object sender, EventArgs e)
-			{
-			commandSearchText.Text = "";
-			}*/
 
 		#endregion
 
 		#region Срок жизни ФН
 
 		// Поиск ЗН ФН в разделе определения срока жизни
-		/*private void FNLifeSerial_TextChanged (object sender, TextChangedEventArgs e)
-			{
-			// Получение описания
-			if (!string.IsNullOrWhiteSpace (fnLifeSerial.Text))
-				fnLifeModelLabel.Text = kb.FNNumbers.GetFNName (fnLifeSerial.Text);
-			else
-				fnLifeModelLabel.Text = "(введите ЗН ФН)";
-
-			// Определение длины ключа
-			fnLife13.IsToggled = !kb.FNNumbers.IsNotFor36Months (fnLifeSerial.Text);
-			fnLife13.IsVisible = !kb.FNNumbers.IsFNKnown (fnLifeSerial.Text);
-
-			// Принудительное изменение
-			FnLife13_Toggled (null, null);
-			}*/
 		private async void FNLifeFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
@@ -1482,18 +1368,18 @@ namespace RD_AAOW
 				{
 				case FNLifeStatus.Inacceptable:
 					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					fnLifeStatus.TextColor = fnLifeDate.TextColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
 					fnLifeMessage = FNSerial.FNIsNotAcceptableMessage;
 					break;
 
 				case FNLifeStatus.Unwelcome:
 					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.WarningMessage);
 					fnLifeStatus.TextColor = fnLifeDate.TextColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.WarningText);
 
 					fnLifeMessage = FNSerial.FNIsNotRecommendedMessage;
 					break;
@@ -1501,18 +1387,18 @@ namespace RD_AAOW
 				case FNLifeStatus.Acceptable:
 				default:
 					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 					fnLifeStatus.TextColor = fnLifeDate.TextColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessText);
 
 					fnLifeMessage = FNSerial.FNIsAcceptableMessage;
 					break;
 
 				case FNLifeStatus.StronglyUnwelcome:
 					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 					fnLifeStatus.TextColor = fnLifeDate.TextColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
 
 					fnLifeMessage = FNSerial.FNIsStronglyUnwelcomeMessage;
 					break;
@@ -1523,25 +1409,25 @@ namespace RD_AAOW
 				if (!kb.FNNumbers.IsFNAllowed (AppSettings.FNSerial))
 					{
 					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					fnLifeStatus.TextColor = fnLifeDate.TextColor =
-						RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
 					fnLifeMessage += (RDLocale.RN + FNSerial.FNIsNotAllowedMessage);
 
-					fnLifeModelLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
-					fnLifeModelLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+					fnLifeModelLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					fnLifeModelLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 					}
 				else
 					{
-					fnLifeModelLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
-					fnLifeModelLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+					fnLifeModelLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+					fnLifeModelLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessText);
 					}
 				}
 			else
 				{
-				fnLifeModelLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
-				fnLifeModelLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
+				fnLifeModelLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				fnLifeModelLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
 				}
 			}
 
@@ -1554,30 +1440,13 @@ namespace RD_AAOW
 		// Сообщение о применимости модели ФН
 		private async void FNLifeStatusClick (object sender, EventArgs e)
 			{
-			await AndroidSupport.ShowMessage (fnLifeMessage, RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
+			await RDInterface.ShowMessage (fnLifeMessage, RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 			}
-
-		/*// Очистка полей
-		private void FNLifeClear_Clicked (object sender, EventArgs e)
-			{
-			fnLifeSerial.Text = "";
-			}
-
-		// Поиск по сигнатуре
-		private void FNLifeFind_ Clicked (object sender, EventArgs e)
-			{
-			string sig = kb.FNNumbers.FindSignatureByName (fnLifeSerial.Text);
-			if (sig != "")
-				{
-				fnLifeSerial.Text = sig;
-				AndroidSupport.HideKeyboard (fnLifeSerial);
-				}
-			}*/
 
 		// Статистика по базе ЗН ФН
 		private async void FNStats_Clicked (object sender, EventArgs e)
 			{
-			await AndroidSupport.ShowMessage (kb.FNNumbers.RegistryStats,
+			await RDInterface.ShowMessage (kb.FNNumbers.RegistryStats,
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 			}
 
@@ -1684,45 +1553,24 @@ namespace RD_AAOW
 		// Изменение ИНН ОФД и РН ККТ
 		private void RNMINNUpdate (object sender, TextChangedEventArgs e)
 			{
-			/*// ЗН ККТ
-			if (rnmKKTSN.Text != "")
-				{
-				rnmKKTTypeLabel.Text = kb.KKTNumbers.GetKKTModel (rnmKKTSN.Text);
-				string s = kb.KKTNumbers.GetFFDSupportStatus (rnmKKTSN.Text);
-				if (!string.IsNullOrWhiteSpace (s))
-					{
-					rnmKKTTypeLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
-					rnmKKTTypeLabel.Text += RDLocale.RN + s;
-					}
-				else
-					{
-					rnmKKTTypeLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
-					}
-				}
-			else
-				{
-				rnmKKTTypeLabel.Text = "(введите ЗН ККТ)";
-				rnmKKTTypeLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
-				}*/
-
 			// ИНН пользователя
 			rnmINNCheckLabel.Text = kb.KKTNumbers.GetRegionName (rnmINN.Text);
 			if (KKTSupport.CheckINN (rnmINN.Text) < 0)
 				{
-				rnmINNCheckLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
-				rnmINNCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
+				rnmINNCheckLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				rnmINNCheckLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
 				rnmINNCheckLabel.Text += " (неполный)";
 				}
 			else if (KKTSupport.CheckINN (rnmINN.Text) == 0)
 				{
-				rnmINNCheckLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
-				rnmINNCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+				rnmINNCheckLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+				rnmINNCheckLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessText);
 				rnmINNCheckLabel.Text += " (ОК)";
 				}
 			else
 				{
-				rnmINNCheckLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningMessage);
-				rnmINNCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.WarningText);
+				rnmINNCheckLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+				rnmINNCheckLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.WarningText);
 				rnmINNCheckLabel.Text += " (возможно, некорректный)";
 				}
 
@@ -1735,21 +1583,21 @@ namespace RD_AAOW
 			// РН
 			if (rnmRNM.Text.Length < 10)
 				{
-				rnmRNMCheckLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
-				rnmRNMCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.QuestionText);
+				rnmRNMCheckLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
+				rnmRNMCheckLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
 				rnmRNMCheckLabel.Text = "(неполный)";
 				}
 			else if (KKTSupport.GetFullRNM (rnmINN.Text, AppSettings.KKTSerial,
 				rnmRNM.Text.Substring (0, 10)) == rnmRNM.Text)
 				{
-				rnmRNMCheckLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
-				rnmRNMCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.SuccessText);
+				rnmRNMCheckLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+				rnmRNMCheckLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessText);
 				rnmRNMCheckLabel.Text = "(OK)";
 				}
 			else
 				{
-				rnmRNMCheckLabel.BackgroundColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
-				rnmRNMCheckLabel.TextColor = RDGenerics.GetInterfaceColor (RDInterfaceColors.ErrorText);
+				rnmRNMCheckLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+				rnmRNMCheckLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 				rnmRNMCheckLabel.Text = "(некорректный)";
 				}
 			}
@@ -1766,7 +1614,7 @@ namespace RD_AAOW
 					rnmRNM.Text.Substring (0, 10));
 
 			if (string.IsNullOrWhiteSpace (rnmRNM.Text))
-				AndroidSupport.ShowBalloon ("Убедитесь, что заводской номер и ИНН введены корректно", true);
+				RDInterface.ShowBalloon ("Убедитесь, что заводской номер и ИНН введены корректно", true);
 			}
 
 		// Очистка полей
@@ -1779,21 +1627,10 @@ namespace RD_AAOW
 			RNMSerial_Search (sampleNextButton, null);
 			}
 
-		/*// Поиск по сигнатуре
-		private void RNMFind_Clicked (object sender, EventArgs e)
-			{
-			string sig = kb.KKTNumbers.FindSignatureByName (rnmKKTSN.Text);
-			if (sig != "")
-				{
-				rnmKKTSN.Text = sig;
-				AndroidSupport.HideKeyboard (rnmKKTSN);
-				}
-			}*/
-
 		// Статистика по базе ЗН ККТ
 		private async void RNMStats_Clicked (object sender, EventArgs e)
 			{
-			await AndroidSupport.ShowMessage (kb.KKTNumbers.RegistryStats,
+			await RDInterface.ShowMessage (kb.KKTNumbers.RegistryStats,
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
 			}
 
@@ -1831,7 +1668,7 @@ namespace RD_AAOW
 			List<string> list = kb.Ofd.GetOFDNames (false);
 
 			// Установка результата
-			int res = await AndroidSupport.ShowList ("Выберите название ОФД:",
+			int res = await RDInterface.ShowList ("Выберите название ОФД:",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 			if (res < 0)
 				return;
@@ -1850,28 +1687,6 @@ namespace RD_AAOW
 		// Поиск по названию ОФД
 		private async void OFDFind_Clicked (object sender, EventArgs e)
 			{
-			/*List<string> codes = kb.Ofd.GetOFDNames (false);
-			codes.AddRange (kb.Ofd.GetOFDINNs ());
-
-			string text = ofdSearchText.Text.ToLower ();
-
-			lastOFDSearchOffset++;
-			for (int i = 0; i < codes.Count; i++)
-				{
-				if (codes[(i + lastOFDSearchOffset) % codes.Count].ToLower ().Contains (text))
-					{
-					lastOFDSearchOffset = (i + lastOFDSearchOffset) % codes.Count;
-					ofdNameButton.Text = codes[lastOFDSearchOffset % (codes.Count / 2)];
-
-					string s = kb.Ofd.GetOFDINNByName (ofdNameButton.Text);
-					if (s != "")
-						AppSettings.OFDINN = ofdINN.Text = s;
-
-					OFDINN_TextChanged (null, null);
-					AndroidSupport.HideKeyboard (ofdSearchText);
-					return;
-					}
-				}*/
 			// Определение запроса
 			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.OFDSearch, "Введите ИНН ОФД или фрагмент его названия",
@@ -1906,12 +1721,6 @@ namespace RD_AAOW
 				}
 			}
 
-		/*// Очистка полей
-		private void OFDClear_Clicked (object sender, EventArgs e)
-			{
-			ofdSearchText.Text = "";
-			}*/
-
 		#endregion
 
 		#region О приложении
@@ -1919,12 +1728,12 @@ namespace RD_AAOW
 		// Вызов справочных материалов
 		private async void ReferenceButton_Click (object sender, EventArgs e)
 			{
-			await AndroidSupport.CallHelpMaterials (RDHelpMaterials.ReferenceMaterials);
+			await RDInterface.CallHelpMaterials (RDHelpMaterials.ReferenceMaterials);
 			}
 
 		private async void HelpButton_Click (object sender, EventArgs e)
 			{
-			await AndroidSupport.CallHelpMaterials (RDHelpMaterials.HelpAndSupport);
+			await RDInterface.CallHelpMaterials (RDHelpMaterials.HelpAndSupport);
 			}
 
 		// Изменение размера шрифта интерфейса
@@ -1933,14 +1742,14 @@ namespace RD_AAOW
 			if (sender != null)
 				{
 				Button b = (Button)sender;
-				if (AndroidSupport.IsNameDefault (b.Text, RDDefaultButtons.Increase))
-					AndroidSupport.MasterFontSize += 0.5;
-				else if (AndroidSupport.IsNameDefault (b.Text, RDDefaultButtons.Decrease))
-					AndroidSupport.MasterFontSize -= 0.5;
+				if (RDInterface.IsNameDefault (b.Text, RDDefaultButtons.Increase))
+					RDInterface.MasterFontSize += 0.5;
+				else if (RDInterface.IsNameDefault (b.Text, RDDefaultButtons.Decrease))
+					RDInterface.MasterFontSize -= 0.5;
 				}
 
-			aboutFontSizeField.Text = AndroidSupport.MasterFontSize.ToString ("F1");
-			aboutFontSizeField.FontSize = AndroidSupport.MasterFontSize;
+			aboutFontSizeField.Text = RDInterface.MasterFontSize.ToString ("F1");
+			aboutFontSizeField.FontSize = RDInterface.MasterFontSize;
 			}
 
 		#endregion
@@ -1961,7 +1770,7 @@ namespace RD_AAOW
 			if (sender != null)
 				{
 				// Запрос модели ККТ
-				res = await AndroidSupport.ShowList ("Выберите модель ККТ:",
+				res = await RDInterface.ShowList ("Выберите модель ККТ:",
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 				// Установка модели
@@ -1974,13 +1783,11 @@ namespace RD_AAOW
 
 			for (int i = 0; i < operationTextLabels.Count; i++)
 				{
-				/*var sections = (UserManualsSections)AppSettings.UserManualSectionsState;*/
 				uint sections = AppSettings.UserGuidesSectionsState;
-				/*bool state = sections.HasFlag ((UserManualsSections)(1u << i));*/
 				bool state = ((sections & (1u << i)) != 0);
 
-				operationTextButtons[i].Text = UserGuides.OperationTypes(false)[i] + (state ?
-					"" : operationButtonSignature);
+				operationTextButtons[i].Text = (state ? operationButtonSignatureShow : operationButtonSignatureHide) +
+					UserGuides.OperationTypes (false)[i];
 				operationTextLabels[i].Text = kb.UserGuides.GetGuide ((uint)res, (UserGuidesTypes)i,
 					UserManualFlags);
 				operationTextLabels[i].IsVisible = state;
@@ -1997,7 +1804,7 @@ namespace RD_AAOW
 				{
 				List<string> modes = new List<string> { "Для кассира", "Для сервис-инженера" };
 
-				res = await AndroidSupport.ShowList ("Сохранить / распечатать руководство:",
+				res = await RDInterface.ShowList ("Сохранить / распечатать руководство:",
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), modes);
 				if (res < 0)
 					return;
@@ -2017,18 +1824,20 @@ namespace RD_AAOW
 		private void OperationTextButton_Clicked (object sender, EventArgs e)
 			{
 			byte idx = (byte)operationTextButtons.IndexOf ((Button)sender);
-			bool state = operationTextButtons[idx].Text.Contains (operationButtonSignature);
-			/*UserManualsSections sections = (UserManualsSections)AppSettings.UserManualSectionsState;*/
+			/*bool state = operationTextButtons[idx].Text.Contains (operationButtonSignature);*/
+			bool state = operationTextButtons[idx].Text.Contains (operationButtonSignatureHide);
 			uint sections = AppSettings.UserGuidesSectionsState;
 
 			if (state)
-				sections |= /*(UserManualsSections)*/(1u << idx);
+				sections |= (1u << idx);
 			else
-				sections &= ~/*(UserManualsSections)*/(1u << idx);
+				sections &= ~(1u << idx);
 			AppSettings.UserGuidesSectionsState = (uint)sections;
 
-			operationTextButtons[idx].Text = UserGuides.OperationTypes(false)[idx] +
-				(state ? "" : operationButtonSignature);
+			/*operationTextButtons[idx].Text = UserGuides.OperationTypes(false)[idx] +
+				(state ? "" : operationButtonSignature);*/
+			operationTextButtons[idx].Text = (state ? operationButtonSignatureShow : operationButtonSignatureHide) +
+				UserGuides.OperationTypes (false)[idx];
 			operationTextLabels[idx].IsVisible = state;
 			}
 
@@ -2090,8 +1899,6 @@ namespace RD_AAOW
 				tlvTypeLabel.Text = kb.Tags.LastType;
 				tlvValuesLabel.Text = kb.Tags.LastValuesSet;
 				tlvObligationLabel.Text = kb.Tags.LastObligation;
-
-				/*AndroidSupport.HideKeyboard (tlvTag);   // Мешает просмотру текста*/
 				}
 			else
 				{
@@ -2099,13 +1906,6 @@ namespace RD_AAOW
 					tlvObligationLabel.Text = "(не найдено)";
 				}
 			}
-
-		/*// Сброс поискового запроса
-		private void TLVClear_Clicked (object sender, EventArgs e)
-			{
-			tlvTag.Text = "";
-			TLVFind_ Clicked (null, null);
-			}*/
 
 		// Ссылка на приказ-обоснование обязательности тегов
 		private async void TLVObligationBase_Click (object sender, EventArgs e)
@@ -2116,7 +1916,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				AndroidSupport.ShowBalloon (RDLocale.GetDefaultText
+				RDInterface.ShowBalloon (RDLocale.GetDefaultText
 					(RDLDefaultTexts.Message_BrowserNotAvailable), true);
 				}
 			}
@@ -2158,7 +1958,7 @@ namespace RD_AAOW
 			if (sender != null)
 				{
 				// Запрос модели ККТ
-				res = await AndroidSupport.ShowList ("Выберите тип кабеля:",
+				res = await RDInterface.ShowList ("Выберите тип кабеля:",
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 				// Установка типа кабеля
@@ -2197,9 +1997,7 @@ namespace RD_AAOW
 				lastConnSearchOffset = 0;
 
 			List<string> conns = kb.Plugs.GetCablesNames ();
-			/*string text = connSearchText.Text.ToLower ();
 
-			lastConnSearchOffset++;*/
 			for (int i = 0; i < conns.Count; i++)
 				{
 				int j = (i + lastConnSearchOffset) % conns.Count;
@@ -2211,7 +2009,7 @@ namespace RD_AAOW
 					lastConnSearchOffset = j;
 
 					CableTypeButton_Clicked (null, null);
-					/*AndroidSupport.HideKeyboard (connSearchText);*/
+					/*RDInterface.HideKeyboard (connSearchText);*/
 					return;
 					}
 				}
@@ -2221,12 +2019,6 @@ namespace RD_AAOW
 			cableLeftPinsText.Text = cableRightSideText.Text = cableRightPinsText.Text =
 				cableDescriptionText.Text = "";
 			}
-
-		/*// Очистка полей
-		private void Conn_Clear (object sender, EventArgs e)
-			{
-			connSearchText.Text = "";
-			}*/
 
 		#endregion
 
@@ -2240,7 +2032,7 @@ namespace RD_AAOW
 
 		private void ConvNumberAdd_Click (object sender, EventArgs e)
 			{
-			bool plus = AndroidSupport.IsNameDefault (((Button)sender).Text,
+			bool plus = RDInterface.IsNameDefault (((Button)sender).Text,
 				RDDefaultButtons.Increase);
 
 			// Извлечение значения с защитой
@@ -2265,7 +2057,7 @@ namespace RD_AAOW
 				}
 
 			convNumberField.Text = ((uint)res).ToString ();
-			AndroidSupport.HideKeyboard (convNumberField);
+			RDGenerics.HideKeyboard (convNumberField);
 			}
 
 		private void ConvCode_TextChanged (object sender, EventArgs e)
@@ -2277,13 +2069,13 @@ namespace RD_AAOW
 
 		private void ConvCodeAdd_Click (object sender, EventArgs e)
 			{
-			bool plus = AndroidSupport.IsNameDefault (((Button)sender).Text,
+			bool plus = RDInterface.IsNameDefault (((Button)sender).Text,
 				RDDefaultButtons.Increase);
 
 			string[] res = DataConvertors.GetSymbolDescription (convCodeField.Text,
 				(short)(plus ? 1 : -1), kb.Unicodes);
 			convCodeField.Text = res[2];
-			AndroidSupport.HideKeyboard (convCodeField);
+			RDGenerics.HideKeyboard (convCodeField);
 			}
 
 		// Копирование символа в буфер
@@ -2329,7 +2121,7 @@ namespace RD_AAOW
 			convTextField.Text = DataConvertors.ConvertHexToText (convHexField.Text,
 				(RDEncodings)(AppSettings.EncodingForConvertor % encodingModesCount),
 				AppSettings.EncodingForConvertor >= encodingModesCount);
-			AndroidSupport.HideKeyboard (convTextField);
+			RDGenerics.HideKeyboard (convTextField);
 			}
 
 		// Преобразование текста в hex-данные
@@ -2338,7 +2130,7 @@ namespace RD_AAOW
 			convHexField.Text = DataConvertors.ConvertTextToHex (convTextField.Text,
 				(RDEncodings)(AppSettings.EncodingForConvertor % encodingModesCount),
 				AppSettings.EncodingForConvertor >= encodingModesCount);
-			AndroidSupport.HideKeyboard (convHexField);
+			RDGenerics.HideKeyboard (convHexField);
 			}
 
 		// Очистка вкладки преобразования данных
@@ -2357,7 +2149,7 @@ namespace RD_AAOW
 			if (sender != null)
 				{
 				// Запрос модели ККТ
-				res = await AndroidSupport.ShowList ("Выберите кодировку:",
+				res = await RDInterface.ShowList ("Выберите кодировку:",
 					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
 
 				// Установка модели

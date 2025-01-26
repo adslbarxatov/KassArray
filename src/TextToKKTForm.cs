@@ -26,7 +26,6 @@ namespace RD_AAOW
 
 		// Ссылки на текущие смещения в списках поиска
 		private int lastErrorSearchOffset = 0;
-		/*private const uint maxErrorSearchLength = 20;*/
 
 		private int lastOFDSearchOffset = 0;
 		private int lastLowLevelSearchOffset = 0;
@@ -128,22 +127,17 @@ namespace RD_AAOW
 				{
 				KKTListForErrors.SelectedIndex = 0;
 				}
-			/*ErrorSearchText.Text = AppSettings.ErrorCode;*/
 
 			lastErrorSearchOffset = 0;	// Требуется переопределение из-за срабатывания косвенных триггеров
 			ErrorFindButton_Click (ErrorFindNextButton, null);
 
-			/*FNLifeSN.Text = AppSettings.FNSerial;*/
 			FNLifeEvFlags = (KassArrayDB::RD_AAOW.FNLifeFlags)AppSettings.FNLifeEvFlags;
 			FNLifeStartDate.Value = DateTime.Now;
 			FNLife_Search (ErrorFindNextButton, null);
 
-			/*RNMSerial.MaxLength = (int)kb.KKTNumbers.MaxSerialNumberLength;
-			RNMSerial.Text = AppSettings.KKTSerial;*/
 			RNMUserINN.Text = AppSettings.UserINN;
 			RNMValue.Text = AppSettings.RNMKKT;
 
-			/*RNMSerial_TextChanged (null, null); // Для протяжки пустых полей*/
 			RNMSerial_Search (ErrorFindNextButton, null);
 			RNMINNUpdate (null, null);
 
@@ -209,9 +203,7 @@ namespace RD_AAOW
 
 			if (AppSettings.EnableExtendedMode) // Уровень 2
 				{
-				RNMTip.Text = /*"Первые 10 цифр являются порядковым номером ККТ в реестре. При генерации " +
-					"РНМ их можно указать вручную – остальные будут достроены программой"*/
-					KassArrayDB::RD_AAOW.KKTSupport.RNMTip;
+				RNMTip.Text = KassArrayDB::RD_AAOW.KKTSupport.RNMTip;
 				}
 			else
 				{
@@ -299,8 +291,6 @@ namespace RD_AAOW
 				this.TopMost = true;
 
 				TMSet (true);
-				/*if (!TopFlag.Checked)
-					this.Top Most = false;*/
 				this.WindowState = FormWindowState.Normal;
 				}
 			}
@@ -349,12 +339,8 @@ namespace RD_AAOW
 			AppSettings.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;
 
 			AppSettings.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
-			/*AppSettings.ErrorCode = ErrorSearchText.Text;*/
-
-			/*AppSettings.FNSerial = FNLifeSN.Text;*/
 			AppSettings.FNLifeEvFlags = (uint)FNLifeEvFlags;
 
-			/*AppSettings.KKTSerial = RNMSerial.Text;*/
 			AppSettings.UserINN = RNMUserINN.Text;
 			AppSettings.RNMKKT = RNMValue.Text;
 
@@ -373,12 +359,10 @@ namespace RD_AAOW
 
 			AppSettings.BarcodeData = BarcodeData.Text;
 			AppSettings.CableType = (uint)CableType.SelectedIndex;
-			/*AppSettings.TLVData = TLVFind.Text;*/
 
 			AppSettings.KKTForManuals = (uint)KKTListForManuals.SelectedIndex;
 			AppSettings.OperationForManuals = (uint)OperationsListForManuals.SelectedIndex;
 			AppSettings.UserGuidesFlags = (uint)UserManualFlags;
-			/*AppSettings.FFDForTLV = (uint)TLV_FFDCombo.SelectedIndex;*/
 
 			AppSettings.ConversionNumber = ConvNumber.Text;
 			AppSettings.ConversionCode = ConvCode.Text;
@@ -419,11 +403,9 @@ namespace RD_AAOW
 			else
 				{
 				// С предупреждением
-				/*this.Top Most = false;*/
 				TMSet (false);
 				res = RDGenerics.KillAllProcesses (
 					Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), true, false);
-				/*this.Top Most = TopFlag.Checked;*/
 				TMSet (true);
 				}
 
@@ -438,7 +420,6 @@ namespace RD_AAOW
 		// Переключение состояния "поверх всех окон"
 		private void TopFlag_CheckedChanged (object sender, EventArgs e)
 			{
-			/*this.Top Most = TopFlag.Checked;*/
 			TMSet (true);
 			}
 
@@ -474,10 +455,10 @@ namespace RD_AAOW
 				{
 				case "OFDFromFNReader":
 					sig = KassArrayDB::RD_AAOW.KKTSupport.OFDINNSignature;
-					if (((left = status.LastIndexOf (/*"ИНН ОФД: "*/ sig)) >= 0) &&
+					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ("\n", left)) >= 0))
 						{
-						left += /*9*/ sig.Length;
+						left += sig.Length;
 						OFDINN.Text = status.Substring (left, right - left).Trim ();
 						LoadOFDParameters ();
 						}
@@ -487,15 +468,15 @@ namespace RD_AAOW
 				// Раздел срока жизни ФН
 				case "FNFromFNReader":
 					sig = KassArrayDB::RD_AAOW.KKTSupport.FNSerialSignature;
-					if (((left = status.LastIndexOf (/*"номер ФН: "*/ sig)) >= 0) &&
+					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ("\n", left)) >= 0))
 						{
-						left += /*10*/ sig.Length;
+						left += sig.Length;
 						AppSettings.FNSerial = status.Substring (left, right - left).Trim ();
 						}
 
 					sig = KassArrayDB::RD_AAOW.KKTSupport.RegistrationSignature;
-					if ((left = status.LastIndexOf (/*"Регистрация"*/ sig)) < 0)
+					if ((left = status.LastIndexOf (sig)) < 0)
 						return;
 
 					if (status.IndexOf ("обложение: ОСН", left) >= 0)
@@ -525,26 +506,26 @@ namespace RD_AAOW
 				// Раздел контроля ЗН ККТ, РНМ и ИНН
 				case "RNMFromFNReader":
 					sig = KassArrayDB::RD_AAOW.KKTSupport.KKTSerialSignature;
-					if (((left = status.LastIndexOf (/*"Заводской номер ККТ: "*/ sig)) >= 0) &&
+					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ("\n", left)) >= 0))
 						{
-						left += /*21*/ sig.Length;
+						left += sig.Length;
 						AppSettings.KKTSerial = status.Substring (left, right - left).Trim ();
 						}
 
 					sig = KassArrayDB::RD_AAOW.KKTSupport.RNMSignature;
-					if (((left = status.LastIndexOf (/*"Регистрационный номер ККТ: "*/ sig)) >= 0) &&
+					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ("\n", left)) >= 0))
 						{
-						left += /*27*/ sig.Length;
+						left += sig.Length;
 						RNMValue.Text = status.Substring (left, right - left).Trim ();
 						}
 
 					sig = KassArrayDB::RD_AAOW.KKTSupport.UserINNSignature;
-					if (((left = status.LastIndexOf (/*"ИНН пользователя: "*/ sig)) >= 0) &&
+					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ("\n", left)) >= 0))
 						{
-						left += /*18*/ sig.Length;
+						left += sig.Length;
 						RNMUserINN.Text = status.Substring (left, right - left).Trim ();
 						}
 
@@ -637,41 +618,8 @@ namespace RD_AAOW
 			else
 				lastErrorSearchOffset = 0;
 
-			/*string search;
-			string senderName = ((Button)sender).Name;
-
-			if (senderName == ErrorFindNextButton.Name)
-				{
-				search = AppSettings.ErrorCode;
-				lastErrorSearchOffset++;
-				}
-			else if (senderName == ErrorFindBufferButton.Name)
-				{
-				search = RDGenerics.GetFromClipboard ();
-				
-				if (search.Length > maxErrorSearchLength)
-					search = search.Substring (0, (int)maxErrorSearchLength);
-				if (!string.IsNullOrWhiteSpace (search))
-					AppSettings.ErrorCode = search;
-				
-				lastErrorSearchOffset++;
-				}
-			else
-				{
-				search = RDGenerics.MessageBox ("Введите код ошибки или фрагмент её текста", true,
-					maxErrorSearchLength, AppSettings.ErrorCode);
-				
-				if (!string.IsNullOrWhiteSpace (search))
-					AppSettings.ErrorCode = search;
-				else
-					return;
-
-				lastErrorSearchOffset = 0;
-				}*/
-
 			// Поиск
 			List<string> codes = kb.Errors.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
-			/*string text = ErrorSearchText.Text.ToLower ();*/
 
 			ErrorText.Text = "Поиск по запросу «" + search[0] + "»:" + RDLocale.RNRN;
 			for (int i = 0; i < codes.Count; i++)
@@ -692,17 +640,6 @@ namespace RD_AAOW
 			// Код не найден
 			ErrorText.Text += "описание ошибки не найдено";
 			}
-
-		/*private void ErrorSearchText_KeyDown (object sender, KeyEventArgs e)
-			{
-			if (e.KeyCode == Keys.Return)
-				Error FindButton_Click (null, null);
-			}
-
-		private void ErrorClearButton_Click (object sender, EventArgs e)
-			{
-			ErrorSearchText.Text = "";
-			}*/
 
 		#endregion
 
@@ -825,10 +762,8 @@ namespace RD_AAOW
 		// Копирование срока действия ФН
 		private void FNLifeDate_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
 			RDGenerics.SendToClipboard (FNLifeDate.Text, true);
-			/*this.Top Most = TopFlag.Checked;*/
 			TMSet (true);
 			}
 
@@ -1051,28 +986,22 @@ namespace RD_AAOW
 		// Копирование в буфер обмена
 		private void OFDDNSName_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
 			RDGenerics.SendToClipboard (((Button)sender).Text, true);
-			/*this.Top Most = TopFlag.Checked;*/
 			TMSet (true);
 			}
 
 		private void OFDNameCopy_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
 			RDGenerics.SendToClipboard (OFDNamesList.Text.Replace ('«', '\"').Replace ('»', '\"'), true);
-			/*this.Top Most = TopFlag.Checked;*/
 			TMSet (true);
 			}
 
 		private void OFDINNCopy_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
 			RDGenerics.SendToClipboard (OFDINN.Text, true);
-			/*this.Top Most = TopFlag.Checked;*/
 			TMSet (true);
 			}
 
@@ -1175,8 +1104,6 @@ namespace RD_AAOW
 				return;
 			byte idx = (byte)OperationsListForManuals.SelectedIndex;
 
-			/*var sections = (KassArrayDB::RD_AAOW.UserManualsSections)AppSettings.UserManualSectionsState;
-			AddToPrint.Checked = sections.HasFlag ((KassArrayDB::RD_AAOW.UserManualsSections)(1u << idx));*/
 			AddToPrint.Checked = ((AppSettings.UserGuidesSectionsState & (1u << idx)) != 0);
 
 			UMOperationText.Text = kb.UserGuides.GetGuide ((uint)KKTListForManuals.SelectedIndex,
@@ -1356,30 +1283,9 @@ namespace RD_AAOW
 			}
 		private string tlvSeparator;
 
-		/*private void TLVFind_KeyDown (object sender, KeyEventArgs e)
-			{
-			if (e.KeyCode == Keys.Return)
-				TLVButton_Click (null, null);
-			}
-
-		// Выбор ФФД
-		private void TLVFFD_Changed (object sender, EventArgs e)
-			{
-			if ((TLVDescription.Text.Length >= 4) && (TLVDescription.Text != "(не найдено)") &&
-				(TLVDescription.Text.Substring (0, 4) != AppSettings.TLVData))
-				AppSettings.TLVData = TLVDescription.Text.Substring (0, 4);
-
-			TLVButton_Click (TLVFindNextButton, null);
-			}*/
-
 		// Ссылка на приказ-обоснование обязательности тегов
 		private void TLVObligationBase_Click (object sender, EventArgs e)
 			{
-			/*try
-				{
-				Process.Start (KassArrayDB::RD_AAOW.TLVTags.ObligationBaseLink);
-				}
-			catch { }*/
 			RDGenerics.RunURL (KassArrayDB::RD_AAOW.TLVTags.ObligationBaseLink);
 			}
 
@@ -1558,10 +1464,8 @@ namespace RD_AAOW
 
 		private void ConvCodeCopy_Click (object sender, EventArgs e)
 			{
-			/*this.Top Most = false;*/
 			TMSet (false);
 			RDGenerics.SendToClipboard (ConvCodeSymbol.Text, true);
-			/*this.Top Most = TopFlag.Checked;*/
 			TMSet (true);
 			}
 
