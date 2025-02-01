@@ -240,13 +240,8 @@ namespace RD_AAOW
 		/// Метод возвращает описание тип тега в соответствующие свойства экземпляра TLVTags
 		/// </summary>
 		/// <param name="Tag">Номер тега или фрагмент описания</param>
-		/// <param name="FFD">Версия ФФД для определения обязательности</param>
 		/// <returns>Возвращает true в случае обнаружения</returns>
-		public bool FindTag (string Tag
-#if !ANDROID
-			, TLVTags_FFDVersions FFD
-#endif
-			)
+		public bool FindTag (string Tag)
 			{
 			// Защита
 			if (string.IsNullOrWhiteSpace (Tag))
@@ -296,12 +291,28 @@ namespace RD_AAOW
 				"</i><br/><br/><b>Для ФФД 1.2:</b><br/><i>" +
 				BuildObligation (i, TLVTags_FFDVersions.FFD_120).Replace (RDLocale.RN, "<br/>") + "</i>";
 #else
-			lastObligation = BuildObligation (i, FFD);
+			if (string.IsNullOrWhiteSpace (tlvSeparator))
+				tlvSeparator = RDLocale.RNRN + "–".PadLeft (54, '–') + RDLocale.RNRN;
+
+			if (string.IsNullOrWhiteSpace (lastValuesSet))
+				lastObligation = "";
+			else
+				lastObligation = tlvSeparator;
+
+			for (TLVTags_FFDVersions v = TLVTags_FFDVersions.FFD_105;
+				v <= TLVTags_FFDVersions.FFD_120; v++)
+				{
+				lastObligation += GetFFDName (v) + ":" + RDLocale.RNRN;
+				lastObligation += BuildObligation (i, v);
+				if (v < TLVTags_FFDVersions.FFD_120)
+					lastObligation += tlvSeparator;
+				}
 #endif
 
 			return true;
 			}
 		private int lastIndex = 0;
+		private string tlvSeparator;
 
 		/// <summary>
 		/// Метод возвращает название поддерживаемой версии ФФД по её коду

@@ -68,7 +68,6 @@ namespace RD_AAOW
 			aboutFontSizeField;
 		private List<Label> operationTextLabels = new List<Label> ();
 		private List<Button> operationTextButtons = new List<Button> ();
-		/*private const string operationButtonSignature = " (скрыто)";*/
 		private const string operationButtonSignatureShow = "🖨 ";
 		private const string operationButtonSignatureHide = "🚫 ";
 
@@ -228,8 +227,6 @@ namespace RD_AAOW
 				bh.IsVisible = true;
 				bh.Margin = ut.Margin;
 				bh.Padding = new Thickness (6, 0);
-				/*bh.Text = UserGuides.OperationTypes (false)[i] +
-					(sectionEnabled ? "" : operationButtonSignature);*/
 				bh.Text = (sectionEnabled ? operationButtonSignatureShow : operationButtonSignatureHide) +
 					UserGuides.OperationTypes (false)[i];
 				bh.TextColor = ut.TextColor;
@@ -244,7 +241,6 @@ namespace RD_AAOW
 				lt.IsVisible = sectionEnabled;
 				lt.Margin = lt.Padding = ut.Margin;
 				lt.Text = "   ";
-				/*lt.TextColor = RDInterface.MasterTextColor;*/
 				lt.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
 
 				operationTextButtons.Add (bh);
@@ -953,7 +949,6 @@ namespace RD_AAOW
 
 			b.FontAttributes = FontAttributes.None;
 			b.FontSize = 5 * RDInterface.MasterFontSize / 4;
-			/*b.TextColor = RDInterface.MasterTextColor;*/
 			b.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
 			b.Margin = b.Padding = new Thickness (1);
 
@@ -1824,7 +1819,6 @@ namespace RD_AAOW
 		private void OperationTextButton_Clicked (object sender, EventArgs e)
 			{
 			byte idx = (byte)operationTextButtons.IndexOf ((Button)sender);
-			/*bool state = operationTextButtons[idx].Text.Contains (operationButtonSignature);*/
 			bool state = operationTextButtons[idx].Text.Contains (operationButtonSignatureHide);
 			uint sections = AppSettings.UserGuidesSectionsState;
 
@@ -1834,8 +1828,6 @@ namespace RD_AAOW
 				sections &= ~(1u << idx);
 			AppSettings.UserGuidesSectionsState = (uint)sections;
 
-			/*operationTextButtons[idx].Text = UserGuides.OperationTypes(false)[idx] +
-				(state ? "" : operationButtonSignature);*/
 			operationTextButtons[idx].Text = (state ? operationButtonSignatureShow : operationButtonSignatureHide) +
 				UserGuides.OperationTypes (false)[idx];
 			operationTextLabels[idx].IsVisible = state;
@@ -1910,14 +1902,31 @@ namespace RD_AAOW
 		// Ссылка на приказ-обоснование обязательности тегов
 		private async void TLVObligationBase_Click (object sender, EventArgs e)
 			{
-			try
+			// Выбор варианта
+			int res = await RDInterface.ShowList ("Что следует сделать?",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
+				new List<string> { "Скопировать основание", "Перейти к его тексту" });
+			if (res < 0)
+				return;
+
+			// Запуск
+			switch (res)
 				{
-				await Launcher.OpenAsync (TLVTags.ObligationBaseLink);
-				}
-			catch
-				{
-				RDInterface.ShowBalloon (RDLocale.GetDefaultText
-					(RDLDefaultTexts.Message_BrowserNotAvailable), true);
+				case 0:
+					RDGenerics.SendToClipboard (TLVTags.ObligationBase, true);
+					break;
+
+				case 1:
+					try
+						{
+						await Launcher.OpenAsync (TLVTags.ObligationBaseLink);
+						}
+					catch
+						{
+						RDInterface.ShowBalloon (RDLocale.GetDefaultText
+							(RDLDefaultTexts.Message_BrowserNotAvailable), true);
+						}
+					break;
 				}
 			}
 
@@ -2009,7 +2018,6 @@ namespace RD_AAOW
 					lastConnSearchOffset = j;
 
 					CableTypeButton_Clicked (null, null);
-					/*RDInterface.HideKeyboard (connSearchText);*/
 					return;
 					}
 				}

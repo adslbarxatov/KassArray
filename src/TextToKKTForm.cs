@@ -484,7 +484,7 @@ namespace RD_AAOW
 					else
 						OtherTaxFlag.Checked = true;
 
-					if ((status.IndexOf ("реализация товаров", left) >= 0))
+					if ((status.IndexOf ("применение во всех сферах", left) >= 0))
 						GoodsFlag.Checked = true;
 					else
 						ServicesFlag.Checked = true;
@@ -1248,45 +1248,62 @@ namespace RD_AAOW
 			AppSettings.TLVData = search[0];
 			bool descriptionFilled = false;
 
-			if (string.IsNullOrWhiteSpace (tlvSeparator))
-				tlvSeparator = RDLocale.RNRN + "–".PadLeft (54, '–') + RDLocale.RNRN;
+			/*if (string.IsNullOrWhiteSpace (tlvSeparator))
+				tlvSeparator = RDLocale.RNRN + "–".PadLeft (54, '–') + RDLocale.RNRN;*/
 
-			for (KassArrayDB::RD_AAOW.TLVTags_FFDVersions i = KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_105;
+			/*for (KassArrayDB::RD_AAOW.TLVTags_FFDVersions i = KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_105;
 				i <= KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_120; i++)
+				{*/
+			if (kb.Tags.FindTag (search[0]))
 				{
-				if (kb.Tags.FindTag (search[0], i))
+				if (!descriptionFilled)
 					{
-					if (!descriptionFilled)
-						{
-						TLVDescription.Text = kb.Tags.LastDescription;
-						TLVType.Text = kb.Tags.LastType;
+					TLVDescription.Text = kb.Tags.LastDescription;
+					TLVType.Text = kb.Tags.LastType;
 
-						if (!string.IsNullOrWhiteSpace (kb.Tags.LastValuesSet))
-							TLVValues.Text = kb.Tags.LastValuesSet + tlvSeparator;
-						else
-							TLVValues.Text = "";
+					if (!string.IsNullOrWhiteSpace (kb.Tags.LastValuesSet))
+						TLVValues.Text = kb.Tags.LastValuesSet /*+ tlvSeparator*/;
+					else
+						TLVValues.Text = "";
 
-						descriptionFilled = true;
-						}
-
-					TLVValues.Text += kb.Tags.GetFFDName (i) + ":" + RDLocale.RNRN;
-					TLVValues.Text += kb.Tags.LastObligation;
-					if (i < KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_120)
-						TLVValues.Text += tlvSeparator;
+					descriptionFilled = true;
 					}
-				else
-					{
-					TLVDescription.Text = TLVType.Text = TLVValues.Text = "(не найдено)";
-					break;
-					}
+
+				/*TLVValues.Text += kb.Tags.GetFFDName (i) + ":" + RDLocale.RNRN;*/
+				TLVValues.Text += kb.Tags.LastObligation;
+				/*if (i < KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_120)
+					TLVValues.Text += tlvSeparator;*/
 				}
+			else
+				{
+				TLVDescription.Text = TLVType.Text = TLVValues.Text = "(не найдено)";
+				/*break;*/
+				}
+			/*}*/
 			}
-		private string tlvSeparator;
 
 		// Ссылка на приказ-обоснование обязательности тегов
 		private void TLVObligationBase_Click (object sender, EventArgs e)
 			{
-			RDGenerics.RunURL (KassArrayDB::RD_AAOW.TLVTags.ObligationBaseLink);
+			TMSet (false);
+			RDMessageButtons b = RDInterface.MessageBox (RDMessageTypes.Question_Center,
+				"Скопировать основание или перейти к его тексту?",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Copy),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_GoTo),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel));
+
+			switch (b)
+				{
+				case RDMessageButtons.ButtonOne:
+					RDGenerics.SendToClipboard (TLV_ObligationBase.Text, true);
+					break;
+
+				case RDMessageButtons.ButtonTwo:
+					RDGenerics.RunURL (KassArrayDB::RD_AAOW.TLVTags.ObligationBaseLink);
+					break;
+				}
+
+			TMSet (true);
 			}
 
 		#endregion
