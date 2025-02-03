@@ -960,7 +960,9 @@ namespace RD_AAOW
 		private static int charactersPerLine;      // Зависимое значение
 		private static PrinterTypes internalPrinterType;
 		private static uint pageNumber;
+#if UMPRINT
 		private static bool addManualLogo;
+#endif
 
 		private static Font printFont;             // Зависимое значение
 		private static Brush printBrush = new SolidBrush (Color.FromArgb (0, 0, 0));
