@@ -1248,12 +1248,6 @@ namespace RD_AAOW
 			AppSettings.TLVData = search[0];
 			bool descriptionFilled = false;
 
-			/*if (string.IsNullOrWhiteSpace (tlvSeparator))
-				tlvSeparator = RDLocale.RNRN + "–".PadLeft (54, '–') + RDLocale.RNRN;*/
-
-			/*for (KassArrayDB::RD_AAOW.TLVTags_FFDVersions i = KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_105;
-				i <= KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_120; i++)
-				{*/
 			if (kb.Tags.FindTag (search[0]))
 				{
 				if (!descriptionFilled)
@@ -1262,24 +1256,19 @@ namespace RD_AAOW
 					TLVType.Text = kb.Tags.LastType;
 
 					if (!string.IsNullOrWhiteSpace (kb.Tags.LastValuesSet))
-						TLVValues.Text = kb.Tags.LastValuesSet /*+ tlvSeparator*/;
+						TLVValues.Text = kb.Tags.LastValuesSet;
 					else
 						TLVValues.Text = "";
 
 					descriptionFilled = true;
 					}
 
-				/*TLVValues.Text += kb.Tags.GetFFDName (i) + ":" + RDLocale.RNRN;*/
 				TLVValues.Text += kb.Tags.LastObligation;
-				/*if (i < KassArrayDB::RD_AAOW.TLVTags_FFDVersions.FFD_120)
-					TLVValues.Text += tlvSeparator;*/
 				}
 			else
 				{
 				TLVDescription.Text = TLVType.Text = TLVValues.Text = "(не найдено)";
-				/*break;*/
 				}
-			/*}*/
 			}
 
 		// Ссылка на приказ-обоснование обязательности тегов

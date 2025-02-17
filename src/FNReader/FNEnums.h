@@ -144,46 +144,16 @@ enum TLVTags
 	// Флаг работы в составе автоматического устройства расчётов (1001)
 	AutomaticFlag = 0x03E9,
 
-	/*define	PROC_ AUTOMATICFLAG(src,dest,type)\
-		case AutomaticFlag:\
-			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s%s Р: ККТ установлена в автомате\r \n", dest, RegFlagSign);\
-			break;*/
-
 	// Флаг автономного режима (1002)
 	AutonomousFlag = 0x03EA,
-
-	/*define PROC_ AUTONOMOUSFLAG(src,dest,type)\
-		case AutonomousFlag:\
-			if (REG_CAUSE (type)) {\
-				autonomousFlag = src;\
-				sprintf (dest, src ? "%s%s Р: автономная ККТ (без ОФД)\r \n" :\
-					"%s%s Р: ККТ передаёт данные ОФД\r \n", \
-					dest, RegFlagSign);\
-				}\
-			break;*/
 
 	// E-mail/телефон покупателя (1008)
 	BuyerEmail = 0x03F0,
 
-	/*define PROC_CLIENTADDRESS(src,dest)\
-		case ClientAddress:\
-			sprintf (dest, "% E-mail или телефон покупателя: %s\r \n", dest, src);\
-			break;*/
-
 	// Адрес расчётов (1009)
 	RegistrationAddress = 0x03F1,
 
-	#define REG_ADDRESS_ALIAS	"Адрес расчётов"
-
-	/*define PROC_REGISTRATIONADDRESS(src,dest,type,preproc)\
-		case RegistrationAddress:\
-			if (REG_CAUSE (type))\
-				{\
-				preproc;\
-				sprintf (dest, "% Адрес расчёта: %s\r \n", dest, src);\
-				}\
-			break;*/
+	#define REG_ADDRESS_ALIAS	"Адрес расчёта"
 
 	// Дата и время документа (1012)
 	DocumentDateTime = 0x03F4,
@@ -197,7 +167,6 @@ enum TLVTags
 	// ИНН пользователя (1018)
 	UserINN = 0x03FA,
 
-	/*define PROC_ USERINN	"% ИНН пользователя: %s\r \n"*/
 	#define USER_INN_ALIAS	"ИНН пользователя"
 
 	// Сумма расчёта (1020)
@@ -206,11 +175,6 @@ enum TLVTags
 	// Имя кассира (1021)
 	CashierName = 0x03FD,
 
-	/*define PROC_ CASHIERNAME(src,dest,preproc)\
-		case CashierName:\
-			preproc;\
-			sprintf (dest, "% Кассир: %s\r \n", dest, src);\
-			break;*/
 	#define CASHIER_NAME_ALIAS	"ФИО кассира"
 
 	// Количество товара (1023)
@@ -225,23 +189,16 @@ enum TLVTags
 	// Номер автомата (терминала) (1036)
 	TerminalNumber = 0x040C,
 
-	/*define PROC_ TERMINALNUMBER(src,dest,type)\
-		case TerminalNumber:\
-			if (REG_CAUSE (type))\
-				sprintf (dest, "% Номер автомата: %s\r \n", dest, src);\
-			break;*/
 	#define TERMINAL_NUMBER_ALIAS	"Номер автомата"
 
 	// Регистрационный номер ККТ (1037)
 	RegistrationNumber = 0x040D,
 
-	/*define PROC_ REGISTRATIONNUMBER	"% Регистрационный номер ККТ: %s\r \n"*/
 	#define REG_NUMBER_ALIAS	"Регистрационный номер ККТ"
 
 	// Номер смены, в которой создан документ (1038)
 	SessionNumber = 0x040E,
 
-	/*define PROC_ SESSIONNUMBER	"% Номер смены: %u\r \n"*/
 	#define SESSION_NUMBER_ALIAS	"Номер смены"
 
 	// Номер фискального документа (1040)
@@ -262,7 +219,6 @@ enum TLVTags
 	// Имя пользователя (1048)
 	UserName = 0x0418,
 
-	/*define PROC_ USERNAME	"% Пользователь: %s\r \n"*/
 	#define USER_NAME_ALIAS		"Пользователь"
 
 	// Предупреждения о состоянии ФН (1050 - 1053)
@@ -280,27 +236,11 @@ enum TLVTags
 	// Применённая СНО (1055)
 	AppliedTaxSystem = 0x041F,
 
-	/*define PROC_ APPTAX(src,dest)	\
-		case AppliedTaxSystem:\
-			sprintf (dest, "% Применённая СНО: %s\r \n", dest, GetTaxFlags (src));\
-			break;*/
-
 	// Флаг шифрования (1056)
 	EncryptionFlag = 0x0420,
 
-	/*define PROC_ ENCRYPTIONFLAG(src,dest,type)\
-	case EncryptionFlag:\
-		if ((REG_CAUSE (type)) && src)\
-			sprintf (dest, "%s%s Р: включено шифрование данных\r \n", dest, RegFlagSign);\
-		break;*/
-
 	// Признаки агента (1057)
 	AgentType = 0x0421,
-
-	/*define PROC_AGENTTYPE(src,dest)\
-	case AgentType:\
-		strcat (dest, GetAgentFlags (src));\
-		break;*/
 
 	// Название предмета расчёта (1059)
 	PaymentObject = 0x0423,
@@ -311,10 +251,6 @@ enum TLVTags
 	// Флаги систем налогообложения (1062)
 	TaxFlags = 0x0426,
 
-	/*define PROC_ REGTAXFLAGS(src,dest)	\
-		case TaxFlags:\
-			sprintf (dest, "% Налогообложение: %s\r \n", dest, GetTaxFlags (src));\
-			break;*/
 	#define REG_TAX_ALIAS	"Налогообложение"
 
 	// Фискальный признак документа (1077)
@@ -343,12 +279,6 @@ enum TLVTags
 	// Причина перерегистрации (1101)
 	RegistrationChangeCause = 0x044D,
 
-	/*define PROC_ REGISTRATIONCHANGECAUSE(src,dest,type)\
-		case RegistrationChangeCause:\
-			if (REREG_CAUSE (type))\
-				strcat (dest, GetRegistrationChangeCause (src));\
-			break;*/
-
 	// Сумма к оплате по ставкам НДС (1102 - 1107)
 	DocumentSummaNDS20 = 0x044E,
 	DocumentSummaNDS10 = 0x044F,
@@ -360,39 +290,14 @@ enum TLVTags
 	// Флаг работы в сети Интернет (1108)
 	InternetFlag = 0x0454,
 
-	/*define PROC_ INTERNETFLAG(src,dest,type)\
-		case InternetFlag:\
-			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s%s Р: работа в сети интернет\r \n", dest, RegFlagSign);\
-			break;*/
-
 	// Флаг режима услуг (1109)
 	ServiceFlag = 0x0455,
-
-	/*define PROC_ SERVICEFLAG(src,dest,type)\
-		case ServiceFlag:\
-			if (REG_CAUSE (type))\
-				sprintf (dest, src ? "%s%s Р: реализация услуг\r \n" : "%s%s Р: реализация товаров\r \n",\
-					dest, RegFlagSign);\
-			break;*/
 
 	// Флаг формирования БСО (1110)
 	BlankFlag = 0x0456,
 
-	/*define PROC_ BLANKFLAG(src,dest,type)\
-		case BlankFlag:\
-			if (REG_CAUSE (type))\
-				sprintf (dest, src ? "%s%s Р: оформление БСО\r \n" : "%s%s Р: оформление кассовых чеков\r \n",\
-					dest, RegFlagSign);\
-			break;*/
-
 	// Количество документов за смену (1111)
 	InSessionDocumentsCount = 0x0457,
-
-	/*define PROC_DOCUMENTSCOUNT(src,dest)\
-		case InSessionDocumentsCount:\
-			sprintf (dest, "% Документов за смену: %s\r \n", dest, src); \
-			break;*/
 
 	// Ставки НДС, применённые при формировании чека (1115)
 	NDSItemsAll = 0x045B,
@@ -414,12 +319,6 @@ enum TLVTags
 		
 	// Флаг режима лотерей (1126)
 	LotteryFlag = 0x0466,
-
-	/*define PROC_ LOTTERYFLAG(src,dest,type)\
-		case LotteryFlag:\
-			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s%s Р: проведение лотерей\r \n", dest, RegFlagSign);\
-			break;*/
 
 	// Итоги по признакам расчёта (1129 - 1132)
 	TotalsIncoming1 = 0x0469,
@@ -487,24 +386,10 @@ enum TLVTags
 	// Место расчётов (1187)
 	RegistrationPlace = 0x04A3,
 
-	/*define PROC_ REGISTRATIONPLACE(src,dest,type,preproc)\
-		case RegistrationPlace:\
-			if (REG_CAUSE (type))\
-				{\
-				preproc;\
-				sprintf (dest, "% Место расчёта: %s\r \n", dest, src);\
-				}\
-			break;*/
-	#define REG_PLACE_ALIAS "Место расчётов"
+	#define REG_PLACE_ALIAS "Место расчёта"
 
 	// Версия ПО ККТ (1188)
 	SoftwareVersionOfKKT = 0x04A4,
-
-	/*define PROC_ KKTSOFTWARE(src,dest)\
-		case SoftwareVersionOfKKT:\
-			if (REG_CAUSE (documentType))\
-				sprintf (dest, "% Версия ПО ККТ: %s\r \n", dest, src);\
-			break;*/
 
 	// Максимальная версия ФФД, поддерживаемая ККТ (1189)
 	FFDVersionOfKKT = 0x04A5,
@@ -514,12 +399,6 @@ enum TLVTags
 
 	// Флаг азартных игр (1193)
 	GamesFlag = 0x04A9,
-
-	/*define PROC_ GAMESFLAG(src,dest,type)\
-		case GamesFlag:\
-			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s%s Р: проведение азартных игр\r \n", dest, RegFlagSign);\
-			break;*/
 
 	// Счётчики итогов смены (1194)
 	TotalSessionCounters = 0x04AA,
@@ -539,59 +418,25 @@ enum TLVTags
 	// ИНН кассира (1203)
 	CashierINN = 0x04B3,
 
-	/*define PROC_ CASHIERINN(src,dest)\
-		case CashierINN:\
-			sprintf (dest, "% ИНН кассира: %s\r \n", dest, src);\
-			break;*/
 	#define CASHIER_INN_ALIAS	"ИНН кассира"
 
 	// Флаги причин перерегистрации (1205)
 	ExtendedReregFlags = 0x04B5,
 
-	/*define PROC_ EXTENDEDREREGFLAGS(src,dest,type)\
-		case ExtendedReregFlags:\
-			if (REREG_CAUSE (type))\
-				strcat (dest, GetRegistrationChangeCauseExtended (src));\
-				break;*/
-
 	// Флаги предупреждений ОФД (1206)
 	OFDAttentionFlags = 0x04B6,
-
-	/*define PROC_OFDATTENTION(src,dest)\
-		case OFDAttentionFlags:\
-			strcat (dest, GetOFDAttentionFlags (src));\
-			break;*/
 
 	// Флаг подакцизных товаров (1207)
 	ExciseFlag = 0x04B7,
 
-	/*define PROC_ EXCISEFLAG(src,dest,type)\
-		case ExciseFlag:\
-			if ((REG_CAUSE (type)) && src)\
-				sprintf (dest, "%s%s Р: продажа подакцизных товаров\r \n", dest, RegFlagSign);\
-			break;*/
-
 	// Версия формата фискальных документов (1209)
 	FFDVersion = 0x04B9,
-
-	/*define PROC_FFDVERSION(is_reg,src,dest)\
-		case FFDVersion:\
-			if (is_reg && (src <= 4) && (src > maxFFDVersion))\
-				maxFFDVersion = src;\
-			sprintf (dest, "% Версия ФФД: %s\r \n", dest, GetFFDVersion (src));\
-			break;*/
 
 	// Признак предмета расчёта (1212)
 	ResultObject = 0x04BC,
 
 	// Срок жизни ФН в днях (1213)
 	FNLifeLength = 0x04BD,
-
-	/*define PROC_FNLIFELENGTH(src,dest)\
-		case FNLifeLength:\
-			if (REG_CAUSE (documentType))\
-				sprintf (dest, "% Срок жизни ФН, дней: %s\r \n", dest, src);\
-			break;*/
 
 	// Признак способа расчёта (1214)
 	ResultMethod = 0x04BE,
@@ -651,12 +496,6 @@ enum TLVTags
 		
 	// Расширенные признаки регистрации (1290)
 	ExtendedRegOptions = 0x050A,
-
-	/*define PROC_ EXTENDEDREGOPT(src,dest,type)\
-		case ExtendedRegOptions:\
-			if (REG_CAUSE (type))\
-				strcat (dest, GetExtendedRegOptions (src));\
-			break;*/
 
 	// Дробное количество маркированного товара (1291)
 	FractionalQuantity = 0x050B,
