@@ -1917,15 +1917,7 @@ namespace RD_AAOW
 					break;
 
 				case 1:
-					try
-						{
-						await Launcher.OpenAsync (TLVTags.ObligationBaseLink);
-						}
-					catch
-						{
-						RDInterface.ShowBalloon (RDLocale.GetDefaultText
-							(RDLDefaultTexts.Message_BrowserNotAvailable), true);
-						}
+					await RDGenerics.RunURL (TLVTags.ObligationBaseLink, true);
 					break;
 				}
 			}
