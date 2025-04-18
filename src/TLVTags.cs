@@ -133,21 +133,21 @@ namespace RD_AAOW
 	public class TLVTags
 		{
 		// Переменные
-		private List<uint> tags = new List<uint> ();
-		private List<string> descriptions = new List<string> ();
-		private List<string> types = new List<string> ();
-		private List<string> possibleValues = new List<string> ();
-		private List<int> links = new List<int> ();
-		private List<List<int>> oblIndices = new List<List<int>> ();
+		private List<uint> tags = [];
+		private List<string> descriptions = [];
+		private List<string> types = [];
+		private List<string> possibleValues = [];
+		private List<int> links = [];
+		private List<List<int>> oblIndices = [];
 
-		private List<TLVTags_FFDVersions> oblFFDVersions = new List<TLVTags_FFDVersions> ();
-		private List<TLVTags_DocumentTypes> oblDocTypes = new List<TLVTags_DocumentTypes> ();
-		private List<TLVTags_ObligationStates> oblPrintObligations = new List<TLVTags_ObligationStates> ();
-		private List<TLVTags_ObligationStates> oblVirtualObligations = new List<TLVTags_ObligationStates> ();
-		private List<string> oblPrintConditions = new List<string> ();
-		private List<string> oblVirtualConditions = new List<string> ();
-		private List<string> oblTables = new List<string> ();
-		private List<string> oblParents = new List<string> ();
+		private List<TLVTags_FFDVersions> oblFFDVersions = [];
+		private List<TLVTags_DocumentTypes> oblDocTypes = [];
+		private List<TLVTags_ObligationStates> oblPrintObligations = [];
+		private List<TLVTags_ObligationStates> oblVirtualObligations = [];
+		private List<string> oblPrintConditions = [];
+		private List<string> oblVirtualConditions = [];
+		private List<string> oblTables = [];
+		private List<string> oblParents = [];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -157,8 +157,8 @@ namespace RD_AAOW
 			// Получение файлов
 			var enc = RDGenerics.GetEncoding (RDEncodings.UTF8);
 #if !ANDROID
-			string tlv = enc.GetString (RD_AAOW.Properties.KassArrayDB.TLVTags);
-			string obl = enc.GetString (RD_AAOW.Properties.KassArrayDB.Obligation);
+			string tlv = enc.GetString (KassArrayDBResources.TLVTags);
+			string obl = enc.GetString (KassArrayDBResources.Obligation);
 #else
 			string tlv = enc.GetString (RD_AAOW.Properties.Resources.TLVTags);
 			string obl = enc.GetString (RD_AAOW.Properties.Resources.Obligation);
@@ -168,8 +168,8 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			string str;
-			char[] tlvSplitter = new char[] { ';' };
-			char[] oblSplitter = new char[] { '\t' };
+			char[] tlvSplitter = [';'];
+			char[] oblSplitter = ['\t'];
 
 			string[] tlvValues,
 				oblValues = oblSR.ReadLine ().Split (oblSplitter, StringSplitOptions.RemoveEmptyEntries);
@@ -192,7 +192,7 @@ namespace RD_AAOW
 					else
 						links.Add (-1);
 
-					oblIndices.Add (new List<int> ());
+					oblIndices.Add ([]);
 
 					// Разбор списка обязательности
 					while ((oblValues.Length == 8) && (uint.Parse (oblValues[1]) == tags[tags.Count - 1]))
@@ -318,7 +318,7 @@ namespace RD_AAOW
 		/// Метод возвращает название поддерживаемой версии ФФД по её коду
 		/// </summary>
 		/// <param name="Version">Поддерживаемая версия ФФД</param>
-		public string GetFFDName (TLVTags_FFDVersions Version)
+		public static string GetFFDName (TLVTags_FFDVersions Version)
 			{
 			switch (Version)
 				{
@@ -337,7 +337,7 @@ namespace RD_AAOW
 			}
 
 		// Метод распаковывает текст описания
-		private string BuildDescription (string Source, uint TagNumber)
+		private static string BuildDescription (string Source, uint TagNumber)
 			{
 			string res = Source;
 
@@ -359,7 +359,7 @@ namespace RD_AAOW
 			}
 
 		// Метод распаковывает тип тега
-		private string BuildType (string Source)
+		private static string BuildType (string Source)
 			{
 			string res = Source;
 

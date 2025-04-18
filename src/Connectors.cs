@@ -10,15 +10,15 @@ namespace RD_AAOW
 	public class Connectors
 		{
 		// Переменные
-		private List<string> connectorsNames = new List<string> ();
-		private List<string> connectorsDescriptions = new List<string> ();
-		private List<string> cablesNames = new List<string> ();
-		private List<string> cablesLeftSides = new List<string> ();
-		private List<string> cablesLeftPins = new List<string> ();
-		private List<string> cablesRightSides = new List<string> ();
-		private List<string> cablesRightPins = new List<string> ();
-		private List<uint> cablesLeftDescriptions = new List<uint> ();
-		private List<uint> cablesRightDescriptions = new List<uint> ();
+		private List<string> connectorsNames = [];
+		private List<string> connectorsDescriptions = [];
+		private List<string> cablesNames = [];
+		private List<string> cablesLeftSides = [];
+		private List<string> cablesLeftPins = [];
+		private List<string> cablesRightSides = [];
+		private List<string> cablesRightPins = [];
+		private List<uint> cablesLeftDescriptions = [];
+		private List<uint> cablesRightDescriptions = [];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -27,16 +27,16 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			byte[] s1 = Properties.KassArrayDB.Connectors;
+			byte[] data = KassArrayDBResources.Connectors;
 #else
-			byte[] s1 = Properties.Resources.Connectors;
+			byte[] data = Properties.Resources.Connectors;
 #endif
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s1);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { '\t' };
+			char[] splitters = [ '\t' ];
 			bool connectors = true;
 
 			// Чтение параметров

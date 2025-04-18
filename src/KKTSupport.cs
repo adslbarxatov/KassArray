@@ -304,7 +304,7 @@ namespace RD_AAOW
 			}
 
 		// Контрольная последовательность для определения корректности ИНН
-		private static byte[] innCheckSequence = new byte[] { 3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8 };
+		private static byte[] innCheckSequence = [ 3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8 ];
 
 		/// <summary>
 		/// Метод проверяет корректность ввода ИНН
@@ -318,7 +318,8 @@ namespace RD_AAOW
 			if ((INN.Length != 10) && (INN.Length != 12))
 				return -1;
 
-			UInt64 inn = 0;
+			/*UInt64 inn = 0;*/
+			UInt64 inn;
 			try
 				{
 				inn = UInt64.Parse (INN);
@@ -373,7 +374,7 @@ namespace RD_AAOW
 			}
 
 		// Таблица полинома CRC16
-		private static UInt16[] crc16_table = new UInt16[] {
+		private static UInt16[] crc16_table = [
 			0, 4129, 8258, 12387, 16516, 20645, 24774, 28903, 33032, 37161, 41290, 45419, 49548, 53677, 57806, 61935,
 			4657, 528, 12915, 8786, 21173, 17044, 29431, 25302, 37689, 33560, 45947, 41818, 54205, 50076, 62463, 58334,
 			9314, 13379, 1056, 5121, 25830, 29895, 17572, 21637, 42346, 46411, 34088, 38153, 58862, 62927, 50604, 54669,
@@ -390,7 +391,7 @@ namespace RD_AAOW
 			52093, 56156, 60223, 64286, 35833, 39896, 43963, 48026, 19061, 23124, 27191, 31254, 2801, 6864, 10931, 14994,
 			64814, 60687, 56684, 52557, 48554, 44427, 40424, 36297, 31782, 27655, 23652, 19525, 15522, 11395, 7392, 3265,
 			61215, 65342, 53085, 57212, 44955, 49082, 36825, 40952, 28183, 32310, 20053, 24180, 11923, 16050, 3793, 7920
-			};
+			];
 
 		/// <summary>
 		/// Метод рассчитывает CRC16 для сообщения
@@ -1119,8 +1120,8 @@ namespace RD_AAOW
 
 #if UMPRINT
 				if (IsA4)
-					ev.Graphics.DrawImage (Properties.KassArrayDB.KAQR, ev.PageBounds.Width -
-						leftMargin - Properties.KassArrayDB.KAQR.Width / 12, topMargin);
+					ev.Graphics.DrawImage (KassArrayDBResources.KAQR, ev.PageBounds.Width -
+						leftMargin - KassArrayDBResources.KAQR.Width / 12, topMargin);
 
 				if (addManualLogo && (internalPrinterType == PrinterTypes.ManualA4))
 					{
@@ -1335,10 +1336,10 @@ namespace RD_AAOW
 #else
 			string[]
 #endif
-		ObtainSearchCriteria (string ButtonName, string OldCriteria, string InputCaption, uint MaxInputLength)
+			ObtainSearchCriteria (string ButtonName, string OldCriteria, string InputCaption, uint MaxInputLength)
 			{
 			string search;
-			string[] res = new string[] { "", "" };
+			string[] res = [ "", "" ];
 
 			if (ButtonName.Contains ("Next"))
 				{
@@ -1427,7 +1428,7 @@ namespace RD_AAOW
 			pagesCount = ForCashier ? 1 : 2;
 			text = Text;
 
-			int i = text.IndexOf ("\n");
+			int i = text.IndexOf ('\n');
 			if (i >= 0)
 				name = text.Substring (0, i).Trim ();
 			else

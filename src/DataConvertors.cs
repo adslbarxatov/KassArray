@@ -11,9 +11,9 @@ namespace RD_AAOW
 	public class UnicodeDescriptor
 		{
 		// Списки
-		private List<ulong> lefts = new List<ulong> ();
-		private List<ulong> rights = new List<ulong> ();
-		private List<string> descriptions = new List<string> ();
+		private List<ulong> lefts = [];
+		private List<ulong> rights = [];
+		private List<string> descriptions = [];
 
 		/// <summary>
 		/// Конструктор. Выполняет загрузку справочника
@@ -23,15 +23,15 @@ namespace RD_AAOW
 			// Получение файла
 			var enc = RDGenerics.GetEncoding (RDEncodings.UTF8);
 #if !ANDROID
-			string ud = enc.GetString (RD_AAOW.Properties.KassArrayDB.Unicodes);
+			string data = enc.GetString (KassArrayDBResources.Unicodes);
 #else
-			string ud = enc.GetString (RD_AAOW.Properties.Resources.Unicodes);
+			string data = enc.GetString (RD_AAOW.Properties.Resources.Unicodes);
 #endif
-			StringReader udSR = new StringReader (ud);
+			StringReader udSR = new StringReader (data);
 
 
 			// Загрузка
-			char[] udSplitter = new char[] { '\t' };
+			char[] udSplitter = ['\t'];
 			string s;
 			while ((s = udSR.ReadLine ()) != null)
 				{
@@ -260,18 +260,18 @@ namespace RD_AAOW
 
 			return res;
 			}
-		private static char[][] powers = new char[][] {
-			new char[] { '0', '⁰' },
-			new char[] { '1', '¹' },
-			new char[] { '2', '²' },
-			new char[] { '3', '³' },
-			new char[] { '4', '⁴' },
-			new char[] { '5', '⁵' },
-			new char[] { '6', '⁶' },
-			new char[] { '7', '⁷' },
-			new char[] { '8', '⁸' },
-			new char[] { '9', '⁹' },
-			};
+		private static char[][] powers = [
+			[ '0', '⁰' ],
+			[ '1', '¹' ],
+			[ '2', '²' ],
+			[ '3', '³' ],
+			[ '4', '⁴' ],
+			[ '5', '⁵' ],
+			[ '6', '⁶' ],
+			[ '7', '⁷' ],
+			[ '8', '⁸' ],
+			[ '9', '⁹' ],
+			];
 
 		/// <summary>
 		/// Метод формирует полное описание указанного символа Unicode
@@ -286,7 +286,7 @@ namespace RD_AAOW
 		public static string[] GetSymbolDescription (string Symbol, long Increment, UnicodeDescriptor UD)
 			{
 			// Защита
-			string[] answer = new string[] { " ", "(введите символ или его код)", "0" };
+			string[] answer = [" ", "(введите символ или его код)", "0"];
 			if (string.IsNullOrEmpty (Symbol))
 				return answer;
 
@@ -314,12 +314,12 @@ namespace RD_AAOW
 			if (n > UD.MaxValue)
 				return answer;
 
-			byte[] ch = new byte[]{
+			byte[] ch = [
 				(byte)(n & 0xFF),
 				(byte)((n >> 8) & 0xFF),
 				(byte)((n >> 16) & 0xFF),
 				(byte)((n >> 24) & 0xFF)
-				};
+				];
 			answer[0] = RDGenerics.GetEncoding (RDEncodings.Unicode32).GetString (ch);
 
 			// Сборка описания
@@ -347,7 +347,7 @@ namespace RD_AAOW
 				return availableEncodings.ToArray ();
 				}
 			}
-		private static List<string> availableEncodings = new List<string> {
+		private static List<string> availableEncodings = [
 			"UTF8",
 			"Unicode (16 bit)",
 			"Unicode (32 bit)",
@@ -358,7 +358,7 @@ namespace RD_AAOW
 #else
 			"ASCII",
 #endif
-			};
+			];
 
 		private const string hexLine = "0123456789ABCDEF";
 		private const string encodingFailure = "(не удаётся преобразовать данные в выбранной кодировке)";
@@ -373,10 +373,10 @@ namespace RD_AAOW
 		public static string ConvertHexToText (string HexData, RDEncodings Mode, bool FromBASE64)
 			{
 			// Обычные данные
-			List<byte> bytes = new List<byte> ();
+			List<byte> bytes = [];
 			if (!FromBASE64)
 				{
-				List<string> numbers = new List<string> { "" };
+				List<string> numbers = [ "" ];
 				string source = HexData.ToUpper ();
 				if (string.IsNullOrWhiteSpace (source))
 					return "";

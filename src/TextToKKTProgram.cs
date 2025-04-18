@@ -17,6 +17,7 @@ namespace RD_AAOW
 			// Инициализация
 			Application.EnableVisualStyles ();
 			Application.SetCompatibleTextRenderingDefault (false);
+			RDLocale.InitEncodings ();
 
 			// Язык интерфейса и контроль XPUN
 			if (!RDLocale.IsXPUNClassAcceptable)
@@ -32,7 +33,7 @@ namespace RD_AAOW
 				return;
 
 			if (!RDGenerics.StartedFromMSStore &&
-				!RDGenerics.CheckLibraries (new string[] { ProgramDescription.KassArrayDLLs[0] }, true))
+				!RDGenerics.CheckLibraries ([ProgramDescription.KassArrayDLLs[0]], true))
 				return;
 
 			// Отображение справки и запроса на принятие Политики

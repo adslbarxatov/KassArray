@@ -11,24 +11,24 @@ namespace RD_AAOW
 		{
 		#region Настройки стилей отображения
 
-		private Color[][] uiColors = new Color[][] {
+		private Color[][] uiColors = [
 			// MasterBackColor, FieldBackColor
-			new Color[] { Color.FromArgb ("#E8E8E8"), Color.FromArgb ("#E0E0E0") },	// 0. Headers
-			new Color[] { Color.FromArgb ("#F4E8FF"), Color.FromArgb ("#ECD8FF") },	// 1. User guides
-			new Color[] { Color.FromArgb ("#FFEEEE"), Color.FromArgb ("#FFD0D0") },	// 2. Errors
-			new Color[] { Color.FromArgb ("#FFF0E0"), Color.FromArgb ("#FFE0C0") },	// 3. FN life
-			new Color[] { Color.FromArgb ("#E0F0FF"), Color.FromArgb ("#C0E0FF") },	// 4. RNM
-			new Color[] { Color.FromArgb ("#F4F4FF"), Color.FromArgb ("#D0D0FF") },	// 5. OFD
-			new Color[] { Color.FromArgb ("#E0FFF0"), Color.FromArgb ("#C8FFE4") },	// 6. TLV
-			new Color[] { Color.FromArgb ("#FFF0FF"), Color.FromArgb ("#FFC8FF") },	// 7. Low level
-			new Color[] { Color.FromArgb ("#FFFFF0"), Color.FromArgb ("#FFFFD0") },	// 8. KKT codes
-			new Color[] { Color.FromArgb ("#F8FFF0"), Color.FromArgb ("#F0FFE0") },	// 9. Connectors
-			new Color[] { Color.FromArgb ("#FFF4E2"), Color.FromArgb ("#E8D9CF") },	// 10. Barcodes
-			new Color[] { Color.FromArgb ("#E1FFF1"), Color.FromArgb ("#D7F4E7") },	// 11. Convertors HT
-			new Color[] { Color.FromArgb ("#E5FFF5"), Color.FromArgb ("#DBF4EB") },	// 12. Convertors SN
-			new Color[] { Color.FromArgb ("#E9FFF9"), Color.FromArgb ("#DFF4EF") },	// 13. Convertors UN
-			new Color[] { Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") },	// 14. App about
-			};
+			[ Color.FromArgb ("#E8E8E8"), Color.FromArgb ("#E0E0E0") ],	// 0. Headers
+			[ Color.FromArgb ("#F4E8FF"), Color.FromArgb ("#ECD8FF") ],	// 1. User guides
+			[ Color.FromArgb ("#FFEEEE"), Color.FromArgb ("#FFD0D0") ],	// 2. Errors
+			[ Color.FromArgb ("#FFF0E0"), Color.FromArgb ("#FFE0C0") ],	// 3. FN life
+			[ Color.FromArgb ("#E0F0FF"), Color.FromArgb ("#C0E0FF") ],	// 4. RNM
+			[ Color.FromArgb ("#F4F4FF"), Color.FromArgb ("#D0D0FF") ],	// 5. OFD
+			[ Color.FromArgb ("#E0FFF0"), Color.FromArgb ("#C8FFE4") ],	// 6. TLV
+			[ Color.FromArgb ("#FFF0FF"), Color.FromArgb ("#FFC8FF") ],	// 7. Low level
+			[ Color.FromArgb ("#FFFFF0"), Color.FromArgb ("#FFFFD0") ],	// 8. KKT codes
+			[ Color.FromArgb ("#F8FFF0"), Color.FromArgb ("#F0FFE0") ],	// 9. Connectors
+			[ Color.FromArgb ("#FFF4E2"), Color.FromArgb ("#E8D9CF") ],	// 10. Barcodes
+			[ Color.FromArgb ("#E1FFF1"), Color.FromArgb ("#D7F4E7") ],	// 11. Convertors HT
+			[ Color.FromArgb ("#E5FFF5"), Color.FromArgb ("#DBF4EB") ],	// 12. Convertors SN
+			[ Color.FromArgb ("#E9FFF9"), Color.FromArgb ("#DFF4EF") ],	// 13. Convertors UN
+			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 14. App about
+			];
 		private const int hdrPage = 0;
 		private const int usgPage = 1;
 		private const int errPage = 2;
@@ -48,13 +48,13 @@ namespace RD_AAOW
 		private const int cBack = 0;
 		private const int cField = 1;
 
-		private const string firstStartRegKey = "HelpShownAt";
+		/*private const string firstStartRegKey = "HelpShownAt";*/
 
 		#endregion
 
 		#region Переменные страниц
 
-		private List<ContentPage> uiPages = new List<ContentPage> ();
+		private List<ContentPage> uiPages = [];
 
 		private Label kktCodesHelpLabel, kktCodesErrorLabel, kktCodesResultText,
 			kktCodesLengthLabel,
@@ -66,8 +66,8 @@ namespace RD_AAOW
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, ofdDisabledLabel, convNumberResultField, convCodeResultField,
 			aboutFontSizeField;
-		private List<Label> operationTextLabels = new List<Label> ();
-		private List<Button> operationTextButtons = new List<Button> ();
+		private List<Label> operationTextLabels = [];
+		private List<Button> operationTextButtons = [];
 		private const string operationButtonSignatureShow = "🖨 ";
 		private const string operationButtonSignatureHide = "🚫 ";
 
@@ -77,7 +77,7 @@ namespace RD_AAOW
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdINN,
 			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate, convCodeSymbolField,
 			encodingButton, fnLifeStatus, sampleNextButton;
-		private List<Button> uiButtons = new List<Button> ();
+		private List<Button> uiButtons = [];
 
 		private Editor codesSourceText, rnmINN, rnmRNM,
 			barcodeField, convNumberField, convCodeField, convHexField, convTextField;
@@ -111,7 +111,13 @@ namespace RD_AAOW
 		private uint encodingModesCount;
 
 		// Список ранее сохранённых подстановок для раздела кодов символов
-		private List<string> kktCodesOftenTexts = new List<string> ();
+		private List<string> kktCodesOftenTexts = [];
+
+		// Список вариантов печати руководств
+		private List<string> userGuideVariants = [];
+
+		// Список вариантов обработки ссылки на ФФД
+		private List<string> ffdBaseVariants = [];
 
 		#endregion
 
@@ -124,6 +130,18 @@ namespace RD_AAOW
 			{
 			// Инициализация
 			InitializeComponent ();
+			}
+
+		// Замена определению MainPage = new MasterPage ()
+		protected override Window CreateWindow (IActivationState activationState)
+			{
+			return new Window (AppShell ());
+			}
+
+		// Инициализация интерфейса
+		private Page AppShell ()
+			{
+			Page mainPage = new MasterPage ();
 			RDAppStartupFlags flags = RDGenerics.GetAppStartupFlags (RDAppStartupFlags.DisableXPUN);
 
 			kb = new KnowledgeBase ();
@@ -136,7 +154,7 @@ namespace RD_AAOW
 
 			#region Общая конструкция страниц приложения
 
-			MainPage = new MasterPage ();
+			/*MainPage = new MasterPage ();*/
 
 			uiPages.Add (ApplyPageSettings (new HeadersPage (), "HeadersPage",
 				"Разделы приложения", uiColors[hdrPage][0], false));
@@ -186,7 +204,8 @@ namespace RD_AAOW
 
 			#endregion
 
-			RDInterface.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
+			/*RDInterface.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);*/
+			RDInterface.SetMasterPage (mainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
 
 			#region Страница «оглавления»
 
@@ -600,7 +619,7 @@ namespace RD_AAOW
 
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
 				RDInterface.ApplyLabelSettings (uiPages[rnmPage], "RNMAbout",
-					KKTSupport.RNMTip, RDLabelTypes.TipLeft);
+					KKTSupport.RNMTip, RDLabelTypes.TipJustify);
 
 			RNMSerial_Search (sampleNextButton, null);
 			RNMINNUpdate (null, null);
@@ -689,7 +708,7 @@ namespace RD_AAOW
 			#region Страница TLV-тегов
 
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindButton",
-				"Найти тег", uiColors[tlvPage][cField],	TLVFind_Clicked, false);
+				"Найти тег", uiColors[tlvPage][cField], TLVFind_Clicked, false);
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindNextButton",
 				NextButton, uiColors[tlvPage][cField], TLVFind_Clicked, false);
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindBufferButton",
@@ -823,7 +842,7 @@ namespace RD_AAOW
 				TextAlignment.Center;
 
 			cableDescriptionText = RDInterface.ApplyLabelSettings (uiPages[conPage], "CableDescription",
-				" ", RDLabelTypes.TipLeft);
+				" ", RDLabelTypes.TipJustify);
 
 			CableTypeButton_Clicked (null, null);
 
@@ -928,6 +947,7 @@ namespace RD_AAOW
 
 			// Обязательное принятие Политики и EULA
 			AcceptPolicy (flags.HasFlag (RDAppStartupFlags.DisableXPUN));
+			return mainPage;
 			}
 
 		// Локальный оформитель страниц приложения
@@ -959,20 +979,21 @@ namespace RD_AAOW
 			}
 
 		// Контроль принятия Политики и EULA
-		private async void AcceptPolicy (bool DisableXPUN)
+		private static async void AcceptPolicy (bool DisableXPUN)
 			{
 			// Контроль XPUN
 			if (!DisableXPUN)
 				await RDInterface.XPUNLoop ();
 
 			// Политика
-			if (RDGenerics.GetAppRegistryValue (firstStartRegKey) != "")
+			/*if (RDGenerics.GetAppRegistryValue (firstStartRegKey) != "")*/
+			if (RDGenerics.TipsState != 0)
 				return;
 
 			await RDInterface.PolicyLoop ();
 
 			// Только после принятия
-			RDGenerics.SetAppRegistryValue (firstStartRegKey, ProgramDescription.AssemblyVersion);
+			/*RDGenerics.SetAppRegistryValue (firstStartRegKey, ProgramDescription.AssemblyVersion);*/
 
 			await RDInterface.ShowMessage ("Вас приветствует " + ProgramDescription.AssemblyMainName +
 				" – " + ProgramDescription.AssemblyDescription + RDLocale.RNRN +
@@ -1080,7 +1101,7 @@ namespace RD_AAOW
 			}
 
 		// Поиск по тексту ошибки
-		private string ButtonNameFromText (Button Ctrl)
+		private static string ButtonNameFromText (Button Ctrl)
 			{
 			if (Ctrl.Text == NextButton)
 				return "Next";
@@ -1117,7 +1138,7 @@ namespace RD_AAOW
 				string res = kb.Errors.GetErrorText (AppSettings.KKTForErrors, (uint)j);
 
 				if (code.Contains (search[0]) || res.ToLower ().Contains (search[0]) ||
-					code.Contains ("?") && search[0].Contains (code.Replace ("?", "")))
+					code.Contains ('?') && search[0].Contains (code.Replace ("?", "")))
 					{
 					lastErrorSearchOffset = (i + lastErrorSearchOffset) % codes.Count;
 					errorsResultText.Text = codes[j] + ": " + res;
@@ -1200,7 +1221,7 @@ namespace RD_AAOW
 			uint total = kb.CodeTables.GetKKTStringLength (AppSettings.KKTForCodes);
 
 			if (text.Length % 2 != 0)
-				if (text.Contains (" "))
+				if (text.Contains (' '))
 					text = text.Insert (text.IndexOf (' '), " ");
 
 			codesSourceText.Text = text.PadLeft ((int)(total + text.Length) / 2, ' ');
@@ -1797,10 +1818,12 @@ namespace RD_AAOW
 
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
 				{
-				List<string> modes = new List<string> { "Для кассира", "Для сервис-инженера" };
+				/*List<string> modes = [ "Для кассира", "Для сервис-инженера" ];*/
+				if (userGuideVariants.Count < 1)
+					userGuideVariants = ["Для кассира", "Для сервис-инженера"];
 
 				res = await RDInterface.ShowList ("Сохранить / распечатать руководство:",
-					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), modes);
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), userGuideVariants);
 				if (res < 0)
 					return;
 				}
@@ -1903,9 +1926,13 @@ namespace RD_AAOW
 		private async void TLVObligationBase_Click (object sender, EventArgs e)
 			{
 			// Выбор варианта
+			if (ffdBaseVariants.Count < 1)
+				ffdBaseVariants = ["Скопировать основание", "Перейти к его тексту"];
+
 			int res = await RDInterface.ShowList ("Что следует сделать?",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
-				new List<string> { "Скопировать основание", "Перейти к его тексту" });
+				ffdBaseVariants);
+				/*new List<st ring> { "Скопировать основание", "Перейти к его тексту" });*/
 			if (res < 0)
 				return;
 

@@ -51,19 +51,19 @@ namespace RD_AAOW
 	public class FNSerial
 		{
 		// Переменные
-		private List<string> names = new List<string> ();
-		private List<string> serials = new List<string> ();
-		private List<FNSerialFlags> flags = new List<FNSerialFlags> ();
-		private List<UInt16> addresses = new List<UInt16> ();
-		private List<bool> isAllowed = new List<bool> ();
+		private List<string> names = [];
+		private List<string> serials = [];
+		private List<FNSerialFlags> flags = [];
+		private List<UInt16> addresses = [];
+		private List<bool> isAllowed = [];
 
-		private uint[] registryStats = new uint[] {
+		private uint[] registryStats = [
 			0,	// В реестре
 			0,	// Из них - 36
 			0,	// Известные серии ЗН
 			0,	// Точно известные серии ЗН
 			0,	// Серии ЗН, для которых доступно чтение
-			};
+			];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -72,15 +72,16 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.FNSN);
+			byte[] data = KassArrayDBResources.FNSN;
 #else
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.FNSN);
+			byte[] data = RD_AAOW.Properties.Resources.FNSN;
 #endif
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { '\t' };
+			char[] splitters = ['\t'];
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
@@ -107,7 +108,7 @@ namespace RD_AAOW
 						registryStats[1]++;
 					}
 
-				if (!serials[serials.Count - 1].Contains ("?"))
+				if (!serials[serials.Count - 1].Contains ('?'))
 					registryStats[3]++;
 
 				if (addresses[addresses.Count - 1] != 0)
@@ -321,7 +322,7 @@ namespace RD_AAOW
 				return overrideAddresses;
 				}
 			}
-		private static UInt16[] overrideAddresses = new ushort[] {
+		private static UInt16[] overrideAddresses = [
 			0x0400,
 			0x0500,
 			0x0600,
@@ -337,7 +338,7 @@ namespace RD_AAOW
 			0x1000,
 			0x1100,
 			0x1200,
-			};
+			];
 
 		/// <summary>
 		/// Возвращает статистику по базе ЗН ФН

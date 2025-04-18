@@ -105,8 +105,8 @@ namespace RD_AAOW
 	public class UserGuides
 		{
 		// Переменные
-		private List<string> names = new List<string> ();
-		private List<List<string>> operations = new List<List<string>> ();
+		private List<string> names = [];
+		private List<List<string>> operations = [];
 
 		/// <summary>
 		/// Возвращает список операций, для которых доступны инструкции
@@ -115,7 +115,7 @@ namespace RD_AAOW
 		public static string[] OperationTypes (bool ForCashiers)
 			{
 			if (ForCashiers)
-				return new string[] {
+				return [
 					operationTypes[(int)UserGuidesTypes.SessionOpen],
 					operationTypes[(int)UserGuidesTypes.SellForCash],
 					operationTypes[(int)UserGuidesTypes.SellForCard],
@@ -126,7 +126,7 @@ namespace RD_AAOW
 					operationTypes[(int)UserGuidesTypes.Reverse],
 					operationTypes[(int)UserGuidesTypes.CashDeposit],
 					operationTypes[(int)UserGuidesTypes.SessionClose],
-					};
+					];
 
 			return operationTypes;
 			}
@@ -141,7 +141,7 @@ namespace RD_AAOW
 		/// </summary>
 		public const uint GuidesFlagsInitialState = 0x02;
 
-		private static string[] operationTypes = new string[] {
+		private static string[] operationTypes = [
 			"Открытие смены",
 			"Продажа за наличные",
 			"Продажа по карте",
@@ -161,7 +161,7 @@ namespace RD_AAOW
 			"Запрос реквизитов регистраций",// 15, 0x?F???
 			"Техобнуление",
 			"Закрытие архива ФН",			// 17, 0x0????
-			};
+			];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -170,17 +170,17 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			byte[] s1 = Properties.KassArrayDB.UserManuals;
+			byte[] data = KassArrayDBResources.UserManuals;
 #else
-			byte[] s1 = Properties.Resources.UserManuals;
+			byte[] data = Properties.Resources.UserManuals;
 #endif
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s1);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 			string str;
 
 			// Формирование массива 
 			while (operations.Count < operationTypes.Length)
-				operations.Add (new List<string> ());
+				operations.Add ([]);
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)

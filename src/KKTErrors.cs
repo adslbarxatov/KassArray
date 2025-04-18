@@ -10,9 +10,9 @@ namespace RD_AAOW
 	public class KKTErrorsList
 		{
 		// Переменные
-		private List<List<KKTError>> errors = new List<List<KKTError>> ();
-		private List<string> names = new List<string> ();
-		private char[] splitters = new char[] { ';' };
+		private List<List<KKTError>> errors = [];
+		private List<string> names = [];
+		private char[] splitters = [ ';' ];
 
 		// Константы
 		/// <summary>
@@ -27,11 +27,11 @@ namespace RD_AAOW
 			{
 			// Получение файла ошибок
 #if !ANDROID
-			byte[] s = Properties.KassArrayDB.Errors;
+			byte[] data = KassArrayDBResources.Errors;
 #else
-			byte[] s = Properties.Resources.Errors;
+			byte[] data = Properties.Resources.Errors;
 #endif
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
@@ -48,7 +48,7 @@ namespace RD_AAOW
 				switch (values.Length)
 					{
 					case 1:
-						errors.Add (new List<KKTError> ());
+						errors.Add ([]);
 						names.Add (values[0]);
 						break;
 
@@ -83,7 +83,7 @@ namespace RD_AAOW
 		/// <param name="KKTType">Модель ККТ</param>
 		public List<string> GetErrorCodesList (uint KKTType)
 			{
-			List<string> res = new List<string> ();
+			List<string> res = [];
 
 			for (int i = 0; i < errors[(int)KKTType].Count; i++)
 				res.Add (errors[(int)KKTType][i].ErrorCode);

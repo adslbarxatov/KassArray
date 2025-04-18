@@ -56,10 +56,10 @@ namespace RD_AAOW
 	public class BarCodes
 		{
 		// Переменные для EAN-8 и EAN-13
-		private List<uint> rangeStart = new List<uint> ();
-		private List<uint> rangeEnd = new List<uint> ();
-		private List<string> descriptions = new List<string> ();
-		private List<bool> country = new List<bool> ();
+		private List<uint> rangeStart = [];
+		private List<uint> rangeEnd = [];
+		private List<string> descriptions = [];
+		private List<bool> country = [];
 
 		// Константы для DataMatrix
 		private const string dmEncodingLine = "ABCDEFGHIJKLMNOP" +
@@ -90,15 +90,16 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.BarCodes);
+			byte[] data = KassArrayDBResources.BarCodes;
 #else
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.BarCodes);
+			byte[] data = RD_AAOW.Properties.Resources.BarCodes;
 #endif
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { ';' };
+			char[] splitters = [ ';' ];
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
@@ -123,7 +124,7 @@ namespace RD_AAOW
 			}
 
 		// Метод определяет тип штрих-кода
-		private SupportedBarcodesTypes GetBarcodeType (string BarcodeData)
+		private static SupportedBarcodesTypes GetBarcodeType (string BarcodeData)
 			{
 			// Контроль
 			string data = BarcodeData.Trim ();
@@ -154,7 +155,7 @@ namespace RD_AAOW
 			}
 
 		// Возвращает читаемое название типа штрих-кода
-		private string GetBarcodeTypeName (SupportedBarcodesTypes Type)
+		private static string GetBarcodeTypeName (SupportedBarcodesTypes Type)
 			{
 			switch (Type)
 				{
@@ -183,7 +184,7 @@ namespace RD_AAOW
 			}
 
 		// Контроль целостности кодов типа EAN
-		private bool CheckEAN (string BarcodeData, bool EAN13)
+		private static bool CheckEAN (string BarcodeData, bool EAN13)
 			{
 			// Разбор штрихкода
 			int checksum = 0;
@@ -212,7 +213,8 @@ namespace RD_AAOW
 				return unknownPrefix;
 
 			// Поиск
-			uint prefix = 0;
+			/*uint prefix = 0;*/
+			uint prefix;
 			try
 				{
 				prefix = uint.Parse (BarcodeData.Substring (0, 3));
@@ -451,7 +453,7 @@ namespace RD_AAOW
 			}
 
 		// Расшифровка числовых данных в DataMatrix
-		private string DecodeDMLine (string Data, bool AsPrice)
+		private static string DecodeDMLine (string Data, bool AsPrice)
 			{
 			// Сборка числа
 			decimal v = 0, mul1, mul2;
@@ -472,7 +474,7 @@ namespace RD_AAOW
 			}
 
 		// Метод собирает hex-представление данных из строки BASE64
-		private string ConvertFromBASE64 (string Data)
+		private static string ConvertFromBASE64 (string Data)
 			{
 			if (string.IsNullOrWhiteSpace (Data))
 				return "";

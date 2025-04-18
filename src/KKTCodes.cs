@@ -9,10 +9,10 @@ namespace RD_AAOW
 	public class KKTCodes
 		{
 		// Переменные
-		private List<string> names = new List<string> ();
-		private List<List<int>> codes = new List<List<int>> ();
-		private List<string> presentations = new List<string> ();
-		private List<string> descriptions = new List<string> ();
+		private List<string> names = [];
+		private List<List<int>> codes = [];
+		private List<string> presentations = [];
+		private List<string> descriptions = [];
 
 		/// <summary>
 		/// Код, возвращаемый при указании некорректных параметров
@@ -20,7 +20,7 @@ namespace RD_AAOW
 		public const string EmptyCode = "xxx";
 
 		// Разделители
-		private char[] splitters = new char[] { '\n', '\t' };
+		private char[] splitters = [ '\n', '\t' ];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицы кодов
@@ -29,11 +29,12 @@ namespace RD_AAOW
 			{
 			// Получение файла символов
 #if !ANDROID
-			byte[] s = Properties.KassArrayDB.KKTCodes;
+			byte[] data = KassArrayDBResources.KKTCodes;
 #else
-			byte[] s = Properties.Resources.KKTCodes;
+			byte[] data = Properties.Resources.KKTCodes;
 #endif
-			string[] buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s).Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+			string dataString = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
+			string[] buf = dataString.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 			// Формирование массива 
 			int line = 0;
@@ -45,7 +46,7 @@ namespace RD_AAOW
 				names.Add (buf[line++]);
 
 				// Чтение кодов
-				codes.Add (new List<int> ());
+				codes.Add ([]);
 
 				for (int i = 0; i < 0x100; i++)
 					{

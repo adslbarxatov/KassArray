@@ -10,21 +10,21 @@ namespace RD_AAOW
 	public class KKTSerial
 		{
 		// Переменные
-		private List<string> names = new List<string> ();
-		private List<uint> serialLengths = new List<uint> ();
-		private List<string> serialSamples = new List<string> ();
-		private List<uint> serialOffsets = new List<uint> ();
-		private List<FFDSupportStates> ffdSupport = new List<FFDSupportStates> ();
-		private List<bool> serialConfirmed = new List<bool> ();
+		private List<string> names = [];
+		private List<uint> serialLengths = [];
+		private List<string> serialSamples = [];
+		private List<uint> serialOffsets = [];
+		private List<FFDSupportStates> ffdSupport = [];
+		private List<bool> serialConfirmed = [];
 
-		private List<string> regions = new List<string> ();
+		private List<string> regions = [];
 
-		private uint[] registryStats = new uint[] {
+		private uint[] registryStats = [
 			0,	// Всего
 			0, 0, 0,	// Поддержка ФФД
 			0,	// Точно известные сигнатуры
 			3,	// Модели с одинаковыми названиями и разными реализациями (в файле помечены буквой Р)
-			};
+			];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -33,15 +33,16 @@ namespace RD_AAOW
 			{
 			// Получение файла заводских номеров и моделей
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.KKTSN);
+			byte[] data = KassArrayDBResources.KKTSN;
 #else
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.KKTSN);
+			byte[] data = RD_AAOW.Properties.Resources.KKTSN;
 #endif
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { '\t' };
+			char[] splitters = [ '\t' ];
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
@@ -103,10 +104,11 @@ namespace RD_AAOW
 
 			// Получение файла регионов
 #if !ANDROID
-			buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.Regions);
+			byte[] data2 = KassArrayDBResources.Regions;
 #else
-			buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.Regions);
+			byte[] data2 = RD_AAOW.Properties.Resources.Regions;
 #endif
+			buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data2);
 			SR = new StringReader (buf);
 
 			// Чтение параметров
@@ -130,7 +132,8 @@ namespace RD_AAOW
 				return ur;
 
 			// Извлечение индекса
-			int number = 0;
+			/*int number = 0;*/
+			int number;
 			try
 				{
 				number = int.Parse (INN.Substring (0, 2)) - 1;
@@ -261,7 +264,7 @@ namespace RD_AAOW
 			return "Подд. ФФД: " + s.Trim ().Replace (" ", ", ").Replace ("&", " ") + RDLocale.RN +
 				"Неподд. ФФД: " + us.Trim ().Replace (" ", ", ");
 			}
-		private static string[] ffdNames = new string[] { "1.05", "1.1", "1.2" };
+		private static string[] ffdNames = [ "1.05", "1.1", "1.2" ];
 
 		/// <summary>
 		/// Метод выполняет поиск по известным моделям ККТ и возвращает сигнатуру ЗН в случае успеха

@@ -10,10 +10,10 @@ namespace RD_AAOW
 	public class LowLevel
 		{
 		// Переменные
-		private List<List<string>> names = new List<List<string>> (),
-			commands = new List<List<string>> (),
-			descriptions = new List<List<string>> ();
-		private List<string> protocols = new List<string> ();
+		private List<List<string>> names = [];
+		private List<List<string>> commands = [];
+		private List<List<string>> descriptions = [];
+		private List<string> protocols = [];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -22,16 +22,16 @@ namespace RD_AAOW
 			{
 			// Получение файлов
 #if !ANDROID
-			byte[] s1 = Properties.KassArrayDB.LowLevel;
+			byte[] data = KassArrayDBResources.LowLevel;
 #else
-			byte[] s1 = Properties.Resources.LowLevel;
+			byte[] data = Properties.Resources.LowLevel;
 #endif
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (s1);
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива
 			string str;
-			char[] splitters = new char[] { ';' };
+			char[] splitters = [ ';' ];
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
@@ -41,9 +41,9 @@ namespace RD_AAOW
 				// Имя протокола
 				if (values.Length == 1)
 					{
-					names.Add (new List<string> ());
-					commands.Add (new List<string> ());
-					descriptions.Add (new List<string> ());
+					names.Add ([]);
+					commands.Add ([]);
+					descriptions.Add ([]);
 
 					protocols.Add (values[0]);
 					}

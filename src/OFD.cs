@@ -10,20 +10,20 @@ namespace RD_AAOW
 	public class OFD
 		{
 		// Переменные
-		private List<string> names = new List<string> ();
-		private List<string> inn = new List<string> ();
+		private List<string> names = [];
+		private List<string> inn = [];
 
-		private List<string> dnsNames = new List<string> ();
-		private List<string> ip = new List<string> ();
-		private List<string> ports = new List<string> ();
-		private List<string> emails = new List<string> ();
-		private List<string> links = new List<string> ();
+		private List<string> dnsNames = [];
+		private List<string> ip = [];
+		private List<string> ports = [];
+		private List<string> emails = [];
+		private List<string> links = [];
 
-		private List<string> dnsNamesM = new List<string> ();
-		private List<string> ipM = new List<string> ();
-		private List<string> portsM = new List<string> ();
+		private List<string> dnsNamesM = [];
+		private List<string> ipM = [];
+		private List<string> portsM = [];
 
-		private List<string> disabledMessages = new List<string> ();
+		private List<string> disabledMessages = [];
 
 		private const string notFound = "[не найдено]";
 		private const string notFoundFlag = "?";
@@ -61,15 +61,16 @@ namespace RD_AAOW
 			{
 			// Получение файла символов
 #if !ANDROID
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.KassArrayDB.OFD);
+			byte[] data = KassArrayDBResources.OFD;
 #else
-			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (RD_AAOW.Properties.Resources.OFD);
+			byte[] data = RD_AAOW.Properties.Resources.OFD;
 #endif
+			string buf = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (data);
 			StringReader SR = new StringReader (buf);
 
 			// Формирование массива 
 			string str;
-			char[] splitters = new char[] { '\t' };
+			char[] splitters = ['\t'];
 			uint line = 0;
 
 			// Чтение параметров
@@ -123,7 +124,8 @@ namespace RD_AAOW
 		/// <param name="EnabledOnly">Флаг указывает на возвращение только активных ОФД</param>
 		public List<string> GetOFDNames (bool EnabledOnly)
 			{
-			List<string> res = new List<string> ();
+			List<string> res = [];
+
 			for (int i = 0; i < names.Count; i++)
 				if (!EnabledOnly || string.IsNullOrWhiteSpace (disabledMessages[i]))
 					res.Add (names[i]);
@@ -148,18 +150,16 @@ namespace RD_AAOW
 			{
 			// Защита
 			if (INN.Contains ("0000000000"))
-				return new List<string> { "?", "Без ОФД", "", "", "", "", "", "", "", "", "" };
+				return ["?", "Без ОФД", "", "", "", "", "", "", "", "", ""];
 
 			if (!inn.Contains (INN))
-				return new List<string> { "?", "Неизвестный ОФД", "", "", "", "", "", "", "", "", "" };
+				return ["?", "Неизвестный ОФД", "", "", "", "", "", "", "", "", ""];
 
 			// Возврат
 			int i = inn.IndexOf (INN);
-			return new List<string> {
-				inn[i], names[i],
+			return [inn[i], names[i],
 				dnsNames[i], ip[i], ports[i], emails[i], links[i],
-				dnsNamesM[i], ipM[i], portsM[i], disabledMessages[i]
-				};
+				dnsNamesM[i], ipM[i], portsM[i], disabledMessages[i]];
 			}
 
 		/// <summary>

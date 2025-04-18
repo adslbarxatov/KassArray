@@ -67,14 +67,14 @@ namespace RD_AAOW
 			try
 				{
 				ewh = new EventWaitHandle (false, EventResetMode.AutoReset,
-					KassArrayDB::ProgramDescription.AssemblyTitle);
+					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);
 				}
 			catch
 				{
 				ewhIsActive = false;
 				}
 
-			if (KassArrayDB::ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
+			if (KassArrayDB::RD_AAOW.ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
 				{
 				RDInterface.MessageBox (RDMessageTypes.Error_Center,
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
@@ -219,20 +219,21 @@ namespace RD_AAOW
 			ConvCode_TextChanged (null, null);
 
 			// Настройка иконки в трее
-			ni.Icon = Properties.TextToKKMResources.KassArrayTray;
+			ni.Icon = KassArrayResources.KassArrayTray;
 			ni.Text = ProgramDescription.AssemblyVisibleName;
 			ni.Visible = true;
 
-			ni.ContextMenu = new ContextMenu ();
+			ni.ContextMenuStrip = new ContextMenuStrip ();
+			ni.ContextMenuStrip.ShowImageMargin = false;
 
-			ni.ContextMenu.MenuItems.Add (new MenuItem ("Работа с &ФН", FNReader_Click));
-			ni.ContextMenu.MenuItems[0].Enabled = !RDGenerics.StartedFromMSStore &&
+			ni.ContextMenuStrip.Items.Add ("Работа с &ФН", null, FNReader_Click);
+			ni.ContextMenuStrip.Items[0].Enabled = !RDGenerics.StartedFromMSStore &&
 				AppSettings.EnableExtendedMode; // Уровень 2
-			ni.ContextMenu.MenuItems.Add (new MenuItem (RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit),
-				CloseService));
+			ni.ContextMenuStrip.Items.Add (RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit), null,
+				CloseService);
 
 			ni.MouseDown += ReturnWindow;
-			ni.ContextMenu.MenuItems[1].DefaultItem = true;
+			/*ni.ContextMenu.MenuItems[1].DefaultItem = true;*/
 
 			// Настройка расширенного режима
 			ExtendedMode.Checked = AppSettings.EnableExtendedMode;
@@ -414,6 +415,13 @@ namespace RD_AAOW
 				return;
 
 			// Нормальный запуск модуля работы с ФН
+			if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]))
+				{
+				RDInterface.MessageBox (RDMessageTypes.Warning_Center, "Модуль чтения и обработки данных ФН отсутствует " +
+					"в расположении программы. Попробуйте развернуть установочный пакет повторно");
+				return;
+				}
+
 			RDGenerics.RunURL (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]);
 			}
 
@@ -456,7 +464,7 @@ namespace RD_AAOW
 				case "OFDFromFNReader":
 					sig = KassArrayDB::RD_AAOW.KKTSupport.OFDINNSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ("\n", left)) >= 0))
+						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						OFDINN.Text = status.Substring (left, right - left).Trim ();
@@ -469,7 +477,7 @@ namespace RD_AAOW
 				case "FNFromFNReader":
 					sig = KassArrayDB::RD_AAOW.KKTSupport.FNSerialSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ("\n", left)) >= 0))
+						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						AppSettings.FNSerial = status.Substring (left, right - left).Trim ();
@@ -507,7 +515,7 @@ namespace RD_AAOW
 				case "RNMFromFNReader":
 					sig = KassArrayDB::RD_AAOW.KKTSupport.KKTSerialSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ("\n", left)) >= 0))
+						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						AppSettings.KKTSerial = status.Substring (left, right - left).Trim ();
@@ -515,7 +523,7 @@ namespace RD_AAOW
 
 					sig = KassArrayDB::RD_AAOW.KKTSupport.RNMSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ("\n", left)) >= 0))
+						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						RNMValue.Text = status.Substring (left, right - left).Trim ();
@@ -523,7 +531,7 @@ namespace RD_AAOW
 
 					sig = KassArrayDB::RD_AAOW.KKTSupport.UserINNSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ("\n", left)) >= 0))
+						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						RNMUserINN.Text = status.Substring (left, right - left).Trim ();
@@ -584,7 +592,7 @@ namespace RD_AAOW
 			uint total = kb.CodeTables.GetKKTStringLength ((uint)KKTListForCodes.SelectedIndex);
 
 			if (text.Length % 2 != 0)
-				if (text.Contains (" "))
+				if (text.Contains (' '))
 					text = text.Insert (text.IndexOf (' '), " ");
 
 			TextToConvert.Text = text.PadLeft ((int)(total + text.Length) / 2, ' ');
@@ -629,7 +637,7 @@ namespace RD_AAOW
 				string res = kb.Errors.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)j);
 
 				if (code.Contains (search[0]) || res.ToLower ().Contains (search[0]) ||
-					code.Contains ("?") && search[0].Contains (code.Replace ("?", "")))
+					code.Contains ('?') && search[0].Contains (code.Replace ("?", "")))
 					{
 					lastErrorSearchOffset = j;
 					ErrorText.Text += codes[j] + ": " + res;
@@ -1246,22 +1254,22 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.TLVData = search[0];
-			bool descriptionFilled = false;
+			/*bool descriptionFilled = false;*/
 
 			if (kb.Tags.FindTag (search[0]))
 				{
-				if (!descriptionFilled)
-					{
-					TLVDescription.Text = kb.Tags.LastDescription;
-					TLVType.Text = kb.Tags.LastType;
+				/*if (!descriptionFilled)
+					{*/
+				TLVDescription.Text = kb.Tags.LastDescription;
+				TLVType.Text = kb.Tags.LastType;
 
-					if (!string.IsNullOrWhiteSpace (kb.Tags.LastValuesSet))
-						TLVValues.Text = kb.Tags.LastValuesSet;
-					else
-						TLVValues.Text = "";
+				if (!string.IsNullOrWhiteSpace (kb.Tags.LastValuesSet))
+					TLVValues.Text = kb.Tags.LastValuesSet;
+				else
+					TLVValues.Text = "";
 
-					descriptionFilled = true;
-					}
+				/*descriptionFilled = true;
+				}*/
 
 				TLVValues.Text += kb.Tags.LastObligation;
 				}
@@ -1390,7 +1398,7 @@ namespace RD_AAOW
 		private void ConvNumberAdd_Click (object sender, EventArgs e)
 			{
 			// Извлечение значения с защитой
-			bool plus = ((Button)sender).Text.Contains ("+");
+			bool plus = ((Button)sender).Text.Contains ('+');
 			double res = KassArrayDB::RD_AAOW.DataConvertors.GetNumber (ConvNumber.Text);
 			if (double.IsNaN (res))
 				res = 0.0;
