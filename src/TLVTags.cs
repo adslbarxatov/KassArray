@@ -312,7 +312,10 @@ namespace RD_AAOW
 			return true;
 			}
 		private int lastIndex = 0;
+
+#if !ANDROID
 		private string tlvSeparator;
+#endif
 
 		/// <summary>
 		/// Метод возвращает название поддерживаемой версии ФФД по её коду
