@@ -318,7 +318,6 @@ namespace RD_AAOW
 			if ((INN.Length != 10) && (INN.Length != 12))
 				return -1;
 
-			/*UInt64 inn = 0;*/
 			UInt64 inn;
 			try
 				{

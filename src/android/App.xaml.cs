@@ -48,8 +48,6 @@ namespace RD_AAOW
 		private const int cBack = 0;
 		private const int cField = 1;
 
-		/*private const string firstStartRegKey = "HelpShownAt";*/
-
 		#endregion
 
 		#region Переменные страниц
@@ -154,57 +152,54 @@ namespace RD_AAOW
 
 			#region Общая конструкция страниц приложения
 
-			/*MainPage = new MasterPage ();*/
-
-			uiPages.Add (ApplyPageSettings (new HeadersPage (), "HeadersPage",
+			uiPages.Add (ApplyPageSettings (new HeadersPage (), /*"HeadersPage",*/
 				"Разделы приложения", uiColors[hdrPage][0], false));
 			menuLayout = (StackLayout)uiPages[hdrPage].FindByName ("MenuField");
 
-			uiPages.Add (ApplyPageSettings (new UserManualsPage (), "UserManualsPage",
+			uiPages.Add (ApplyPageSettings (new UserManualsPage (), /*"UserManualsPage",*/
 				"Инструкции по работе с ККТ", uiColors[usgPage][cBack], true));
-			uiPages.Add (ApplyPageSettings (new ErrorsPage (), "ErrorsPage",
+			uiPages.Add (ApplyPageSettings (new ErrorsPage (), /*"ErrorsPage",*/
 				"Коды ошибок ККТ", uiColors[errPage][cBack], true));
-			uiPages.Add (ApplyPageSettings (new FNLifePage (), "FNLifePage",
+			uiPages.Add (ApplyPageSettings (new FNLifePage (), /*"FNLifePage",*/
 				"Срок жизни ФН", uiColors[fnlPage][cBack], true));
-			uiPages.Add (ApplyPageSettings (new RNMPage (), "RNMPage",
+			uiPages.Add (ApplyPageSettings (new RNMPage (), /*"RNMPage",*/
 				"Заводской и рег. номер ККТ", uiColors[rnmPage][cBack], true));
-			uiPages.Add (ApplyPageSettings (new OFDPage (), "OFDPage",
+			uiPages.Add (ApplyPageSettings (new OFDPage (), /*"OFDPage",*/
 				"Параметры ОФД", uiColors[ofdPage][cBack], true));
 
-			uiPages.Add (ApplyPageSettings (new TagsPage (), "TagsPage",
+			uiPages.Add (ApplyPageSettings (new TagsPage (), /*"TagsPage",*/
 				"TLV-теги", uiColors[tlvPage][cBack], true));
 			uiButtons[tlvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
-			uiPages.Add (ApplyPageSettings (new LowLevelPage (), "LowLevelPage",
+			uiPages.Add (ApplyPageSettings (new LowLevelPage (), /*"LowLevelPage",*/
 				"Команды нижнего уровня", uiColors[llvPage][cBack], true));
 			uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
-			uiPages.Add (ApplyPageSettings (new KKTCodesPage (), "KKTCodesPage",
+			uiPages.Add (ApplyPageSettings (new KKTCodesPage (), /*"KKTCodesPage",*/
 				"Перевод текста в коды ККТ", uiColors[codPage][cBack], true));
 			uiButtons[codPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 1
 
-			uiPages.Add (ApplyPageSettings (new ConnectorsPage (), "ConnectorsPage",
+			uiPages.Add (ApplyPageSettings (new ConnectorsPage (), /*"ConnectorsPage",*/
 				"Разъёмы", uiColors[conPage][cBack], true));
 			uiButtons[conPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
-			uiPages.Add (ApplyPageSettings (new BarCodesPage (), "BarCodesPage",
+			uiPages.Add (ApplyPageSettings (new BarCodesPage (), /*"BarCodesPage",*/
 				"Штрих-коды", uiColors[bcdPage][cBack], true));
-			uiPages.Add (ApplyPageSettings (new ConvertorsHTPage (), "ConvertorsHTPage",
+			uiPages.Add (ApplyPageSettings (new ConvertorsHTPage (), /*"ConvertorsHTPage",*/
 				"Конвертор двоичных данных", uiColors[cvhPage][cBack], true));
-			uiPages.Add (ApplyPageSettings (new ConvertorsSNPage (), "ConvertorsSNPage",
+			uiPages.Add (ApplyPageSettings (new ConvertorsSNPage (), /*"ConvertorsSNPage",*/
 				"Конвертор систем счисления", uiColors[cvsPage][cBack], true));
-			uiPages.Add (ApplyPageSettings (new ConvertorsUCPage (), "ConvertorsUCPage",
+			uiPages.Add (ApplyPageSettings (new ConvertorsUCPage (), /*"ConvertorsUCPage",*/
 				"Конвертор символов Unicode", uiColors[cvuPage][cBack], true));
 
 			// С отступом
 			menuLayout.Children.Add (new Label ());
-			uiPages.Add (ApplyPageSettings (new AboutPage (), "AboutPage",
+			uiPages.Add (ApplyPageSettings (new AboutPage (), /*"AboutPage",*/
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				uiColors[aabPage][cBack], true));
 
 			#endregion
 
-			/*RDInterface.SetMasterPage (MainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);*/
 			RDInterface.SetMasterPage (mainPage, uiPages[hdrPage], uiColors[hdrPage][cBack]);
 
 			#region Страница «оглавления»
@@ -951,11 +946,11 @@ namespace RD_AAOW
 			}
 
 		// Локальный оформитель страниц приложения
-		private ContentPage ApplyPageSettings (ContentPage CreatedPage, string PageName, string PageTitle,
+		private ContentPage ApplyPageSettings (ContentPage CreatedPage, /*string PageName,*/ string PageTitle,
 			Color PageBackColor, bool AddToMenu)
 			{
 			// Инициализация страницы
-			ContentPage page = RDInterface.ApplyPageSettings (CreatedPage, PageName, PageTitle, PageBackColor);
+			ContentPage page = RDInterface.ApplyPageSettings (CreatedPage, /*PageName,*/ PageTitle, PageBackColor);
 
 			// Добавление в содержание
 			if (!AddToMenu)
@@ -986,15 +981,12 @@ namespace RD_AAOW
 				await RDInterface.XPUNLoop ();
 
 			// Политика
-			/*if (RDGenerics.GetAppRegistryValue (firstStartRegKey) != "")*/
 			if (RDGenerics.TipsState != 0)
 				return;
 
 			await RDInterface.PolicyLoop ();
 
 			// Только после принятия
-			/*RDGenerics.SetAppRegistryValue (firstStartRegKey, ProgramDescription.AssemblyVersion);*/
-
 			await RDInterface.ShowMessage ("Вас приветствует " + ProgramDescription.AssemblyMainName +
 				" – " + ProgramDescription.AssemblyDescription + RDLocale.RNRN +
 				"На этой странице находится перечень функций приложения, который позволяет перейти " +
@@ -1818,7 +1810,6 @@ namespace RD_AAOW
 
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
 				{
-				/*List<string> modes = [ "Для кассира", "Для сервис-инженера" ];*/
 				if (userGuideVariants.Count < 1)
 					userGuideVariants = ["Для кассира", "Для сервис-инженера"];
 
@@ -1932,7 +1923,6 @@ namespace RD_AAOW
 			int res = await RDInterface.ShowList ("Что следует сделать?",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
 				ffdBaseVariants);
-				/*new List<st ring> { "Скопировать основание", "Перейти к его тексту" });*/
 			if (res < 0)
 				return;
 

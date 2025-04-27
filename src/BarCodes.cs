@@ -213,7 +213,6 @@ namespace RD_AAOW
 				return unknownPrefix;
 
 			// Поиск
-			/*uint prefix = 0;*/
 			uint prefix;
 			try
 				{

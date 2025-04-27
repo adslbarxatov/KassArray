@@ -42,7 +42,7 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			string str;
-			char[] splitters = [ '\t' ];
+			char[] splitters = ['\t'];
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
@@ -132,7 +132,6 @@ namespace RD_AAOW
 				return ur;
 
 			// Извлечение индекса
-			/*int number = 0;*/
 			int number;
 			try
 				{
@@ -264,7 +263,7 @@ namespace RD_AAOW
 			return "Подд. ФФД: " + s.Trim ().Replace (" ", ", ").Replace ("&", " ") + RDLocale.RN +
 				"Неподд. ФФД: " + us.Trim ().Replace (" ", ", ");
 			}
-		private static string[] ffdNames = [ "1.05", "1.1", "1.2" ];
+		private static string[] ffdNames = ["1.05", "1.1", "1.2"];
 
 		/// <summary>
 		/// Метод выполняет поиск по известным моделям ККТ и возвращает сигнатуру ЗН в случае успеха

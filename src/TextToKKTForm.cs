@@ -233,7 +233,6 @@ namespace RD_AAOW
 				CloseService);
 
 			ni.MouseDown += ReturnWindow;
-			/*ni.ContextMenu.MenuItems[1].DefaultItem = true;*/
 
 			// Настройка расширенного режима
 			ExtendedMode.Checked = AppSettings.EnableExtendedMode;
@@ -1254,12 +1253,9 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.TLVData = search[0];
-			/*bool descriptionFilled = false;*/
 
 			if (kb.Tags.FindTag (search[0]))
 				{
-				/*if (!descriptionFilled)
-					{*/
 				TLVDescription.Text = kb.Tags.LastDescription;
 				TLVType.Text = kb.Tags.LastType;
 
@@ -1267,9 +1263,6 @@ namespace RD_AAOW
 					TLVValues.Text = kb.Tags.LastValuesSet;
 				else
 					TLVValues.Text = "";
-
-				/*descriptionFilled = true;
-				}*/
 
 				TLVValues.Text += kb.Tags.LastObligation;
 				}

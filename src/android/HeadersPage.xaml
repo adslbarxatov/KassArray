@@ -9,22 +9,13 @@
 			<Label x:Name="FunctionsLabel" />
 
 			<Label />
-			<StackLayout x:Name="MenuField">
-			</StackLayout>
+			<StackLayout x:Name="MenuField" />
 
 			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />
 
 			<Label />
 			<Label x:Name="SettingsLabel" />
-
-			<!--<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
-				<Switch x:Name="AllowService" VerticalOptions="Center" />
-				<Label x:Name="AllowServiceLabel" VerticalOptions="Center" />
-			</StackLayout>
-
-			<Label x:Name="AllowServiceTip" />
-			<Button x:Name="AllowServiceButton" />-->
 
 			<StackLayout Orientation="Horizontal" HorizontalOptions="Start">
 				<Switch x:Name="ExtendedMode" VerticalOptions="Center" />
@@ -36,4 +27,4 @@
 		</StackLayout>
 	</ScrollView>
 </ContentPage>
-   
+  
