@@ -74,7 +74,13 @@ namespace RD_AAOW
 				ewhIsActive = false;
 				}
 
-			if (KassArrayDB::RD_AAOW.ProgramDescription.GetCurrentAssemblyVersion != ProgramDescription.AssemblyVersion)
+			try
+				{
+				FileVersionInfo fvi = FileVersionInfo.GetVersionInfo (ProgramDescription.KassArrayDLLs[0]);
+				if (fvi.FileVersion != ProgramDescription.AssemblyVersion)
+					throw new Exception ();
+				}
+			catch
 				{
 				RDInterface.MessageBox (RDMessageTypes.Error_Center,
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
@@ -83,6 +89,16 @@ namespace RD_AAOW
 				closeWindowOnError = true;
 				return;
 				}
+
+			/*if (fvi.FileVersion != ProgramDescription.AssemblyVersion)
+				{
+				RDInterface.MessageBox (RDMessageTypes.Error_Center,
+					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
+					ProgramDescription.KassArrayDLLs[0]));
+
+				closeWindowOnError = true;
+				return;
+				}*/
 
 			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
 
