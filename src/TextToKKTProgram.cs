@@ -33,7 +33,7 @@ namespace RD_AAOW
 				return;
 
 			if (!RDGenerics.StartedFromMSStore &&
-				!RDGenerics.CheckLibraries ([ProgramDescription.KassArrayDLLs[0]], true))
+				!RDGenerics.CheckLibrariesExistence (ProgramDescription.AssemblyLibraries, true))
 				return;
 
 			// Отображение справки и запроса на принятие Политики

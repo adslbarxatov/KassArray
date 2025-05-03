@@ -74,7 +74,7 @@ namespace RD_AAOW
 				ewhIsActive = false;
 				}
 
-			try
+			/*try
 				{
 				FileVersionInfo fvi = FileVersionInfo.GetVersionInfo (ProgramDescription.KassArrayDLLs[0]);
 				if (fvi.FileVersion != ProgramDescription.AssemblyVersion)
@@ -84,21 +84,13 @@ namespace RD_AAOW
 				{
 				RDInterface.MessageBox (RDMessageTypes.Error_Center,
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
-					ProgramDescription.KassArrayDLLs[0]));
-
+					ProgramDescription.KassArrayDLLs[0]));*/
+			if (!RDGenerics.CheckLibraryVersion (ProgramDescription.AssemblyLibraries[0][0],
+				ProgramDescription.AssemblyLibraries[0][1]))
+				{
 				closeWindowOnError = true;
 				return;
 				}
-
-			/*if (fvi.FileVersion != ProgramDescription.AssemblyVersion)
-				{
-				RDInterface.MessageBox (RDMessageTypes.Error_Center,
-					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
-					ProgramDescription.KassArrayDLLs[0]));
-
-				closeWindowOnError = true;
-				return;
-				}*/
 
 			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
 
@@ -410,18 +402,17 @@ namespace RD_AAOW
 
 			// Контроль на завершение предыдущих процессов
 			bool res;
+			const string proc = ProgramDescription.AssemblyMainName + "FN";
 			if (!problem)
 				{
 				// Тихо
-				res = RDGenerics.KillAllProcesses (
-					Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), false, true);
+				res = RDGenerics.KillAllProcesses (proc, false, true);
 				}
 			else
 				{
 				// С предупреждением
 				TMSet (false);
-				res = RDGenerics.KillAllProcesses (
-					Path.GetFileNameWithoutExtension (ProgramDescription.KassArrayDLLs[1]), true, false);
+				res = RDGenerics.KillAllProcesses (proc, true, false);
 				TMSet (true);
 				}
 
@@ -430,14 +421,16 @@ namespace RD_AAOW
 				return;
 
 			// Нормальный запуск модуля работы с ФН
-			if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]))
+			/*if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]))
 				{
 				RDInterface.MessageBox (RDMessageTypes.Warning_Center, "Модуль чтения и обработки данных ФН отсутствует " +
 					"в расположении программы. Попробуйте развернуть установочный пакет повторно");
 				return;
-				}
+				}*/
+			if (!RDGenerics.CheckLibrariesExistence (proc + ".exe", true))
+				return;
 
-			RDGenerics.RunURL (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]);
+			RDGenerics.RunURL (RDGenerics.AppStartupPath + proc + ".exe");
 			}
 
 		// Переключение состояния "поверх всех окон"
