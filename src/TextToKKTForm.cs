@@ -74,17 +74,6 @@ namespace RD_AAOW
 				ewhIsActive = false;
 				}
 
-			/*try
-				{
-				FileVersionInfo fvi = FileVersionInfo.GetVersionInfo (ProgramDescription.KassArrayDLLs[0]);
-				if (fvi.FileVersion != ProgramDescription.AssemblyVersion)
-					throw new Exception ();
-				}
-			catch
-				{
-				RDInterface.MessageBox (RDMessageTypes.Error_Center,
-					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.MessageFormat_WrongVersion_Fmt),
-					ProgramDescription.KassArrayDLLs[0]));*/
 			if (!RDGenerics.CheckLibraryVersion (ProgramDescription.AssemblyLibraries[0][0],
 				ProgramDescription.AssemblyLibraries[0][1]))
 				{
@@ -421,16 +410,11 @@ namespace RD_AAOW
 				return;
 
 			// Нормальный запуск модуля работы с ФН
-			/*if (!File.Exists (RDGenerics.AppStartupPath + ProgramDescription.KassArrayDLLs[1]))
-				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center, "Модуль чтения и обработки данных ФН отсутствует " +
-					"в расположении программы. Попробуйте развернуть установочный пакет повторно");
-				return;
-				}*/
-			if (!RDGenerics.CheckLibrariesExistence (proc + ".exe", true))
+			string fnExe = RDGenerics.AppStartupPath + proc + ".exe";
+			if (!RDGenerics.CheckLibrariesExistence (fnExe, true))
 				return;
 
-			RDGenerics.RunURL (RDGenerics.AppStartupPath + proc + ".exe");
+			RDGenerics.RunURL (fnExe);
 			}
 
 		// Переключение состояния "поверх всех окон"
