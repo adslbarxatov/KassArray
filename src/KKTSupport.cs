@@ -8,9 +8,9 @@ using System.IO;
 	using Android.Print.Pdf;
 	using Android.Runtime;
 #else
-	using System.Drawing;
-	using System.Drawing.Printing;
-	using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Windows.Forms;
 #endif
 
 namespace RD_AAOW
@@ -168,6 +168,107 @@ namespace RD_AAOW
 		}
 
 	/// <summary>
+	/// Доступные критичные теги из статуса ФН
+	/// </summary>
+	public enum CriticalTags
+		{
+		/// <summary>
+		/// Адрес расчётов
+		/// </summary>
+		RegistrationAddress = 1009,
+
+		/// <summary>
+		/// Заводской номер ККТ
+		/// </summary>
+		KKTSerialNumber = 1013,
+
+		/// <summary>
+		/// ИНН ОФД
+		/// </summary>
+		OFDINN = 1017,
+
+		/// <summary>
+		/// ИНН пользователя
+		/// </summary>
+		UserINN = 1018,
+
+		/// <summary>
+		/// Регистрационный номер
+		/// </summary>
+		RegistrationNumber = 1037,
+
+		/// <summary>
+		/// Заводской номер ФН
+		/// </summary>
+		FNSerialNumber = 1041,
+
+		/// <summary>
+		/// Наименование пользователя
+		/// </summary>
+		UserName = 1048,
+
+		/// <summary>
+		/// Место расчётов
+		/// </summary>
+		RegistrationPlace = 1187,
+
+		/// <summary>
+		/// Версия ФФД
+		/// </summary>
+		FFDVersion = 1209,
+
+		/// <summary>
+		/// Псевдотег – признак автономного режима
+		/// </summary>
+		AutonomousFlag = 9001,
+
+		/// <summary>
+		/// Псевдотег – признак режима услуг
+		/// </summary>
+		ServiceFlag = 9002,
+
+		/// <summary>
+		/// Псевдотег – признак торговли подакцизными товарами
+		/// </summary>
+		ExciseFlag = 9003,
+
+		/// <summary>
+		/// Псевдотег – признак торговли маркированными товарами
+		/// </summary>
+		MarkingFlag = 9004,
+
+		/// <summary>
+		/// Псевдотег – признак ломбардной деятельности
+		/// </summary>
+		PawnFlag = 9005,
+
+		/// <summary>
+		/// Псевдотег – признак страхования
+		/// </summary>
+		InsuranceFlag = 9006,
+
+		/// <summary>
+		/// Псевдотег – признак лотерей
+		/// </summary>
+		LotteryFlag = 9007,
+
+		/// <summary>
+		/// Псевдотег – признак азартных игр
+		/// </summary>
+		GamblingFlag = 9008,
+
+		/// <summary>
+		/// Псевдотег – признак наличия общей системы налогообложения
+		/// </summary>
+		GenericTaxFlag = 9009,
+
+		/// <summary>
+		/// Псевдотег – признак наличия агентской схемы
+		/// </summary>
+		AgentFlag = 9010,
+		}
+
+	/// <summary>
 	/// Класс описывает результат оценки срока жизни ФН и его применимости
 	/// </summary>
 	public class FNLifeResult
@@ -231,7 +332,7 @@ namespace RD_AAOW
 			if (Flags.HasFlag (FNLifeFlags.GenericTax) && !Flags.HasFlag (FNLifeFlags.FN15) &&
 				Flags.HasFlag (FNLifeFlags.Goods))
 				{
-				if (Flags.HasFlag (FNLifeFlags.FFD12FullSupport))	// Проверено
+				if (Flags.HasFlag (FNLifeFlags.FFD12FullSupport))   // Проверено
 					res = FNLifeStatus.Unwelcome;
 				else
 					res = FNLifeStatus.Inacceptable;
@@ -274,7 +375,7 @@ namespace RD_AAOW
 			if ((Flags.HasFlag (FNLifeFlags.GamblingAndLotteries) || Flags.HasFlag (FNLifeFlags.PawnsAndInsurance)) &&
 				Flags.HasFlag (FNLifeFlags.FFD12) && Flags.HasFlag (FNLifeFlags.FN15) ||
 				Flags.HasFlag (FNLifeFlags.Excise) && Flags.HasFlag (FNLifeFlags.FFD12) ||
-				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.Excise))	// Новое условие
+				!Flags.HasFlag (FNLifeFlags.FN15) && Flags.HasFlag (FNLifeFlags.Excise))    // Новое условие
 				{
 				length = 410u;
 				}
@@ -304,7 +405,7 @@ namespace RD_AAOW
 			}
 
 		// Контрольная последовательность для определения корректности ИНН
-		private static byte[] innCheckSequence = [ 3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8 ];
+		private static byte[] innCheckSequence = [3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8];
 
 		/// <summary>
 		/// Метод проверяет корректность ввода ИНН
@@ -960,12 +1061,97 @@ namespace RD_AAOW
 		private static int charactersPerLine;      // Зависимое значение
 		private static PrinterTypes internalPrinterType;
 		private static uint pageNumber;
+		private static bool[][] qrCodeData;
 #if UMPRINT
 		private static bool addManualLogo;
 #endif
 
 		private static Font printFont;             // Зависимое значение
 		private static Brush printBrush = new SolidBrush (Color.FromArgb (0, 0, 0));
+
+		/// <summary>
+		/// Метод выводит печатную форму чека на печать с указанными настройками
+		/// </summary>
+		/// <param name="TextForPrinting">Текст ПФ</param>
+		/// <param name="QRCodeData">Данные QR-кода</param>
+		/// <param name="PrinterType">Тип принтера</param>
+		/// <returns>Возвращает текст ошибки или null в случае успеха</returns>
+		public static string PrintReceipt (string TextForPrinting, bool[][] QRCodeData, PrinterTypes PrinterType)
+			{
+			// Контроль
+			if (string.IsNullOrWhiteSpace (TextForPrinting))
+				return "No text specified";
+
+			string txt = TextForPrinting;
+			internalPrinterType = PrinterType;
+			pageNumber = 0;
+			qrCodeData = QRCodeData;
+
+			// Удаление отступов (только для чековой ленты)
+			int pageLength = 0;
+			if (!IsA4)
+				{
+				if (qrCodeData == null)
+					while (txt.Contains ("\n "))
+						txt = txt.Replace ("\n ", "\n");
+				txt = txt.Replace ("\r", "");
+
+				// Расчёт примерной длины страницы (A4 или менее)
+				string chk = txt.Replace ("\n", "");
+				pageLength = 14 * (txt.Length - chk.Length + 2);
+				// +1 - линия отреза
+				// ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
+
+				if (pageLength > 1170)  // ~300000 / 254, А4
+					pageLength = 1170;
+				}
+
+			// Создание потока и запуск диалога
+			printStream = new StringReader (txt);
+
+			PrintDocument pd = new PrintDocument ();
+			pd.PrintPage += new PrintPageEventHandler (PrintPage);
+
+			// Размер бумаги (считается в сотых долях дюйма)
+			switch (internalPrinterType)
+				{
+				case PrinterTypes.Receipt57mm:
+				case PrinterTypes.Receipt57mmThin:
+					pd.DefaultPageSettings.PaperSize = new PaperSize ("Receipt57", 225, pageLength);    // 57000 / 254
+					break;
+
+				case PrinterTypes.Receipt80mm:
+				case PrinterTypes.Receipt80mmThin:
+					pd.DefaultPageSettings.PaperSize = new PaperSize ("Receipt80", 315, pageLength);    // 80000 / 254
+					break;
+				}
+
+			PrintDialog spd = new PrintDialog ();
+			spd.AllowCurrentPage = spd.AllowPrintToFile = spd.AllowSelection = spd.AllowSomePages = false;
+			spd.PrintToFile = spd.ShowHelp = false;
+			spd.ShowNetwork = true;
+			spd.UseEXDialog = true;
+			spd.Document = pd;
+
+			if (spd.ShowDialog () == DialogResult.OK)
+				{
+				try
+					{
+					pd.PrinterSettings = spd.PrinterSettings;
+					pd.Print ();
+					}
+				catch (Exception ex)
+					{
+					return ex.Message;
+					}
+				}
+
+			// Успешно
+			printStream.Close ();
+			pd.Dispose ();
+			txt = null;
+			return null;
+			}
 
 		/// <summary>
 		/// Метод выводит произвольный текст на печать с указанными настройками
@@ -975,13 +1161,16 @@ namespace RD_AAOW
 		/// <returns>Возвращает текст ошибки или null в случае успеха</returns>
 		public static string PrintText (string TextForPrinting, PrinterTypes PrinterType)
 			{
-			// Контроль
+			return PrintReceipt (TextForPrinting, null, PrinterType);
+
+			/*// Контроль
 			if (string.IsNullOrWhiteSpace (TextForPrinting))
 				return "No text specified";
 
 			string txt = TextForPrinting;
 			internalPrinterType = PrinterType;
 			pageNumber = 0;
+			qrCodeData = null;
 
 			// Удаление отступов (только для чековой ленты)
 			int pageLength = 0;
@@ -1045,7 +1234,7 @@ namespace RD_AAOW
 			printStream.Close ();
 			pd.Dispose ();
 			txt = null;
-			return null;
+			return null;*/
 			}
 
 		/// <summary>
@@ -1068,6 +1257,7 @@ namespace RD_AAOW
 			// Инициализация
 			if (printFont != null)
 				printFont.Dispose ();
+			bool receipt = (qrCodeData != null);
 
 			// Вычисление числа строк на странице и параметров шрифта
 			float leftMargin, topMargin, linesPerPage, yPos;
@@ -1077,14 +1267,22 @@ namespace RD_AAOW
 				{
 				case PrinterTypes.DefaultA4:
 				default:
-					printFont = new Font ("Courier New", 10, FontStyle.Bold);
-					charactersPerLine = 80;
+					if (receipt)
+						{
+						printFont = new Font (fontConsolas, 80 * 6.0f / 57, FontStyle.Bold);
+						charactersPerLine = receiptLineLength;
+						}
+					else
+						{
+						printFont = new Font (fontCourier, 10, FontStyle.Bold);
+						charactersPerLine = 80;
+						}
 					leftMargin = topMargin = 70;
 					linesPerPage = ev.MarginBounds.Height / printFont.GetHeight (ev.Graphics);
 					break;
 
 				case PrinterTypes.ManualA4:
-					printFont = new Font ("Consolas", 9, FontStyle.Bold);
+					printFont = new Font (fontConsolas, 9, FontStyle.Bold);
 					charactersPerLine = ManualA4CharPerLine;
 					leftMargin = topMargin = 70;
 					linesPerPage = ev.MarginBounds.Height / printFont.GetHeight (ev.Graphics) + 1;
@@ -1092,18 +1290,34 @@ namespace RD_AAOW
 
 				case PrinterTypes.Receipt80mm:
 				case PrinterTypes.Receipt80mmThin:
-					printFont = new Font ("Courier New", 7,
-						(internalPrinterType == PrinterTypes.Receipt80mm) ? FontStyle.Bold : FontStyle.Regular);
-					charactersPerLine = 47;
+					bool bold80 = (internalPrinterType == PrinterTypes.Receipt80mm);
+					if (receipt)
+						{
+						printFont = new Font (fontConsolas, 80 * 6.0f / 57, bold80 ? FontStyle.Bold : FontStyle.Regular);
+						charactersPerLine = receiptLineLength;
+						}
+					else
+						{
+						printFont = new Font (fontCourier, 7, bold80 ? FontStyle.Bold : FontStyle.Regular);
+						charactersPerLine = 47;
+						}
 					leftMargin = topMargin = 0;
 					linesPerPage = 102;
 					break;
 
 				case PrinterTypes.Receipt57mm:
 				case PrinterTypes.Receipt57mmThin:
-					printFont = new Font ("Courier New", 6,
-						(internalPrinterType == PrinterTypes.Receipt57mm) ? FontStyle.Bold : FontStyle.Regular);
-					charactersPerLine = 39;
+					bool bold57 = (internalPrinterType == PrinterTypes.Receipt57mm);
+					if (receipt)
+						{
+						printFont = new Font (fontConsolas, 6.0f, bold57 ? FontStyle.Bold : FontStyle.Regular);
+						charactersPerLine = receiptLineLength;
+						}
+					else
+						{
+						printFont = new Font (fontCourier, 6, bold57 ? FontStyle.Bold : FontStyle.Regular);
+						charactersPerLine = 39;
+						}
 					leftMargin = topMargin = 0;
 					linesPerPage = 118;
 					break;
@@ -1157,8 +1371,24 @@ namespace RD_AAOW
 					}
 
 				yPos = topMargin + (count * printFont.GetHeight (ev.Graphics));
-				ev.Graphics.DrawString ((line.Length > charactersPerLine) ? line.Substring (0, charactersPerLine) :
-					line, printFont, printBrush, leftMargin, yPos, new StringFormat ());
+				string s;
+				if (line.Length > charactersPerLine)
+					s = line.Substring (0, charactersPerLine);
+				else
+					s = line;
+
+				// Плохо – привязанные константы
+				if (receipt && s.StartsWith ("СУММА"))
+					{
+					Font f = new Font (printFont.FontFamily, printFont.Size * 2, printFont.Style);
+					ev.Graphics.DrawString (s, f, printBrush, leftMargin, yPos, new StringFormat ());
+					f.Dispose ();
+					count++;
+					}
+				else
+					{
+					ev.Graphics.DrawString (s, printFont, printBrush, leftMargin, yPos, new StringFormat ());
+					}
 				count++;
 
 				if (line.Length > charactersPerLine)
@@ -1176,9 +1406,36 @@ namespace RD_AAOW
 					}
 				}
 
+			// Отрисовка QR-кода при необходимости (тоже плохо – ручной подбор размеров)
+			if (receipt)
+				{
+				// Расчёт масштаба и смещения
+				SizeF qrWidth = ev.Graphics.MeasureString ("A".PadLeft (17, 'A'), printFont);
+				float pixelWidth = qrWidth.Width / qrCodeData.Length;
+
+				SizeF qrLeftOffset = ev.Graphics.MeasureString ("A".PadLeft (24, 'A'), printFont);
+				float qrLeft = qrLeftOffset.Width + leftMargin;
+				float qrTop = topMargin + ((count - 8) * printFont.GetHeight (ev.Graphics));
+
+				// Отрисовка
+				for (int r = 0; r < qrCodeData.Length; r++)
+					{
+					for (int c = 0; c < qrCodeData[r].Length; c++)
+						{
+						if (qrCodeData[r][c])
+							ev.Graphics.FillRectangle (printBrush, qrLeft + c * pixelWidth,
+								qrTop + r * pixelWidth, pixelWidth, pixelWidth);
+						}
+					}
+				}
+
 			// Переход на следующую страницу при необходимости
 			ev.HasMorePages = line != null;
 			}
+
+		private const string fontCourier = "Courier New";
+		private const string fontConsolas = "Consolas";
+		private const int receiptLineLength = 42;
 
 
 #endif
@@ -1234,57 +1491,63 @@ namespace RD_AAOW
 		/// </summary>
 		public const string OverrideCloseButtonPar = "OCB";
 
-		// Общие сигнатуры
+		/*// Общие сигнатуры
 
-		/// <summary>
-		/// Сигнатура заводского номера ФН в статусе
-		/// </summary>
-		public const string FNSerialSignature = "Заводской номер ФН: ";
-
-		/// <summary>
-		/// Сигнатура заводского номера ККТ в статусе
-		/// </summary>
-		public const string KKTSerialSignature = "Заводской номер ККТ: ";
-
-		/// <summary>
-		/// Сигнатура ИНН ОФД в статусе
-		/// </summary>
-		public const string OFDINNSignature = "ИНН ОФД: ";
-
-		/// <summary>
-		/// Сигнатура ИНН пользователя в статусе
-		/// </summary>
-		public const string UserINNSignature = "ИНН пользователя: ";
-
-		/// <summary>
-		/// Сигнатура регистрационного номера в статусе
-		/// </summary>
-		public const string RNMSignature = "Регистрационный номер ККТ: ";
-
-		/// <summary>
-		/// Сигнатура наименования пользователя в статусе
-		/// </summary>
-		public const string UserSignature = "Пользователь: ";
-
-		/// <summary>
-		/// Сигнатура адреса расчёта пользователя в статусе
-		/// </summary>
-		public const string UserAddressSignature = "Адрес расчёта: ";
-
-		/// <summary>
-		/// Сигнатура места расчёта пользователя в статусе
-		/// </summary>
-		public const string UserPlaceSignature = "Место расчёта: ";
-
-		/// <summary>
-		/// Сигнатура статуса ФН, запрошенного напрямую (не из файла)
-		/// </summary>
-		public const string StatusSignature = "Статус ФН";
 
 		/// <summary>
 		/// Сигнатура регистрации ФН (статус, запрошенный любым способом)
 		/// </summary>
-		public const string RegistrationSignature = "Регистрация";
+		public const string RegistrationSignature = "Регистрация";*/
+
+		/// <summary>
+		/// Метод получает значение критичного тега из последнего считанного статуса
+		/// </summary>
+		/// <param name="TagNumber">Номер тега из данных регистрации</param>
+		/// <returns>Возвращает значение или пустую строку, если статус не был запрошен,
+		/// или ФН не содержит регистраций</returns>
+		public static string GetCriticalTagValue (CriticalTags TagNumber)
+			{
+			// Попытка чтения
+			string file;
+			try
+				{
+				file = File.ReadAllText (statusesDirectory + "\\KassArrayStatus.fsr",
+					RDGenerics.GetEncoding (RDEncodings.CP1251));
+				}
+			catch
+				{
+				return "";
+				}
+
+			// Попытка извлечения
+			string signature = "[" + ((uint)TagNumber).ToString () + "] ";
+			int left;
+			switch (TagNumber)
+				{
+				case CriticalTags.FNSerialNumber:
+				case CriticalTags.KKTSerialNumber:
+				case CriticalTags.RegistrationNumber:
+				case CriticalTags.UserINN:
+					left = file.IndexOf (signature);
+					break;
+
+				default:
+					left = file.LastIndexOf (signature);
+					break;
+				}
+
+			if (left < 0)
+				return "";
+			left += signature.Length;
+
+			int right = file.IndexOf ('\n', left);
+			if (right < 0)
+				return "";
+
+			// Успешно
+			string res = file.Substring (left, right - left);
+			return res.Replace ("\r", "").Trim ();
+			}
 
 		/// <summary>
 		/// Метод формирует путь к файлу статуса, включая в него уникальный идентификатор
@@ -1308,6 +1571,17 @@ namespace RD_AAOW
 			// Формирование имени
 			return statusesDirectory + "\\" + (string.IsNullOrWhiteSpace (UID) ? "KassArrayStatus" : UID)
 				+ ".fss";
+			}
+
+		/// <summary>
+		/// Возвращает путь к сформированным файлам статусов
+		/// </summary>
+		public static string StatusesDirectory
+			{
+			get
+				{
+				return statusesDirectory;
+				}
 			}
 		private static string statusesDirectory = RDGenerics.AppStartupPath + "CachedStatuses";
 
@@ -1338,7 +1612,7 @@ namespace RD_AAOW
 			ObtainSearchCriteria (string ButtonName, string OldCriteria, string InputCaption, uint MaxInputLength)
 			{
 			string search;
-			string[] res = [ "", "" ];
+			string[] res = ["", ""];
 
 			if (ButtonName.Contains ("Next"))
 				{

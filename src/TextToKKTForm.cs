@@ -446,56 +446,100 @@ namespace RD_AAOW
 				}
 
 			// Разбор
-			int left, right;
+			/*int left, right;*/
 			string buttonName = ((Button)sender).Name;
-			string sig;
+			/*string sig;*/
 
 			// Раздел параметров ОФД
 			switch (buttonName)
 				{
 				case "OFDFromFNReader":
-					sig = KassArrayDB::RD_AAOW.KKTSupport.OFDINNSignature;
+					/*sig = KassArrayDB::RD_AAOW.KKTSupport.OFDINNSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						OFDINN.Text = status.Substring (left, right - left).Trim ();
 						LoadOFDParameters ();
-						}
+						}*/
+					OFDINN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.OFDINN);
+					if (!string.IsNullOrWhiteSpace (OFDINN.Text))
+						LoadOFDParameters ();
 
 					break;
 
 				// Раздел срока жизни ФН
 				case "FNFromFNReader":
-					sig = KassArrayDB::RD_AAOW.KKTSupport.FNSerialSignature;
+					/*sig = KassArrayDB::RD_AAOW.KKTSupport.FNSerialSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						AppSettings.FNSerial = status.Substring (left, right - left).Trim ();
-						}
-
-					sig = KassArrayDB::RD_AAOW.KKTSupport.RegistrationSignature;
-					if ((left = status.LastIndexOf (sig)) < 0)
+						}*/
+					AppSettings.FNSerial = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.FNSerialNumber);
+					if (string.IsNullOrWhiteSpace (AppSettings.FNSerial))
 						return;
 
-					if (status.IndexOf ("обложение: ОСН", left) >= 0)
+					/*sig = KassArrayDB::RD_AAOW.KKTSupport.RegistrationSignature;
+					if ((left = status.LastIndexOf (sig)) < 0)
+						return;*/
+
+					/*if (status.IndexOf ("обложение: ОСН", left) >= 0)*/
+					if (!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.GenericTaxFlag)))
 						GenericTaxFlag.Checked = true;
 					else
 						OtherTaxFlag.Checked = true;
 
-					if ((status.IndexOf ("применение во всех сферах", left) >= 0))
+					/*if ((status.IndexOf ("применение во всех сферах", left) >= 0))
+						GoodsFlag.Checked = true;
+					else
+						ServicesFlag.Checked = true;*/
+					if (string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.ServiceFlag)))
 						GoodsFlag.Checked = true;
 					else
 						ServicesFlag.Checked = true;
 
-					AutonomousFlag.Checked = (status.IndexOf ("автономная", left) >= 0);
-					ExciseFlag.Checked = (status.IndexOf ("а подакцизн", left) >= 0);
-					FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);
-					AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);
-					MarkGoodsFlag.Checked = (status.IndexOf ("а маркирован", left) >= 0);
-					PawnInsuranceFlag.Checked = (status.IndexOf ("ги ломбарда", left) >= 0);
-					GamblingLotteryFlag.Checked = (status.IndexOf ("ги страхования", left) >= 0);
+					/*AutonomousFlag.Checked = (status.IndexOf ("автономная", left) >= 0);*/
+					AutonomousFlag.Checked = !string.IsNullOrWhiteSpace
+						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.AutonomousFlag));
+
+					/*ExciseFlag.Checked = (status.IndexOf ("а подакцизн", left) >= 0);*/
+					ExciseFlag.Checked = !string.IsNullOrWhiteSpace
+						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.ExciseFlag));
+
+					/*FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);*/
+					FFD12Flag.Checked = (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.FFDVersion) == "1.2");
+
+					/*AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);*/
+					AgentsFlag.Checked = !string.IsNullOrWhiteSpace
+						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.AgentFlag));
+
+					/*MarkGoodsFlag.Checked = (status.IndexOf ("а маркирован", left) >= 0);
+					PawnInsuranceFlag.Checked = (status.IndexOf ("ги ломбарда", left) >= 0);*/
+					MarkGoodsFlag.Checked = !string.IsNullOrWhiteSpace
+						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.MarkingFlag));
+					PawnInsuranceFlag.Checked = !string.IsNullOrWhiteSpace
+						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.PawnFlag)) ||
+						!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.InsuranceFlag));
+
+					/*GamblingLotteryFlag.Checked = (status.IndexOf ("ги страхования", left) >= 0);*/
+					GamblingLotteryFlag.Checked = !string.IsNullOrWhiteSpace
+						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.GamblingFlag)) ||
+						!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.LotteryFlag));
 					// Дату и сезонный режим не запрашиваем
 
 					// Триггер поиска
@@ -505,29 +549,41 @@ namespace RD_AAOW
 
 				// Раздел контроля ЗН ККТ, РНМ и ИНН
 				case "RNMFromFNReader":
-					sig = KassArrayDB::RD_AAOW.KKTSupport.KKTSerialSignature;
+					/*sig = KassArrayDB::RD_AAOW.KKTSupport.KKTSerialSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						AppSettings.KKTSerial = status.Substring (left, right - left).Trim ();
-						}
+						}*/
+					AppSettings.KKTSerial = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.KKTSerialNumber);
+					if (string.IsNullOrWhiteSpace (AppSettings.KKTSerial))
+						return;
 
-					sig = KassArrayDB::RD_AAOW.KKTSupport.RNMSignature;
+					/*sig = KassArrayDB::RD_AAOW.KKTSupport.RNMSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						RNMValue.Text = status.Substring (left, right - left).Trim ();
-						}
+						}*/
+					RNMValue.Text = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.RegistrationNumber);
+					if (string.IsNullOrWhiteSpace (RNMValue.Text))
+						return;
 
-					sig = KassArrayDB::RD_AAOW.KKTSupport.UserINNSignature;
+					/*sig = KassArrayDB::RD_AAOW.KKTSupport.UserINNSignature;
 					if (((left = status.LastIndexOf (sig)) >= 0) &&
 						((right = status.IndexOf ('\n', left)) >= 0))
 						{
 						left += sig.Length;
 						RNMUserINN.Text = status.Substring (left, right - left).Trim ();
-						}
+						}*/
+					RNMUserINN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
+						(KassArrayDB::RD_AAOW.CriticalTags.UserINN);
+					if (string.IsNullOrWhiteSpace (RNMUserINN.Text))
+						return;
 
 					// Триггер поиска
 					RNMSerial_Search (ErrorFindNextButton, null);
