@@ -446,24 +446,14 @@ namespace RD_AAOW
 				}
 
 			// Разбор
-			/*int left, right;*/
 			string buttonName = ((Button)sender).Name;
-			/*string sig;*/
 
 			// Раздел параметров ОФД
 			switch (buttonName)
 				{
 				case "OFDFromFNReader":
-					/*sig = KassArrayDB::RD_AAOW.KKTSupport.OFDINNSignature;
-					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ('\n', left)) >= 0))
-						{
-						left += sig.Length;
-						OFDINN.Text = status.Substring (left, right - left).Trim ();
-						LoadOFDParameters ();
-						}*/
-					OFDINN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.OFDINN);
+					OFDINN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.OFDINN, true);
 					if (!string.IsNullOrWhiteSpace (OFDINN.Text))
 						LoadOFDParameters ();
 
@@ -471,75 +461,52 @@ namespace RD_AAOW
 
 				// Раздел срока жизни ФН
 				case "FNFromFNReader":
-					/*sig = KassArrayDB::RD_AAOW.KKTSupport.FNSerialSignature;
-					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ('\n', left)) >= 0))
-						{
-						left += sig.Length;
-						AppSettings.FNSerial = status.Substring (left, right - left).Trim ();
-						}*/
-					AppSettings.FNSerial = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.FNSerialNumber);
+					AppSettings.FNSerial = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.FNSerialNumber, true);
 					if (string.IsNullOrWhiteSpace (AppSettings.FNSerial))
 						return;
 
-					/*sig = KassArrayDB::RD_AAOW.KKTSupport.RegistrationSignature;
-					if ((left = status.LastIndexOf (sig)) < 0)
-						return;*/
-
-					/*if (status.IndexOf ("обложение: ОСН", left) >= 0)*/
-					if (!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.GenericTaxFlag)))
+					if (!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.GenericTaxFlag, false)))
 						GenericTaxFlag.Checked = true;
 					else
 						OtherTaxFlag.Checked = true;
 
-					/*if ((status.IndexOf ("применение во всех сферах", left) >= 0))
-						GoodsFlag.Checked = true;
-					else
-						ServicesFlag.Checked = true;*/
-					if (string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.ServiceFlag)))
+					if (string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.ServiceFlag, false)))
 						GoodsFlag.Checked = true;
 					else
 						ServicesFlag.Checked = true;
 
-					/*AutonomousFlag.Checked = (status.IndexOf ("автономная", left) >= 0);*/
 					AutonomousFlag.Checked = !string.IsNullOrWhiteSpace
-						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.AutonomousFlag));
+						(KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.AutonomousFlag, false));
 
-					/*ExciseFlag.Checked = (status.IndexOf ("а подакцизн", left) >= 0);*/
 					ExciseFlag.Checked = !string.IsNullOrWhiteSpace
-						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.ExciseFlag));
+						(KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.ExciseFlag, false));
 
-					/*FFD12Flag.Checked = (status.IndexOf ("ФФД: 1.2", left) >= 0);*/
-					FFD12Flag.Checked = (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.FFDVersion) == "1.2");
+					FFD12Flag.Checked = (KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.FFDVersion, false) == "1.2");
 
-					/*AgentsFlag.Checked = (status.IndexOf ("А: признак", left) >= 0);*/
 					AgentsFlag.Checked = !string.IsNullOrWhiteSpace
-						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.AgentFlag));
+						(KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.AgentFlag, false));
 
-					/*MarkGoodsFlag.Checked = (status.IndexOf ("а маркирован", left) >= 0);
-					PawnInsuranceFlag.Checked = (status.IndexOf ("ги ломбарда", left) >= 0);*/
 					MarkGoodsFlag.Checked = !string.IsNullOrWhiteSpace
-						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.MarkingFlag));
+						(KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.MarkingFlag, false));
 					PawnInsuranceFlag.Checked = !string.IsNullOrWhiteSpace
-						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.PawnFlag)) ||
-						!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.InsuranceFlag));
+						(KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.PawnFlag, false)) ||
+						!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.InsuranceFlag, false));
 
-					/*GamblingLotteryFlag.Checked = (status.IndexOf ("ги страхования", left) >= 0);*/
 					GamblingLotteryFlag.Checked = !string.IsNullOrWhiteSpace
-						(KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.GamblingFlag)) ||
-						!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.LotteryFlag));
+						(KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.GamblingFlag, false)) ||
+						!string.IsNullOrWhiteSpace (KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.LotteryFlag, false));
 					// Дату и сезонный режим не запрашиваем
 
 					// Триггер поиска
@@ -549,39 +516,18 @@ namespace RD_AAOW
 
 				// Раздел контроля ЗН ККТ, РНМ и ИНН
 				case "RNMFromFNReader":
-					/*sig = KassArrayDB::RD_AAOW.KKTSupport.KKTSerialSignature;
-					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ('\n', left)) >= 0))
-						{
-						left += sig.Length;
-						AppSettings.KKTSerial = status.Substring (left, right - left).Trim ();
-						}*/
-					AppSettings.KKTSerial = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.KKTSerialNumber);
+					AppSettings.KKTSerial = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.KKTSerialNumber, true);
 					if (string.IsNullOrWhiteSpace (AppSettings.KKTSerial))
 						return;
 
-					/*sig = KassArrayDB::RD_AAOW.KKTSupport.RNMSignature;
-					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ('\n', left)) >= 0))
-						{
-						left += sig.Length;
-						RNMValue.Text = status.Substring (left, right - left).Trim ();
-						}*/
-					RNMValue.Text = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.RegistrationNumber);
+					RNMValue.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.RegistrationNumber, false);
 					if (string.IsNullOrWhiteSpace (RNMValue.Text))
 						return;
 
-					/*sig = KassArrayDB::RD_AAOW.KKTSupport.UserINNSignature;
-					if (((left = status.LastIndexOf (sig)) >= 0) &&
-						((right = status.IndexOf ('\n', left)) >= 0))
-						{
-						left += sig.Length;
-						RNMUserINN.Text = status.Substring (left, right - left).Trim ();
-						}*/
-					RNMUserINN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetCriticalTagValue
-						(KassArrayDB::RD_AAOW.CriticalTags.UserINN);
+					RNMUserINN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+						(KassArrayDB::RD_AAOW.RegTags.UserINN, false);
 					if (string.IsNullOrWhiteSpace (RNMUserINN.Text))
 						return;
 

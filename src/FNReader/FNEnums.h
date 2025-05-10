@@ -184,7 +184,7 @@ enum TLVTags
 	GoodName = 0x0406,
 
 	// Сумма наличными (1031)
-	RealCashValue = 0x0407,
+	CashPaymentValue = 0x0407,
 
 	// Номер автомата (терминала) (1036)
 	TerminalNumber = 0x040C,
@@ -263,7 +263,7 @@ enum TLVTags
 	ItemCost = 0x0437,
 
 	// Сумма безналичными (1081)
-	ElectronicCashValue = 0x0439,
+	ElectronicPaymentValue = 0x0439,
 
 	// Дополнительный реквизит пользователя (1084)
 	ExtraUserTag = 0x043C,
@@ -445,13 +445,13 @@ enum TLVTags
 	ResultMethod = 0x04BE,
 
 	// Сумма предоплатой / авансом (1215)
-	PrepaidCashValue = 0x04BF,
+	PrepaidPaymentValue = 0x04BF,
 
 	// Сумма постоплатой / кредитом (1216)
-	PostpaidCashValue = 0x04C0,
+	PostpaidPaymentValue = 0x04C0,
 
 	// Сумма иной оплатой (1217)
-	OtherCashValue = 0x04C1,
+	OtherPaymentValue = 0x04C1,
 
 	// Итоговая сумма авансом, кредитом и иными способами (1218 - 1220)
 	TotalsSummaPrepaid = 0x04C2,

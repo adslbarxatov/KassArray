@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
+
 
 #if ANDROID
 	using Android.Graphics;
@@ -8,9 +10,9 @@ using System.IO;
 	using Android.Print.Pdf;
 	using Android.Runtime;
 #else
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
+	using System.Drawing;
+	using System.Drawing.Printing;
+	using System.Windows.Forms;
 #endif
 
 namespace RD_AAOW
@@ -168,9 +170,9 @@ namespace RD_AAOW
 		}
 
 	/// <summary>
-	/// Доступные критичные теги из статуса ФН
+	/// Доступные теги регистрации из статуса ФН
 	/// </summary>
-	public enum CriticalTags
+	public enum RegTags
 		{
 		/// <summary>
 		/// Адрес расчётов
@@ -266,6 +268,162 @@ namespace RD_AAOW
 		/// Псевдотег – признак наличия агентской схемы
 		/// </summary>
 		AgentFlag = 9010,
+		}
+
+	/// <summary>
+	/// Доступные теги чеков из статуса ФН
+	/// </summary>
+	public enum ReceiptTags
+		{
+		/// <summary>
+		/// Тип коррекции
+		/// </summary>
+		CorrectionType = 1173,
+
+		/// <summary>
+		/// Дата коррекции
+		/// </summary>
+		CorrectionDate = 1178,
+
+		/// <summary>
+		/// Основание коррекции
+		/// </summary>
+		CorrectionOrder = 1179,
+
+		/// <summary>
+		/// Наименование предмета расчёта
+		/// </summary>
+		GoodName = 1030,
+
+		/// <summary>
+		/// Ограничитель описаний предметов расчёта
+		/// </summary>
+		GoodDelimiter = 1059,
+
+		/// <summary>
+		/// Единица измерения предмета расчёта
+		/// </summary>
+		UnitNameMark = 2108,
+
+		/// <summary>
+		/// Количество предмета расчёта
+		/// </summary>
+		GoodsCount = 1023,
+
+		/// <summary>
+		/// Цена единицы предмета расчёта
+		/// </summary>
+		ItemCost = 1079,
+
+		/// <summary>
+		/// Стоимость предмета расчёта
+		/// </summary>
+		ItemResult = 1043,
+
+		/// <summary>
+		/// Признак предмета расчёта
+		/// </summary>
+		ResultObject = 1212,
+
+		/// <summary>
+		/// Признак способа расчёта
+		/// </summary>
+		ResultMethod = 1214,
+
+		/// <summary>
+		/// Ставка НДС
+		/// </summary>
+		NDS = 1199,
+
+		/// <summary>
+		/// Сумма наличными
+		/// </summary>
+		CashPaymentValue = 1031,
+
+		/// <summary>
+		/// Сумма безналичными
+		/// </summary>
+		ElectronicPaymentValue = 1081,
+
+		/// <summary>
+		/// Сумма авансом
+		/// </summary>
+		PrepaidPaymentValue = 1215,
+
+		/// <summary>
+		/// Сумма кредитом
+		/// </summary>
+		PostpaidPaymentValue = 1216,
+
+		/// <summary>
+		/// Сумма встречным предоставлением
+		/// </summary>
+		OtherPaymentValue = 1217,
+
+		/// <summary>
+		/// Сумма НДС 20%
+		/// </summary>
+		DocumentSummaNDS20 = 1102,
+
+		/// <summary>
+		/// Сумма НДС 10%
+		/// </summary>
+		DocumentSummaNDS10 = 1103,
+
+		/// <summary>
+		/// Сумма НДС 20/120
+		/// </summary>
+		DocumentSummaNDS120 = 1106,
+
+		/// <summary>
+		/// Сумма НДС 10/110
+		/// </summary>
+		DocumentSummaNDS110 = 1107,
+
+		/// <summary>
+		/// Сумма НДС 0%
+		/// </summary>
+		DocumentSummaNDS0 = 1104,
+
+		/// <summary>
+		/// Сумма без НДС
+		/// </summary>
+		DocumentSummaNoNDS = 1105,
+
+		/// <summary>
+		/// Псевдотег – сумма НДС 5%
+		/// </summary>
+		DocumentSummaNDS5 = 9101,
+
+		/// <summary>
+		/// Псевдотег – сумма НДС 7%
+		/// </summary>
+		DocumentSummaNDS7 = 9102,
+
+		/// <summary>
+		/// Псевдотег – сумма НДС 5/105
+		/// </summary>
+		DocumentSummaNDS105 = 9103,
+
+		/// <summary>
+		/// Псевдотег – сумма НДС 7/107
+		/// </summary>
+		DocumentSummaNDS107 = 9104,
+
+		/// <summary>
+		/// Номер смены
+		/// </summary>
+		SessionNumber = 1038,
+
+		/// <summary>
+		/// Номер документа за смену
+		/// </summary>
+		InSessionDocumentNumber = 1042,
+
+		/// <summary>
+		/// ФИО и должность кассира
+		/// </summary>
+		CashierName = 1021,
 		}
 
 	/// <summary>
@@ -1377,10 +1535,10 @@ namespace RD_AAOW
 				else
 					s = line;
 
-				// Плохо – привязанные константы
-				if (receipt && s.StartsWith ("СУММА"))
+				if (receipt && s.StartsWith ('\x1'))
 					{
 					Font f = new Font (printFont.FontFamily, printFont.Size * 2, printFont.Style);
+					s = s.Substring (1);
 					ev.Graphics.DrawString (s, f, printBrush, leftMargin, yPos, new StringFormat ());
 					f.Dispose ();
 					count++;
@@ -1491,27 +1649,22 @@ namespace RD_AAOW
 		/// </summary>
 		public const string OverrideCloseButtonPar = "OCB";
 
-		/*// Общие сигнатуры
-
-
 		/// <summary>
-		/// Сигнатура регистрации ФН (статус, запрошенный любым способом)
+		/// Метод получает значение тега регистрации из последнего считанного статуса
 		/// </summary>
-		public const string RegistrationSignature = "Регистрация";*/
-
-		/// <summary>
-		/// Метод получает значение критичного тега из последнего считанного статуса
-		/// </summary>
-		/// <param name="TagNumber">Номер тега из данных регистрации</param>
+		/// <param name="TagNumber">Номер тега</param>
+		/// <param name="Initial">Первичная загрузка данных текущего чека</param>
 		/// <returns>Возвращает значение или пустую строку, если статус не был запрошен,
 		/// или ФН не содержит регистраций</returns>
-		public static string GetCriticalTagValue (CriticalTags TagNumber)
+		public static string GetRegTagValue (RegTags TagNumber, bool Initial)
 			{
 			// Попытка чтения
-			string file;
+			if (!Initial)
+				goto skipRegFile;
+
 			try
 				{
-				file = File.ReadAllText (statusesDirectory + "\\KassArrayStatus.fsr",
+				regTagsFile = File.ReadAllText (statusesDirectory + "\\Registration.fsr",
 					RDGenerics.GetEncoding (RDEncodings.CP1251));
 				}
 			catch
@@ -1520,19 +1673,20 @@ namespace RD_AAOW
 				}
 
 			// Попытка извлечения
+			skipRegFile:
 			string signature = "[" + ((uint)TagNumber).ToString () + "] ";
 			int left;
 			switch (TagNumber)
 				{
-				case CriticalTags.FNSerialNumber:
-				case CriticalTags.KKTSerialNumber:
-				case CriticalTags.RegistrationNumber:
-				case CriticalTags.UserINN:
-					left = file.IndexOf (signature);
+				case RegTags.FNSerialNumber:
+				case RegTags.KKTSerialNumber:
+				case RegTags.RegistrationNumber:
+				case RegTags.UserINN:
+					left = regTagsFile.IndexOf (signature);
 					break;
 
 				default:
-					left = file.LastIndexOf (signature);
+					left = regTagsFile.LastIndexOf (signature);
 					break;
 				}
 
@@ -1540,13 +1694,143 @@ namespace RD_AAOW
 				return "";
 			left += signature.Length;
 
-			int right = file.IndexOf ('\n', left);
+			int right = regTagsFile.IndexOf (RDLocale.RN, left);
 			if (right < 0)
 				return "";
 
 			// Успешно
-			string res = file.Substring (left, right - left);
-			return res.Replace ("\r", "").Trim ();
+			string res = regTagsFile.Substring (left, right - left);
+			return res./*Replace ("\r", "").*/Trim ();
+			}
+		private static string regTagsFile;
+
+		/// <summary>
+		/// Метод получает первое значение тега чека из последнего считанного документа
+		/// </summary>
+		/// <param name="TagNumber">Номер тега</param>
+		/// <returns>Возвращает значение или пустую строку, если чек не был запрошен</returns>
+		public static string GetReceiptTagValue (ReceiptTags TagNumber)
+			{
+			string[] values = GetReceiptTagValues (TagNumber, false);
+			if (values.Length < 1)
+				return "";
+
+			return values[0];
+			}
+
+		/// <summary>
+		/// Метод получает список значений тега чека из последнего считанного документа
+		/// </summary>
+		/// <param name="TagNumber">Номер тега</param>
+		/// <returns>Возвращает список значений или пустой массив, если чек не был запрошен</returns>
+		public static string[] GetReceiptTagValues (ReceiptTags TagNumber)
+			{
+			return GetReceiptTagValues (TagNumber, false);
+			}
+
+		private static string[] GetReceiptTagValues (ReceiptTags TagNumber, bool Initial)
+			{
+			// Попытка чтения
+			if (!Initial)
+				goto findTag;
+
+			receiptTags.Clear ();
+			receiptTagsValues.Clear ();
+			receiptOffsets.Clear ();
+
+			string file;
+			try
+				{
+				file = File.ReadAllText (statusesDirectory + "\\Receipt.fsr",
+					RDGenerics.GetEncoding (RDEncodings.CP1251));
+				}
+			catch
+				{
+				return [];
+				}
+
+			// Извлечение полного состава тегов
+			string[] values = file.Split (['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+			for (int i = 0; i < values.Length; i++)
+				{
+				if (values[i].Length < 8)
+					continue;
+
+				uint v;
+				try
+					{
+					v = uint.Parse (values[i].Substring (1, 4));
+					}
+				catch
+					{
+					continue;
+					}
+
+				receiptTags.Add ((ReceiptTags)v);
+				receiptTagsValues.Add (values[i].Substring (7).Trim ());
+				if ((ReceiptTags)v == ReceiptTags.GoodDelimiter)
+					receiptOffsets.Add (i);
+				}
+
+			// Определение типа целевого тега
+			findTag:
+			bool multiple;
+			switch (TagNumber)
+				{
+				case ReceiptTags.GoodsCount:
+				case ReceiptTags.GoodName:
+				case ReceiptTags.ItemCost:
+				case ReceiptTags.ItemResult:
+				case ReceiptTags.NDS:
+				case ReceiptTags.ResultMethod:
+				case ReceiptTags.ResultObject:
+				case ReceiptTags.UnitNameMark:
+					multiple = true;
+					break;
+
+				default:
+					multiple = false;
+					break;
+				}
+
+			// Одиночные теги
+			int idx;
+			if (!multiple)
+				{
+				idx = receiptTags.IndexOf (TagNumber);
+				if (idx < 0)
+					return [];
+
+				return [receiptTagsValues[idx]];
+				}
+
+			// Множественные теги
+			List<string> res = [];
+			for (int i = 0; i < receiptOffsets.Count; i += 2)
+				{
+				idx = receiptTags.IndexOf (TagNumber, receiptOffsets[i], receiptOffsets[i + 1] - receiptOffsets[i]);
+				if (idx < 0)
+					res.Add ("");
+				else
+					res.Add (receiptTagsValues[idx]);
+				}
+
+			return res.ToArray ();
+			}
+		private static List<ReceiptTags> receiptTags = [];
+		private static List<string> receiptTagsValues = [];
+		private static List<int> receiptOffsets = [];
+
+		/// <summary>
+		/// Возвращает количество предметов расчёта в последнем считанном чеке
+		/// </summary>
+		public static uint ObjectsCountInReceipt
+			{
+			get
+				{
+				_ = GetReceiptTagValues (ReceiptTags.GoodDelimiter, true);
+				return (uint)receiptOffsets.Count / 2;
+				}
 			}
 
 		/// <summary>
