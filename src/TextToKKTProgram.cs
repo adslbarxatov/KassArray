@@ -32,9 +32,9 @@ namespace RD_AAOW
 			if (!RDGenerics.AppHasAccessRights (true, false))
 				return;
 
-			if (!RDGenerics.StartedFromMSStore &&
+			/*if (!RDGenerics.StartedFromMSStore &&
 				!RDGenerics.CheckLibrariesExistence (ProgramDescription.AssemblyLibraries, true))
-				return;
+				return;*/
 
 			// Отображение справки и запроса на принятие Политики
 			if (!RDInterface.AcceptEULA ())

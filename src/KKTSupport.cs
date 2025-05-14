@@ -1255,7 +1255,7 @@ namespace RD_AAOW
 				txt = txt.Replace ("\r", "");
 
 				// Расчёт примерной длины страницы (A4 или менее)
-				string chk = txt.Replace ("\n", "");
+				string chk = txt.Replace ("\n", "").Replace ("\x1", "");
 				pageLength = 14 * (txt.Length - chk.Length + 2);
 				// +1 - линия отреза
 				// ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
@@ -1320,79 +1320,6 @@ namespace RD_AAOW
 		public static string PrintText (string TextForPrinting, PrinterTypes PrinterType)
 			{
 			return PrintReceipt (TextForPrinting, null, PrinterType);
-
-			/*// Контроль
-			if (string.IsNullOrWhiteSpace (TextForPrinting))
-				return "No text specified";
-
-			string txt = TextForPrinting;
-			internalPrinterType = PrinterType;
-			pageNumber = 0;
-			qrCodeData = null;
-
-			// Удаление отступов (только для чековой ленты)
-			int pageLength = 0;
-			if (!IsA4)
-				{
-				while (txt.Contains ("\n "))
-					txt = txt.Replace ("\n ", "\n");
-				txt = txt.Replace ("\r", "");
-
-				// Расчёт примерной длины страницы (A4 или менее)
-				string chk = txt.Replace ("\n", "");
-				pageLength = 14 * (txt.Length - chk.Length + 2);
-				// +1 - линия отреза
-				// ~0,4 см на строку (* 3 / 10), в сотых дюйма (* 10000 / 254)
-
-				if (pageLength > 1170)  // ~300000 / 254, А4
-					pageLength = 1170;
-				}
-
-			// Создание потока и запуск диалога
-			printStream = new StringReader (txt);
-
-			PrintDocument pd = new PrintDocument ();
-			pd.PrintPage += new PrintPageEventHandler (PrintPage);
-
-			// Размер бумаги (считается в сотых долях дюйма)
-			switch (internalPrinterType)
-				{
-				case PrinterTypes.Receipt57mm:
-				case PrinterTypes.Receipt57mmThin:
-					pd.DefaultPageSettings.PaperSize = new PaperSize ("Receipt57", 225, pageLength);    // 57000 / 254
-					break;
-
-				case PrinterTypes.Receipt80mm:
-				case PrinterTypes.Receipt80mmThin:
-					pd.DefaultPageSettings.PaperSize = new PaperSize ("Receipt80", 315, pageLength);    // 80000 / 254
-					break;
-				}
-
-			PrintDialog spd = new PrintDialog ();
-			spd.AllowCurrentPage = spd.AllowPrintToFile = spd.AllowSelection = spd.AllowSomePages = false;
-			spd.PrintToFile = spd.ShowHelp = false;
-			spd.ShowNetwork = true;
-			spd.UseEXDialog = true;
-			spd.Document = pd;
-
-			if (spd.ShowDialog () == DialogResult.OK)
-				{
-				try
-					{
-					pd.PrinterSettings = spd.PrinterSettings;
-					pd.Print ();
-					}
-				catch (Exception ex)
-					{
-					return ex.Message;
-					}
-				}
-
-			// Успешно
-			printStream.Close ();
-			pd.Dispose ();
-			txt = null;
-			return null;*/
 			}
 
 		/// <summary>
@@ -1608,8 +1535,7 @@ namespace RD_AAOW
 		/// <param name="Flags">Флаги формирования руководства</param>
 		/// <param name="Sections">Список разрешённых секций руководства пользователя</param>
 		/// <returns>Возвращает инструкцию пользователя</returns>
-		public static string BuildUserGuide (UserGuides Guides, uint GuideNumber, uint Sections,
-			UserGuidesFlags Flags)
+		public static string BuildUserGuide (UserGuides Guides, uint GuideNumber, uint Sections, UserGuidesFlags Flags)
 			{
 			bool forCashier = Flags.HasFlag (UserGuidesFlags.GuideForCashier);
 #if !ANDROID
@@ -1700,7 +1626,7 @@ namespace RD_AAOW
 
 			// Успешно
 			string res = regTagsFile.Substring (left, right - left);
-			return res./*Replace ("\r", "").*/Trim ();
+			return res.Trim ();
 			}
 		private static string regTagsFile;
 

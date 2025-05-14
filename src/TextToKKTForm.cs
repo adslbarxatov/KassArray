@@ -74,12 +74,12 @@ namespace RD_AAOW
 				ewhIsActive = false;
 				}
 
-			if (!RDGenerics.CheckLibraryVersion (ProgramDescription.AssemblyLibraries[0][0],
+			/*if (!RDGenerics.CheckLibraryVersion (ProgramDescription.AssemblyLibraries[0][0],
 				ProgramDescription.AssemblyLibraries[0][1]))
 				{
 				closeWindowOnError = true;
 				return;
-				}
+				}*/
 
 			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
 
