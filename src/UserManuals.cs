@@ -343,6 +343,9 @@ namespace RD_AAOW
 					}
 				}
 
+			if ((GuideType == UserGuidesTypes.SessionOpen) || (GuideType == UserGuidesTypes.SellWithQuantity))
+				text = text.Replace ("#07", goods ? "товара" : "услуги");
+
 			if (GuideType <= UserGuidesTypes.SellWithQuantity)
 				{
 				if (Flags.HasFlag (UserGuidesFlags.BaseContainsSingleItem))
