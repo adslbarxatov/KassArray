@@ -268,6 +268,11 @@ namespace RD_AAOW
 		/// Псевдотег – признак наличия агентской схемы
 		/// </summary>
 		AgentFlag = 9010,
+
+		/// <summary>
+		/// Заводской номер автомата
+		/// </summary>
+		AutomatSerial = 1036,
 		}
 
 	/// <summary>
@@ -424,6 +429,11 @@ namespace RD_AAOW
 		/// ФИО и должность кассира
 		/// </summary>
 		CashierName = 1021,
+
+		/// <summary>
+		/// СНО чека
+		/// </summary>
+		ReceiptTax = 1055,
 		}
 
 	/// <summary>
@@ -1322,21 +1332,7 @@ namespace RD_AAOW
 			return PrintReceipt (TextForPrinting, null, PrinterType);
 			}
 
-		/// <summary>
-		/// Возвращает имя файла логотипа для добавления в руководство пользователя
-		/// </summary>
-		public const string ManualLogoFileName = "ManualLogo.p";
-
-		// Обработчик событий принтера
-		private static bool IsA4
-			{
-			get
-				{
-				return ((internalPrinterType == PrinterTypes.DefaultA4) ||
-					(internalPrinterType == PrinterTypes.ManualA4));
-				}
-			}
-
+		// Непосредственная отрисовка страницы при печати
 		private static void PrintPage (object sender, PrintPageEventArgs ev)
 			{
 			// Инициализация
@@ -1355,7 +1351,7 @@ namespace RD_AAOW
 					if (receipt)
 						{
 						printFont = new Font (fontConsolas, 80 * 6.0f / 57, FontStyle.Bold);
-						charactersPerLine = receiptLineLength;
+						charactersPerLine = ReceiptLineLength;
 						}
 					else
 						{
@@ -1379,7 +1375,7 @@ namespace RD_AAOW
 					if (receipt)
 						{
 						printFont = new Font (fontConsolas, 80 * 6.0f / 57, bold80 ? FontStyle.Bold : FontStyle.Regular);
-						charactersPerLine = receiptLineLength;
+						charactersPerLine = ReceiptLineLength;
 						}
 					else
 						{
@@ -1396,7 +1392,7 @@ namespace RD_AAOW
 					if (receipt)
 						{
 						printFont = new Font (fontConsolas, 6.0f, bold57 ? FontStyle.Bold : FontStyle.Regular);
-						charactersPerLine = receiptLineLength;
+						charactersPerLine = ReceiptLineLength;
 						}
 					else
 						{
@@ -1500,7 +1496,7 @@ namespace RD_AAOW
 
 				SizeF qrLeftOffset = ev.Graphics.MeasureString ("A".PadLeft (24, 'A'), printFont);
 				float qrLeft = qrLeftOffset.Width + leftMargin;
-				float qrTop = topMargin + ((count - 8) * printFont.GetHeight (ev.Graphics));
+				float qrTop = topMargin + ((count - 9) * printFont.GetHeight (ev.Graphics));
 
 				// Отрисовка
 				for (int r = 0; r < qrCodeData.Length; r++)
@@ -1518,10 +1514,28 @@ namespace RD_AAOW
 			ev.HasMorePages = line != null;
 			}
 
+		/// <summary>
+		/// Возвращает имя файла логотипа для добавления в руководство пользователя
+		/// </summary>
+		public const string ManualLogoFileName = "ManualLogo.p";
+
+		// Обработчик событий принтера
+		private static bool IsA4
+			{
+			get
+				{
+				return ((internalPrinterType == PrinterTypes.DefaultA4) ||
+					(internalPrinterType == PrinterTypes.ManualA4));
+				}
+			}
+
 		private const string fontCourier = "Courier New";
 		private const string fontConsolas = "Consolas";
-		private const int receiptLineLength = 42;
 
+		/// <summary>
+		/// Возвращает ширину печатной формы чеков в символах
+		/// </summary>
+		public const int ReceiptLineLength = 42;
 
 #endif
 
@@ -1576,6 +1590,17 @@ namespace RD_AAOW
 		public const string OverrideCloseButtonPar = "OCB";
 
 		/// <summary>
+		/// Возвращает путь к промежуточному файлу регистрационных тегов
+		/// </summary>
+		public static string RegistrationTagsFileName
+			{
+			get
+				{
+				return statusesDirectory + "\\Registration.fsr";
+				}
+			}
+
+		/// <summary>
 		/// Метод получает значение тега регистрации из последнего считанного статуса
 		/// </summary>
 		/// <param name="TagNumber">Номер тега</param>
@@ -1590,7 +1615,7 @@ namespace RD_AAOW
 
 			try
 				{
-				regTagsFile = File.ReadAllText (statusesDirectory + "\\Registration.fsr",
+				regTagsFile = File.ReadAllText (RegistrationTagsFileName,
 					RDGenerics.GetEncoding (RDEncodings.CP1251));
 				}
 			catch
@@ -1631,6 +1656,17 @@ namespace RD_AAOW
 		private static string regTagsFile;
 
 		/// <summary>
+		/// Возвращает путь к промежуточному файлу тегов чека
+		/// </summary>
+		public static string ReceiptTagsFileName
+			{
+			get
+				{
+				return statusesDirectory + "\\Receipt.fsr";
+				}
+			}
+
+		/// <summary>
 		/// Метод получает первое значение тега чека из последнего считанного документа
 		/// </summary>
 		/// <param name="TagNumber">Номер тега</param>
@@ -1642,6 +1678,17 @@ namespace RD_AAOW
 				return "";
 
 			return values[0];
+			}
+
+		/// <summary>
+		/// Возвращает путь к промежуточному файлу тегов, заменяемых при формировании печатной формы
+		/// </summary>
+		public static string ReplacementsTagsFileName
+			{
+			get
+				{
+				return statusesDirectory + "\\Replacements.fsr";
+				}
 			}
 
 		/// <summary>
@@ -1667,8 +1714,7 @@ namespace RD_AAOW
 			string file;
 			try
 				{
-				file = File.ReadAllText (statusesDirectory + "\\Receipt.fsr",
-					RDGenerics.GetEncoding (RDEncodings.CP1251));
+				file = File.ReadAllText (ReceiptTagsFileName, RDGenerics.GetEncoding (RDEncodings.CP1251));
 				}
 			catch
 				{
