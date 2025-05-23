@@ -74,12 +74,11 @@ namespace RD_AAOW
 				ewhIsActive = false;
 				}
 
-			/*if (!RDGenerics.CheckLibraryVersion (ProgramDescription.AssemblyLibraries[0][0],
-				ProgramDescription.AssemblyLibraries[0][1]))
+			if (!RDGenerics.CheckLibrariesVersions (ProgramDescription.AssemblyLibraries, true))
 				{
 				closeWindowOnError = true;
 				return;
-				}*/
+				}
 
 			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
 
@@ -866,13 +865,12 @@ namespace RD_AAOW
 
 			if (search[1] == "C")
 				return;
+			AppSettings.KKTSerial = search[0];
 
 			// Подмена названия сигнатурой ЗН
 			string sig = kb.KKTNumbers.FindSignatureByName (search[0]);
 			if (!string.IsNullOrWhiteSpace (sig))
 				search[0] = sig;
-
-			AppSettings.KKTSerial = search[0];
 
 			// Заводской номер ККТ
 			if (!string.IsNullOrWhiteSpace (search[0]))

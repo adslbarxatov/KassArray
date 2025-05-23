@@ -5,6 +5,93 @@ using System.IO;
 namespace RD_AAOW
 	{
 	/// <summary>
+	/// Флаги особенностей моделей ККТ
+	/// </summary>
+	public enum KKTSerialFlags
+		{
+		/// <summary>
+		/// Точно известный ЗН
+		/// </summary>
+		SerialIsKnown = 0x01,
+
+		/// <summary>
+		/// Модель имеет то же название в реестре, но сигнатура ЗН и реализация отличаются
+		/// </summary>
+		DifferentImplementations = 0x02,
+
+		/// <summary>
+		/// Модель изменила название (отсутствует в реестре, но технически не исключена из него)
+		/// </summary>
+		NameChanged = 0x04,
+
+		/// <summary>
+		/// Для модели неизвестна сигнатура ЗН
+		/// </summary>
+		UnknownSignature = 0x08,
+
+		/// <summary>
+		/// Модель исключена из реестра
+		/// </summary>
+		RemovedFromRegistry = 0x10,
+		}
+
+	/// <summary>
+	/// Доступные статусы поддержки ФФД
+	/// </summary>
+	public enum FFDSupportStates
+		{
+		/// <summary>
+		/// Статус не задан
+		/// </summary>
+		None = 0x0000,
+
+		/// <summary>
+		/// ФФД 1.05 поддерживается
+		/// </summary>
+		Supported105 = 0x0001,
+
+		/// <summary>
+		/// ФФД 1.1 поддерживается
+		/// </summary>
+		Supported11 = 0x0002,
+
+		/// <summary>
+		/// ФФД 1.2 поддерживается
+		/// </summary>
+		Supported12 = 0x0004,
+
+		/// <summary>
+		/// ФФД 1.05 не поддерживается
+		/// </summary>
+		Unsupported105 = 0x0010,
+
+		/// <summary>
+		/// ФФД 1.1 не поддерживается
+		/// </summary>
+		Unsupported11 = 0x0020,
+
+		/// <summary>
+		/// ФФД 1.2 не поддерживается
+		/// </summary>
+		Unsupported12 = 0x0040,
+
+		/// <summary>
+		/// ФФД 1.05 планируется
+		/// </summary>
+		Planned105 = 0x0100,
+
+		/// <summary>
+		/// ФФД 1.1 планируется
+		/// </summary>
+		Planned11 = 0x0200,
+
+		/// <summary>
+		/// ФФД 1.2 планируется
+		/// </summary>
+		Planned12 = 0x0400,
+		}
+
+	/// <summary>
 	/// Класс предоставляет сведения о моделях ККТ
 	/// </summary>
 	public class KKTSerial
@@ -15,15 +102,17 @@ namespace RD_AAOW
 		private List<string> serialSamples = [];
 		private List<uint> serialOffsets = [];
 		private List<FFDSupportStates> ffdSupport = [];
-		private List<bool> serialConfirmed = [];
+		private List<KKTSerialFlags> serialFlags = [];
 
 		private List<string> regions = [];
 
 		private uint[] registryStats = [
 			0,	// Всего
 			0, 0, 0,	// Поддержка ФФД
+			0,	// Известные сигнатуры
 			0,	// Точно известные сигнатуры
-			3,	// Модели с одинаковыми названиями и разными реализациями (в файле помечены буквой Р)
+			0,	// Исключены из реестра
+			/*3,	// Модели с одинаковыми названиями и разными реализациями (в файле помечены буквой Р)*/
 			];
 
 		/// <summary>
@@ -50,9 +139,15 @@ namespace RD_AAOW
 				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 				// Защита
-				if (values.Length < 2)
+				if (values.Length < 3)
 					continue;
-				registryStats[0]++;
+
+				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[2], RDGenerics.HexNumberStyle);
+				serialFlags.Add (flags);
+
+				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations) &&
+					!flags.HasFlag (KKTSerialFlags.NameChanged))
+					registryStats[0]++;
 
 				FFDSupportStates state = FFDSupportStates.None;
 				for (int i = 0; i < ffdNames.Length; i++)
@@ -61,7 +156,10 @@ namespace RD_AAOW
 						{
 						case '1':
 							state |= (FFDSupportStates)(1 << i);
-							registryStats[1 + i]++;
+
+							if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations) &&
+								!flags.HasFlag (KKTSerialFlags.NameChanged))
+								registryStats[1 + i]++;
 							break;
 
 						case '0':
@@ -74,21 +172,34 @@ namespace RD_AAOW
 						}
 					}
 
-				// Протокол
+				/*// Протокол
 				if (values.Length < 6)
-					continue;
+					continue;*/
 
 				// Список команд
 				names.Add (values[0]);
-				serialLengths.Add (uint.Parse (values[3]));
-				if (maxSNLength < serialLengths[serialLengths.Count - 1])
-					maxSNLength = serialLengths[serialLengths.Count - 1];
 
-				serialSamples.Add (values[4]);
-				serialOffsets.Add (uint.Parse (values[5]));
+				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) &&
+					!flags.HasFlag (KKTSerialFlags.NameChanged))
+					{
+					serialLengths.Add (uint.Parse (values[3]));
+					if (maxSNLength < serialLengths[serialLengths.Count - 1])
+						maxSNLength = serialLengths[serialLengths.Count - 1];
+
+					serialSamples.Add (values[4]);
+					serialOffsets.Add (uint.Parse (values[5]));
+
+					registryStats[1 + ffdNames.Length]++;
+					}
+				else
+					{
+					serialLengths.Add (0);
+					serialSamples.Add ("\x1");
+					serialOffsets.Add (0);
+					}
 				ffdSupport.Add (state);
 
-				if (values[2] == "1")
+				/*if ((flags & 0x01) != 0)
 					{
 					serialConfirmed.Add (true);
 					registryStats[1 + ffdNames.Length]++;
@@ -96,7 +207,12 @@ namespace RD_AAOW
 				else
 					{
 					serialConfirmed.Add (false);
-					}
+					}*/
+				if (flags.HasFlag (KKTSerialFlags.SerialIsKnown) &&
+					!flags.HasFlag (KKTSerialFlags.NameChanged))
+					registryStats[2 + ffdNames.Length]++;
+				if (flags.HasFlag (KKTSerialFlags.RemovedFromRegistry))
+					registryStats[3 + ffdNames.Length]++;
 				}
 
 			// Завершено
@@ -160,74 +276,21 @@ namespace RD_AAOW
 			if (i < 0)
 				return "неизвестная модель ККТ";
 
-			return names[i] + (serialConfirmed[i] ? "" : " (неточно)");
+			return names[i] + (serialFlags[i].HasFlag (KKTSerialFlags.SerialIsKnown) ? "" : " (неточно)");
 			}
 
 		// Поиск ККТ по фрагментам ЗН
 		private int FindKKT (string KKTSerialNumber)
 			{
+			if (KKTSerialNumber.StartsWith ('\x1'))
+				return int.Parse (KKTSerialNumber.Substring (1));
+
 			for (int i = 0; i < names.Count; i++)
 				if ((KKTSerialNumber.Length == serialLengths[i]) &&
 					KKTSerialNumber.Substring ((int)serialOffsets[i]).StartsWith (serialSamples[i]))
 					return i;
 
 			return -1;
-			}
-
-		/// <summary>
-		/// Доступные статусы поддержки ФФД
-		/// </summary>
-		public enum FFDSupportStates
-			{
-			/// <summary>
-			/// Статус не задан
-			/// </summary>
-			None = 0x0000,
-
-			/// <summary>
-			/// ФФД 1.05 поддерживается
-			/// </summary>
-			Supported105 = 0x0001,
-
-			/// <summary>
-			/// ФФД 1.1 поддерживается
-			/// </summary>
-			Supported11 = 0x0002,
-
-			/// <summary>
-			/// ФФД 1.2 поддерживается
-			/// </summary>
-			Supported12 = 0x0004,
-
-			/// <summary>
-			/// ФФД 1.05 не поддерживается
-			/// </summary>
-			Unsupported105 = 0x0010,
-
-			/// <summary>
-			/// ФФД 1.1 не поддерживается
-			/// </summary>
-			Unsupported11 = 0x0020,
-
-			/// <summary>
-			/// ФФД 1.2 не поддерживается
-			/// </summary>
-			Unsupported12 = 0x0040,
-
-			/// <summary>
-			/// ФФД 1.05 планируется
-			/// </summary>
-			Planned105 = 0x0100,
-
-			/// <summary>
-			/// ФФД 1.1 планируется
-			/// </summary>
-			Planned11 = 0x0200,
-
-			/// <summary>
-			/// ФФД 1.2 планируется
-			/// </summary>
-			Planned12 = 0x0400,
 			}
 
 		/// <summary>
@@ -240,6 +303,9 @@ namespace RD_AAOW
 			int i = FindKKT (KKTSerialNumber);
 			if (i < 0)
 				return "";
+
+			if (serialFlags[i].HasFlag (KKTSerialFlags.RemovedFromRegistry))
+				return "(исключена из реестра ККТ)";
 
 			string s = "";
 			string us = "";
@@ -269,7 +335,8 @@ namespace RD_AAOW
 		/// Метод выполняет поиск по известным моделям ККТ и возвращает сигнатуру ЗН в случае успеха
 		/// </summary>
 		/// <param name="KKTModel">Часть или полное название модели ККТ</param>
-		/// <returns>Сигнатура ЗН или пустая строка в случае отсутствия результатов</returns>
+		/// <returns>Сигнатура ЗН или пустая строка в случае отсутствия результатов.
+		/// При неизвестной сигнатуре ЗН возвращает номер модели в списке с префиксом U+0001</returns>
 		public string FindSignatureByName (string KKTModel)
 			{
 			// Защита
@@ -285,6 +352,9 @@ namespace RD_AAOW
 
 			if (i >= names.Count)
 				return "";
+
+			if (serialFlags[i].HasFlag (KKTSerialFlags.UnknownSignature))
+				return "\x1" + i.ToString ();
 
 			// Сборка сигнатуры
 			string sig = "";
@@ -320,7 +390,7 @@ namespace RD_AAOW
 #if ANDROID
 				string res = "Моделей ККТ в реестре ФНС" + RDLocale.RN +
 					"(на " + ProgramDescription.AssemblyLastUpdate + "): " +
-					(registryStats[0] - registryStats[ffdNames.Length + 2]).ToString () + RDLocale.RNRN;
+					registryStats[0].ToString () + RDLocale.RNRN;
 				res += "Из них поддерживают:" + RDLocale.RN;
 
 				for (int i = 0; i < ffdNames.Length; i++)
@@ -330,10 +400,13 @@ namespace RD_AAOW
 				res += RDLocale.RN + "Известно сигнатур ЗН: " +
 					names.Count.ToString () + RDLocale.RN;
 				res += "  из них – точно: " + registryStats[ffdNames.Length + 1];
+
+				res += RDLocale.RN + "Исключены из реестра: " +
+					registryStats[ffdNames.Length + 2];
 #else
 				string res = "\tМоделей ККТ в реестре ФНС" + RDLocale.RN +
 					"\t(на " + ProgramDescription.AssemblyLastUpdate + "):\t" +
-					(registryStats[0] - registryStats[ffdNames.Length + 2]).ToString () + RDLocale.RNRN;
+					registryStats[0].ToString () + RDLocale.RNRN;
 				res += "\tИз них поддерживают:" + RDLocale.RN;
 
 				for (int i = 0; i < ffdNames.Length; i++)
@@ -341,8 +414,11 @@ namespace RD_AAOW
 						registryStats[1 + i].ToString () + RDLocale.RN;
 
 				res += RDLocale.RN + "\tИзвестно сигнатур ЗН:\t" +
-					names.Count.ToString () + RDLocale.RN;
-				res += "\t  из них – точно:\t\t" + registryStats[ffdNames.Length + 1];
+					registryStats[ffdNames.Length + 1] + RDLocale.RN;
+				res += "\t  из них – точно:\t\t" + registryStats[ffdNames.Length + 2] + RDLocale.RN;
+
+				res += RDLocale.RN + "\tИсключены из реестра:\t" +
+					registryStats[ffdNames.Length + 3];
 #endif
 
 				return res;
