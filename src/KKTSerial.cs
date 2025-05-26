@@ -398,11 +398,11 @@ namespace RD_AAOW
 						registryStats[1 + i].ToString () + RDLocale.RN;
 
 				res += RDLocale.RN + "Известно сигнатур ЗН: " +
-					names.Count.ToString () + RDLocale.RN;
-				res += "  из них – точно: " + registryStats[ffdNames.Length + 1];
+					registryStats[ffdNames.Length + 1] + RDLocale.RN;
+				res += "  из них – точно: " + registryStats[ffdNames.Length + 2] + RDLocale.RN;
 
 				res += RDLocale.RN + "Исключены из реестра: " +
-					registryStats[ffdNames.Length + 2];
+					registryStats[ffdNames.Length + 3];
 #else
 				string res = "\tМоделей ККТ в реестре ФНС" + RDLocale.RN +
 					"\t(на " + ProgramDescription.AssemblyLastUpdate + "):\t" +
