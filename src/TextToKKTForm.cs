@@ -1122,7 +1122,12 @@ namespace RD_AAOW
 				(uint)KKTListForManuals.SelectedIndex, AppSettings.UserGuidesSectionsState, flags);
 
 			// Печать
-			KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4);
+			string s = KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4);
+			if (!string.IsNullOrWhiteSpace (s))
+				RDInterface.MessageBox (RDMessageTypes.Warning_Center, "Не удалось распечатать документ" +
+					RDLocale.RN + s);
+			else
+				RDInterface.MessageBox (RDMessageTypes.Success_Center, "Задание отправлено на печать", 700);
 			}
 
 		// Выбор компонентов инструкции
