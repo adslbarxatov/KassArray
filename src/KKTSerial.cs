@@ -112,7 +112,6 @@ namespace RD_AAOW
 			0,	// Известные сигнатуры
 			0,	// Точно известные сигнатуры
 			0,	// Исключены из реестра
-			/*3,	// Модели с одинаковыми названиями и разными реализациями (в файле помечены буквой Р)*/
 			];
 
 		/// <summary>
@@ -172,10 +171,6 @@ namespace RD_AAOW
 						}
 					}
 
-				/*// Протокол
-				if (values.Length < 6)
-					continue;*/
-
 				// Список команд
 				names.Add (values[0]);
 
@@ -199,15 +194,6 @@ namespace RD_AAOW
 					}
 				ffdSupport.Add (state);
 
-				/*if ((flags & 0x01) != 0)
-					{
-					serialConfirmed.Add (true);
-					registryStats[1 + ffdNames.Length]++;
-					}
-				else
-					{
-					serialConfirmed.Add (false);
-					}*/
 				if (flags.HasFlag (KKTSerialFlags.SerialIsKnown) &&
 					!flags.HasFlag (KKTSerialFlags.NameChanged))
 					registryStats[2 + ffdNames.Length]++;

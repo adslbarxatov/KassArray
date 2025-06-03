@@ -391,7 +391,7 @@ namespace RD_AAOW
 				{
 				res = res.Replace ("STREA", "");
 				uint v = uint.Parse (res);
-				return "Строка длиной " + v.ToString () + " байт (дополняется пробелами справа при необходимости)";
+				return "Строка длиной " + v.ToString () + " байт (дополняется пробелами справа)";
 				}
 			if (res.StartsWith ("STRE"))
 				{
@@ -402,8 +402,13 @@ namespace RD_AAOW
 			if (res.StartsWith ("SCTLE"))
 				{
 				res = res.Replace ("SCTLE", "");
-				uint v = uint.Parse (res);
-				return "Структура длиной не более " + v.ToString () + " байт";
+				if (res != "?")
+					{
+					uint v = uint.Parse (res);
+					return "Структура длиной не более " + v.ToString () + " байт";
+					}
+
+				return "Структура с неуточнённой длиной";
 				}
 			if (res.StartsWith ("ARRAY"))
 				{
