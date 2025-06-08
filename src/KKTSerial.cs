@@ -103,6 +103,7 @@ namespace RD_AAOW
 		private List<uint> serialOffsets = [];
 		private List<FFDSupportStates> ffdSupport = [];
 		private List<KKTSerialFlags> serialFlags = [];
+		private List<string> serialVersions = [];
 
 		private List<string> regions = [];
 
@@ -138,22 +139,22 @@ namespace RD_AAOW
 				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 				// Защита
-				if (values.Length < 3)
-					continue;
+				if (values.Length < 4)
+					throw new Exception ("Invalid data at point 1, debug is required");
 
-				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[2], RDGenerics.HexNumberStyle);
+				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[3], RDGenerics.HexNumberStyle);
 				serialFlags.Add (flags);
 
-				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations) &&
-					!flags.HasFlag (KKTSerialFlags.NameChanged))
+				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations) /*&&
+					!flags.HasFlag (KKTSerialFlags.NameChanged)*/)
 					registryStats[0]++;
 
 				FFDSupportStates state = FFDSupportStates.None;
 				for (int i = 0; i < ffdNames.Length; i++)
 					{
-					switch (values[1][i])
+					switch (values[2][i])
 						{
-						case '1':
+						case 'S':
 							state |= (FFDSupportStates)(1 << i);
 
 							if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations) &&
@@ -161,35 +162,39 @@ namespace RD_AAOW
 								registryStats[1 + i]++;
 							break;
 
-						case '0':
+						case 'U':
 							state |= (FFDSupportStates)((1 << i) << 4);
 							break;
 
-						case '+':
+						case 'P':
 							state |= (FFDSupportStates)((1 << i) << 8);
 							break;
+
+						default:
+							throw new Exception ("Invalid data at point 2, debug is required");
 						}
 					}
 
-				// Список команд
+				// Список моделей
 				names.Add (values[0]);
+				serialVersions.Add (values[1]);
 
 				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) &&
 					!flags.HasFlag (KKTSerialFlags.NameChanged))
 					{
-					serialLengths.Add (uint.Parse (values[3]));
+					serialLengths.Add (uint.Parse (values[4]));
 					if (maxSNLength < serialLengths[serialLengths.Count - 1])
 						maxSNLength = serialLengths[serialLengths.Count - 1];
 
-					serialSamples.Add (values[4]);
-					serialOffsets.Add (uint.Parse (values[5]));
+					serialSamples.Add (values[5]);
+					serialOffsets.Add (uint.Parse (values[6]));
 
 					registryStats[1 + ffdNames.Length]++;
 					}
 				else
 					{
 					serialLengths.Add (0);
-					serialSamples.Add ("\x1");
+					serialSamples.Add ("\x2");
 					serialOffsets.Add (0);
 					}
 				ffdSupport.Add (state);
@@ -272,7 +277,8 @@ namespace RD_AAOW
 				return int.Parse (KKTSerialNumber.Substring (1));
 
 			for (int i = 0; i < names.Count; i++)
-				if ((KKTSerialNumber.Length == serialLengths[i]) &&
+				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
+					(KKTSerialNumber.Length == serialLengths[i]) &&
 					KKTSerialNumber.Substring ((int)serialOffsets[i]).StartsWith (serialSamples[i]))
 					return i;
 
@@ -283,7 +289,7 @@ namespace RD_AAOW
 		/// Метод возвращает статус поддержки ФФД для ККТ по её заводскому номеру
 		/// </summary>
 		/// <param name="KKTSerialNumber">Заводской номер ККТ</param>
-		/// <returns>Возвращает вектор из трёх состояний для ФФД 1.05, 1.1 и 1.2</returns>
+		/// <returns>Возвращает строку с описанием поддерживаемых ФФД</returns>
 		public string GetFFDSupportStatus (string KKTSerialNumber)
 			{
 			int i = FindKKT (KKTSerialNumber);
@@ -333,7 +339,8 @@ namespace RD_AAOW
 			string model = KKTModel.ToLower ();
 			int i;
 			for (i = 0; i < names.Count; i++)
-				if (names[i].ToLower ().Contains (model))
+				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) && 
+					names[i].ToLower ().Contains (model))
 					break;
 
 			if (i >= names.Count)
@@ -409,6 +416,20 @@ namespace RD_AAOW
 
 				return res;
 				}
+			}
+
+		/// <summary>
+		/// Метод возвращает последнюю версию ПО ККТ по её заводскому номеру
+		/// </summary>
+		/// <param name="KKTSerialNumber">Заводской номер ККТ</param>
+		/// <returns>Возвращает строку с версией или пустую строку, если ККТ не была найдена</returns>
+		public string GetSoftwareVersion (string KKTSerialNumber)
+			{
+			int i = FindKKT (KKTSerialNumber);
+			if (i < 0)
+				return "";
+
+			return serialVersions[i];
 			}
 		}
 	}
