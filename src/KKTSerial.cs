@@ -339,7 +339,7 @@ namespace RD_AAOW
 			string model = KKTModel.ToLower ();
 			int i;
 			for (i = 0; i < names.Count; i++)
-				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) && 
+				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
 					names[i].ToLower ().Contains (model))
 					break;
 
@@ -430,6 +430,34 @@ namespace RD_AAOW
 				return "";
 
 			return serialVersions[i];
+			}
+
+		/// <summary>
+		/// Метод возвращает список моделей ККТ, доступных для регистрации
+		/// </summary>
+		public string[] EnumerateAvailableModels ()
+			{
+			List<string> models = [];
+			for (int i = 0; i < names.Count; i++)
+				if (!serialFlags[i].HasFlag (KKTSerialFlags.DifferentImplementations) &&
+					!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
+					!serialFlags[i].HasFlag (KKTSerialFlags.RemovedFromRegistry))
+					models.Add (names[i]);
+
+			return models.ToArray ();
+			}
+
+		/// <summary>
+		/// Метод возвращает список регионов РФ
+		/// </summary>
+		public string[] EnumerateAvailableRegions ()
+			{
+			List<string> regs = [];
+			for (int i = 0; i < regions.Count; i++)
+				if (!string.IsNullOrWhiteSpace (regions[i]))
+					regs.Add ((i + 1).ToString ("D2") + " – " + regions[i]);
+
+			return regs.ToArray ();
 			}
 		}
 	}

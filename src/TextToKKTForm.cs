@@ -222,9 +222,10 @@ namespace RD_AAOW
 			ni.ContextMenuStrip = new ContextMenuStrip ();
 			ni.ContextMenuStrip.ShowImageMargin = false;
 
-			ni.ContextMenuStrip.Items.Add ("Работа с &ФН", null, FNReader_Click);
-			ni.ContextMenuStrip.Items[0].Enabled = !RDGenerics.StartedFromMSStore &&
-				AppSettings.EnableExtendedMode; // Уровень 2
+			ni.ContextMenuStrip.Items.Add ("Работа с &ФН", null, CallFNReader);
+			ni.ContextMenuStrip.Items.Add ("Заявления для ФНС", null, CallTemplateBuilder);
+			ni.ContextMenuStrip.Items[0].Enabled = ni.ContextMenuStrip.Items[1].Enabled =
+				!RDGenerics.StartedFromMSStore && AppSettings.EnableExtendedMode;
 			ni.ContextMenuStrip.Items.Add (RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit), null,
 				CloseService);
 
@@ -378,10 +379,21 @@ namespace RD_AAOW
 		// Вызов библиотеки FNReader
 		private void FNReader_Click (object sender, EventArgs e)
 			{
-			CallFNReader ();
+			/*CallFNReader ();*/
+			ni.ContextMenuStrip.Show (FNReader, Point.Empty);
 			}
 
-		private void CallFNReader ()
+		private void CallFNReader (object sender, EventArgs e)
+			{
+			CallSideTool (true);
+			}
+
+		private void CallTemplateBuilder (object sender, EventArgs e)
+			{
+			CallSideTool (false);
+			}
+
+		private void CallSideTool (bool FN)
 			{
 			// Отправка "сообщения" окну модуля работы с ФН
 			bool problem = ewhIsActive ? ewh.WaitOne (100) : true;
@@ -390,7 +402,7 @@ namespace RD_AAOW
 
 			// Контроль на завершение предыдущих процессов
 			bool res;
-			const string proc = ProgramDescription.AssemblyMainName + "FN";
+			string proc = ProgramDescription.AssemblyMainName + (FN ? "FN" : "TB");
 			if (!problem)
 				{
 				// Тихо

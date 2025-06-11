@@ -374,5 +374,18 @@ namespace RD_AAOW
 				return res;
 				}
 			}
+
+		/// <summary>
+		/// Метод возвращает список моделей ФН, доступных для регистрации
+		/// </summary>
+		public string[] EnumerateAvailableModels ()
+			{
+			List<string> models = [];
+			for (int i = 0; i < names.Count; i++)
+				if (!models.Contains (names[i]) && isAllowed[i])
+					models.Add (names[i]);
+
+			return models.ToArray ();
+			}
 		}
 	}
