@@ -1,6 +1,7 @@
 ﻿extern alias KassArrayDB;
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -136,6 +137,8 @@ namespace RD_AAOW
 		// Поиск пользователя
 		private void FindUserButton_Click (object sender, EventArgs e)
 			{
+			RDInterface.MessageBox (RDMessageTypes.Success_Center, "ИНН пользователя скопирован в буфер", 1000);
+			RDGenerics.SendToClipboard (INNField.Text, false);
 			RDGenerics.RunURL ("https://egrul.nalog.ru");
 			}
 
@@ -297,6 +300,7 @@ namespace RD_AAOW
 
 			#region Контроль значений
 
+			bool checkRNM = true;
 			if (!string.IsNullOrWhiteSpace (INNField.Text))
 				{
 				if ((INNField.Text.Length != 10) && (INNField.Text.Length != 12) ||
@@ -307,6 +311,10 @@ namespace RD_AAOW
 						"(предприниматель) цифр." + leftEmpty);
 					return;
 					}
+				}
+			else
+				{
+				checkRNM = false;
 				}
 
 			if (!string.IsNullOrWhiteSpace (OGRNField.Text))
@@ -351,6 +359,10 @@ namespace RD_AAOW
 						"Регистрационный номер ККТ должен быть числом, состоящим из 16 цифр." + leftEmpty);
 					return;
 					}
+				}
+			else
+				{
+				checkRNM = false;
 				}
 
 			if (!string.IsNullOrWhiteSpace (AddressIndexField.Text))
@@ -450,6 +462,15 @@ namespace RD_AAOW
 				{
 				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
 					"Не указана ни одна из причин перерегистрации");
+				return;
+				}
+
+			if (checkRNM && !string.IsNullOrWhiteSpace (KKTSerialField.Text) &&
+				(KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (INNField.Text, KKTSerialField.Text,
+				KKTRNMField.Text.Substring (0, 10)) != KKTRNMField.Text))
+				{
+				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+					"Указанный регистрационный номер не соответствует ИНН пользователя и ЗН ККТ");
 				return;
 				}
 
@@ -688,8 +709,138 @@ namespace RD_AAOW
 			else
 				RDInterface.MessageBox (RDMessageTypes.Success_Center, "Задание отправлено на печать", 1000);
 			}
-		
+
 		private const string leftEmpty = RDLocale.RNRN + "Оставьте это поле пустым, чтобы заполнить его вручную " +
 			"в распечатанном заявлении";
+
+		// Получение реквизитов из ФН
+		private void GetFromFN_Click (object sender, EventArgs e)
+			{
+			#region Получение реквизитов отчётов
+
+			string res = "";
+			string masterRN = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.RegistrationNumber, true);
+			if (KKTRNMField.Enabled)
+				KKTRNMField.Text = masterRN;
+
+			string fnOpen = "";
+			string rnOpen = "";
+			try
+				{
+				fnOpen = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.FNOpenFileName,
+					RDGenerics.GetEncoding (RDEncodings.CP1251));
+				}
+			catch { }
+
+			if (!string.IsNullOrWhiteSpace (fnOpen))
+				{
+				string[] lines = fnOpen.Split (['\n'], StringSplitOptions.RemoveEmptyEntries);
+				if (lines.Length >= 5)
+					{
+					rnOpen = lines[0];
+					if (fnOpen.Contains ("измен"))
+						BlankTypeCombo.SelectedIndex = 1;
+
+					if (FNOpenFPDField.Enabled && (masterRN == rnOpen))
+						{
+						int idx = lines[2].IndexOf (':');
+						FNOpenFDField.Text = lines[2].Substring (idx + 2);
+						idx = lines[3].IndexOf (':');
+						FNOpenDateField.Value = DateTime.Parse (lines[3].Substring (idx + 2).Replace (',', ' '));
+						idx = lines[4].IndexOf (':');
+						FNOpenFPDField.Text = lines[4].Substring (idx + 2);
+						}
+					}
+				}
+
+			if (string.IsNullOrWhiteSpace (rnOpen))
+				res += "• Не удалось получить реквизиты отчёта о фискализации ФН" + RDLocale.RN;
+			else if (masterRN != rnOpen)
+				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
+					"из-за несовпадения регистрационного номера" + RDLocale.RN;
+			else if (!FNOpenFPDField.Enabled)
+				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
+					"из-за неподходящего типа заявления" + RDLocale.RN;
+			else
+				res += "• Получены реквизиты отчёта о фискализации ФН" + RDLocale.RN;
+
+			string fnClose = "";
+			string rnClose = "";
+			try
+				{
+				fnClose = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.FNCloseFileName,
+					RDGenerics.GetEncoding (RDEncodings.CP1251));
+				}
+			catch { }
+
+			if (!string.IsNullOrWhiteSpace (fnClose))
+				{
+				string[] lines = fnClose.Split (['\n'], StringSplitOptions.RemoveEmptyEntries);
+				if (lines.Length >= 5)
+					{
+					rnClose = lines[0];
+
+					if (FNCloseFPDField.Enabled && (masterRN == rnClose))
+						{
+						int idx = lines[2].IndexOf (':');
+						FNCloseFDField.Text = lines[2].Substring (idx + 2);
+						idx = lines[3].IndexOf (':');
+						FNCloseDateField.Value = DateTime.Parse (lines[3].Substring (idx + 2).Replace (',', ' '));
+						idx = lines[4].IndexOf (':');
+						FNCloseFPDField.Text = lines[4].Substring (idx + 2);
+						}
+					}
+				}
+
+			if (string.IsNullOrWhiteSpace (rnClose))
+				res += "• Не удалось получить реквизиты отчёта о закрытии архива ФН" + RDLocale.RN;
+			else if (masterRN != rnClose)
+				res += "• Реквизиты отчёта о закрытии архива ФН получены, но проигнорированы " +
+					"из-за несовпадения регистрационного номера" + RDLocale.RN;
+			else if (!FNCloseFPDField.Enabled)
+				res += "• Реквизиты отчёта о закрытии архива ФН получены, но проигнорированы " +
+					"из-за неподходящего типа заявления или снятого флажка «" +
+					FNChangeFlag.Text + "»" + RDLocale.RN;
+			else
+				res += "• Получены реквизиты отчёта о закрытии архива ФН" + RDLocale.RN;
+
+			#endregion
+
+			#region Получение реквизитов регистрации
+
+			UserNameField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.UserName, false);
+			INNField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.UserINN, false);
+			KKTSerialField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.KKTSerialNumber, false);
+			FNSerialField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.FNSerialNumber, false);
+
+			string ofdINN = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.OFDINN, false);
+			if (ofdINN == "0".PadLeft (12, '0'))
+				{
+				OFDVariantCombo.SelectedIndex = 1;
+				}
+			else
+				{
+				OFDVariantCombo.SelectedIndex = 0;
+				string ofd = kb.Ofd.GetOFDByINN (ofdINN, 1);
+				if (OFDNameCombo.Items.Contains (ofd))
+					OFDNameCombo.Text = ofd;
+				}
+
+			AddressFromFN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.RegistrationAddress, false);
+			PlaceField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+				(KassArrayDB::RD_AAOW.RegTags.RegistrationPlace, false);
+
+			#endregion
+
+			// Завершено
+			RDInterface.MessageBox (RDMessageTypes.Information_Left, res);
+			}
 		}
 	}
