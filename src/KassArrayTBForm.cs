@@ -12,9 +12,11 @@ namespace RD_AAOW
 	/// </summary>
 	public partial class KassArrayTBForm: Form
 		{
-		// Переменные
+		// Переменные и константы
 		private KassArrayDB::RD_AAOW.KnowledgeBase kb;
 		private bool closeWindowOnError = false;
+
+		private const string regionPar = "BCRegion";
 
 		// Ресивер сообщений на повторное открытие окна
 		private EventWaitHandle ewh;
@@ -73,6 +75,14 @@ namespace RD_AAOW
 
 			// Получение настроек
 			RDGenerics.LoadWindowDimensions (this);
+			try
+				{
+				AddressRegionCodeCombo.SelectedIndex = (int)RDGenerics.GetSettings (regionPar, 0);
+				}
+			catch
+				{
+				AddressRegionCodeCombo.SelectedIndex = 0;
+				}
 
 			// Подключение к прослушиванию системного события вызова окна
 			try
@@ -96,6 +106,7 @@ namespace RD_AAOW
 				return;
 
 			RDGenerics.SaveWindowDimensions (this);
+			RDGenerics.SetSettings (regionPar, (uint)AddressRegionCodeCombo.SelectedIndex);
 			}
 
 		private void ShowWindowTimer_Tick (object sender, EventArgs e)
@@ -739,8 +750,8 @@ namespace RD_AAOW
 				if (lines.Length >= 5)
 					{
 					rnOpen = lines[0];
-					if (fnOpen.Contains ("измен"))
-						BlankTypeCombo.SelectedIndex = 1;
+					/*if (fnOpen.Contains ("измен"))
+						BlankTypeCombo.SelectedIndex = 1;*/
 
 					if (FNOpenFPDField.Enabled && (masterRN == rnOpen))
 						{
@@ -755,15 +766,16 @@ namespace RD_AAOW
 				}
 
 			if (string.IsNullOrWhiteSpace (rnOpen))
-				res += "• Не удалось получить реквизиты отчёта о фискализации ФН" + RDLocale.RN;
+				res += "• Не удалось получить реквизиты отчёта о фискализации ФН";
 			else if (masterRN != rnOpen)
 				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
-					"из-за несовпадения регистрационного номера" + RDLocale.RN;
+					"из-за несовпадения регистрационного номера";
 			else if (!FNOpenFPDField.Enabled)
 				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
-					"из-за неподходящего типа заявления" + RDLocale.RN;
+					"из-за неподходящего типа заявления";
 			else
-				res += "• Получены реквизиты отчёта о фискализации ФН" + RDLocale.RN;
+				res += "• Получены реквизиты отчёта о фискализации ФН";
+			res += RDLocale.RNRN;
 
 			string fnClose = "";
 			string rnClose = "";
@@ -794,16 +806,17 @@ namespace RD_AAOW
 				}
 
 			if (string.IsNullOrWhiteSpace (rnClose))
-				res += "• Не удалось получить реквизиты отчёта о закрытии архива ФН" + RDLocale.RN;
+				res += "• Не удалось получить реквизиты отчёта о закрытии архива ФН";
 			else if (masterRN != rnClose)
 				res += "• Реквизиты отчёта о закрытии архива ФН получены, но проигнорированы " +
-					"из-за несовпадения регистрационного номера" + RDLocale.RN;
+					"из-за несовпадения регистрационного номера";
 			else if (!FNCloseFPDField.Enabled)
 				res += "• Реквизиты отчёта о закрытии архива ФН получены, но проигнорированы " +
 					"из-за неподходящего типа заявления или снятого флажка «" +
-					FNChangeFlag.Text + "»" + RDLocale.RN;
+					FNChangeFlag.Text + "»";
 			else
-				res += "• Получены реквизиты отчёта о закрытии архива ФН" + RDLocale.RN;
+				res += "• Получены реквизиты отчёта о закрытии архива ФН";
+			res += RDLocale.RNRN;
 
 			#endregion
 
@@ -815,8 +828,10 @@ namespace RD_AAOW
 				(KassArrayDB::RD_AAOW.RegTags.UserINN, false);
 			KKTSerialField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.KKTSerialNumber, false);
-			FNSerialField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
-				(KassArrayDB::RD_AAOW.RegTags.FNSerialNumber, false);
+
+			if (FNSerialField.Enabled)
+				FNSerialField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.FNSerialNumber, false);
 
 			string ofdINN = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.OFDINN, false);
@@ -834,13 +849,48 @@ namespace RD_AAOW
 
 			AddressFromFN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.RegistrationAddress, false);
-			PlaceField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
-				(KassArrayDB::RD_AAOW.RegTags.RegistrationPlace, false);
+			if (PlaceField.Enabled)
+				PlaceField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.RegistrationPlace, false);
+
+			if (ExciseFlag.Enabled)
+				ExciseFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.ExciseFlag, false) == "1";
+			if (MarkFlag.Enabled)
+				MarkFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.MarkingFlag, false) == "1";
+			if (LotteryFlag.Enabled)
+				LotteryFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.LotteryFlag, false) == "1";
+			if (GamblingFlag.Enabled)
+				GamblingFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.GamblingFlag, false) == "1";
+			if (InternetFlag.Enabled)
+				InternetFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.InternetFlag, false) == "1";
+
+			if (AutomatFlag.Enabled)
+				{
+				AutomatFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.AutomatFlag, false) == "1";
+				AutomatNumberField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.AutomatSerial, false);
+				}
+
+			if (BSOFlag.Enabled)
+				BSOFlag.Checked = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+					(KassArrayDB::RD_AAOW.RegTags.BSOFlag, false) == "1";
 
 			#endregion
 
 			// Завершено
-			RDInterface.MessageBox (RDMessageTypes.Information_Left, res);
+			res += "Обратите внимание:" + RDLocale.RN +
+				"• Реквизиты, которые можно получить из ФН, помечены синим цветом. Остальные реквизиты при запросе " +
+				"из ФН не меняются (кроме модели ККТ и ФН – приложение попытается их подобрать)" + RDLocale.RN +
+				"• После загрузки проверять следует все значения (особенно, если из ФН были получены " +
+				"не все данные)" + RDLocale.RN +
+				"• Запрос данных из ФН приводит к замене ранее введённых данных в соответствующих полях";
+			RDInterface.MessageBox (RDMessageTypes.Question_Left, res);
 			}
 		}
 	}

@@ -602,6 +602,21 @@ namespace RD_AAOW
 		/// Заводской номер автомата
 		/// </summary>
 		AutomatSerial = 1036,
+
+		/// <summary>
+		/// Псевдотег – признак автоматического режима
+		/// </summary>
+		AutomatFlag = 9011,
+
+		/// <summary>
+		/// Псевдотег – признак режима работы в сети интернет
+		/// </summary>
+		InternetFlag = 9012,
+
+		/// <summary>
+		/// Псевдотег – признак режима бланков строгой отчётности
+		/// </summary>
+		BSOFlag = 9013,
 		}
 
 	/// <summary>

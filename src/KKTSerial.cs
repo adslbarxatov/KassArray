@@ -145,8 +145,7 @@ namespace RD_AAOW
 				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[3], RDGenerics.HexNumberStyle);
 				serialFlags.Add (flags);
 
-				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations) /*&&
-					!flags.HasFlag (KKTSerialFlags.NameChanged)*/)
+				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations))
 					registryStats[0]++;
 
 				FFDSupportStates state = FFDSupportStates.None;
