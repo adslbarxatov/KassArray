@@ -750,8 +750,6 @@ namespace RD_AAOW
 				if (lines.Length >= 5)
 					{
 					rnOpen = lines[0];
-					/*if (fnOpen.Contains ("измен"))
-						BlankTypeCombo.SelectedIndex = 1;*/
 
 					if (FNOpenFPDField.Enabled && (masterRN == rnOpen))
 						{

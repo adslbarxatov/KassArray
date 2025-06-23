@@ -379,7 +379,6 @@ namespace RD_AAOW
 		// Вызов библиотеки FNReader
 		private void FNReader_Click (object sender, EventArgs e)
 			{
-			/*CallFNReader ();*/
 			ni.ContextMenuStrip.Show (FNReader, Point.Empty);
 			}
 
