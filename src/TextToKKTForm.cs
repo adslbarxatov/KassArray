@@ -1133,7 +1133,8 @@ namespace RD_AAOW
 				(uint)KKTListForManuals.SelectedIndex, AppSettings.UserGuidesSectionsState, flags);
 
 			// Печать
-			string s = KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4);
+			string s = KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4,
+				KassArrayDB::RD_AAOW.PrinterFlags.None);
 			if (!string.IsNullOrWhiteSpace (s))
 				RDInterface.MessageBox (RDMessageTypes.Warning_Center, "Не удалось распечатать документ" +
 					RDLocale.RN + s);

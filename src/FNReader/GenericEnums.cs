@@ -295,6 +295,27 @@ namespace RD_AAOW
 		}
 
 	/// <summary>
+	/// Доступные параметры работы принтера
+	/// </summary>
+	public enum PrinterFlags
+		{
+		/// <summary>
+		/// Без специальных настроек
+		/// </summary>
+		None = 0x00,
+
+		/// <summary>
+		/// Разрешение на использование сохранённых настроек принтера
+		/// </summary>
+		AllowSavedPrinterSettings = 0x01,
+
+		/// <summary>
+		/// Отмена запроса принтера при печати (использование сохранённых настроек)
+		/// </summary>
+		DontRequestPrinter = 0x02,
+		}
+
+	/// <summary>
 	/// Доступные уровни детализации
 	/// </summary>
 	public enum DetailsLevels

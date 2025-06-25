@@ -713,7 +713,8 @@ namespace RD_AAOW
 
 			// Запуск на печать
 			field = KassArrayDB::RD_AAOW.KKTSupport.PrintText (KATBSupport.Template,
-				KassArrayDB::RD_AAOW.PrinterTypes.BlankA4);
+				KassArrayDB::RD_AAOW.PrinterTypes.BlankA4,
+				KassArrayDB::RD_AAOW.PrinterFlags.None);
 			if (!string.IsNullOrWhiteSpace (field))
 				RDInterface.MessageBox (RDMessageTypes.Error_Center, "Не удалось распечатать документ" +
 					RDLocale.RN + field);
