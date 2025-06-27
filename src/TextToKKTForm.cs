@@ -420,6 +420,7 @@ namespace RD_AAOW
 				return;
 
 			// Нормальный запуск модуля работы с ФН
+			BExit_Click (null, null);
 			string fnExe = RDGenerics.AppStartupPath + proc + ".exe";
 			if (!RDGenerics.CheckLibrariesExistence (fnExe, true))
 				return;
