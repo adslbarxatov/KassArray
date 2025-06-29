@@ -29,7 +29,7 @@ namespace RD_AAOW
 			// Проверка запуска единственной копии
 			if (!RDGenerics.IsAppInstanceUnique (false, "TB"))
 				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Left,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 					"Программа " + ProgramDescription.AssemblyTitle + " уже запущена." + RDLocale.RNRN +
 					"Закройте запущенный экземпляр и повторите попытку");
 

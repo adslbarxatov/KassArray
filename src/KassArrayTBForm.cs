@@ -148,7 +148,8 @@ namespace RD_AAOW
 		// Поиск пользователя
 		private void FindUserButton_Click (object sender, EventArgs e)
 			{
-			RDInterface.MessageBox (RDMessageTypes.Success_Center, "ИНН пользователя скопирован в буфер", 1000);
+			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
+				"ИНН пользователя скопирован в буфер", 1000);
 			RDGenerics.SendToClipboard (INNField.Text, false);
 			RDGenerics.RunURL ("https://egrul.nalog.ru");
 			}
@@ -317,7 +318,7 @@ namespace RD_AAOW
 				if ((INNField.Text.Length != 10) && (INNField.Text.Length != 12) ||
 					!UInt64.TryParse (INNField.Text, out _))
 					{
-					RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 						"ИНН пользователя должен быть числом длиной в 10 (организация) или 12 " +
 						"(предприниматель) цифр." + leftEmpty);
 					return;
@@ -333,7 +334,7 @@ namespace RD_AAOW
 				if ((OGRNField.Text.Length != 13) && (OGRNField.Text.Length != 15) ||
 					!UInt64.TryParse (OGRNField.Text, out _))
 					{
-					RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 						"ОГРН пользователя должен быть числом длиной в 13 (организация) или 15 " +
 						"(предприниматель) цифр." + leftEmpty);
 					return;
@@ -345,7 +346,7 @@ namespace RD_AAOW
 				if ((KPPField.Text.Length != 9) || !UInt64.TryParse (KPPField.Text, out _) ||
 					(INNField.Text.Length > 10) || (OGRNField.Text.Length > 13))
 					{
-					RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 						"КПП должен быть числом длиной в 9 цифр. Кроме того, он не должен быть указан, " +
 						"если пользователь является индивидуальным предпринимателем." + leftEmpty);
 					return;
@@ -356,7 +357,7 @@ namespace RD_AAOW
 				{
 				if ((FNSerialField.Text.Length != 16) || !UInt64.TryParse (FNSerialField.Text, out _))
 					{
-					RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 						"Заводской номер ФН должен быть числом, состоящим из 16 цифр." + leftEmpty);
 					return;
 					}
@@ -366,7 +367,7 @@ namespace RD_AAOW
 				{
 				if ((KKTRNMField.Text.Length != 16) || !UInt64.TryParse (KKTRNMField.Text, out _))
 					{
-					RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 						"Регистрационный номер ККТ должен быть числом, состоящим из 16 цифр." + leftEmpty);
 					return;
 					}
@@ -380,7 +381,7 @@ namespace RD_AAOW
 				{
 				if ((AddressIndexField.Text.Length != 6) || !UInt64.TryParse (AddressIndexField.Text, out _))
 					{
-					RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 						"Почтовый индекс должен быть числом, состоящим из 6 цифр." + leftEmpty);
 					return;
 					}
@@ -421,7 +422,7 @@ namespace RD_AAOW
 
 			if ((v1 < 1) || (v1 > 250000) || (v2 < 1) || (v2 > 250000))
 				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 					"Номер фискального документа (ФД) должен быть числом между 1 и 250000 " +
 					"(включительно)." + leftEmpty);
 				return;
@@ -461,7 +462,7 @@ namespace RD_AAOW
 
 			if ((v1 < 1) || (v1 > 0xFFFFFFFF) || (v2 < 1) || (v2 > 0xFFFFFFFF))
 				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 					"Фискальный признак документа (ФПД) должен быть числом между 1 и " + 0xFFFFFFFF.ToString () +
 					" (включительно)." + leftEmpty);
 				return;
@@ -471,7 +472,7 @@ namespace RD_AAOW
 				!AutomatChangeFlag.Checked && !FNChangeFlag.Checked &&
 				!UserNameChangeFlag.Checked && !OtherChangeFlag.Checked)
 				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 					"Не указана ни одна из причин перерегистрации");
 				return;
 				}
@@ -480,7 +481,7 @@ namespace RD_AAOW
 				(KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (INNField.Text, KKTSerialField.Text,
 				KKTRNMField.Text.Substring (0, 10)) != KKTRNMField.Text))
 				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 					"Указанный регистрационный номер не соответствует ИНН пользователя и ЗН ККТ");
 				return;
 				}
@@ -716,10 +717,11 @@ namespace RD_AAOW
 				KassArrayDB::RD_AAOW.PrinterTypes.BlankA4,
 				KassArrayDB::RD_AAOW.PrinterFlags.None);
 			if (!string.IsNullOrWhiteSpace (field))
-				RDInterface.MessageBox (RDMessageTypes.Error_Center, "Не удалось распечатать документ" +
-					RDLocale.RN + field);
+				RDInterface.MessageBox (RDMessageFlags.Error | RDMessageFlags.CenterText,
+					"Не удалось распечатать документ" + RDLocale.RN + field);
 			else
-				RDInterface.MessageBox (RDMessageTypes.Success_Center, "Задание отправлено на печать", 1000);
+				RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
+					"Задание отправлено на печать", 700);
 			}
 
 		private const string leftEmpty = RDLocale.RNRN + "Оставьте это поле пустым, чтобы заполнить его вручную " +
@@ -889,7 +891,7 @@ namespace RD_AAOW
 				"• После загрузки проверять следует все значения (особенно, если из ФН были получены " +
 				"не все данные)" + RDLocale.RN +
 				"• Запрос данных из ФН приводит к замене ранее введённых данных в соответствующих полях";
-			RDInterface.MessageBox (RDMessageTypes.Question_Left, res);
+			RDInterface.MessageBox (RDMessageFlags.Question | RDMessageFlags.NoSound, res);
 			}
 		}
 	}

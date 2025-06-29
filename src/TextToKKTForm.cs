@@ -260,12 +260,14 @@ namespace RD_AAOW
 
 			if (ExtendedMode.Checked)
 				{
-				RDInterface.MessageBox (RDMessageTypes.Error_Left, AppSettings.ExtendedModeMessage);
+				RDInterface.MessageBox (RDMessageFlags.Error | RDMessageFlags.LockSmallSize,
+					AppSettings.ExtendedModeMessage);
 				AppSettings.EnableExtendedMode = true;
 				}
 			else
 				{
-				RDInterface.MessageBox (RDMessageTypes.Question_Center, AppSettings.NoExtendedModeMessage);
+				RDInterface.MessageBox (RDMessageFlags.Question | RDMessageFlags.CenterText | RDMessageFlags.LockSmallSize,
+					AppSettings.NoExtendedModeMessage);
 				AppSettings.EnableExtendedMode = false;
 				}
 
@@ -449,7 +451,7 @@ namespace RD_AAOW
 			if (string.IsNullOrWhiteSpace (status))
 				{
 				TMSet (false);
-				RDInterface.MessageBox (RDMessageTypes.Information_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"Статус ФН ещё не запрашивался или содержит не все требуемые поля", 2000);
 				TMSet (true);
 
@@ -784,7 +786,7 @@ namespace RD_AAOW
 		private void FNLifeStatus_Click (object sender, EventArgs e)
 			{
 			TMSet (false);
-			RDInterface.MessageBox (RDMessageTypes.Information_Left, fnLifeMessage);
+			RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound, fnLifeMessage);
 			TMSet (true);
 			}
 
@@ -792,7 +794,8 @@ namespace RD_AAOW
 		private void FNLifeStats_Click (object sender, EventArgs e)
 			{
 			TMSet (false);
-			RDInterface.MessageBox (RDMessageTypes.Information_Left, kb.FNNumbers.RegistryStats);
+			RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound,
+				kb.FNNumbers.RegistryStats);
 			TMSet (true);
 			}
 
@@ -947,7 +950,7 @@ namespace RD_AAOW
 					AppSettings.KKTSerial, RNMValue.Text.Substring (0, 10));
 
 			if (string.IsNullOrWhiteSpace (RNMValue.Text))
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"Убедитесь, что заводской номер ККТ и ИНН заполнены корректно", 2000);
 			}
 
@@ -955,7 +958,8 @@ namespace RD_AAOW
 		private void RNMStats_Click (object sender, EventArgs e)
 			{
 			TMSet (false);
-			RDInterface.MessageBox (RDMessageTypes.Information_Left, kb.KKTNumbers.RegistryStats);
+			RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound,
+				kb.KKTNumbers.RegistryStats);
 			TMSet (true);
 			}
 
@@ -1137,10 +1141,11 @@ namespace RD_AAOW
 			string s = KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4,
 				KassArrayDB::RD_AAOW.PrinterFlags.None);
 			if (!string.IsNullOrWhiteSpace (s))
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center, "Не удалось распечатать документ" +
-					RDLocale.RN + s);
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Не удалось распечатать документ" + RDLocale.RN + s);
 			else
-				RDInterface.MessageBox (RDMessageTypes.Success_Center, "Задание отправлено на печать", 700);
+				RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
+					"Задание отправлено на печать", 700);
 			}
 
 		// Выбор компонентов инструкции
@@ -1171,7 +1176,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText | RDMessageFlags.LockSmallSize,
 					"Выбранный файл недоступен или не является поддерживаемым файлом изображения");
 				return;
 				}
@@ -1188,7 +1193,7 @@ namespace RD_AAOW
 				}
 			catch
 				{
-				RDInterface.MessageBox (RDMessageTypes.Warning_Center,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.Message_SaveFailure_Fmt),
 					KassArrayDB::RD_AAOW.KKTSupport.ManualLogoFileName));
 				b2.Dispose ();
@@ -1197,7 +1202,8 @@ namespace RD_AAOW
 			b2.Dispose ();
 
 			// Успешно
-			RDInterface.MessageBox (RDMessageTypes.Success_Center, "Логотип успешно добавлен", 1000);
+			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText,
+				"Логотип успешно добавлен", 1000);
 			AddManualLogo.Checked = true;
 			}
 
@@ -1287,7 +1293,7 @@ namespace RD_AAOW
 		private void TLVObligationBase_Click (object sender, EventArgs e)
 			{
 			TMSet (false);
-			RDMessageButtons b = RDInterface.MessageBox (RDMessageTypes.Question_Center,
+			RDMessageButtons b = RDInterface.MessageBox (RDMessageFlags.Question | RDMessageFlags.CenterText,
 				"Скопировать основание или перейти к его тексту?",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Copy),
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_GoTo),
