@@ -41,7 +41,7 @@
 			}
 		private OFD ofd;
 
-		/// <summary>
+		/*/// <summary>
 		/// Возвращает справочник команд нижнего уровня
 		/// </summary>
 		public LowLevel LLCommands
@@ -51,7 +51,19 @@
 				return ll;
 				}
 			}
-		private LowLevel ll;
+		private LowLevel ll;*/
+
+		/// <summary>
+		/// Возвращает справочник команд нижнего уровня
+		/// </summary>
+		public TermsDictionary Dictionary
+			{
+			get
+				{
+				return td;
+				}
+			}
+		private TermsDictionary td;
 
 		/// <summary>
 		/// Возвращает оператор руководств пользователя ККТ
@@ -145,7 +157,8 @@
 			kktc = new KKTCodes ();
 			kkte = new KKTErrorsList ();
 			ofd = new OFD ();
-			ll = new LowLevel ();
+			/*ll = new LowLevel ();*/
+			td = new TermsDictionary ();
 			ug = new UserGuides ();
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();

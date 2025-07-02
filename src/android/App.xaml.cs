@@ -20,14 +20,15 @@ namespace RD_AAOW
 			[ Color.FromArgb ("#E0F0FF"), Color.FromArgb ("#C0E0FF") ],	// 4. RNM
 			[ Color.FromArgb ("#F4F4FF"), Color.FromArgb ("#D0D0FF") ],	// 5. OFD
 			[ Color.FromArgb ("#E0FFF0"), Color.FromArgb ("#C8FFE4") ],	// 6. TLV
-			[ Color.FromArgb ("#FFF0FF"), Color.FromArgb ("#FFC8FF") ],	// 7. Low level
+			[ Color.FromArgb ("#FFF0FF"), Color.FromArgb ("#FFC8FF") ],	// 7. Terms dictionary
 			[ Color.FromArgb ("#FFFFF0"), Color.FromArgb ("#FFFFD0") ],	// 8. KKT codes
 			[ Color.FromArgb ("#F8FFF0"), Color.FromArgb ("#F0FFE0") ],	// 9. Connectors
 			[ Color.FromArgb ("#FFF4E2"), Color.FromArgb ("#E8D9CF") ],	// 10. Barcodes
 			[ Color.FromArgb ("#E1FFF1"), Color.FromArgb ("#D7F4E7") ],	// 11. Convertors HT
 			[ Color.FromArgb ("#E5FFF5"), Color.FromArgb ("#DBF4EB") ],	// 12. Convertors SN
 			[ Color.FromArgb ("#E9FFF9"), Color.FromArgb ("#DFF4EF") ],	// 13. Convertors UN
-			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 14. App about
+			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 14. Settings
+			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 15. App about
 			];
 		private const int hdrPage = 0;
 		private const int usgPage = 1;
@@ -36,14 +37,15 @@ namespace RD_AAOW
 		private const int rnmPage = 4;
 		private const int ofdPage = 5;
 		private const int tlvPage = 6;
-		private const int llvPage = 7;
+		private const int tdcPage = 7;
 		private const int codPage = 8;
 		private const int conPage = 9;
 		private const int bcdPage = 10;
 		private const int cvhPage = 11;
 		private const int cvsPage = 12;
 		private const int cvuPage = 13;
-		private const int aabPage = 14;
+		private const int setPage = 14;
+		private const int aabPage = 15;
 
 		private const int cBack = 0;
 		private const int cField = 1;
@@ -60,10 +62,11 @@ namespace RD_AAOW
 			cableDescriptionText,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
-			lowLevelCommandDescr,
+			/*lowLevelCommandDescr,*/
+			dictionaryDescriptionField,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, ofdDisabledLabel, convNumberResultField, convCodeResultField,
-			aboutFontSizeField;
+			fontSizeField;
 		private List<Label> operationTextLabels = [];
 		private List<Button> operationTextButtons = [];
 		private const string operationButtonSignatureShow = "🖨 ";
@@ -73,7 +76,7 @@ namespace RD_AAOW
 			errorsKKTButton, userManualsKKTButton, userManualsPrintButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdINN,
-			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode, rnmGenerate, convCodeSymbolField,
+			/*lowLevelProtocol, lowLevelCommand, lowLevelCommandCode,*/ rnmGenerate, convCodeSymbolField,
 			encodingButton, fnLifeStatus, sampleNextButton;
 		private List<Button> uiButtons = [];
 
@@ -147,9 +150,6 @@ namespace RD_AAOW
 			if (!RDLocale.IsCurrentLanguageRuRu)
 				RDLocale.CurrentLanguage = RDLanguages.ru_ru;
 
-			/*// Переход в статус запуска для отмены вызова из оповещения
-			RDGenerics.AppIsRunning = true;*/
-
 			#region Общая конструкция страниц приложения
 
 			uiPages.Add (ApplyPageSettings (new HeadersPage (),
@@ -171,9 +171,16 @@ namespace RD_AAOW
 				"TLV-теги", uiColors[tlvPage][cBack], true));
 			uiButtons[tlvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
-			uiPages.Add (ApplyPageSettings (new LowLevelPage (),
-				"Команды нижнего уровня", uiColors[llvPage][cBack], true));
-			uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
+			/*uiPages.Add (ApplyPageSettings (new LowLevelPage (),
+				"Команды нижнего уровня", uiColors[llvPage][cBack], true));*/
+			uiPages.Add (ApplyPageSettings (new TermsDictionaryPage (),
+				"Словарь терминов", uiColors[tdcPage][cBack], true));
+
+			// !!! ВРЕМЕННО !!!
+			uiButtons[tdcPage - 1].IsVisible = false;
+			// !!! ВРЕМЕННО !!!
+
+			/*uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2*/
 
 			uiPages.Add (ApplyPageSettings (new KKTCodesPage (),
 				"Перевод текста в коды ККТ", uiColors[codPage][cBack], true));
@@ -194,9 +201,34 @@ namespace RD_AAOW
 
 			// С отступом
 			menuLayout.Children.Add (new Label ());
+			uiPages.Add (ApplyPageSettings (new SettingsPage (),
+				"Настройки", uiColors[setPage][cBack], true));
 			uiPages.Add (ApplyPageSettings (new AboutPage (),
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
 				uiColors[aabPage][cBack], true));
+
+			#endregion
+
+			#region Настройки приложения
+
+			RDInterface.ApplyLabelSettings (uiPages[setPage], "ExtendedModeLabel",
+				"Режим сервис-инженера", RDLabelTypes.DefaultLeft);
+			extendedMode = RDInterface.ApplySwitchSettings (uiPages[setPage], "ExtendedMode", false,
+				uiColors[setPage][cField], ExtendedMode_Toggled, AppSettings.EnableExtendedMode);
+
+			RDInterface.ApplyLabelSettings (uiPages[setPage], "RestartTipLabel",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Message_RestartRequired),
+				RDLabelTypes.TipCenter);
+
+			RDInterface.ApplyLabelSettings (uiPages[setPage], "FontSizeLabel",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Control_InterfaceFontSize),
+				RDLabelTypes.DefaultLeft);
+			RDInterface.ApplyButtonSettings (uiPages[setPage], "FontSizeInc",
+				RDDefaultButtons.Increase, uiColors[setPage][cField], FontSizeButton_Clicked);
+			RDInterface.ApplyButtonSettings (uiPages[setPage], "FontSizeDec",
+				RDDefaultButtons.Decrease, uiColors[setPage][cField], FontSizeButton_Clicked);
+			fontSizeField = RDInterface.ApplyLabelSettings (uiPages[setPage], "FontSizeField",
+				" ", RDLabelTypes.DefaultCenter);
 
 			#endregion
 
@@ -204,15 +236,10 @@ namespace RD_AAOW
 
 			#region Страница «оглавления»
 
-			RDInterface.ApplyLabelSettings (uiPages[hdrPage], "ExtendedModeLabel",
-				"Режим сервис-инженера", RDLabelTypes.DefaultLeft);
-			extendedMode = RDInterface.ApplySwitchSettings (uiPages[hdrPage], "ExtendedMode", false,
-				uiColors[hdrPage][cField], ExtendedMode_Toggled, AppSettings.EnableExtendedMode);
-
 			RDInterface.ApplyLabelSettings (uiPages[hdrPage], "FunctionsLabel",
 				"Разделы приложения", RDLabelTypes.HeaderCenter);
-			RDInterface.ApplyLabelSettings (uiPages[hdrPage], "SettingsLabel",
-				"Настройки", RDLabelTypes.HeaderCenter);
+			/*RDInterface.ApplyLabelSettings (uiPages[hdrPage], "SettingsLabel",
+				"Настройки", RDLabelTypes.HeaderCenter);*/
 
 			if (AppSettings.CurrentTab <= aabPage)
 				RDInterface.SetCurrentPage (uiPages[(int)AppSettings.CurrentTab],
@@ -423,23 +450,9 @@ namespace RD_AAOW
 			RDInterface.ApplyButtonSettings (uiPages[aabPage], "HelpButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_HelpSupport),
 				uiColors[aabPage][cField], HelpButton_Click, false);
-			RDInterface.ApplyLabelSettings (uiPages[aabPage], "GenericSettingsLabel",
+			/*RDInterface.ApplyLabelSettings (uiPages[aabPage], "GenericSettingsLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_GenericSettings),
-				RDLabelTypes.HeaderLeft);
-
-			RDInterface.ApplyLabelSettings (uiPages[aabPage], "RestartTipLabel",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Message_RestartRequired),
-				RDLabelTypes.TipCenter);
-
-			RDInterface.ApplyLabelSettings (uiPages[aabPage], "FontSizeLabel",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Control_InterfaceFontSize),
-				RDLabelTypes.DefaultLeft);
-			RDInterface.ApplyButtonSettings (uiPages[aabPage], "FontSizeInc",
-				RDDefaultButtons.Increase, uiColors[aabPage][cField], FontSizeButton_Clicked);
-			RDInterface.ApplyButtonSettings (uiPages[aabPage], "FontSizeDec",
-				RDDefaultButtons.Decrease, uiColors[aabPage][cField], FontSizeButton_Clicked);
-			aboutFontSizeField = RDInterface.ApplyLabelSettings (uiPages[aabPage], "FontSizeField",
-				" ", RDLabelTypes.DefaultCenter);
+				RDLabelTypes.HeaderLeft);*/
 
 			RDInterface.ApplyLabelSettings (uiPages[aabPage], "HelpHeaderLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
@@ -737,17 +750,17 @@ namespace RD_AAOW
 
 			#endregion
 
-			#region Страница команд нижнего уровня
+			#region Страница словаря терминов
 
-			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindButton",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[llvPage][cField],
-				LowLevelFind_Clicked, false);
-			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindNextButton",
-				NextButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
-			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindBufferButton",
-				BufferButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
+			RDInterface.ApplyButtonSettings (uiPages[tdcPage], "DictionaryFindButton",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[tdcPage][cField],
+				DictionaryFind_Clicked, false);
+			RDInterface.ApplyButtonSettings (uiPages[tdcPage], "DictionaryFindNextButton",
+				NextButton, uiColors[tdcPage][cField], DictionaryFind_Clicked, false);
+			RDInterface.ApplyButtonSettings (uiPages[tdcPage], "DictionaryFindBufferButton",
+				BufferButton, uiColors[tdcPage][cField], DictionaryFind_Clicked, false);
 
-			RDInterface.ApplyLabelSettings (uiPages[llvPage], "ProtocolLabel",
+			/*RDInterface.ApplyLabelSettings (uiPages[llvPage], "ProtocolLabel",
 				"Протокол:", RDLabelTypes.HeaderLeft);
 			lowLevelProtocol = RDInterface.ApplyButtonSettings (uiPages[llvPage], "ProtocolButton",
 				kb.LLCommands.GetProtocolsNames ()[(int)AppSettings.LowLevelProtocol],
@@ -763,18 +776,19 @@ namespace RD_AAOW
 				"Код команды:", RDLabelTypes.HeaderLeft);
 			lowLevelCommandCode = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandCodeButton",
 				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, false),
-				uiColors[llvPage][cField], Field_Clicked, true);
+				uiColors[llvPage][cField], Field_Clicked, true);*/
 
-			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescrLabel",
-				"Пояснение:", RDLabelTypes.HeaderLeft);
+			RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescrLabel",
+				"Описание:", RDLabelTypes.HeaderLeft);
 
-			lowLevelCommandDescr = RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescr",
-				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true),
-				RDLabelTypes.Field, uiColors[llvPage][cField]);
+			dictionaryDescriptionField = RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescr",
+				"",
+				/*kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true)*/
+				RDLabelTypes.Field, uiColors[tdcPage][cField]);
 
-			RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
+			/*RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена",
-				RDLabelTypes.TipCenter);
+				RDLabelTypes.TipCenter);*/
 
 			#endregion
 
@@ -1063,14 +1077,6 @@ namespace RD_AAOW
 			AppSettings.UserGuidesFlags = (uint)UserManualFlags;
 			}
 
-		/*/// <summary>
-		/// Возврат в интерфейс
-		/// </summary>
-		protected override void OnResume ()
-			{
-			RDGenerics.AppIsRunning = true;
-			}*/
-
 		#endregion
 
 		#region Коды ошибок ККТ
@@ -1221,9 +1227,9 @@ namespace RD_AAOW
 
 		#endregion
 
-		#region Команды нижнего уровня
+		#region Словарь терминов
 
-		// Выбор команды нижнего уровня
+		/*// Выбор команды нижнего уровня
 		private async void LowLevelCommandCodeButton_Clicked (object sender, EventArgs e)
 			{
 			// Запрос кода ошибки
@@ -1263,25 +1269,25 @@ namespace RD_AAOW
 
 			// Вызов вложенного обработчика
 			LowLevelCommandCodeButton_Clicked (sender, null);
-			}
+			}*/
 
 		// Поиск по названию команды нижнего уровня
-		private async void LowLevelFind_Clicked (object sender, EventArgs e)
+		private async void DictionaryFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
 			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
-				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
-				AppSettings.LowLevelSearchMaxLength);
+				AppSettings.DictionarySearch, "Введите термин или его сокращение",
+				AppSettings.DictionarySearchMaxLength);
 			if (search[1] == "C")
 				return;
 
-			AppSettings.LowLevelSearch = search[0];
+			AppSettings.DictionarySearch = search[0];
 			if (search[1] == "I")
 				lastCommandSearchOffset++;
 			else
 				lastCommandSearchOffset = 0;
 
-			List<string> codes = kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol);
+			/*List<string> codes = kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol);
 
 			for (int i = 0; i < codes.Count; i++)
 				{
@@ -1299,7 +1305,7 @@ namespace RD_AAOW
 
 					return;
 					}
-				}
+				}*/
 			}
 
 		#endregion
@@ -1755,8 +1761,8 @@ namespace RD_AAOW
 					RDInterface.MasterFontSize -= 0.5;
 				}
 
-			aboutFontSizeField.Text = RDInterface.MasterFontSize.ToString ("F1");
-			aboutFontSizeField.FontSize = RDInterface.MasterFontSize;
+			fontSizeField.Text = RDInterface.MasterFontSize.ToString ("F1");
+			fontSizeField.FontSize = RDInterface.MasterFontSize;
 			}
 
 		#endregion

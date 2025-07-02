@@ -17,21 +17,6 @@
 					WidthRequest="200" Color="#606060" Margin="9" />
 
 			<Label />
-			<Label x:Name="GenericSettingsLabel" />
-			<Label x:Name="RestartTipLabel" />
-
-			<StackLayout Orientation="Horizontal">
-				<Label x:Name="FontSizeLabel" VerticalOptions="Center" />
-
-				<Button x:Name="FontSizeInc" VerticalOptions="Center" />
-				<Label x:Name="FontSizeField" VerticalOptions="Center" />
-				<Button x:Name="FontSizeDec" VerticalOptions="Center" />
-			</StackLayout>
-
-			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
-					WidthRequest="200" Color="#505050" Margin="9" />
-
-			<Label />
 			<Label x:Name="HelpHeaderLabel" />
 			<Label x:Name="HelpTextLabel" />
 

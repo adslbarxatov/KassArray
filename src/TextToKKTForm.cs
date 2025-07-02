@@ -89,9 +89,9 @@ namespace RD_AAOW
 			KKTListForErrors.Items.AddRange (kb.Errors.GetKKTTypeNames ().ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
 
-			LowLevelProtocol.Items.AddRange (kb.LLCommands.GetProtocolsNames ().ToArray ());
+			/*LowLevelProtocol.Items.AddRange (kb.LLCommands.GetProtocolsNames ().ToArray ());
 			LowLevelProtocol.SelectedIndex = (int)AppSettings.LowLevelProtocol;
-			LowLevelProtocol_CheckedChanged (null, null);
+			LowLevelProtocol_CheckedChanged (null, null);*/
 
 			OFDNamesList.Items.Add ("Неизвестный ОФД");
 			OFDNamesList.Items.AddRange (kb.Ofd.GetOFDNames (false).ToArray ());
@@ -145,7 +145,7 @@ namespace RD_AAOW
 			CDNSite.Text = KassArrayDB::RD_AAOW.OFD.CDNSite;
 			LoadOFDParameters ();
 
-			LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;
+			/*LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;*/
 
 			try
 				{
@@ -190,8 +190,13 @@ namespace RD_AAOW
 			ConvertHexField.Text = AppSettings.ConversionHex;
 			ConvertTextField.Text = AppSettings.ConversionText;
 
+			// !!! ВРЕМЕННО !!!
+			LLFindBufferButton.Enabled = LLFindButton.Enabled = LLFindNextButton.Enabled =
+				LLLabel.Enabled = LLDescription.Enabled = false;
+			// !!! ВРЕМЕННО !!!
+
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = LowLevelTab.Enabled = TLVTab.Enabled = ConnectorsTab.Enabled =
+			RNMGenerate.Visible /*= DictionaryTab.Enabled*/ = TLVTab.Enabled = ConnectorsTab.Enabled =
 				PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;   // Уровень 2
 			CodesTab.Enabled = AppSettings.EnableExtendedMode;  // Уровень 1
 			AddManualLogo.Visible = ManualLogo.Visible = AppSettings.EnableExtendedMode &&
@@ -345,8 +350,8 @@ namespace RD_AAOW
 
 			AppSettings.OFDINN = OFDINN.Text;
 
-			AppSettings.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
-			AppSettings.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
+			/*AppSettings.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
+			AppSettings.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;*/
 
 			AppSettings.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			AppSettings.CodesText = TextToConvert.Text;
@@ -1057,9 +1062,9 @@ namespace RD_AAOW
 
 		#endregion
 
-		#region Команды нижнего уровня
+		#region Словарь терминов
 
-		// Выбор списка команд нижнего уровня
+		/*// Выбор списка команд нижнего уровня
 		private void LowLevelProtocol_CheckedChanged (object sender, EventArgs e)
 			{
 			LowLevelCommand.Items.Clear ();
@@ -1074,7 +1079,7 @@ namespace RD_AAOW
 				(uint)LowLevelCommand.SelectedIndex, false);
 			LowLevelCommandDescr.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
 				(uint)LowLevelCommand.SelectedIndex, true);
-			}
+			}*/
 
 		// Поиск по тексту ошибки
 		private void LowLevelSearch_Click (object sender, EventArgs e)
@@ -1082,21 +1087,21 @@ namespace RD_AAOW
 			// Определение запроса
 			TMSet (false);
 			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
-				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
-				AppSettings.LowLevelSearchMaxLength);
+				AppSettings.DictionarySearch, "Введите термин или его сокращение",
+				AppSettings.DictionarySearchMaxLength);
 			TMSet (true);
 
 			if (search[1] == "C")
 				return;
 
-			AppSettings.LowLevelSearch = search[0];
+			AppSettings.DictionarySearch = search[0];
 			if (search[1] == "I")
 				lastLowLevelSearchOffset++;
 			else
 				lastLowLevelSearchOffset = 0;
 
 			// Поиск
-			List<string> codes = kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
+			/*List<string> codes = kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
 
 			for (int i = 0; i < codes.Count; i++)
 				{
@@ -1106,7 +1111,7 @@ namespace RD_AAOW
 						(i + lastLowLevelSearchOffset) % codes.Count;
 					return;
 					}
-				}
+				}*/
 			}
 
 		#endregion

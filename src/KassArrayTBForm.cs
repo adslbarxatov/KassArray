@@ -85,12 +85,21 @@ namespace RD_AAOW
 				}
 
 			// Подключение к прослушиванию системного события вызова окна
-			try
+			if (!RDGenerics.StartedFromMSStore)
 				{
-				ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);
+				try
+					{
+					ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);
+					}
+				catch { }
+				ShowWindowTimer.Enabled = true;
 				}
-			catch { }
-			ShowWindowTimer.Enabled = true;
+
+			// Отключение запроса из ФН
+			else
+				{
+				GetFromFN.Visible = false;
+				}
 			}
 
 		private void KassArrayTBForm_Shown (object sender, EventArgs e)
@@ -229,8 +238,8 @@ namespace RD_AAOW
 				AddressBuildingLabel.Enabled = AddressBuildingField.Enabled =
 				AddressAppartmentLabel.Enabled = AddressAppartmentField.Enabled =
 				PlaceLabel.Enabled = PlaceField.Enabled = !finish;
-			if (!AddressRegionCodeLabel.Enabled)
-				AddressRegionCodeCombo.SelectedIndex = 0;
+			/*if (!AddressRegionCodeLabel.Enabled)
+				AddressRegionCodeCombo.SelectedIndex = 0;*/
 
 			LotteryFlag.Enabled = GamblingFlag.Enabled = GamblingExchangeFlag.Enabled =
 				BankAgentFlag.Enabled = AgentFlag.Enabled = DeliveryFlag.Enabled =
@@ -486,6 +495,20 @@ namespace RD_AAOW
 				return;
 				}
 
+			if (FNOpenDateField.Enabled && FNCloseDateField.Enabled &&
+				(FNCloseDateField.Value.Year > FNCloseDateField.MinDate.Year) &&
+				(FNOpenDateField.Value.Year > FNOpenDateField.MinDate.Year) &&
+
+				(FNOpenDateField.Value < FNCloseDateField.Value))
+				{
+				if (RDInterface.MessageBox (RDMessageFlags.Question | RDMessageFlags.LockSmallSize,
+					"Отчёт о (пере)регистрации старше отчёта о закрытии архива ФН. Если это – ожидаемая " +
+					"ситуация, и все реквизиты заполнены корректно, нажмите кнопку «Далее»",
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Next),
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel)) != RDMessageButtons.ButtonOne)
+					return;
+				}
+
 			#endregion
 
 			#region Сборка шаблона заявления
@@ -578,7 +601,7 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.FNSerialNumber, FNSerialField.Text);
 
 			KATBSupport.ApplyField (BlankFields.UserAddressRegionCode,
-				(AddressRegionCodeCombo.SelectedIndex == 0) ? "" :
+				(AddressRegionCodeCombo.SelectedIndex == 0) || !AddressRegionCodeCombo.Enabled ? "" :
 				AddressRegionCodeCombo.Text.Substring (0, 2));
 			KATBSupport.ApplyField (BlankFields.UserAddressIndex, AddressIndexField.Text);
 			KATBSupport.ApplyField (BlankFields.UserAddressArea, AddressAreaField.Text);
@@ -615,7 +638,7 @@ namespace RD_AAOW
 			if (AutomatAddressIsSame.Checked)
 				{
 				KATBSupport.ApplyField (BlankFields.AutomatAddressRegionCode,
-					(AddressRegionCodeCombo.SelectedIndex == 0) ? "" :
+					(AddressRegionCodeCombo.SelectedIndex == 0) || !AddressRegionCodeCombo.Enabled ? "" :
 					AddressRegionCodeCombo.Text.Substring (0, 2));
 
 				KATBSupport.ApplyField (BlankFields.AutomatAddressIndex, AddressIndexField.Text);
@@ -732,52 +755,14 @@ namespace RD_AAOW
 			{
 			#region Получение реквизитов отчётов
 
+			// Регистрационный номер
 			string res = "";
 			string masterRN = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.RegistrationNumber, true);
 			if (KKTRNMField.Enabled)
 				KKTRNMField.Text = masterRN;
 
-			string fnOpen = "";
-			string rnOpen = "";
-			try
-				{
-				fnOpen = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.FNOpenFileName,
-					RDGenerics.GetEncoding (RDEncodings.CP1251));
-				}
-			catch { }
-
-			if (!string.IsNullOrWhiteSpace (fnOpen))
-				{
-				string[] lines = fnOpen.Split (['\n'], StringSplitOptions.RemoveEmptyEntries);
-				if (lines.Length >= 5)
-					{
-					rnOpen = lines[0];
-
-					if (FNOpenFPDField.Enabled && (masterRN == rnOpen))
-						{
-						int idx = lines[2].IndexOf (':');
-						FNOpenFDField.Text = lines[2].Substring (idx + 2);
-						idx = lines[3].IndexOf (':');
-						FNOpenDateField.Value = DateTime.Parse (lines[3].Substring (idx + 2).Replace (',', ' '));
-						idx = lines[4].IndexOf (':');
-						FNOpenFPDField.Text = lines[4].Substring (idx + 2);
-						}
-					}
-				}
-
-			if (string.IsNullOrWhiteSpace (rnOpen))
-				res += "• Не удалось получить реквизиты отчёта о фискализации ФН";
-			else if (masterRN != rnOpen)
-				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
-					"из-за несовпадения регистрационного номера";
-			else if (!FNOpenFPDField.Enabled)
-				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
-					"из-за неподходящего типа заявления";
-			else
-				res += "• Получены реквизиты отчёта о фискализации ФН";
-			res += RDLocale.RNRN;
-
+			// Закрытие архива
 			string fnClose = "";
 			string rnClose = "";
 			try
@@ -817,6 +802,56 @@ namespace RD_AAOW
 					FNChangeFlag.Text + "»";
 			else
 				res += "• Получены реквизиты отчёта о закрытии архива ФН";
+			res += RDLocale.RNRN;
+
+			// Регистрация или перерегистрация
+			string fnOpen = "";
+			string rnOpen = "";
+			try
+				{
+				fnOpen = File.ReadAllText (KassArrayDB::RD_AAOW.KKTSupport.FNOpenFileName,
+					RDGenerics.GetEncoding (RDEncodings.CP1251));
+				}
+			catch { }
+
+			bool openIsOlder = false;
+			if (!string.IsNullOrWhiteSpace (fnOpen))
+				{
+				string[] lines = fnOpen.Split (['\n'], StringSplitOptions.RemoveEmptyEntries);
+				if (lines.Length >= 5)
+					{
+					rnOpen = lines[0];
+
+					// Помимо прочего отчёт о (пере)регистрации не должен быть старше отчёта о закрытии
+					// более чем на месяц (в норме)
+					int idx = lines[3].IndexOf (':');
+					DateTime dto = DateTime.Parse (lines[3].Substring (idx + 2).Replace (',', ' '));
+					openIsOlder = (FNCloseDateField.Value > dto.AddMonths (1));
+
+					if (FNOpenFPDField.Enabled && (masterRN == rnOpen) && !openIsOlder)
+						{
+						idx = lines[2].IndexOf (':');
+						FNOpenFDField.Text = lines[2].Substring (idx + 2);
+						FNOpenDateField.Value = dto;
+						idx = lines[4].IndexOf (':');
+						FNOpenFPDField.Text = lines[4].Substring (idx + 2);
+						}
+					}
+				}
+
+			if (string.IsNullOrWhiteSpace (rnOpen))
+				res += "• Не удалось получить реквизиты отчёта о фискализации ФН";
+			else if (masterRN != rnOpen)
+				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
+					"из-за несовпадения регистрационного номера";
+			else if (!FNOpenFPDField.Enabled)
+				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы " +
+					"из-за неподходящего типа заявления";
+			else if (openIsOlder)
+				res += "• Реквизиты отчёта о фискализации ФН получены, но проигнорированы, " +
+					"т.к. отчёт старше закрытия архива более чем на месяц";
+			else
+				res += "• Получены реквизиты отчёта о фискализации ФН";
 			res += RDLocale.RNRN;
 
 			#endregion
