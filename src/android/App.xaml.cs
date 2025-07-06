@@ -62,8 +62,7 @@ namespace RD_AAOW
 			cableDescriptionText,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
 			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
-			/*lowLevelCommandDescr,*/
-			dictionaryDescriptionField,
+			dictionaryDescriptionField, dictionaryLabelField,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, ofdDisabledLabel, convNumberResultField, convCodeResultField,
 			fontSizeField;
@@ -76,7 +75,7 @@ namespace RD_AAOW
 			errorsKKTButton, userManualsKKTButton, userManualsPrintButton,
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdINN,
-			/*lowLevelProtocol, lowLevelCommand, lowLevelCommandCode,*/ rnmGenerate, convCodeSymbolField,
+			rnmGenerate, convCodeSymbolField,
 			encodingButton, fnLifeStatus, sampleNextButton;
 		private List<Button> uiButtons = [];
 
@@ -99,11 +98,11 @@ namespace RD_AAOW
 		// Опорные классы
 		private KnowledgeBase kb;
 
-		// Поисковые состояния
+		/*// Поисковые состояния
 		private int lastErrorSearchOffset = 0;
 		private int lastCommandSearchOffset = 0;
 		private int lastOFDSearchOffset = 0;
-		private int lastConnSearchOffset = 0;
+		private int lastConnSearchOffset = 0;*/
 
 		// Сообщение о применимости модели ФН
 		private string fnLifeMessage = "";
@@ -176,11 +175,9 @@ namespace RD_AAOW
 			uiPages.Add (ApplyPageSettings (new TermsDictionaryPage (),
 				"Словарь терминов", uiColors[tdcPage][cBack], true));
 
-			// !!! ВРЕМЕННО !!!
+			/*// !!! ВРЕМЕННО !!!
 			uiButtons[tdcPage - 1].IsVisible = false;
-			// !!! ВРЕМЕННО !!!
-
-			/*uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2*/
+			// !!! ВРЕМЕННО !!!*/
 
 			uiPages.Add (ApplyPageSettings (new KKTCodesPage (),
 				"Перевод текста в коды ККТ", uiColors[codPage][cBack], true));
@@ -782,9 +779,9 @@ namespace RD_AAOW
 				"Описание:", RDLabelTypes.HeaderLeft);
 
 			dictionaryDescriptionField = RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescr",
-				"",
-				/*kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true)*/
-				RDLabelTypes.Field, uiColors[tdcPage][cField]);
+				"", RDLabelTypes.Field, uiColors[tdcPage][cField]);
+			dictionaryLabelField = RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescrLabel",
+				"", RDLabelTypes.HeaderCenter, uiColors[tdcPage][cField]);
 
 			/*RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена",
@@ -1121,7 +1118,7 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.ErrorCode = search[0];
-			if (search[1] == "I")
+			/*if (search[1] == "I")
 				lastErrorSearchOffset++;
 			else
 				lastErrorSearchOffset = 0;
@@ -1146,7 +1143,9 @@ namespace RD_AAOW
 				}
 
 			// Код не найден
-			errorsResultText.Text = "(описание ошибки не найдено)";
+			errorsResultText.Text = "(описание ошибки не найдено)";*/
+			errorsResultText.Text = kb.Errors.FindNext (AppSettings.KKTForErrors,
+				search[0], search[1] == "I");
 			}
 
 		#endregion
@@ -1282,30 +1281,24 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.DictionarySearch = search[0];
-			if (search[1] == "I")
+			/*if (search[1] == "I")
 				lastCommandSearchOffset++;
 			else
-				lastCommandSearchOffset = 0;
+				lastCommandSearchOffset = 0;*/
+			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");
 
-			/*List<string> codes = kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol);
-
-			for (int i = 0; i < codes.Count; i++)
+			int idx = res.IndexOf ('\x1');
+			if (idx < 0)
 				{
-				if (codes[(i + lastCommandSearchOffset) % codes.Count].ToLower ().Contains (search[0]))
-					{
-					lastCommandSearchOffset = (i + lastCommandSearchOffset) % codes.Count;
-
-					lowLevelCommand.Text = codes[lastCommandSearchOffset];
-					AppSettings.LowLevelCode = (uint)lastCommandSearchOffset;
-
-					lowLevelCommandCode.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol,
-						(uint)lastCommandSearchOffset, false);
-					lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol,
-						(uint)lastCommandSearchOffset, true);
-
-					return;
-					}
-				}*/
+				dictionaryLabelField.Text = res;
+				dictionaryDescriptionField.Text = "";
+				}
+			else
+				{
+				string[] values = res.Split (['\x1']);
+				dictionaryLabelField.Text = values[0];
+				dictionaryDescriptionField.Text = values[1];
+				}
 			}
 
 		#endregion
@@ -1708,7 +1701,7 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.OFDSearch = search[0];
-			if (search[1] == "I")
+			/*if (search[1] == "I")
 				lastOFDSearchOffset++;
 			else
 				lastOFDSearchOffset = 0;
@@ -1731,7 +1724,19 @@ namespace RD_AAOW
 					OFDINN_TextChanged (null, null);
 					return;
 					}
+				}*/
+			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");
+			if (idx < 0)
+				{
+				RDInterface.ShowBalloon ("По указанному запросу ОФД не найден", true);
+				return;
 				}
+
+			List<string> codes = kb.Ofd.GetOFDNames (false);
+			ofdNameButton.Text = codes[idx];
+
+			AppSettings.OFDINN = ofdINN.Text = kb.Ofd.GetOFDINNByName (ofdNameButton.Text);
+			OFDINN_TextChanged (null, null);
 			}
 
 		#endregion
@@ -2014,7 +2019,7 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.CableSearch = search[0];
-			if (search[1] == "I")
+			/*if (search[1] == "I")
 				lastConnSearchOffset++;
 			else
 				lastConnSearchOffset = 0;
@@ -2039,7 +2044,16 @@ namespace RD_AAOW
 			// Код не найден
 			cableLeftSideText.Text = "(описание не найдено)";
 			cableLeftPinsText.Text = cableRightSideText.Text = cableRightPinsText.Text =
-				cableDescriptionText.Text = "";
+				cableDescriptionText.Text = "";*/
+			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");
+			if (idx < 0)
+				{
+				RDInterface.ShowBalloon ("По указанному запросу распиновка не найдена", true);
+				return;
+				}
+
+			AppSettings.CableType = (uint)idx;
+			CableTypeButton_Clicked (null, null);
 			}
 
 		#endregion

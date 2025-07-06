@@ -16,8 +16,9 @@
 					WidthRequest="200" Color="#505050" Margin="6" />
 
 			<Label x:Name="DictionaryDescrLabel" />
-			<Label x:Name="DictionaryDescr" />
+			<Label />
 
+			<Label x:Name="DictionaryDescr" />
 			<Label />
 
 		</StackLayout>

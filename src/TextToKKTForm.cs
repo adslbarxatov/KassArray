@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+/*using System.Diagnostics;*/
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -24,12 +24,12 @@ namespace RD_AAOW
 		// Сообщение о применимости ФН
 		private string fnLifeMessage = "";
 
-		// Ссылки на текущие смещения в списках поиска
+		/*// Ссылки на текущие смещения в списках поиска
 		private int lastErrorSearchOffset = 0;
 
 		private int lastOFDSearchOffset = 0;
 		private int lastLowLevelSearchOffset = 0;
-		private int lastConnSearchOffset = 0;
+		private int lastConnSearchOffset = 0;*/
 
 		// Число режимов преобразования
 		private uint encodingModesCount;
@@ -124,7 +124,7 @@ namespace RD_AAOW
 				KKTListForErrors.SelectedIndex = 0;
 				}
 
-			lastErrorSearchOffset = 0;	// Требуется переопределение из-за срабатывания косвенных триггеров
+			/*lastErrorSearchOffset = 0;	// Требуется переопределение из-за срабатывания косвенных триггеров*/
 			ErrorFindButton_Click (ErrorFindNextButton, null);
 
 			FNLifeEvFlags = (KassArrayDB::RD_AAOW.FNLifeFlags)AppSettings.FNLifeEvFlags;
@@ -146,6 +146,7 @@ namespace RD_AAOW
 			LoadOFDParameters ();
 
 			/*LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;*/
+			LowLevelSearch_Click (LLFindNextButton, null);
 
 			try
 				{
@@ -190,13 +191,13 @@ namespace RD_AAOW
 			ConvertHexField.Text = AppSettings.ConversionHex;
 			ConvertTextField.Text = AppSettings.ConversionText;
 
-			// !!! ВРЕМЕННО !!!
+			/*// !!! ВРЕМЕННО !!!
 			LLFindBufferButton.Enabled = LLFindButton.Enabled = LLFindNextButton.Enabled =
 				LLLabel.Enabled = LLDescription.Enabled = false;
-			// !!! ВРЕМЕННО !!!
+			// !!! ВРЕМЕННО !!!*/
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible /*= DictionaryTab.Enabled*/ = TLVTab.Enabled = ConnectorsTab.Enabled =
+			RNMGenerate.Visible = TLVTab.Enabled = ConnectorsTab.Enabled =
 				PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;   // Уровень 2
 			CodesTab.Enabled = AppSettings.EnableExtendedMode;  // Уровень 1
 			AddManualLogo.Visible = ManualLogo.Visible = AppSettings.EnableExtendedMode &&
@@ -633,7 +634,8 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.ErrorCode = search[0];
-			if (search[1] == "I")
+			ErrorText.Text = kb.Errors.FindNext ((uint)KKTListForErrors.SelectedIndex, search[0], search[1] == "I");
+			/*if (search[1] == "I")
 				lastErrorSearchOffset++;
 			else
 				lastErrorSearchOffset = 0;
@@ -658,7 +660,7 @@ namespace RD_AAOW
 				}
 
 			// Код не найден
-			ErrorText.Text += "описание ошибки не найдено";
+			ErrorText.Text += "описание ошибки не найдено";*/
 			}
 
 		#endregion
@@ -1040,7 +1042,13 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.OFDSearch = search[0];
-			if (search[1] == "I")
+			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");
+			if (idx < 0)
+				OFDNamesList.SelectedIndex = 0;
+			else
+				OFDNamesList.SelectedIndex = idx;
+
+			/*if (search[1] == "I")
 				lastOFDSearchOffset++;
 			else
 				lastOFDSearchOffset = 0;
@@ -1057,7 +1065,7 @@ namespace RD_AAOW
 					OFDNamesList.SelectedIndex = lastOFDSearchOffset % (codes.Count / 2) + 1;
 					return;
 					}
-				}
+				}*/
 			}
 
 		#endregion
@@ -1095,13 +1103,15 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.DictionarySearch = search[0];
-			if (search[1] == "I")
+			/*if (search[1] == "I")
 				lastLowLevelSearchOffset++;
 			else
-				lastLowLevelSearchOffset = 0;
+				lastLowLevelSearchOffset = 0;*/
+			/*if (string.IsNullOrWhiteSpace (LLDescription.Text))
+				LLDescription.Text = search[0] + RDLocale.RNRN + "(описание термина не найдено)";
 
 			// Поиск
-			/*List<string> codes = kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
+			List<string> codes = kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
 
 			for (int i = 0; i < codes.Count; i++)
 				{
@@ -1112,6 +1122,20 @@ namespace RD_AAOW
 					return;
 					}
 				}*/
+			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");
+
+			int idx = res.IndexOf ('\x1');
+			if (idx < 0)
+				{
+				LLLabel.Text = res;
+				LLDescription.Text = "";
+				}
+			else
+				{
+				string[] values = res.Split (['\x1']);
+				LLLabel.Text = values[0];
+				LLDescription.Text = values[1];
+				}
 			}
 
 		#endregion
@@ -1375,7 +1399,7 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.CableSearch = search[0];
-			if (search[1] == "I")
+			/*if (search[1] == "I")
 				lastConnSearchOffset++;
 			else
 				lastConnSearchOffset = 0;
@@ -1393,11 +1417,18 @@ namespace RD_AAOW
 					CableType.SelectedIndex = lastConnSearchOffset = j;
 					return;
 					}
-				}
+				}*/
 
-			// Код не найден
-			CableLeftSide.Text = "(описание не найдено)";
-			CableLeftPins.Text = CableRightPins.Text = CableLeftDescription.Text = CableRightSide.Text = "";
+			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");
+			if (idx < 0)
+				{
+				CableLeftSide.Text = "(описание не найдено)";
+				CableLeftPins.Text = CableRightPins.Text = CableLeftDescription.Text = CableRightSide.Text = "";
+				}
+			else
+				{
+				CableType.SelectedIndex = idx;
+				}
 			}
 
 		#endregion
@@ -1512,7 +1543,6 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.ConversionCodeSearch = search[0];
-
 			ulong left = kb.Unicodes.FindRange (search[0]);
 			if (left != 0)
 				{

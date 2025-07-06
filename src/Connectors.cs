@@ -20,6 +20,8 @@ namespace RD_AAOW
 		private List<uint> cablesLeftDescriptions = [];
 		private List<uint> cablesRightDescriptions = [];
 
+		private int lastSearchOffset = 0;
+
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
@@ -154,6 +156,37 @@ namespace RD_AAOW
 				default:
 					return "";
 				}
+			}
+
+		/// <summary>
+		/// Метод выполняет поиск указанного ключевого слова в справочнике разъёмов
+		/// </summary>
+		/// <param name="Criteria">Ключевое слово для поиска</param>
+		/// <param name="Continue">Флаг продолжения поиска в порядке следования терминов</param>
+		/// <returns>Возвращает номер найденного разъёма либо -1, если разъём не был найден</returns>
+		public int FindNext (string Criteria, bool Continue)
+			{
+			string criteria = Criteria.ToLower ();
+			if (!Continue)
+				lastSearchOffset = 0;
+			else
+				lastSearchOffset++;
+
+			// Поиск
+			for (int i = 0; i < cablesNames.Count; i++)
+				{
+				int j = (i + lastSearchOffset) % cablesNames.Count;
+				string conn = cablesNames[j].ToLower ();
+
+				if (conn.Contains (criteria))
+					{
+					lastSearchOffset = j;
+					return j;
+					}
+				}
+
+			// Не найдено
+			return -1;
 			}
 		}
 	}

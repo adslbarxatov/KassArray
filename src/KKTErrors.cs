@@ -12,13 +12,14 @@ namespace RD_AAOW
 		// Переменные
 		private List<List<KKTError>> errors = [];
 		private List<string> names = [];
-		private char[] splitters = [ ';' ];
-
-		// Константы
+		private char[] splitters = [';'];
+		private int lastSearchOffset = 0;
+		
+		/*// Константы
 		/// <summary>
 		/// Код, возвращаемый при указании некорректных параметров
 		/// </summary>
-		public const string EmptyCode = "\x7";
+		public const string EmptyCode = "\x7";*/
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу ошибок
@@ -68,7 +69,7 @@ namespace RD_AAOW
 			SR.Close ();
 			}
 
-		/// <summary>
+		/*/// <summary>
 		/// Метод возвращает список ошибок ККТ
 		/// </summary>
 		/// <param name="KKTType">Модель ККТ</param>
@@ -103,7 +104,7 @@ namespace RD_AAOW
 				return errors[(int)KKTType][(int)ErrorNumber].ErrorText;
 
 			return EmptyCode;
-			}
+			}*/
 
 		/// <summary>
 		/// Метод возвращает список названий ККТ
@@ -111,6 +112,39 @@ namespace RD_AAOW
 		public List<string> GetKKTTypeNames ()
 			{
 			return names;
+			}
+
+		/// <summary>
+		/// Метод выполняет поиск указанного ключевого слова в списке ошибок ККТ
+		/// </summary>
+		/// <param name="Criteria">Ключевое слово для поиска</param>
+		/// <param name="Continue">Флаг продолжения поиска в порядке следования терминов</param>
+		/// <returns>Возвращает описание ошибки либо пустую строку, если ошибка не была найдена</returns>
+		public string FindNext (uint KKTType, string Criteria, bool Continue)
+			{
+			int idx = (int)KKTType;
+			string criteria = Criteria.ToLower ();
+			if (!Continue)
+				lastSearchOffset = 0;
+			else
+				lastSearchOffset++;
+
+			for (int i = 0; i < errors[idx].Count; i++)
+				{
+				int j = (i + lastSearchOffset) % errors[idx].Count;
+				string code = errors[idx][j].ErrorCode.ToLower ();
+				string res = errors[idx][j].ErrorText;
+
+				if (code.Contains (criteria) || res.ToLower ().Contains (criteria) ||
+					code.Contains ('?') && criteria.Contains (code.Replace ("?", "")))
+					{
+					lastSearchOffset = j;
+					return errors[idx][j].ErrorCode + ": " + res;
+					}
+				}
+
+			// Код не найден
+			return "(описание ошибки не найдено)";
 			}
 		}
 

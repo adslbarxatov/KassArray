@@ -25,6 +25,7 @@ namespace RD_AAOW
 
 		private List<string> disabledMessages = [];
 
+		private int lastSearchOffset = 0;
 		private const string notFound = "[не найдено]";
 		private const string notFoundFlag = "?";
 		private const string equivalentFlag = "=";
@@ -201,5 +202,43 @@ namespace RD_AAOW
 			// Возврат
 			return inn[names.IndexOf (OFDName)];
 			}
+
+		/// <summary>
+		/// Метод выполняет поиск указанного ключевого слова в списке ОФД
+		/// </summary>
+		/// <param name="Criteria">Ключевое слово для поиска</param>
+		/// <param name="Continue">Флаг продолжения поиска в порядке следования терминов</param>
+		/// <returns>Возвращает номер найденного ОФД либо -1, если ОФД не был найден</returns>
+		public int FindNext (string Criteria, bool Continue)
+			{
+			string criteria = Criteria.ToLower ();
+			if (!Continue)
+				lastSearchOffset = 0;
+			else
+				lastSearchOffset++;
+
+			// Поиск
+			if (searchList.Count < 1)
+				{
+				searchList.AddRange (GetOFDNames (false));
+				searchList.AddRange (GetOFDINNs ());
+
+				for (int i = 0; i < searchList.Count; i++)
+					searchList[i] = searchList[i].ToLower ();
+				}
+
+			for (int i = 0; i < searchList.Count; i++)
+				{
+				if (searchList[(i + lastSearchOffset) % searchList.Count].Contains (criteria))
+					{
+					lastSearchOffset = (i + lastSearchOffset) % searchList.Count;
+					return (lastSearchOffset % (searchList.Count / 2) + 1);
+					}
+				}
+
+			// Не найдено
+			return -1;
+			}
+		private List<string> searchList = [];
 		}
 	}

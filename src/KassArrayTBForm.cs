@@ -95,10 +95,18 @@ namespace RD_AAOW
 				ShowWindowTimer.Enabled = true;
 				}
 
-			// Отключение запроса из ФН
+			// Отключение запроса из ФН и сброс цветового выделения
 			else
 				{
 				GetFromFN.Visible = false;
+				for (int i = 0; i < MainTabControl.TabPages.Count; i++)
+					{
+					for (int j = 0; j < MainTabControl.TabPages[i].Controls.Count; j++)
+						{
+						if ((MainTabControl.TabPages[i].Controls[j].ForeColor.ToArgb () & 0xFFFFFF) == 0xFF)
+							MainTabControl.TabPages[i].Controls[j].ForeColor = BlankTypeLabel.ForeColor;
+						}
+					}
 				}
 			}
 
@@ -386,12 +394,14 @@ namespace RD_AAOW
 				checkRNM = false;
 				}
 
-			if (!string.IsNullOrWhiteSpace (AddressIndexField.Text))
+			if (!string.IsNullOrWhiteSpace (AddressIndexField.Text) ||
+				(AddressRegionCodeCombo.SelectedIndex > 0))
 				{
 				if ((AddressIndexField.Text.Length != 6) || !UInt64.TryParse (AddressIndexField.Text, out _))
 					{
 					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Почтовый индекс должен быть числом, состоящим из 6 цифр." + leftEmpty);
+						"Почтовый индекс должен быть числом, состоящим из 6 цифр. В случае, если регион РФ " +
+						"выбран, это поле является обязательным для заполнения." + leftEmpty);
 					return;
 					}
 				}
@@ -740,7 +750,7 @@ namespace RD_AAOW
 				KassArrayDB::RD_AAOW.PrinterTypes.BlankA4,
 				KassArrayDB::RD_AAOW.PrinterFlags.None);
 			if (!string.IsNullOrWhiteSpace (field))
-				RDInterface.MessageBox (RDMessageFlags.Error | RDMessageFlags.CenterText,
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"Не удалось распечатать документ" + RDLocale.RN + field);
 			else
 				RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
@@ -927,6 +937,31 @@ namespace RD_AAOW
 				"не все данные)" + RDLocale.RN +
 				"• Запрос данных из ФН приводит к замене ранее введённых данных в соответствующих полях";
 			RDInterface.MessageBox (RDMessageFlags.Question | RDMessageFlags.NoSound, res);
+			}
+
+		// Поиск почтового индекса
+		private void FindPostIndex_Click (object sender, EventArgs e)
+			{
+			bool city = !string.IsNullOrWhiteSpace (AddressCityField.Text);
+			bool town = !string.IsNullOrWhiteSpace (AddressTownField.Text);
+
+			if (!city && !town)
+				{
+				RDInterface.MessageBox (RDMessageFlags.CenterText | RDMessageFlags.Warning,
+					"Для поиска почтового индекса нужно указать город или населённый пункт");
+				return;
+				}
+
+			// Населённый пункт – более точная локация
+			if (town)
+				{
+				RDGenerics.RunURL ("https://google.com/search?q=почтовый+индекс+" +
+					AddressTownField.Text.Replace (' ', '+').ToLower ());
+				return;
+				}
+
+			RDGenerics.RunURL ("https://google.com/search?q=почтовый+индекс+" +
+				AddressCityField.Text.Replace (' ', '+').ToLower ());
 			}
 		}
 	}
