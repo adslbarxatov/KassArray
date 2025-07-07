@@ -1046,7 +1046,7 @@ namespace RD_AAOW
 			if (idx < 0)
 				OFDNamesList.SelectedIndex = 0;
 			else
-				OFDNamesList.SelectedIndex = idx;
+				OFDNamesList.SelectedIndex = idx + 1;
 
 			/*if (search[1] == "I")
 				lastOFDSearchOffset++;

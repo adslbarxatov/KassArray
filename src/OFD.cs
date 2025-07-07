@@ -134,13 +134,13 @@ namespace RD_AAOW
 			return res;
 			}
 
-		/// <summary>
+		/*/// <summary>
 		/// Метод возвращает список ИНН ОФД
 		/// </summary>
 		public List<string> GetOFDINNs ()
 			{
 			return new List<string> (inn);
-			}
+			}*/
 
 		/// <summary>
 		/// Метод возвращает параметры указанного ОФД
@@ -220,11 +220,11 @@ namespace RD_AAOW
 			// Поиск
 			if (searchList.Count < 1)
 				{
-				searchList.AddRange (GetOFDNames (false));
-				searchList.AddRange (GetOFDINNs ());
-
+				searchList.AddRange (names);
 				for (int i = 0; i < searchList.Count; i++)
 					searchList[i] = searchList[i].ToLower ();
+
+				searchList.AddRange (inn);
 				}
 
 			for (int i = 0; i < searchList.Count; i++)
@@ -232,7 +232,7 @@ namespace RD_AAOW
 				if (searchList[(i + lastSearchOffset) % searchList.Count].Contains (criteria))
 					{
 					lastSearchOffset = (i + lastSearchOffset) % searchList.Count;
-					return (lastSearchOffset % (searchList.Count / 2) + 1);
+					return (lastSearchOffset % (searchList.Count / 2));
 					}
 				}
 

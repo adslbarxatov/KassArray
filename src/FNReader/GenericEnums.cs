@@ -854,6 +854,11 @@ namespace RD_AAOW
 		/// Результат проверки кода маркировки в ОИСМ
 		/// </summary>
 		MarkCheckResult = 2106,
+
+		/// <summary>
+		/// Признак наличия кодов маркировки с отрицательным результатом проверки
+		/// </summary>
+		MarkBadCodesFlag = 2107,
 		}
 
 	/// <summary>

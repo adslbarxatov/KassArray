@@ -20,7 +20,7 @@ namespace RD_AAOW
 			[ Color.FromArgb ("#E0F0FF"), Color.FromArgb ("#C0E0FF") ],	// 4. RNM
 			[ Color.FromArgb ("#F4F4FF"), Color.FromArgb ("#D0D0FF") ],	// 5. OFD
 			[ Color.FromArgb ("#E0FFF0"), Color.FromArgb ("#C8FFE4") ],	// 6. TLV
-			[ Color.FromArgb ("#FFF0FF"), Color.FromArgb ("#FFC8FF") ],	// 7. Terms dictionary
+			[ Color.FromArgb ("#FFF0FF"), Color.FromArgb ("#F0D8FF") ],	// 7. Terms dictionary
 			[ Color.FromArgb ("#FFFFF0"), Color.FromArgb ("#FFFFD0") ],	// 8. KKT codes
 			[ Color.FromArgb ("#F8FFF0"), Color.FromArgb ("#F0FFE0") ],	// 9. Connectors
 			[ Color.FromArgb ("#FFF4E2"), Color.FromArgb ("#E8D9CF") ],	// 10. Barcodes
@@ -90,6 +90,7 @@ namespace RD_AAOW
 		private DatePicker fnLifeStartDate;
 
 		private StackLayout userManualLayout, menuLayout;
+		private FlexLayout goToButtons;
 
 		#endregion
 
@@ -97,12 +98,6 @@ namespace RD_AAOW
 
 		// Опорные классы
 		private KnowledgeBase kb;
-
-		/*// Поисковые состояния
-		private int lastErrorSearchOffset = 0;
-		private int lastCommandSearchOffset = 0;
-		private int lastOFDSearchOffset = 0;
-		private int lastConnSearchOffset = 0;*/
 
 		// Сообщение о применимости модели ФН
 		private string fnLifeMessage = "";
@@ -226,6 +221,13 @@ namespace RD_AAOW
 				RDDefaultButtons.Decrease, uiColors[setPage][cField], FontSizeButton_Clicked);
 			fontSizeField = RDInterface.ApplyLabelSettings (uiPages[setPage], "FontSizeField",
 				" ", RDLabelTypes.DefaultCenter);
+
+			RDInterface.ApplyLabelSettings (uiPages[setPage], "ExtendedModeTipLabel",
+				"В режиме сервис-инженера открывается доступ к разделам и функциям, предназначенным " +
+				"только для специалистов и опытных пользователей", RDLabelTypes.TipJustify);
+			RDInterface.ApplyLabelSettings (uiPages[setPage], "FontSizeTipLabel",
+				"Размер шрифта интерфейса влияет на все элементы в приложении. Измените его, если " +
+				"автоматическое масштабирование не дало желаемого результата", RDLabelTypes.TipJustify);
 
 			#endregion
 
@@ -757,35 +759,22 @@ namespace RD_AAOW
 			RDInterface.ApplyButtonSettings (uiPages[tdcPage], "DictionaryFindBufferButton",
 				BufferButton, uiColors[tdcPage][cField], DictionaryFind_Clicked, false);
 
-			/*RDInterface.ApplyLabelSettings (uiPages[llvPage], "ProtocolLabel",
-				"Протокол:", RDLabelTypes.HeaderLeft);
-			lowLevelProtocol = RDInterface.ApplyButtonSettings (uiPages[llvPage], "ProtocolButton",
-				kb.LLCommands.GetProtocolsNames ()[(int)AppSettings.LowLevelProtocol],
-				uiColors[llvPage][cField], LowLevelProtocol_Clicked, true);
-
-			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandLabel",
-				"Команда:", RDLabelTypes.HeaderLeft);
-			lowLevelCommand = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandButton",
-				kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol)[(int)AppSettings.LowLevelCode],
-				uiColors[llvPage][cField], LowLevelCommandCodeButton_Clicked, true);
-
-			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandCodeLabel",
-				"Код команды:", RDLabelTypes.HeaderLeft);
-			lowLevelCommandCode = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandCodeButton",
-				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, false),
-				uiColors[llvPage][cField], Field_Clicked, true);*/
-
 			RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescrLabel",
 				"Описание:", RDLabelTypes.HeaderLeft);
 
 			dictionaryDescriptionField = RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescr",
 				"", RDLabelTypes.Field, uiColors[tdcPage][cField]);
-			dictionaryLabelField = RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescrLabel",
-				"", RDLabelTypes.HeaderCenter, uiColors[tdcPage][cField]);
+			dictionaryDescriptionField.FontFamily = RDGenerics.SerifFont;
+			dictionaryDescriptionField.HorizontalTextAlignment = TextAlignment.Justify;
 
-			/*RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
-				"Нажатие кнопки копирует команду в буфер обмена",
-				RDLabelTypes.TipCenter);*/
+			dictionaryLabelField = RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescrLabel",
+				"", RDLabelTypes.HeaderCenter);
+			dictionaryLabelField.FontFamily = RDGenerics.SerifFont;
+
+			RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescrTipLabel",
+				"Термины в квадратных скобках также доступны в словаре", RDLabelTypes.TipCenter);
+			goToButtons = (FlexLayout)uiPages[tdcPage].FindByName ("GoToButtons");
+			DictionaryFind_Clicked (sampleNextButton, null);
 
 			#endregion
 
@@ -1228,48 +1217,6 @@ namespace RD_AAOW
 
 		#region Словарь терминов
 
-		/*// Выбор команды нижнего уровня
-		private async void LowLevelCommandCodeButton_Clicked (object sender, EventArgs e)
-			{
-			// Запрос кода ошибки
-			List<string> list = kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol);
-			int res = 0;
-			if (e != null)
-				res = await RDInterface.ShowList ("Выберите команду:",
-					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
-
-			// Установка результата
-			if ((e == null) || (res >= 0))
-				{
-				AppSettings.LowLevelCode = (uint)res;
-				lowLevelCommand.Text = list[res];
-
-				lowLevelCommandCode.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, false);
-				lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, true);
-				}
-
-			list.Clear ();
-			}
-
-		// Выбор списка команд
-		private async void LowLevelProtocol_Clicked (object sender, EventArgs e)
-			{
-			// Запрос кода ошибки
-			List<string> list = kb.LLCommands.GetProtocolsNames ();
-
-			// Установка результата
-			int res = await RDInterface.ShowList ("Выберите протокол:",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
-			if (res < 0)
-				return;
-
-			AppSettings.LowLevelProtocol = (uint)res;
-			lowLevelProtocol.Text = list[res];
-
-			// Вызов вложенного обработчика
-			LowLevelCommandCodeButton_Clicked (sender, null);
-			}*/
-
 		// Поиск по названию команды нижнего уровня
 		private async void DictionaryFind_Clicked (object sender, EventArgs e)
 			{
@@ -1280,11 +1227,8 @@ namespace RD_AAOW
 			if (search[1] == "C")
 				return;
 
+			// Поиск
 			AppSettings.DictionarySearch = search[0];
-			/*if (search[1] == "I")
-				lastCommandSearchOffset++;
-			else
-				lastCommandSearchOffset = 0;*/
 			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");
 
 			int idx = res.IndexOf ('\x1');
@@ -1292,13 +1236,47 @@ namespace RD_AAOW
 				{
 				dictionaryLabelField.Text = res;
 				dictionaryDescriptionField.Text = "";
+				return;
 				}
-			else
+
+			// Загрузка текста
+			string[] values = res.Split (['\x1']);
+			dictionaryLabelField.Text = values[0];
+			dictionaryDescriptionField.Text = values[1];
+
+			// Поиск ссылок
+			int left = 0, right;
+			List<string> links = [];
+			while ((left = values[1].IndexOf ('[', left)) >= 0)
 				{
-				string[] values = res.Split (['\x1']);
-				dictionaryLabelField.Text = values[0];
-				dictionaryDescriptionField.Text = values[1];
+				left++;
+				right = values[1].IndexOf (']', left);
+				links.Add (values[1].Substring (left, right - left));
 				}
+
+			// Добавление кнопок
+			goToButtons.Children.Clear ();
+			for (int i = 0; i < links.Count; i++)
+				{
+				Button b = new Button ();
+				b.BackgroundColor = uiColors[tdcPage][cField];
+				b.FontAttributes = FontAttributes.None;
+				b.FontSize = RDInterface.MasterFontSize;
+				b.TextColor = RDInterface. GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
+				b.LineBreakMode = LineBreakMode.WordWrap;
+				b.Margin = new Thickness (3);
+				b.Text = links[i];
+				b.TextTransform = TextTransform.None;
+				b.Clicked += GoToButton_Clicked;
+
+				goToButtons.Children.Add (b);
+				}
+			}
+
+		private void GoToButton_Clicked (object sender, EventArgs e)
+			{
+			AppSettings.DictionarySearch = ((Button)sender).Text;
+			DictionaryFind_Clicked (sampleNextButton, null);
 			}
 
 		#endregion
@@ -1701,30 +1679,7 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.OFDSearch = search[0];
-			/*if (search[1] == "I")
-				lastOFDSearchOffset++;
-			else
-				lastOFDSearchOffset = 0;
 
-			// Поиск
-			List<string> codes = kb.Ofd.GetOFDNames (false);
-			codes.AddRange (kb.Ofd.GetOFDINNs ());
-
-			for (int i = 0; i < codes.Count; i++)
-				{
-				if (codes[(i + lastOFDSearchOffset) % codes.Count].ToLower ().Contains (search[0]))
-					{
-					lastOFDSearchOffset = (i + lastOFDSearchOffset) % codes.Count;
-					ofdNameButton.Text = codes[lastOFDSearchOffset % (codes.Count / 2)];
-
-					string s = kb.Ofd.GetOFDINNByName (ofdNameButton.Text);
-					if (s != "")
-						AppSettings.OFDINN = ofdINN.Text = s;
-
-					OFDINN_TextChanged (null, null);
-					return;
-					}
-				}*/
 			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");
 			if (idx < 0)
 				{

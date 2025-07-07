@@ -21,6 +21,12 @@
 			<Label x:Name="DictionaryDescr" />
 			<Label />
 
+			<FlexLayout Direction="Row" JustifyContent="Center" Wrap="Wrap" x:Name="GoToButtons" />
+			<Label />
+
+			<Label x:Name="DictionaryDescrTipLabel" />
+			<Label />
+
 		</StackLayout>
 	</ScrollView>
 </ContentPage>
