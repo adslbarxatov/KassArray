@@ -329,6 +329,7 @@ namespace RD_AAOW
 
 			#region Контроль значений
 
+			// Контроль ИНН, если указан
 			bool checkRNM = true;
 			if (!string.IsNullOrWhiteSpace (INNField.Text))
 				{
@@ -346,6 +347,7 @@ namespace RD_AAOW
 				checkRNM = false;
 				}
 
+			// Контроль ОГРН, если указан
 			if (!string.IsNullOrWhiteSpace (OGRNField.Text))
 				{
 				if ((OGRNField.Text.Length != 13) && (OGRNField.Text.Length != 15) ||
@@ -358,6 +360,7 @@ namespace RD_AAOW
 					}
 				}
 
+			// Контроль КПП, если указан
 			if (!string.IsNullOrWhiteSpace (KPPField.Text))
 				{
 				if ((KPPField.Text.Length != 9) || !UInt64.TryParse (KPPField.Text, out _) ||
@@ -370,6 +373,7 @@ namespace RD_AAOW
 					}
 				}
 
+			// Контроль ЗН ФН, если указан
 			if (!string.IsNullOrWhiteSpace (FNSerialField.Text))
 				{
 				if ((FNSerialField.Text.Length != 16) || !UInt64.TryParse (FNSerialField.Text, out _))
@@ -380,6 +384,7 @@ namespace RD_AAOW
 					}
 				}
 
+			// Контроль РНМ, если указан
 			if (!string.IsNullOrWhiteSpace (KKTRNMField.Text))
 				{
 				if ((KKTRNMField.Text.Length != 16) || !UInt64.TryParse (KKTRNMField.Text, out _))
@@ -394,8 +399,9 @@ namespace RD_AAOW
 				checkRNM = false;
 				}
 
-			if (!string.IsNullOrWhiteSpace (AddressIndexField.Text) ||
-				(AddressRegionCodeCombo.SelectedIndex > 0))
+			// Контроль почтового индекса, если указан или если выбран регион РФ (при условии, что адрес требуется)
+			if (AddressIndexField.Enabled && (!string.IsNullOrWhiteSpace (AddressIndexField.Text) ||
+				(AddressRegionCodeCombo.SelectedIndex > 0)))
 				{
 				if ((AddressIndexField.Text.Length != 6) || !UInt64.TryParse (AddressIndexField.Text, out _))
 					{
@@ -406,6 +412,7 @@ namespace RD_AAOW
 					}
 				}
 
+			// Контроль ФД, если указаны
 			uint v1, v2;
 			if (string.IsNullOrWhiteSpace (FNOpenFDField.Text))
 				{
@@ -447,6 +454,7 @@ namespace RD_AAOW
 				return;
 				}
 
+			// Контроль ФПД, если указаны
 			if (string.IsNullOrWhiteSpace (FNOpenFPDField.Text))
 				{
 				v1 = 1;
@@ -487,6 +495,7 @@ namespace RD_AAOW
 				return;
 				}
 
+			// Контроль причин перерегистрации
 			if (rereg && (OFDVariantCombo.SelectedIndex < 2) && !AddressPlaceChangeFlag.Checked &&
 				!AutomatChangeFlag.Checked && !FNChangeFlag.Checked &&
 				!UserNameChangeFlag.Checked && !OtherChangeFlag.Checked)
@@ -496,6 +505,7 @@ namespace RD_AAOW
 				return;
 				}
 
+			// Контроль РНМ по КС
 			if (checkRNM && !string.IsNullOrWhiteSpace (KKTSerialField.Text) &&
 				(KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (INNField.Text, KKTSerialField.Text,
 				KKTRNMField.Text.Substring (0, 10)) != KKTRNMField.Text))
@@ -505,6 +515,7 @@ namespace RD_AAOW
 				return;
 				}
 
+			// Контроль последовательности ФД
 			if (FNOpenDateField.Enabled && FNCloseDateField.Enabled &&
 				(FNCloseDateField.Value.Year > FNCloseDateField.MinDate.Year) &&
 				(FNOpenDateField.Value.Year > FNOpenDateField.MinDate.Year) &&
@@ -893,8 +904,17 @@ namespace RD_AAOW
 					OFDNameCombo.Text = ofd;
 				}
 
-			AddressFromFN.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
+			string addressFromFN = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.RegistrationAddress, false);
+			string[] affn = addressFromFN.Split ([',', '.', ' '], StringSplitOptions.RemoveEmptyEntries);
+			AddressFromFN.Text = "";
+			for (int i = 0; i < affn.Length; i++)
+				{
+				AddressFromFN.Text += affn[i];
+				if (i < affn.Length - 1)
+					AddressFromFN.Text += RDLocale.RN;
+				}
+
 			if (PlaceField.Enabled)
 				PlaceField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 					(KassArrayDB::RD_AAOW.RegTags.RegistrationPlace, false);
