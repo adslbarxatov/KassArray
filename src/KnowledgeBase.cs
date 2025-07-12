@@ -41,18 +41,6 @@
 			}
 		private OFD ofd;
 
-		/*/// <summary>
-		/// Возвращает справочник команд нижнего уровня
-		/// </summary>
-		public LowLevel LLCommands
-			{
-			get
-				{
-				return ll;
-				}
-			}
-		private LowLevel ll;*/
-
 		/// <summary>
 		/// Возвращает справочник команд нижнего уровня
 		/// </summary>
@@ -157,7 +145,6 @@
 			kktc = new KKTCodes ();
 			kkte = new KKTErrorsList ();
 			ofd = new OFD ();
-			/*ll = new LowLevel ();*/
 			td = new TermsDictionary ();
 			ug = new UserGuides ();
 			kkts = new KKTSerial ();

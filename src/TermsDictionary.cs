@@ -69,12 +69,6 @@ namespace RD_AAOW
 					lastSearchOffset = idx;
 					return shortNames[idx] + RDLocale.RN + longNames[idx] + "\x1" + descriptions[idx];
 					}
-
-				/*if (longNames[idx].ToLower ().Contains (criteria))
-					{
-					lastSearchOffset = idx;
-					return shortNames[idx] + " (" + longNames[idx] + ")\x1" + descriptions[idx];
-					}*/
 				}
 
 			return "(описание термина не найдено)";

@@ -15,12 +15,6 @@ namespace RD_AAOW
 		private char[] splitters = [';'];
 		private int lastSearchOffset = 0;
 		
-		/*// Константы
-		/// <summary>
-		/// Код, возвращаемый при указании некорректных параметров
-		/// </summary>
-		public const string EmptyCode = "\x7";*/
-
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу ошибок
 		/// </summary>
@@ -68,43 +62,6 @@ namespace RD_AAOW
 			// Завершено
 			SR.Close ();
 			}
-
-		/*/// <summary>
-		/// Метод возвращает список ошибок ККТ
-		/// </summary>
-		/// <param name="KKTType">Модель ККТ</param>
-		public List<KKTError> GetErrors (uint KKTType)
-			{
-			return errors[(int)KKTType];
-			}
-
-		/// <summary>
-		/// Метод возвращает список кодов ошибок ККТ
-		/// </summary>
-		/// <param name="KKTType">Модель ККТ</param>
-		public List<string> GetErrorCodesList (uint KKTType)
-			{
-			List<string> res = [];
-
-			for (int i = 0; i < errors[(int)KKTType].Count; i++)
-				res.Add (errors[(int)KKTType][i].ErrorCode);
-
-			return res;
-			}
-
-		/// <summary>
-		/// Метод возвращает описание указанной ошибки
-		/// </summary>
-		/// <param name="KKTType">Модель ККТ</param>
-		/// <param name="ErrorNumber">Порядковый номер сообщения</param>
-		/// <returns>Возвращает описание ошибки или \x7 в случае, если входные параметры некорректны</returns>
-		public string GetErrorText (uint KKTType, uint ErrorNumber)
-			{
-			if (((int)KKTType < names.Count) && ((int)ErrorNumber < errors[(int)KKTType].Count))
-				return errors[(int)KKTType][(int)ErrorNumber].ErrorText;
-
-			return EmptyCode;
-			}*/
 
 		/// <summary>
 		/// Метод возвращает список названий ККТ

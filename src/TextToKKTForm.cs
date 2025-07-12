@@ -24,13 +24,6 @@ namespace RD_AAOW
 		// Сообщение о применимости ФН
 		private string fnLifeMessage = "";
 
-		/*// Ссылки на текущие смещения в списках поиска
-		private int lastErrorSearchOffset = 0;
-
-		private int lastOFDSearchOffset = 0;
-		private int lastLowLevelSearchOffset = 0;
-		private int lastConnSearchOffset = 0;*/
-
 		// Число режимов преобразования
 		private uint encodingModesCount;
 
@@ -899,13 +892,13 @@ namespace RD_AAOW
 				{
 				RNMSerialResult.Text = "Модель ККТ: " + kb.KKTNumbers.GetKKTModel (search[0]);
 
-				string s = kb.KKTNumbers.GetFFDSupportStatus (search[0]);
+				/*string s = kb.KKTNumbers.GetFFDSupportStatus (search[0]);
 				if (!string.IsNullOrWhiteSpace (s))
-					RNMSerialResult.Text += RDLocale.RN + s;
+					RNMSerialResult.Text += RDLocale.RN + s;*/
 				}
 			else
 				{
-				RNMSerialResult.Text = "(модель ККТ не задана)";
+				RNMSerialResult.Text = "(модель ККТ не найдена)";
 				}
 
 			// Остальные поля
@@ -967,6 +960,21 @@ namespace RD_AAOW
 			TMSet (false);
 			RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound,
 				kb.KKTNumbers.RegistryStats);
+			TMSet (true);
+			}
+
+		// Информация о модели ККТ
+		private void RNMInfo_Click (object sender, EventArgs e)
+			{
+			TMSet (false);
+
+			string res = kb.KKTNumbers.GetKKTDescription (AppSettings.KKTSerial);
+			if (string.IsNullOrWhiteSpace (res))
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					 "Модель ККТ не найдена", 1000);
+			else
+				RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound, res);
+
 			TMSet (true);
 			}
 

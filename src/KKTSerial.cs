@@ -92,6 +92,42 @@ namespace RD_AAOW
 		}
 
 	/// <summary>
+	/// Доступные типы бумаги для принтеров ККТ
+	/// </summary>
+	public enum KKTPaperTypes
+		{
+		/// <summary>
+		/// 57 мм термо
+		/// </summary>
+		Termo57 = 5,
+
+		/// <summary>
+		/// 80 мм термо
+		/// </summary>
+		Termo80 = 8,
+
+		/// <summary>
+		/// 69 мм без термослоя
+		/// </summary>
+		NonTermo69,
+
+		/// <summary>
+		/// Зависит от принтера
+		/// </summary>
+		DependsOnPrinter = 1,
+
+		/// <summary>
+		/// Не используется
+		/// </summary>
+		NotUsed = 0,
+
+		/// <summary>
+		/// Неизвестный тип бумаги
+		/// </summary>
+		Unknown = -1,
+		}
+
+	/// <summary>
 	/// Класс предоставляет сведения о моделях ККТ
 	/// </summary>
 	public class KKTSerial
@@ -104,6 +140,8 @@ namespace RD_AAOW
 		private List<FFDSupportStates> ffdSupport = [];
 		private List<KKTSerialFlags> serialFlags = [];
 		private List<string> serialVersions = [];
+		private List<KKTPaperTypes> serialPaperWidths = [];
+		private List<byte> serialPaperLengths = [];
 
 		private List<string> regions = [];
 
@@ -139,10 +177,10 @@ namespace RD_AAOW
 				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 				// Защита
-				if (values.Length < 4)
+				if (values.Length < 5)
 					throw new Exception ("Invalid data at point 1, debug is required");
 
-				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[3], RDGenerics.HexNumberStyle);
+				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[4], RDGenerics.HexNumberStyle);
 				serialFlags.Add (flags);
 
 				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations))
@@ -151,7 +189,7 @@ namespace RD_AAOW
 				FFDSupportStates state = FFDSupportStates.None;
 				for (int i = 0; i < ffdNames.Length; i++)
 					{
-					switch (values[2][i])
+					switch (values[3][i])
 						{
 						case 'S':
 							state |= (FFDSupportStates)(1 << i);
@@ -178,15 +216,37 @@ namespace RD_AAOW
 				names.Add (values[0]);
 				serialVersions.Add (values[1]);
 
+				if (values[2] == "?")
+					{
+					serialPaperWidths.Add (KKTPaperTypes.Unknown);
+					serialPaperLengths.Add (0);
+					}
+				else if (values[2] == "P")
+					{
+					serialPaperWidths.Add (KKTPaperTypes.DependsOnPrinter);
+					serialPaperLengths.Add (0);
+					}
+				else if (values[2] == "N")
+					{
+					serialPaperWidths.Add (KKTPaperTypes.NotUsed);
+					serialPaperLengths.Add (0);
+					}
+				else
+					{
+					uint paper = uint.Parse (values[2]);
+					serialPaperWidths.Add ((KKTPaperTypes)(paper / 100));
+					serialPaperLengths.Add ((byte)(paper % 100));
+					}
+
 				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) &&
 					!flags.HasFlag (KKTSerialFlags.NameChanged))
 					{
-					serialLengths.Add (uint.Parse (values[4]));
+					serialLengths.Add (uint.Parse (values[5]));
 					if (maxSNLength < serialLengths[serialLengths.Count - 1])
 						maxSNLength = serialLengths[serialLengths.Count - 1];
 
-					serialSamples.Add (values[5]);
-					serialOffsets.Add (uint.Parse (values[6]));
+					serialSamples.Add (values[6]);
+					serialOffsets.Add (uint.Parse (values[7]));
 
 					registryStats[1 + ffdNames.Length]++;
 					}
@@ -285,18 +345,28 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод возвращает статус поддержки ФФД для ККТ по её заводскому номеру
+		/// Метод возвращает характеристики ККТ
 		/// </summary>
-		/// <param name="KKTSerialNumber">Заводской номер ККТ</param>
-		/// <returns>Возвращает строку с описанием поддерживаемых ФФД</returns>
-		public string GetFFDSupportStatus (string KKTSerialNumber)
+		/// <param name="KKTModelOrSerial">Часть названия или ЗН КТТ</param>
+		/// <returns>Возвращает строку с описанием ККТ</returns>
+		public string GetKKTDescription (string KKTModelOrSerial)
 			{
-			int i = FindKKT (KKTSerialNumber);
+			string sig = FindSignatureByName (KKTModelOrSerial);
+			if (string.IsNullOrWhiteSpace (sig))
+				sig = KKTModelOrSerial;
+
+			int i = FindKKT (sig);
 			if (i < 0)
 				return "";
 
+			// Общие сведения
+			string res = "Модель ККТ: " + names[i] + RDLocale.RN + "Статус: ";
 			if (serialFlags[i].HasFlag (KKTSerialFlags.RemovedFromRegistry))
-				return "(исключена из реестра ККТ)";
+				res += "! исключена из реестра ФНС !";
+			else
+				res += "присутствует в реестре ФНС";
+
+			res += (RDLocale.RNRN + "Актуальная версия ПО: " + serialVersions[i] + RDLocale.RN);
 
 			string s = "";
 			string us = "";
@@ -317,8 +387,47 @@ namespace RD_AAOW
 			if (string.IsNullOrEmpty (us))
 				us = "нет";
 
-			return "Подд. ФФД: " + s.Trim ().Replace (" ", ", ").Replace ("&", " ") + RDLocale.RN +
-				"Неподд. ФФД: " + us.Trim ().Replace (" ", ", ");
+			res += ("  Поддерживаемые ФФД: " + s.Trim ().Replace (" ", ", ").Replace ("&", " ") + RDLocale.RN);
+			res += ("  Неподдерживаемые ФФД: " + us.Trim ().Replace (" ", ", ") + RDLocale.RNRN);
+
+			res += "Чековая лента: ";
+			bool addLength = true;
+			switch (serialPaperWidths[i])
+				{
+				case KKTPaperTypes.DependsOnPrinter:
+					res += "зависит от печатающего устройства";
+					addLength = false;
+					break;
+
+				case KKTPaperTypes.Unknown:
+					res += "(нет сведений)";
+					addLength = false;
+					break;
+
+				case KKTPaperTypes.NotUsed:
+					res += "не используется";
+					addLength = false;
+					break;
+
+				case KKTPaperTypes.Termo57:
+					res += "57 мм, термо";
+					break;
+
+				case KKTPaperTypes.Termo80:
+					res += "80 мм, термо";
+					break;
+
+				case KKTPaperTypes.NonTermo69:
+					res += "69 мм, без термослоя";
+					break;
+				}
+
+			if (addLength)
+				res += (RDLocale.RN + "  Намотка, точно помещающаяся в принтер: " +
+					serialPaperLengths[i].ToString () + " м");
+
+			// Готово
+			return res;
 			}
 		private static string[] ffdNames = ["1.05", "1.1", "1.2"];
 

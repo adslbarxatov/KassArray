@@ -164,16 +164,9 @@ namespace RD_AAOW
 			uiPages.Add (ApplyPageSettings (new TagsPage (),
 				"TLV-теги", uiColors[tlvPage][cBack], true));
 			uiButtons[tlvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
-
-			/*uiPages.Add (ApplyPageSettings (new LowLevelPage (),
-				"Команды нижнего уровня", uiColors[llvPage][cBack], true));*/
+			
 			uiPages.Add (ApplyPageSettings (new TermsDictionaryPage (),
 				"Словарь терминов", uiColors[tdcPage][cBack], true));
-
-			/*// !!! ВРЕМЕННО !!!
-			uiButtons[tdcPage - 1].IsVisible = false;
-			// !!! ВРЕМЕННО !!!*/
-
 			uiPages.Add (ApplyPageSettings (new KKTCodesPage (),
 				"Перевод текста в коды ККТ", uiColors[codPage][cBack], true));
 			uiButtons[codPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 1
@@ -237,8 +230,6 @@ namespace RD_AAOW
 
 			RDInterface.ApplyLabelSettings (uiPages[hdrPage], "FunctionsLabel",
 				"Разделы приложения", RDLabelTypes.HeaderCenter);
-			/*RDInterface.ApplyLabelSettings (uiPages[hdrPage], "SettingsLabel",
-				"Настройки", RDLabelTypes.HeaderCenter);*/
 
 			if (AppSettings.CurrentTab <= aabPage)
 				RDInterface.SetCurrentPage (uiPages[(int)AppSettings.CurrentTab],
@@ -449,9 +440,6 @@ namespace RD_AAOW
 			RDInterface.ApplyButtonSettings (uiPages[aabPage], "HelpButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_HelpSupport),
 				uiColors[aabPage][cField], HelpButton_Click, false);
-			/*RDInterface.ApplyLabelSettings (uiPages[aabPage], "GenericSettingsLabel",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Control_GenericSettings),
-				RDLabelTypes.HeaderLeft);*/
 
 			RDInterface.ApplyLabelSettings (uiPages[aabPage], "HelpHeaderLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
@@ -1030,9 +1018,6 @@ namespace RD_AAOW
 		/// </summary>
 		protected override void OnSleep ()
 			{
-			/*// Переключение состояния
-			RDGenerics.AppIsRunning = false;*/
-
 			// Сохранение настроек
 			AppSettings.CurrentTab = (uint)uiPages.IndexOf ((ContentPage)RDInterface.MasterPage.CurrentPage);
 
@@ -1107,32 +1092,6 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.ErrorCode = search[0];
-			/*if (search[1] == "I")
-				lastErrorSearchOffset++;
-			else
-				lastErrorSearchOffset = 0;
-
-			// 
-			List<string> codes = kb.Errors.GetErrorCodesList (AppSettings.KKTForErrors);
-
-			for (int i = 0; i < codes.Count; i++)
-				{
-				int j = (i + lastErrorSearchOffset) % codes.Count;
-				string code = codes[j].ToLower ();
-				string res = kb.Errors.GetErrorText (AppSettings.KKTForErrors, (uint)j);
-
-				if (code.Contains (search[0]) || res.ToLower ().Contains (search[0]) ||
-					code.Contains ('?') && search[0].Contains (code.Replace ("?", "")))
-					{
-					lastErrorSearchOffset = (i + lastErrorSearchOffset) % codes.Count;
-					errorsResultText.Text = codes[j] + ": " + res;
-
-					return;
-					}
-				}
-
-			// Код не найден
-			errorsResultText.Text = "(описание ошибки не найдено)";*/
 			errorsResultText.Text = kb.Errors.FindNext (AppSettings.KKTForErrors,
 				search[0], search[1] == "I");
 			}
@@ -1519,15 +1478,24 @@ namespace RD_AAOW
 			// Заводской номер ККТ
 			if (!string.IsNullOrWhiteSpace (search[0]))
 				{
-				rnmKKTTypeLabel.Text = "Модель ККТ: " + kb.KKTNumbers.GetKKTModel (search[0]);
+				/*rnmKKTTypeLabel.Text = "Модель ККТ: " + kb.KKTNumbers.GetKKTModel (search[0]);*/
 
-				string s = kb.KKTNumbers.GetFFDSupportStatus (search[0]);
+				string s = kb.KKTNumbers.GetKKTDescription (search[0]);
 				if (!string.IsNullOrWhiteSpace (s))
-					rnmKKTTypeLabel.Text += RDLocale.RN + s;
+					{
+					rnmKKTTypeLabel.Text = s;
+					rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Start;
+					}
+				else
+					{
+					rnmKKTTypeLabel.Text = "(модель ККТ не найдена)";
+					rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
+					}
 				}
 			else
 				{
-				rnmKKTTypeLabel.Text = "(модель ККТ не задана)";
+				rnmKKTTypeLabel.Text = "(модель ККТ не найдена)";
+				rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
 				}
 
 			// Остальные поля
@@ -1974,32 +1942,6 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.CableSearch = search[0];
-			/*if (search[1] == "I")
-				lastConnSearchOffset++;
-			else
-				lastConnSearchOffset = 0;
-
-			List<string> conns = kb.Plugs.GetCablesNames ();
-
-			for (int i = 0; i < conns.Count; i++)
-				{
-				int j = (i + lastConnSearchOffset) % conns.Count;
-				string conn = conns[j].ToLower ();
-
-				if (conn.Contains (search[0]))
-					{
-					AppSettings.CableType = (uint)j;
-					lastConnSearchOffset = j;
-
-					CableTypeButton_Clicked (null, null);
-					return;
-					}
-				}
-
-			// Код не найден
-			cableLeftSideText.Text = "(описание не найдено)";
-			cableLeftPinsText.Text = cableRightSideText.Text = cableRightPinsText.Text =
-				cableDescriptionText.Text = "";*/
 			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");
 			if (idx < 0)
 				{
