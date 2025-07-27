@@ -246,8 +246,6 @@ namespace RD_AAOW
 				AddressBuildingLabel.Enabled = AddressBuildingField.Enabled =
 				AddressAppartmentLabel.Enabled = AddressAppartmentField.Enabled =
 				PlaceLabel.Enabled = PlaceField.Enabled = !finish;
-			/*if (!AddressRegionCodeLabel.Enabled)
-				AddressRegionCodeCombo.SelectedIndex = 0;*/
 
 			LotteryFlag.Enabled = GamblingFlag.Enabled = GamblingExchangeFlag.Enabled =
 				BankAgentFlag.Enabled = AgentFlag.Enabled = DeliveryFlag.Enabled =

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-/*using System.Diagnostics;*/
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -82,10 +81,6 @@ namespace RD_AAOW
 			KKTListForErrors.Items.AddRange (kb.Errors.GetKKTTypeNames ().ToArray ());
 			KKTListForErrors.SelectedIndex = 0;
 
-			/*LowLevelProtocol.Items.AddRange (kb.LLCommands.GetProtocolsNames ().ToArray ());
-			LowLevelProtocol.SelectedIndex = (int)AppSettings.LowLevelProtocol;
-			LowLevelProtocol_CheckedChanged (null, null);*/
-
 			OFDNamesList.Items.Add ("Неизвестный ОФД");
 			OFDNamesList.Items.AddRange (kb.Ofd.GetOFDNames (false).ToArray ());
 			OFDNamesList.SelectedIndex = 0;
@@ -117,7 +112,6 @@ namespace RD_AAOW
 				KKTListForErrors.SelectedIndex = 0;
 				}
 
-			/*lastErrorSearchOffset = 0;	// Требуется переопределение из-за срабатывания косвенных триггеров*/
 			ErrorFindButton_Click (ErrorFindNextButton, null);
 
 			FNLifeEvFlags = (KassArrayDB::RD_AAOW.FNLifeFlags)AppSettings.FNLifeEvFlags;
@@ -138,7 +132,6 @@ namespace RD_AAOW
 			CDNSite.Text = KassArrayDB::RD_AAOW.OFD.CDNSite;
 			LoadOFDParameters ();
 
-			/*LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;*/
 			LowLevelSearch_Click (LLFindNextButton, null);
 
 			try
@@ -183,11 +176,6 @@ namespace RD_AAOW
 
 			ConvertHexField.Text = AppSettings.ConversionHex;
 			ConvertTextField.Text = AppSettings.ConversionText;
-
-			/*// !!! ВРЕМЕННО !!!
-			LLFindBufferButton.Enabled = LLFindButton.Enabled = LLFindNextButton.Enabled =
-				LLLabel.Enabled = LLDescription.Enabled = false;
-			// !!! ВРЕМЕННО !!!*/
 
 			// Блокировка расширенных функций при необходимости
 			RNMGenerate.Visible = TLVTab.Enabled = ConnectorsTab.Enabled =
@@ -343,9 +331,6 @@ namespace RD_AAOW
 			AppSettings.RNMKKT = RNMValue.Text;
 
 			AppSettings.OFDINN = OFDINN.Text;
-
-			/*AppSettings.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
-			AppSettings.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;*/
 
 			AppSettings.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			AppSettings.CodesText = TextToConvert.Text;
@@ -628,32 +613,6 @@ namespace RD_AAOW
 
 			AppSettings.ErrorCode = search[0];
 			ErrorText.Text = kb.Errors.FindNext ((uint)KKTListForErrors.SelectedIndex, search[0], search[1] == "I");
-			/*if (search[1] == "I")
-				lastErrorSearchOffset++;
-			else
-				lastErrorSearchOffset = 0;
-
-			// Поиск
-			List<string> codes = kb.Errors.GetErrorCodesList ((uint)KKTListForErrors.SelectedIndex);
-
-			ErrorText.Text = "Поиск по запросу «" + search[0] + "»:" + RDLocale.RNRN;
-			for (int i = 0; i < codes.Count; i++)
-				{
-				int j = (i + lastErrorSearchOffset) % codes.Count;
-				string code = codes[j].ToLower ();
-				string res = kb.Errors.GetErrorText ((uint)KKTListForErrors.SelectedIndex, (uint)j);
-
-				if (code.Contains (search[0]) || res.ToLower ().Contains (search[0]) ||
-					code.Contains ('?') && search[0].Contains (code.Replace ("?", "")))
-					{
-					lastErrorSearchOffset = j;
-					ErrorText.Text += codes[j] + ": " + res;
-					return;
-					}
-				}
-
-			// Код не найден
-			ErrorText.Text += "описание ошибки не найдено";*/
 			}
 
 		#endregion
@@ -889,17 +848,9 @@ namespace RD_AAOW
 
 			// Заводской номер ККТ
 			if (!string.IsNullOrWhiteSpace (search[0]))
-				{
 				RNMSerialResult.Text = "Модель ККТ: " + kb.KKTNumbers.GetKKTModel (search[0]);
-
-				/*string s = kb.KKTNumbers.GetFFDSupportStatus (search[0]);
-				if (!string.IsNullOrWhiteSpace (s))
-					RNMSerialResult.Text += RDLocale.RN + s;*/
-				}
 			else
-				{
 				RNMSerialResult.Text = "(модель ККТ не найдена)";
-				}
 
 			// Остальные поля
 			RNMRNMUpdate (null, null);
@@ -1055,47 +1006,11 @@ namespace RD_AAOW
 				OFDNamesList.SelectedIndex = 0;
 			else
 				OFDNamesList.SelectedIndex = idx + 1;
-
-			/*if (search[1] == "I")
-				lastOFDSearchOffset++;
-			else
-				lastOFDSearchOffset = 0;
-
-			// Поиск
-			List<string> codes = kb.Ofd.GetOFDNames (false);
-			codes.AddRange (kb.Ofd.GetOFDINNs ());
-
-			for (int i = 0; i < codes.Count; i++)
-				{
-				if (codes[(i + lastOFDSearchOffset) % codes.Count].ToLower ().Contains (search[0]))
-					{
-					lastOFDSearchOffset = (i + lastOFDSearchOffset) % codes.Count;
-					OFDNamesList.SelectedIndex = lastOFDSearchOffset % (codes.Count / 2) + 1;
-					return;
-					}
-				}*/
 			}
 
 		#endregion
 
 		#region Словарь терминов
-
-		/*// Выбор списка команд нижнего уровня
-		private void LowLevelProtocol_CheckedChanged (object sender, EventArgs e)
-			{
-			LowLevelCommand.Items.Clear ();
-			LowLevelCommand.Items.AddRange (kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
-			LowLevelCommand.SelectedIndex = 0;
-			}
-
-		// Выбор команды
-		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
-			{
-			LowLevelCommandCode.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
-				(uint)LowLevelCommand.SelectedIndex, false);
-			LowLevelCommandDescr.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
-				(uint)LowLevelCommand.SelectedIndex, true);
-			}*/
 
 		// Поиск по тексту ошибки
 		private void LowLevelSearch_Click (object sender, EventArgs e)
@@ -1111,25 +1026,6 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.DictionarySearch = search[0];
-			/*if (search[1] == "I")
-				lastLowLevelSearchOffset++;
-			else
-				lastLowLevelSearchOffset = 0;*/
-			/*if (string.IsNullOrWhiteSpace (LLDescription.Text))
-				LLDescription.Text = search[0] + RDLocale.RNRN + "(описание термина не найдено)";
-
-			// Поиск
-			List<string> codes = kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex);
-
-			for (int i = 0; i < codes.Count; i++)
-				{
-				if (codes[(i + lastLowLevelSearchOffset) % codes.Count].ToLower ().Contains (search[0]))
-					{
-					lastLowLevelSearchOffset = LowLevelCommand.SelectedIndex =
-						(i + lastLowLevelSearchOffset) % codes.Count;
-					return;
-					}
-				}*/
 			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");
 
 			int idx = res.IndexOf ('\x1');
@@ -1407,25 +1303,6 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.CableSearch = search[0];
-			/*if (search[1] == "I")
-				lastConnSearchOffset++;
-			else
-				lastConnSearchOffset = 0;
-
-			// Поиск
-			List<string> conns = kb.Plugs.GetCablesNames ();
-
-			for (int i = 0; i < conns.Count; i++)
-				{
-				int j = (i + lastConnSearchOffset) % conns.Count;
-				string conn = conns[j].ToLower ();
-
-				if (conn.Contains (search[0]))
-					{
-					CableType.SelectedIndex = lastConnSearchOffset = j;
-					return;
-					}
-				}*/
 
 			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");
 			if (idx < 0)
