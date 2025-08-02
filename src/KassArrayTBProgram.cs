@@ -57,6 +57,13 @@ namespace RD_AAOW
 				return;
 			RDInterface.ShowAbout (true);
 
+			// Отдельная обработка расширений, в обход ответа ShowAbout из верхнего приложения
+			if (RDGenerics.GetAppRegistryValue ("TBHelpShownAt") != ProgramDescription.AssemblyVersion)
+				{
+				RDGenerics.RegisterFileAssociations (true);
+				RDGenerics.SetAppRegistryValue ("TBHelpShownAt", ProgramDescription.AssemblyVersion);
+				}
+
 			Application.Run (new KassArrayTBForm ());
 			}
 		}

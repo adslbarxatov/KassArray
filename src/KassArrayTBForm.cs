@@ -1,6 +1,7 @@
 ﻿extern alias KassArrayDB;
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,7 +17,17 @@ namespace RD_AAOW
 		private KassArrayDB::RD_AAOW.KnowledgeBase kb;
 		private bool closeWindowOnError = false;
 
-		private const string regionPar = "BCRegion";
+		private const string leftEmpty = RDLocale.RNRN + "Оставьте это поле пустым, чтобы заполнить его вручную " +
+			"в распечатанном заявлении";
+
+		private const char fileSplitter = '\x1';
+
+		// Доступные версии файлов заявлений
+		private enum KBFVersions
+			{
+			Unknown = 0,
+			V1 = 1,
+			}
 
 		// Ресивер сообщений на повторное открытие окна
 		private EventWaitHandle ewh;
@@ -40,6 +51,11 @@ namespace RD_AAOW
 				}
 
 			this.Text = ProgramDescription.AssemblyVisibleName;
+
+			OFDialog.Title = "Выберите файл заявления";
+			SFDialog.Title = "Укажите расположение для файла заявления";
+			OFDialog.Filter = SFDialog.Filter = "Файлы заявлений " + ProgramDescription.AssemblyMainName + "TB (*." +
+				ProgramDescription.AppExtension + ")|*." + ProgramDescription.AppExtension;
 
 			// Настройка контролов
 			KKTModelCombo.Items.Add ("(вписывается вручную)");
@@ -77,7 +93,8 @@ namespace RD_AAOW
 			RDGenerics.LoadWindowDimensions (this);
 			try
 				{
-				AddressRegionCodeCombo.SelectedIndex = (int)RDGenerics.GetSettings (regionPar, 0);
+				/*AddressRegionCodeCombo.SelectedIndex = (int)RDGenerics.GetSettings (regionPar, 0);*/
+				AddressRegionCodeCombo.SelectedIndex = (int)KassArrayTBSettings.RegionIndex;
 				}
 			catch
 				{
@@ -123,7 +140,8 @@ namespace RD_AAOW
 				return;
 
 			RDGenerics.SaveWindowDimensions (this);
-			RDGenerics.SetSettings (regionPar, (uint)AddressRegionCodeCombo.SelectedIndex);
+			/*RDGenerics.SetSettings (regionPar, (uint)AddressRegionCodeCombo.SelectedIndex);*/
+			KassArrayTBSettings.RegionIndex = (uint)AddressRegionCodeCombo.SelectedIndex;
 			}
 
 		private void ShowWindowTimer_Tick (object sender, EventArgs e)
@@ -325,10 +343,28 @@ namespace RD_AAOW
 			bool rereg = (BlankTypeCombo.SelectedIndex == 1);
 			bool finish = (BlankTypeCombo.SelectedIndex == 2);
 
+			// Запрос настроек, если указано
+			if (KassArrayTBSettings.AskSettingsEveryTime)
+				_ = new KassArrayTBSettings ();
+
+			// Сохранение копии, если указано
+			if (!string.IsNullOrWhiteSpace (KassArrayTBSettings.BackupsPath))
+				{
+				string fileName = RDInterface.MessageBox ("Укажите название для резервной копии заявления",
+					true, 256, RecommendedFileName);
+
+				if (!string.IsNullOrWhiteSpace (fileName))
+					{
+					SFDialog.FileName = KassArrayTBSettings.BackupsPath + fileName + "." +
+						ProgramDescription.AppExtension;
+					SFDialog_FileOk (null, null);
+					}
+				}
+
 			#region Контроль значений
 
 			// Контроль ИНН, если указан
-			bool checkRNM = true;
+			bool checkRNM = rereg;
 			if (!string.IsNullOrWhiteSpace (INNField.Text))
 				{
 				if ((INNField.Text.Length != 10) && (INNField.Text.Length != 12) ||
@@ -538,7 +574,7 @@ namespace RD_AAOW
 			else
 				tmp = KassArrayTBResources.Blk1110061;
 			KATBSupport.Template = RDGenerics.GetEncoding (RDEncodings.Unicode16).GetString (tmp);
-			KATBSupport.UseFillers = !DontUseFillers.Checked;
+			/*KATBSupport.UseFillers = !DontUseFillers.Checked;*/
 
 			KATBSupport.ApplyField (BlankFields.OGRN, OGRNField.Text);
 			KATBSupport.ApplyField (BlankFields.INN, INNField.Text);
@@ -581,7 +617,7 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.CurrentDate, DateTime.Now.ToString ("dd.MM.yyyy"));
 			KATBSupport.ApplyField (BlankFields.AppendixesCount, "");
 
-			KATBSupport.ApplyField (BlankFields.RegistrationNumber, KKTRNMField.Text);
+			KATBSupport.ApplyField (BlankFields.RegistrationNumber, rereg ? KKTRNMField.Text : "");
 
 			field = (KKTModelCombo.SelectedIndex == 0) ? "" : KKTModelCombo.Text;
 			int idx = field.IndexOf ('(');
@@ -715,8 +751,10 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.KKTStolenFlag, KKTStolenFlag.Checked);
 			KATBSupport.ApplyField (BlankFields.KKTMissingFlag, KKTMissingFlag.Checked);
 
-			string dateFiller = DontUseFillers.Checked ? "  .  .    " : "--.--.----";
-			string timeFiller = DontUseFillers.Checked ? "  :  " : "--:--";
+			/*string dateFiller = DontUseFillers.Checked ? "  .  .    " : "--.--.----";
+			string timeFiller = DontUseFillers.Checked ? "  :  " : "--:--";*/
+			string dateFiller = KassArrayTBSettings.DontAddStrikeouts ? "  .  .    " : "--.--.----";
+			string timeFiller = KassArrayTBSettings.DontAddStrikeouts ? "  :  " : "--:--";
 
 			KATBSupport.ApplyField (BlankFields.FNOpenDocumentNumber, FNOpenFDField.Text);
 			if (FNOpenDateField.Value.Year > FNOpenDateField.MinDate.Year)
@@ -765,9 +803,6 @@ namespace RD_AAOW
 				RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
 					"Задание отправлено на печать", 700);
 			}
-
-		private const string leftEmpty = RDLocale.RNRN + "Оставьте это поле пустым, чтобы заполнить его вручную " +
-			"в распечатанном заявлении";
 
 		// Получение реквизитов из ФН
 		private void GetFromFN_Click (object sender, EventArgs e)
@@ -980,6 +1015,237 @@ namespace RD_AAOW
 
 			RDGenerics.RunURL ("https://google.com/search?q=почтовый+индекс+" +
 				AddressCityField.Text.Replace (' ', '+').ToLower ());
+			}
+
+		// Отображение раздела настроек
+		private void MSettings_Click (object sender, EventArgs e)
+			{
+			_ = new KassArrayTBSettings ();
+			}
+
+		// Загрузка данных из файла заявления
+		private void MOpen_Click (object sender, EventArgs e)
+			{
+			if (!string.IsNullOrWhiteSpace (KassArrayTBSettings.BackupsPath))
+				OFDialog.InitialDirectory = KassArrayTBSettings.BackupsPath;
+			else
+				OFDialog.InitialDirectory = "";
+
+			OFDialog.ShowDialog ();
+			}
+
+		private void OFDialog_FileOk (object sender, CancelEventArgs e)
+			{
+			// Загрузка
+			string file;
+			try
+				{
+				file = File.ReadAllText (OFDialog.FileName, RDGenerics.GetEncoding (RDEncodings.CP1251));
+				}
+			catch
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.Message_LoadFailure_Fmt),
+					Path.GetFileName (OFDialog.FileName)));
+				return;
+				}
+
+			// Разбор
+			string[] fields = file.Split ([fileSplitter], StringSplitOptions.None);
+
+			KBFVersions version = KBFVersions.Unknown;
+			if (fields.Length > 0)
+				{
+				switch (fields[0])
+					{
+					case "1":
+						version = KBFVersions.V1;
+						break;
+					}
+				}
+
+			if ((fields.Length < KATBSupport.FieldsCount + 1) || (version == KBFVersions.Unknown))
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Указанный файл повреждён или не является поддерживаемым файлом заявления");
+				return;
+				}
+
+			// Загрузка
+			try
+				{
+				FNChangeFlag.Checked = fields[(int)BlankFields.FNChangeFlag] == "1";
+				UserNameField.Text = fields[(int)BlankFields.UserName_Line1];
+				INNField.Text = fields[(int)BlankFields.INN];
+				OGRNField.Text = fields[(int)BlankFields.OGRN];
+				KPPField.Text = fields[(int)BlankFields.KPP];
+				PresenterTypeField.Text = fields[(int)BlankFields.UserPresenter_Line1];
+				PresenterTypeFlag.Checked = fields[(int)BlankFields.UserPresenterType] == "1";
+				UserNameChangeFlag.Checked = fields[(int)BlankFields.NameChangeFlag] == "1";
+				KKTStolenFlag.Checked = fields[(int)BlankFields.KKTStolenFlag] == "1";
+				KKTMissingFlag.Checked = fields[(int)BlankFields.KKTMissingFlag] == "1";
+				FNBrokenFlag.Checked = fields[(int)BlankFields.FNBrokenFlag] == "1";
+
+				KKTSerialField.Text = fields[(int)BlankFields.KKTSerialNumber_Line1];
+				KKTModelCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.KKTModelName]);
+				FNSerialField.Text = fields[(int)BlankFields.FNSerialNumber];
+				FNModelCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.FNModelName_Line1]);
+				OFDNameCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.OFDName_Line1]);
+				OFDVariantCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.OFDChangeFlag]); // !!!
+				KKTRNMField.Text = fields[(int)BlankFields.RegistrationNumber];
+
+				AddressRegionCodeCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.UserAddressRegionCode]);
+				AddressAreaField.Text = fields[(int)BlankFields.UserAddressArea];
+				AddressCityField.Text = fields[(int)BlankFields.UserAddressCity];
+				AddressTownField.Text = fields[(int)BlankFields.UserAddressTown];
+				AddressIndexField.Text = fields[(int)BlankFields.UserAddressIndex];
+				AddressStreetField.Text = fields[(int)BlankFields.UserAddressStreet];
+				AddressHouseField.Text = fields[(int)BlankFields.UserAddressHouseNumber];
+				AddressBuildingField.Text = fields[(int)BlankFields.UserAddressBuildingNumber];
+				AddressAppartmentField.Text = fields[(int)BlankFields.UserAddressAppartmentNumber];
+				PlaceField.Text = fields[(int)BlankFields.UserPlace_Line1];
+				AddressPlaceChangeFlag.Checked = fields[(int)BlankFields.AddressPlaceChangeFlag] == "1";
+
+				LotteryFlag.Checked = fields[(int)BlankFields.LotteryFlag] == "1";
+				GamblingFlag.Checked = fields[(int)BlankFields.GamblingFlag] == "1";
+				GamblingExchangeFlag.Checked = fields[(int)BlankFields.GamblingExchangeFlag] == "1";
+				BSOFlag.Checked = fields[(int)BlankFields.BSOFlag] == "1";
+				BankAgentFlag.Checked = fields[(int)BlankFields.BankPaymentAgentFlag] == "1";
+				AgentFlag.Checked = fields[(int)BlankFields.PaymentAgentFlag] == "1";
+				DeliveryFlag.Checked = fields[(int)BlankFields.DeliveryFlag] == "1";
+				ExciseFlag.Checked = fields[(int)BlankFields.ExciseFlag] == "1";
+				MarkFlag.Checked = fields[(int)BlankFields.MarkFlag] == "1";
+				InternetFlag.Checked = fields[(int)BlankFields.InternetFlag] == "1";
+				OtherChangeFlag.Checked = fields[(int)BlankFields.OtherChangeFlag] == "1";
+				AutomatNumberField.Text = fields[(int)BlankFields.AutomatNumber];
+				AutomatAddressIsSame.Checked = fields[(int)BlankFields.AutomatPlace_Line3] == "1";  // !!!
+				AutomatChangeFlag.Checked = fields[(int)BlankFields.AutomatChangeFlag] == "1";
+				AutomatFlag.Checked = fields[(int)BlankFields.AutomatFlag] == "1";
+
+				FNCloseFDField.Text = fields[(int)BlankFields.FNCloseDocumentNumber];
+				FNCloseDateField.Value = DateTime.Parse (fields[(int)BlankFields.FNCloseDate], RDLocale.GetCulture (RDLanguages.ru_ru));
+				FNCloseFPDField.Text = fields[(int)BlankFields.FNCloseDocumentSign];
+				FNOpenFDField.Text = fields[(int)BlankFields.FNOpenDocumentNumber];
+				FNOpenDateField.Value = DateTime.Parse (fields[(int)BlankFields.FNOpenDate], RDLocale.GetCulture (RDLanguages.ru_ru));
+				FNOpenFPDField.Text = fields[(int)BlankFields.FNOpenDocumentSign];
+
+				// В последнюю очередь, поскольку событие запускает внутренние проверки
+				BlankTypeCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.BlankType]);
+				}
+			catch
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText | RDMessageFlags.LockSmallSize,
+					"Файл заявления повреждён и не может быть загружен полностью. Проверьте поля заявления перед формированием");
+				return;
+				}
+
+			/*// Завершено
+			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText,
+				"Заявление успешно загружено", 1000);*/
+			}
+
+		// Сохранение данных в файл заявления
+		private void MSave_Click (object sender, EventArgs e)
+			{
+			SFDialog.FileName = RecommendedFileName;
+			SFDialog.ShowDialog ();
+			}
+
+		private void SFDialog_FileOk (object sender, CancelEventArgs e)
+			{
+			// Формирование списка
+			string[] fields = new string[KATBSupport.FieldsCount + 1];
+			fields[0] = ((uint)KBFVersions.V1).ToString ();
+
+			fields[(int)BlankFields.BlankType] = BlankTypeCombo.SelectedIndex.ToString ();
+			fields[(int)BlankFields.FNChangeFlag] = FNChangeFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.UserName_Line1] = UserNameField.Text;
+			fields[(int)BlankFields.INN] = INNField.Text;
+			fields[(int)BlankFields.OGRN] = OGRNField.Text;
+			fields[(int)BlankFields.KPP] = KPPField.Text;
+			fields[(int)BlankFields.UserPresenter_Line1] = PresenterTypeField.Text;
+			fields[(int)BlankFields.UserPresenterType] = PresenterTypeFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.NameChangeFlag] = UserNameChangeFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.KKTStolenFlag] = KKTStolenFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.KKTMissingFlag] = KKTMissingFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.FNBrokenFlag] = FNBrokenFlag.Checked ? "1" : "0";
+
+			fields[(int)BlankFields.KKTSerialNumber_Line1] = KKTSerialField.Text;
+			fields[(int)BlankFields.KKTModelName] = KKTModelCombo.SelectedIndex.ToString ();
+			fields[(int)BlankFields.FNSerialNumber] = FNSerialField.Text;
+			fields[(int)BlankFields.FNModelName_Line1] = FNModelCombo.SelectedIndex.ToString ();
+			fields[(int)BlankFields.OFDName_Line1] = OFDNameCombo.SelectedIndex.ToString ();
+			fields[(int)BlankFields.OFDChangeFlag] = OFDVariantCombo.SelectedIndex.ToString (); // !!!
+			fields[(int)BlankFields.RegistrationNumber] = KKTRNMField.Text;
+
+			fields[(int)BlankFields.UserAddressRegionCode] = AddressRegionCodeCombo.SelectedIndex.ToString ();
+			fields[(int)BlankFields.UserAddressArea] = AddressAreaField.Text;
+			fields[(int)BlankFields.UserAddressCity] = AddressCityField.Text;
+			fields[(int)BlankFields.UserAddressTown] = AddressTownField.Text;
+			fields[(int)BlankFields.UserAddressIndex] = AddressIndexField.Text;
+			fields[(int)BlankFields.UserAddressStreet] = AddressStreetField.Text;
+			fields[(int)BlankFields.UserAddressHouseNumber] = AddressHouseField.Text;
+			fields[(int)BlankFields.UserAddressBuildingNumber] = AddressBuildingField.Text;
+			fields[(int)BlankFields.UserAddressAppartmentNumber] = AddressAppartmentField.Text;
+			fields[(int)BlankFields.UserPlace_Line1] = PlaceField.Text;
+			fields[(int)BlankFields.AddressPlaceChangeFlag] = AddressPlaceChangeFlag.Checked ? "1" : "0";
+
+			fields[(int)BlankFields.LotteryFlag] = LotteryFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.GamblingFlag] = GamblingFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.GamblingExchangeFlag] = GamblingExchangeFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.BSOFlag] = BSOFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.BankPaymentAgentFlag] = BankAgentFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.PaymentAgentFlag] = AgentFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.DeliveryFlag] = DeliveryFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.ExciseFlag] = ExciseFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.MarkFlag] = MarkFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.InternetFlag] = InternetFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.OtherChangeFlag] = OtherChangeFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.AutomatNumber] = AutomatNumberField.Text;
+			fields[(int)BlankFields.AutomatPlace_Line3] = AutomatAddressIsSame.Checked ? "1" : "0"; // !!!
+			fields[(int)BlankFields.AutomatChangeFlag] = AutomatChangeFlag.Checked ? "1" : "0";
+			fields[(int)BlankFields.AutomatFlag] = AutomatFlag.Checked ? "1" : "0";
+
+			fields[(int)BlankFields.FNCloseDocumentNumber] = FNCloseFDField.Text;
+			fields[(int)BlankFields.FNCloseDate] = FNCloseDateField.Value.ToString (RDLocale.GetCulture (RDLanguages.ru_ru));
+			fields[(int)BlankFields.FNCloseDocumentSign] = FNCloseFPDField.Text;
+			fields[(int)BlankFields.FNOpenDocumentNumber] = FNOpenFDField.Text;
+			fields[(int)BlankFields.FNOpenDate] = FNOpenDateField.Value.ToString (RDLocale.GetCulture (RDLanguages.ru_ru));
+			fields[(int)BlankFields.FNOpenDocumentSign] = FNOpenFPDField.Text;
+
+			// Запись
+			string file = "";
+			for (int i = 0; i < fields.Length; i++)
+				{
+				file += fields[i];
+				if (i < fields.Length - 1)
+					file += fileSplitter.ToString ();
+				}
+
+			try
+				{
+				File.WriteAllText (SFDialog.FileName, file, RDGenerics.GetEncoding (RDEncodings.CP1251));
+				}
+			catch
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.Message_SaveFailure_Fmt),
+					Path.GetFileName (SFDialog.FileName)));
+				return;
+				}
+
+			// Завершено
+			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
+				"Заявление успешно сохранено", 1000);
+			}
+
+		// Рекомендуемое имя файла
+		private string RecommendedFileName
+			{
+			get
+				{
+				return UserNameField.Text.Replace ('"', ' ') + ", " + FNSerialField.Text;
+				}
 			}
 		}
 	}
