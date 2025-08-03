@@ -37,8 +37,9 @@ namespace RD_AAOW
 		private bool closeWindowOnError = false;
 		private bool closeWindowOnRequest = false;
 
-		private EventWaitHandle ewh;
-		private bool ewhIsActive = true;
+		private EventWaitHandle ewhTB, ewhFN;
+		private bool ewhTBIsActive = true;
+		private bool ewhFNIsActive = true;
 
 		#region Главный интерфейс
 
@@ -58,12 +59,21 @@ namespace RD_AAOW
 
 			try
 				{
-				ewh = new EventWaitHandle (false, EventResetMode.AutoReset,
-					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);
+				ewhTB = new EventWaitHandle (false, EventResetMode.AutoReset,
+					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
 				}
 			catch
 				{
-				ewhIsActive = false;
+				ewhTBIsActive = false;
+				}
+			try
+				{
+				ewhFN = new EventWaitHandle (false, EventResetMode.AutoReset,
+					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "FN");
+				}
+			catch
+				{
+				ewhFNIsActive = false;
 				}
 
 			if (!RDGenerics.CheckLibrariesVersions (ProgramDescription.AssemblyLibraries, true))
@@ -381,9 +391,22 @@ namespace RD_AAOW
 		private void CallSideTool (bool FN)
 			{
 			// Отправка "сообщения" окну модуля работы с ФН
-			bool problem = ewhIsActive ? ewh.WaitOne (100) : true;
+			/*bool problem = ewhIsActive ? ewh.WaitOne (100) : true;
 			if (!problem)
-				ewh.Set ();
+				ewh.Set ();*/
+			bool problem;
+			if (FN)
+				problem = ewhFNIsActive ? ewhFN.WaitOne (100) : true;
+			else
+				problem = ewhTBIsActive ? ewhTB.WaitOne (100) : true;
+
+			if (!problem)
+				{
+				if (FN)
+					ewhFN.Set ();
+				else
+					ewhTB.Set ();
+				}
 
 			// Контроль на завершение предыдущих процессов
 			bool res;

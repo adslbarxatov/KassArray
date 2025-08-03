@@ -35,7 +35,8 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
-		public KassArrayTBForm ()
+		/// <param name="FileName">Путь к файлу для немедленного открытия. Может быть пустым</param>
+		public KassArrayTBForm (string FileName)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -93,7 +94,6 @@ namespace RD_AAOW
 			RDGenerics.LoadWindowDimensions (this);
 			try
 				{
-				/*AddressRegionCodeCombo.SelectedIndex = (int)RDGenerics.GetSettings (regionPar, 0);*/
 				AddressRegionCodeCombo.SelectedIndex = (int)KassArrayTBSettings.RegionIndex;
 				}
 			catch
@@ -106,7 +106,8 @@ namespace RD_AAOW
 				{
 				try
 					{
-					ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);
+					/*ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);*/
+					ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
 					}
 				catch { }
 				ShowWindowTimer.Enabled = true;
@@ -124,6 +125,13 @@ namespace RD_AAOW
 							MainTabControl.TabPages[i].Controls[j].ForeColor = BlankTypeLabel.ForeColor;
 						}
 					}
+				}
+
+			// Открытие файла, если предусмотрено
+			if (!string.IsNullOrWhiteSpace (FileName))
+				{
+				OFDialog.FileName = FileName;
+				OFDialog_FileOk (null, null);
 				}
 			}
 
@@ -1234,9 +1242,9 @@ namespace RD_AAOW
 				return;
 				}
 
-			// Завершено
+			/*// Завершено
 			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
-				"Заявление успешно сохранено", 1000);
+				"Заявление успешно сохранено", 1000);*/
 			}
 
 		// Рекомендуемое имя файла
@@ -1244,7 +1252,7 @@ namespace RD_AAOW
 			{
 			get
 				{
-				return UserNameField.Text.Replace ('"', ' ') + ", " + FNSerialField.Text;
+				return UserNameField.Text.Replace ("\"", "") + ", " + FNSerialField.Text;
 				}
 			}
 		}

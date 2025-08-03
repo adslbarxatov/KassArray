@@ -36,7 +36,8 @@ namespace RD_AAOW
 				try
 					{
 					EventWaitHandle ewh =
-						EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);
+						/*EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);*/
+						EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
 					ewh.Set ();
 					}
 				catch { }
@@ -64,7 +65,12 @@ namespace RD_AAOW
 				RDGenerics.SetAppRegistryValue ("TBHelpShownAt", ProgramDescription.AssemblyVersion);
 				}
 
-			Application.Run (new KassArrayTBForm ());
+			// Запуск
+			/*Application.Run (new KassArrayTBForm ());*/
+			if (args.Length > 0)
+				Application.Run (new KassArrayTBForm (args[0]));
+			else
+				Application.Run (new KassArrayTBForm (""));
 			}
 		}
 	}
