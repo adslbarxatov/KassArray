@@ -22,6 +22,8 @@ namespace RD_AAOW
 
 		private const char fileSplitter = '\x1';
 
+		private string[] ipSignatures = ["ип", "индивидуальный предприниматель"];
+
 		// Доступные версии файлов заявлений
 		private enum KBFVersions
 			{
@@ -106,7 +108,6 @@ namespace RD_AAOW
 				{
 				try
 					{
-					/*ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);*/
 					ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
 					}
 				catch { }
@@ -148,7 +149,6 @@ namespace RD_AAOW
 				return;
 
 			RDGenerics.SaveWindowDimensions (this);
-			/*RDGenerics.SetSettings (regionPar, (uint)AddressRegionCodeCombo.SelectedIndex);*/
 			KassArrayTBSettings.RegionIndex = (uint)AddressRegionCodeCombo.SelectedIndex;
 			}
 
@@ -582,7 +582,6 @@ namespace RD_AAOW
 			else
 				tmp = KassArrayTBResources.Blk1110061;
 			KATBSupport.Template = RDGenerics.GetEncoding (RDEncodings.Unicode16).GetString (tmp);
-			/*KATBSupport.UseFillers = !DontUseFillers.Checked;*/
 
 			KATBSupport.ApplyField (BlankFields.OGRN, OGRNField.Text);
 			KATBSupport.ApplyField (BlankFields.INN, INNField.Text);
@@ -759,8 +758,6 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.KKTStolenFlag, KKTStolenFlag.Checked);
 			KATBSupport.ApplyField (BlankFields.KKTMissingFlag, KKTMissingFlag.Checked);
 
-			/*string dateFiller = DontUseFillers.Checked ? "  .  .    " : "--.--.----";
-			string timeFiller = DontUseFillers.Checked ? "  :  " : "--:--";*/
 			string dateFiller = KassArrayTBSettings.DontAddStrikeouts ? "  .  .    " : "--.--.----";
 			string timeFiller = KassArrayTBSettings.DontAddStrikeouts ? "  :  " : "--:--";
 
@@ -920,8 +917,23 @@ namespace RD_AAOW
 
 			#region Получение реквизитов регистрации
 
+			// Наименование пользователя
 			UserNameField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.UserName, false);
+
+			string unf = UserNameField.Text.ToLower ();
+			bool ip = true;
+			if (unf.StartsWith (ipSignatures[0]))
+				UserNameField.Text = UserNameField.Text.Substring (ipSignatures[0].Length).Trim ();
+			else if (unf.StartsWith (ipSignatures[1]))
+				UserNameField.Text = UserNameField.Text.Substring (ipSignatures[1].Length).Trim ();
+			else
+				ip = false;
+
+			if (ip)
+				PresenterTypeField.Text = UserNameField.Text;
+
+			// Остальные реквизиты
 			INNField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.UserINN, false);
 			KKTSerialField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
@@ -1146,10 +1158,6 @@ namespace RD_AAOW
 					"Файл заявления повреждён и не может быть загружен полностью. Проверьте поля заявления перед формированием");
 				return;
 				}
-
-			/*// Завершено
-			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText,
-				"Заявление успешно загружено", 1000);*/
 			}
 
 		// Сохранение данных в файл заявления
@@ -1241,10 +1249,6 @@ namespace RD_AAOW
 					Path.GetFileName (SFDialog.FileName)));
 				return;
 				}
-
-			/*// Завершено
-			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
-				"Заявление успешно сохранено", 1000);*/
 			}
 
 		// Рекомендуемое имя файла
@@ -1252,7 +1256,8 @@ namespace RD_AAOW
 			{
 			get
 				{
-				return UserNameField.Text.Replace ("\"", "") + ", " + FNSerialField.Text;
+				return UserNameField.Text.Replace ("\"", "") + " - " + BlankTypeCombo.Text.ToLower () +
+					" от " + DateTime.Now.ToString ("dd.MM.yyyy");
 				}
 			}
 		}

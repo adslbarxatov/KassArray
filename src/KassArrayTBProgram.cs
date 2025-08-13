@@ -36,7 +36,6 @@ namespace RD_AAOW
 				try
 					{
 					EventWaitHandle ewh =
-						/*EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyTitle);*/
 						EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
 					ewh.Set ();
 					}
@@ -66,7 +65,6 @@ namespace RD_AAOW
 				}
 
 			// Запуск
-			/*Application.Run (new KassArrayTBForm ());*/
 			if (args.Length > 0)
 				Application.Run (new KassArrayTBForm (args[0]));
 			else

@@ -391,9 +391,6 @@ namespace RD_AAOW
 		private void CallSideTool (bool FN)
 			{
 			// Отправка "сообщения" окну модуля работы с ФН
-			/*bool problem = ewhIsActive ? ewh.WaitOne (100) : true;
-			if (!problem)
-				ewh.Set ();*/
 			bool problem;
 			if (FN)
 				problem = ewhFNIsActive ? ewhFN.WaitOne (100) : true;
@@ -1094,8 +1091,11 @@ namespace RD_AAOW
 				(uint)KKTListForManuals.SelectedIndex, AppSettings.UserGuidesSectionsState, flags);
 
 			// Печать
+			TMSet (false);
 			string s = KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4,
 				KassArrayDB::RD_AAOW.PrinterFlags.None);
+			TMSet (true);
+
 			if (!string.IsNullOrWhiteSpace (s))
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"Не удалось распечатать документ" + RDLocale.RN + s);
