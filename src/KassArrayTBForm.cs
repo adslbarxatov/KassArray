@@ -24,6 +24,12 @@ namespace RD_AAOW
 
 		private string[] ipSignatures = ["ип", "индивидуальный предприниматель"];
 
+		private string[][] blankNames = [
+			["Заявление о первичной регистрации ККТ", "первичная регистрация"],
+			["Заявление о перерегистрации ККТ", "перерегистрация"],
+			["Заявление о снятии ККТ с учёта", "снятие с учёта"],
+			];
+
 		// Доступные версии файлов заявлений
 		private enum KBFVersions
 			{
@@ -87,9 +93,12 @@ namespace RD_AAOW
 			AutomatFlag_CheckedChanged (null, null);
 
 			// В последнюю очередь, т.к. запускает изменение прочих состояний
-			BlankTypeCombo.Items.Add ("Заявление о первичной регистрации ККТ");
+			/*BlankTypeCombo.Items.Add ("Заявление о первичной регистрации ККТ");
 			BlankTypeCombo.Items.Add ("Заявление о перерегистрации ККТ");
-			BlankTypeCombo.Items.Add ("Заявление о снятии ККТ с учёта");
+			BlankTypeCombo.Items.Add ("Заявление о снятии ККТ с учёта");*/
+			BlankTypeCombo.Items.Add (blankNames[0][0]);
+			BlankTypeCombo.Items.Add (blankNames[1][0]);
+			BlankTypeCombo.Items.Add (blankNames[2][0]);
 			BlankTypeCombo.SelectedIndex = 0;
 
 			// Получение настроек
@@ -1256,8 +1265,11 @@ namespace RD_AAOW
 			{
 			get
 				{
-				return UserNameField.Text.Replace ("\"", "") + " - " + BlankTypeCombo.Text.ToLower () +
-					" от " + DateTime.Now.ToString ("dd.MM.yyyy");
+				int idx = BlankTypeCombo.SelectedIndex;
+				/*return UserNameField.Text.Replace ("\"", "") + " - " + BlankTypeCombo.Text.ToLower () +
+					" от " + DateTime.Now.ToString ("dd-MM-yyyy");*/
+				return UserNameField.Text.Replace ("\"", "") + " - " + blankNames[idx][1] +
+					" от " + DateTime.Now.ToString ("dd-MM-yyyy");
 				}
 			}
 		}
