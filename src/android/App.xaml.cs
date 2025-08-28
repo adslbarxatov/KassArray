@@ -730,6 +730,8 @@ namespace RD_AAOW
 				"", RDLabelTypes.Field, uiColors[tlvPage][cField]);
 			tlvObligationLabel.TextType = TextType.Html;
 
+			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVParentsButton",
+				"Родительские теги", uiColors[tlvPage][cField], TLVFindFromParents_Click, false);
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVObligationHelpLabel",
 				TLVTags.ObligationBase, uiColors[tlvPage][cField], TLVObligationBase_Click, false);
 
@@ -1868,6 +1870,27 @@ namespace RD_AAOW
 					await RDGenerics.RunURL (TLVTags.ObligationBaseLink, true);
 					break;
 				}
+			}
+
+		// Выбор родительского тега для перехода
+		private async void TLVFindFromParents_Click (object sender, EventArgs e)
+			{
+			// Контроль
+			string[] parents = kb.Tags.LastParents;
+			if (parents.Length < 1)
+				{
+				await RDInterface.ShowMessage ("Тег входит в состав документа напрямую (не является " +
+					"частью других тегов)", RDLocale.GetDefaultText (RDLDefaultTexts.Button_OK));
+				return;
+				}
+
+			int res = await RDInterface.ShowList ("Родительские теги",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), new List<string> (parents));
+			if (res < 0)
+				return;
+
+			AppSettings.TLVData = parents[res];
+			TLVFind_Clicked (sampleNextButton, null);
 			}
 
 		#endregion

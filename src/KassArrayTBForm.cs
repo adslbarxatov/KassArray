@@ -151,6 +151,7 @@ namespace RD_AAOW
 				this.Close ();
 			}
 
+		// Закрытие окна
 		private void KassArrayTBForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
 			// Контроль
@@ -161,6 +162,17 @@ namespace RD_AAOW
 			KassArrayTBSettings.RegionIndex = (uint)AddressRegionCodeCombo.SelectedIndex;
 			}
 
+		/*private void BExit_Click (object sender, EventArgs e)
+			{
+			this.Close ();
+			}*/
+
+		private void MClose_Click (object sender, EventArgs e)
+			{
+			this.Close ();
+			}
+
+		// Таймер обратной связи с вызывающим приложением
 		private void ShowWindowTimer_Tick (object sender, EventArgs e)
 			{
 			// Контроль
@@ -189,12 +201,6 @@ namespace RD_AAOW
 		private void BHelp_Clicked (object sender, EventArgs e)
 			{
 			RDInterface.ShowAbout (false);
-			}
-
-		// Завершение работы
-		private void BExit_Click (object sender, EventArgs e)
-			{
-			this.Close ();
 			}
 
 		// Поиск пользователя
@@ -1266,8 +1272,6 @@ namespace RD_AAOW
 			get
 				{
 				int idx = BlankTypeCombo.SelectedIndex;
-				/*return UserNameField.Text.Replace ("\"", "") + " - " + BlankTypeCombo.Text.ToLower () +
-					" от " + DateTime.Now.ToString ("dd-MM-yyyy");*/
 				return UserNameField.Text.Replace ("\"", "") + " - " + blankNames[idx][1] +
 					" от " + DateTime.Now.ToString ("dd-MM-yyyy");
 				}

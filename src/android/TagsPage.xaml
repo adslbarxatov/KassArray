@@ -11,6 +11,7 @@
 				<Button x:Name="TLVFindNextButton" VerticalOptions="Center" />
 				<Button x:Name="TLVFindBufferButton" VerticalOptions="Center" />
 			</StackLayout>
+			<Button x:Name="TLVParentsButton" HorizontalOptions="Center" />
 
 			<BoxView VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="1" 
 					WidthRequest="200" Color="#505050" Margin="6" />

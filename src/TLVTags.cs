@@ -435,8 +435,11 @@ namespace RD_AAOW
 		// Метод собирает требование обязательности
 		private string BuildObligation (int Index, TLVTags_FFDVersions FFD)
 			{
+			// Подготовка
 			string res = "";
+			lastParents.Clear ();
 
+			// Прогон по списку обязательности
 			for (int i = 0; i < oblIndices[Index].Count; i++)
 				{
 				if (oblFFDVersions[oblIndices[Index][i]] != FFD)
@@ -512,7 +515,7 @@ namespace RD_AAOW
 						oblVirtualObligations[oblIndices[Index][i]]);
 
 					res += RDLocale.RN + "• ";
-					switch (os)
+					/*switch (os)
 						{
 						case TLVTags_ObligationStates.Unused:
 							res += "не предусмотрен";
@@ -526,39 +529,57 @@ namespace RD_AAOW
 						case TLVTags_ObligationStates.RecommendedWith:
 							if (os == TLVTags_ObligationStates.RecommendedWith)
 								res += "не";
-							res += "обязателен";
+							res += "обязателен";*/
 
-							string condition = ((j == 0) ? oblPrintConditions[oblIndices[Index][i]] :
-								oblVirtualConditions[oblIndices[Index][i]]);
-							bool cond = !string.IsNullOrWhiteSpace (condition);
-							bool parent = !string.IsNullOrWhiteSpace (oblParents[oblIndices[Index][i]]);
+					if (os == TLVTags_ObligationStates.Unused)
+						{
+						res += "не предусмотрен";
+						}
+					else
+						{
+						if (os == TLVTags_ObligationStates.Required)
+							res += "строго ";
+						else if (os == TLVTags_ObligationStates.RecommendedWith)
+							res += "не";
+						res += "обязателен";
 
-							if (cond || parent)
+						string condition = ((j == 0) ? oblPrintConditions[oblIndices[Index][i]] :
+							oblVirtualConditions[oblIndices[Index][i]]);
+						bool cond = !string.IsNullOrWhiteSpace (condition);
+						bool parent = !string.IsNullOrWhiteSpace (oblParents[oblIndices[Index][i]]);
+
+						if (cond || parent)
+							{
+							res += " (";
+							if (cond)
+								res += ("с учётом прим. " + condition + " к табл. " +
+									oblTables[oblIndices[Index][i]]);
+
+							if (cond && parent)
+								res += " ";
+
+							if (parent)
 								{
-								res += " (";
-								if (cond)
-									res += ("с учётом прим. " + condition + " к табл. " +
-										oblTables[oblIndices[Index][i]]);
+								string op = oblParents[oblIndices[Index][i]];
+								if (os == TLVTags_ObligationStates.RecommendedWith)
+									res += ("даже ");
 
-								if (cond && parent)
-									res += " ";
+								res += ("при наличии тег");
+								if (op.Length > 4)
+									res += "ов ";
+								else
+									res += "а ";
+								res += op;
 
-								if (parent)
-									{
-									if (os == TLVTags_ObligationStates.RecommendedWith)
-										res += ("даже ");
-
-									res += ("при наличии тег");
-									if (oblParents[oblIndices[Index][i]].Length > 4)
-										res += "ов ";
-									else
-										res += "а ";
-									res += oblParents[oblIndices[Index][i]];
-									}
-
-								res += ")";
+								string[] lTags = op.Split ([',', ' '], StringSplitOptions.RemoveEmptyEntries);
+								for (int l = 0; l < lTags.Length; l++)
+									if (!lastParents.Contains (lTags[l]))
+										lastParents.Add (lTags[l]);
 								}
-							break;
+
+							res += ")";
+							}
+						/*break;*/
 						}
 
 					res += ((j == 0) ? " в печ. форме" : " в эл. форме" + RDLocale.RNRN);
@@ -621,6 +642,18 @@ namespace RD_AAOW
 				}
 			}
 		private string lastObligation = "";
+
+		/// <summary>
+		/// Возвращает список тегов, являющихся родительскими для последнего запрошенного тега
+		/// </summary>
+		public string[] LastParents
+			{
+			get
+				{
+				return lastParents.ToArray ();
+				}
+			}
+		private List<string> lastParents = [];
 
 		/// <summary>
 		/// Возвращает приказ, обосновывающий обязательность реквизитов

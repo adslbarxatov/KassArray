@@ -1269,6 +1269,36 @@ namespace RD_AAOW
 			TMSet (true);
 			}
 
+		// Выбор родительского тега для перехода
+		private void TLVFindFromParents_Click (object sender, EventArgs e)
+			{
+			// Контроль
+			string[] parents = kb.Tags.LastParents;
+			if (parents.Length < 1)
+				{
+				TMSet (false);
+				RDInterface.MessageBox (RDMessageFlags.CenterText | RDMessageFlags.Warning,
+					"Тег входит в состав документа напрямую" + RDLocale.RN +
+					"(не является частью других тегов)"/*, 2000*/);
+
+				TMSet (true);
+				return;
+				}
+
+			ContextMenuStrip cms = new ContextMenuStrip ();
+			cms.ShowImageMargin = false;
+			for (int i = 0; i < parents.Length; i++)
+				cms.Items.Add (parents[i], null, TLVFindFromParentsMenu_Click);
+
+			cms.Show (TLVFindFromParents, new Point (0, TLVFindFromParents.Height));
+			}
+
+		private void TLVFindFromParentsMenu_Click (object sender, EventArgs e)
+			{
+			AppSettings.TLVData = ((ToolStripMenuItem)sender).Text;
+			TLVButton_Click (TLVFindNextButton, null);
+			}
+
 		#endregion
 
 		#region Штрих-коды
