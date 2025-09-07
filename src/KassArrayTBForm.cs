@@ -2,6 +2,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -29,6 +30,8 @@ namespace RD_AAOW
 			["Заявление о перерегистрации ККТ", "перерегистрация"],
 			["Заявление о снятии ККТ с учёта", "снятие с учёта"],
 			];
+
+		private ContextMenuStrip addressMenu;
 
 		// Доступные версии файлов заявлений
 		private enum KBFVersions
@@ -90,12 +93,12 @@ namespace RD_AAOW
 			AddressRegionCodeCombo.Items.AddRange (kb.KKTNumbers.EnumerateAvailableRegions ());
 			AddressRegionCodeCombo.SelectedIndex = 0;
 
+			addressMenu = new ContextMenuStrip ();
+			addressMenu.ShowImageMargin = false;
+
 			AutomatFlag_CheckedChanged (null, null);
 
 			// В последнюю очередь, т.к. запускает изменение прочих состояний
-			/*BlankTypeCombo.Items.Add ("Заявление о первичной регистрации ККТ");
-			BlankTypeCombo.Items.Add ("Заявление о перерегистрации ККТ");
-			BlankTypeCombo.Items.Add ("Заявление о снятии ККТ с учёта");*/
 			BlankTypeCombo.Items.Add (blankNames[0][0]);
 			BlankTypeCombo.Items.Add (blankNames[1][0]);
 			BlankTypeCombo.Items.Add (blankNames[2][0]);
@@ -161,11 +164,6 @@ namespace RD_AAOW
 			RDGenerics.SaveWindowDimensions (this);
 			KassArrayTBSettings.RegionIndex = (uint)AddressRegionCodeCombo.SelectedIndex;
 			}
-
-		/*private void BExit_Click (object sender, EventArgs e)
-			{
-			this.Close ();
-			}*/
 
 		private void MClose_Click (object sender, EventArgs e)
 			{
@@ -975,12 +973,33 @@ namespace RD_AAOW
 			string addressFromFN = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.RegistrationAddress, false);
 			string[] affn = addressFromFN.Split ([',', '.', ' '], StringSplitOptions.RemoveEmptyEntries);
-			AddressFromFN.Text = "";
+			
+			/*if (affn.Length > 0)
+				{
+				if (addressMenu == null)
+					{
+					AddressAreaField.MouseClick += AddressField_MouseClick;
+					AddressCityField.MouseClick += AddressField_MouseClick;
+					AddressTownField.MouseClick += AddressField_MouseClick;
+					AddressStreetField.MouseClick += AddressField_MouseClick;
+					AddressHouseField.MouseClick += AddressField_MouseClick;
+					AddressBuildingField.MouseClick += AddressField_MouseClick;
+					AddressAppartmentField.MouseClick += AddressField_MouseClick;
+					AddressIndexField.MouseClick += AddressField_MouseClick;
+					}
+
+				addressMenu = new ContextMenuStrip ();
+				}*/
+
+			/*AddressFromFN.Text = "";*/
+			addressMenu.Items.Clear ();
 			for (int i = 0; i < affn.Length; i++)
 				{
-				AddressFromFN.Text += affn[i];
+				/*AddressFromFN.Text += affn[i];
 				if (i < affn.Length - 1)
-					AddressFromFN.Text += RDLocale.RN;
+					AddressFromFN.Text += RDLocale.RN;*/
+
+				addressMenu.Items.Add (affn[i], null, AddressMenu_Click);
 				}
 
 			if (PlaceField.Enabled)
@@ -1275,6 +1294,24 @@ namespace RD_AAOW
 				return UserNameField.Text.Replace ("\"", "") + " - " + blankNames[idx][1] +
 					" от " + DateTime.Now.ToString ("dd-MM-yyyy");
 				}
+			}
+
+		// Обработчик контекстного меню адресных полей
+		private void AddressField_MouseClick (object sender, MouseEventArgs e)
+			{
+			if (addressMenu.Items.Count < 1)
+				return;
+			if (e.Button != MouseButtons.Left)
+				return;
+
+			addressField = (TextBox)sender;
+			addressMenu.Show (addressField, new Point (0, addressField.Height));
+			}
+		private TextBox addressField;
+
+		private void AddressMenu_Click (object sender, EventArgs e)
+			{
+			addressField.Text = ((ToolStripItem)sender).Text;
 			}
 		}
 	}
