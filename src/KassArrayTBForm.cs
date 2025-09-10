@@ -974,33 +974,9 @@ namespace RD_AAOW
 				(KassArrayDB::RD_AAOW.RegTags.RegistrationAddress, false);
 			string[] affn = addressFromFN.Split ([',', '.', ' '], StringSplitOptions.RemoveEmptyEntries);
 			
-			/*if (affn.Length > 0)
-				{
-				if (addressMenu == null)
-					{
-					AddressAreaField.MouseClick += AddressField_MouseClick;
-					AddressCityField.MouseClick += AddressField_MouseClick;
-					AddressTownField.MouseClick += AddressField_MouseClick;
-					AddressStreetField.MouseClick += AddressField_MouseClick;
-					AddressHouseField.MouseClick += AddressField_MouseClick;
-					AddressBuildingField.MouseClick += AddressField_MouseClick;
-					AddressAppartmentField.MouseClick += AddressField_MouseClick;
-					AddressIndexField.MouseClick += AddressField_MouseClick;
-					}
-
-				addressMenu = new ContextMenuStrip ();
-				}*/
-
-			/*AddressFromFN.Text = "";*/
 			addressMenu.Items.Clear ();
 			for (int i = 0; i < affn.Length; i++)
-				{
-				/*AddressFromFN.Text += affn[i];
-				if (i < affn.Length - 1)
-					AddressFromFN.Text += RDLocale.RN;*/
-
 				addressMenu.Items.Add (affn[i], null, AddressMenu_Click);
-				}
 
 			if (PlaceField.Enabled)
 				PlaceField.Text = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue

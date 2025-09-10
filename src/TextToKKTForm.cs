@@ -1279,7 +1279,7 @@ namespace RD_AAOW
 				TMSet (false);
 				RDInterface.MessageBox (RDMessageFlags.CenterText | RDMessageFlags.Warning,
 					"Тег входит в состав документа напрямую" + RDLocale.RN +
-					"(не является частью других тегов)"/*, 2000*/);
+					"(не является частью других тегов)");
 
 				TMSet (true);
 				return;

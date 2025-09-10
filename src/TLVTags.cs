@@ -515,22 +515,6 @@ namespace RD_AAOW
 						oblVirtualObligations[oblIndices[Index][i]]);
 
 					res += RDLocale.RN + "• ";
-					/*switch (os)
-						{
-						case TLVTags_ObligationStates.Unused:
-							res += "не предусмотрен";
-							break;
-
-						case TLVTags_ObligationStates.Required:
-							res += "обязателен";
-							break;
-
-						case TLVTags_ObligationStates.RequiredWith:
-						case TLVTags_ObligationStates.RecommendedWith:
-							if (os == TLVTags_ObligationStates.RecommendedWith)
-								res += "не";
-							res += "обязателен";*/
-
 					if (os == TLVTags_ObligationStates.Unused)
 						{
 						res += "не предусмотрен";
@@ -579,7 +563,6 @@ namespace RD_AAOW
 
 							res += ")";
 							}
-						/*break;*/
 						}
 
 					res += ((j == 0) ? " в печ. форме" : " в эл. форме" + RDLocale.RNRN);

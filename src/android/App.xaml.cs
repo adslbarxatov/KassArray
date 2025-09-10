@@ -27,8 +27,9 @@ namespace RD_AAOW
 			[ Color.FromArgb ("#E1FFF1"), Color.FromArgb ("#D7F4E7") ],	// 11. Convertors HT
 			[ Color.FromArgb ("#E5FFF5"), Color.FromArgb ("#DBF4EB") ],	// 12. Convertors SN
 			[ Color.FromArgb ("#E9FFF9"), Color.FromArgb ("#DFF4EF") ],	// 13. Convertors UN
-			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 14. Settings
-			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 15. App about
+			[ Color.FromArgb ("#FFF0FF"), Color.FromArgb ("#FFC8FF") ],	// 14. Low level
+			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 15. Settings
+			[ Color.FromArgb ("#F0FFF0"), Color.FromArgb ("#D0FFD0") ],	// 16. App about
 			];
 		private const int hdrPage = 0;
 		private const int usgPage = 1;
@@ -44,8 +45,9 @@ namespace RD_AAOW
 		private const int cvhPage = 11;
 		private const int cvsPage = 12;
 		private const int cvuPage = 13;
-		private const int setPage = 14;
-		private const int aabPage = 15;
+		private const int llvPage = 14;
+		private const int setPage = 15;
+		private const int aabPage = 16;
 
 		private const int cBack = 0;
 		private const int cField = 1;
@@ -61,7 +63,7 @@ namespace RD_AAOW
 			errorsResultText, cableLeftSideText, cableRightSideText, cableLeftPinsText, cableRightPinsText,
 			cableDescriptionText,
 			fnLifeLabel, fnLifeModelLabel, fnLifeGenericTaxLabel, fnLifeGoodsLabel,
-			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel,
+			rnmKKTTypeLabel, rnmINNCheckLabel, rnmRNMCheckLabel, lowLevelCommandDescr,
 			dictionaryDescriptionField, dictionaryLabelField,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, ofdDisabledLabel, convNumberResultField, convCodeResultField,
@@ -76,6 +78,7 @@ namespace RD_AAOW
 			ofdNameButton, ofdDNSNameButton, ofdIPButton, ofdPortButton, ofdEmailButton, ofdSiteButton,
 			ofdDNSNameMButton, ofdIPMButton, ofdPortMButton, ofdINN,
 			rnmGenerate, convCodeSymbolField,
+			lowLevelProtocol, lowLevelCommand, lowLevelCommandCode,
 			encodingButton, fnLifeStatus, sampleNextButton;
 		private List<Button> uiButtons = [];
 
@@ -164,7 +167,7 @@ namespace RD_AAOW
 			uiPages.Add (ApplyPageSettings (new TagsPage (),
 				"TLV-теги", uiColors[tlvPage][cBack], true));
 			uiButtons[tlvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
-			
+
 			uiPages.Add (ApplyPageSettings (new TermsDictionaryPage (),
 				"Словарь терминов", uiColors[tdcPage][cBack], true));
 			uiPages.Add (ApplyPageSettings (new KKTCodesPage (),
@@ -183,6 +186,10 @@ namespace RD_AAOW
 				"Конвертор систем счисления", uiColors[cvsPage][cBack], true));
 			uiPages.Add (ApplyPageSettings (new ConvertorsUCPage (),
 				"Конвертор символов Unicode", uiColors[cvuPage][cBack], true));
+
+			uiPages.Add (ApplyPageSettings (new LowLevelPage (),
+				"Команды нижнего уровня", uiColors[llvPage][cBack], true));
+			uiButtons[llvPage - 1].IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
 			// С отступом
 			menuLayout.Children.Add (new Label ());
@@ -927,6 +934,47 @@ namespace RD_AAOW
 			encodingButton = RDInterface.ApplyButtonSettings (uiPages[cvhPage], "EncodingButton",
 				" ", uiColors[cvhPage][cField], EncodingButton_Clicked, true);
 			EncodingButton_Clicked (null, null);
+
+			#endregion
+
+			#region Страница команд нижнего уровня
+
+			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindButton",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[llvPage][cField],
+				LowLevelFind_Clicked, false);
+			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindNextButton",
+				NextButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
+			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindBufferButton",
+				BufferButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
+
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "ProtocolLabel",
+				"Протокол:", RDLabelTypes.HeaderLeft);
+			lowLevelProtocol = RDInterface.ApplyButtonSettings (uiPages[llvPage], "ProtocolButton",
+				kb.LLCommands.GetProtocolsNames ()[(int)AppSettings.LowLevelProtocol],
+				uiColors[llvPage][cField], LowLevelProtocol_Clicked, true);
+
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandLabel",
+				"Команда:", RDLabelTypes.HeaderLeft);
+			lowLevelCommand = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandButton",
+				kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol)[(int)AppSettings.LowLevelCode],
+				uiColors[llvPage][cField], LowLevelCommandCodeButton_Clicked, true);
+
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandCodeLabel",
+				"Код команды:", RDLabelTypes.HeaderLeft);
+			lowLevelCommandCode = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandCodeButton",
+				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, false),
+				uiColors[llvPage][cField], Field_Clicked, true);
+
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescrLabel",
+				"Пояснение:", RDLabelTypes.HeaderLeft);
+
+			lowLevelCommandDescr = RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescr",
+				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true),
+				RDLabelTypes.Field, uiColors[llvPage][cField]);
+
+			RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
+				"Нажатие кнопки копирует команду в буфер обмена",
+				RDLabelTypes.TipCenter);
 
 			#endregion
 
@@ -2113,6 +2161,75 @@ namespace RD_AAOW
 
 			encodingButton.Text = list[res];
 			AppSettings.EncodingForConvertor = (uint)res;
+			}
+
+		#endregion
+
+		#region Команды нижнего уровня
+
+		// Выбор команды нижнего уровня
+		private async void LowLevelCommandCodeButton_Clicked (object sender, EventArgs e)
+			{
+			// Запрос кода ошибки
+			List<string> list = kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol);
+			int res = (int)AppSettings.LowLevelCode;
+			if (e != null)
+				res = await RDInterface.ShowList ("Выберите команду:",
+					RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
+
+			// Установка результата
+			if ((e == null) || (res >= 0))
+				{
+				AppSettings.LowLevelCode = (uint)res;
+				lowLevelCommand.Text = list[res];
+
+				lowLevelCommandCode.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, false);
+				lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, true);
+				}
+
+			list.Clear ();
+			}
+
+		// Выбор списка команд
+		private async void LowLevelProtocol_Clicked (object sender, EventArgs e)
+			{
+			// Запрос кода ошибки
+			List<string> list = kb.LLCommands.GetProtocolsNames ();
+
+			// Установка результата
+			int res = await RDInterface.ShowList ("Выберите протокол:",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel), list);
+			if (res < 0)
+				return;
+
+			AppSettings.LowLevelProtocol = (uint)res;
+			AppSettings.LowLevelCode = 0;
+			lowLevelProtocol.Text = list[res];
+
+			// Вызов вложенного обработчика
+			LowLevelCommandCodeButton_Clicked (null, null);
+			}
+
+		// Поиск по названию команды нижнего уровня
+		private async void LowLevelFind_Clicked (object sender, EventArgs e)
+			{
+			// Определение запроса
+			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
+				AppSettings.LowLevelSearchMaxLength);
+			if (search[1] == "C")
+				return;
+
+			AppSettings.LowLevelSearch = search[0];
+			int idx = kb.LLCommands.FindNext (search[0], search[1] == "I");
+			if (idx < 0)
+				{
+				RDInterface.ShowBalloon ("По указанному запросу команда не найдена", true);
+				return;
+				}
+
+			AppSettings.LowLevelCode = (uint)idx;
+			LowLevelCommandCodeButton_Clicked (null, null);
 			}
 
 		#endregion
