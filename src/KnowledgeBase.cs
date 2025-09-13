@@ -137,8 +137,6 @@
 			}
 		private UnicodeDescriptor ud;
 
-#if ANDROID
-
 		/// <summary>
 		/// Возвращает справочник команд нижнего уровня
 		/// </summary>
@@ -150,8 +148,6 @@
 				}
 			}
 		private LowLevel ll;
-
-#endif
 
 		/// <summary>
 		/// Конструктор. Инициализирует базу знаний
@@ -169,9 +165,7 @@
 			barc = new BarCodes ();
 			conn = new Connectors ();
 			ud = new UnicodeDescriptor ();
-#if ANDROID
 			ll = new LowLevel ();
-#endif
 			}
 		}
 	}

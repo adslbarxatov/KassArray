@@ -20,6 +20,25 @@ namespace RD_AAOW
 		// Дескриптор иконки в трее
 		private NotifyIcon ni = new NotifyIcon ();
 
+		// Список панелей главного окна
+		private List<Panel> tabs = [];
+		/*private const int usgPage = 0;
+		private const int errPage = 1;
+		private const int tlvPage = 2;
+		private const int fnlPage = 3;
+		private const int rnmPage = 4;
+		private const int ofdPage = 5;
+		private const int tdcPage = 6;
+		private const int codPage = 7;
+		private const int conPage = 8;
+		private const int bcdPage = 9;
+		private const int cvnPage = 10;
+		private const int cvuPage = 11;
+		private const int cvhPage = 12;
+		private const int llvPage = 13;
+		private const int othPage = 14;*/
+		private List<int> availableTabs = [];
+
 		// Сообщение о применимости ФН
 		private string fnLifeMessage = "";
 
@@ -82,9 +101,96 @@ namespace RD_AAOW
 				return;
 				}
 
-			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
+			// Сборка структуры страниц
+			int pIdx = 0;
+			tabs.Add (GuidesPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Руководства");
+
+			tabs.Add (ErrorsPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Коды ошибок");
+
+			tabs.Add (TagsPanel);
+			if (AppSettings.EnableExtendedMode)
+				{
+				availableTabs.Add (pIdx);
+				HeadersList.Items.Add ("Теги ФФД");
+				}
+			pIdx++;
+
+			tabs.Add (FNPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Срок жизни ФН");
+
+			tabs.Add (KKTPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("ЗН и РНМ");
+
+			tabs.Add (OFDPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Настройки ОФД");
+
+			tabs.Add (TermsPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Словарь терминов");
+
+			tabs.Add (CodesPanel);
+			if (AppSettings.EnableExtendedMode)
+				{
+				availableTabs.Add (pIdx);
+				HeadersList.Items.Add ("Коды символов");
+				}
+			pIdx++;
+
+			tabs.Add (ConnectorsPanel);
+			if (AppSettings.EnableExtendedMode)
+				{
+				availableTabs.Add (pIdx);
+				HeadersList.Items.Add ("Разъёмы");
+				}
+			pIdx++;
+
+			tabs.Add (BarcodesPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Штрих-коды");
+
+			tabs.Add (NConvPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Системы счисления");
+
+			tabs.Add (UConvPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Символы Unicode");
+
+			tabs.Add (HConvPanel);
+			availableTabs.Add (pIdx++);
+			HeadersList.Items.Add ("Двоичные данные");
+
+			tabs.Add (LowLevelPanel);
+			if (AppSettings.EnableExtendedMode)
+				{
+				availableTabs.Add (pIdx);
+				HeadersList.Items.Add ("Нижний уровень");
+				}
+			pIdx++;
+
+			tabs.Add (OthersPanel);
+			availableTabs.Add (pIdx);
+			HeadersList.Items.Add ("Прочее");
+
+			try
+				{
+				HeadersList.SelectedIndex = (int)AppSettings.CurrentTab;
+				}
+			catch
+				{
+				HeadersList.SelectedIndex = 0;
+				}
 
 			// Настройка контролов
+			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
+
 			KKTListForCodes.Items.AddRange (kb.CodeTables.GetKKTTypeNames ().ToArray ());
 			KKTListForCodes.SelectedIndex = 0;
 
@@ -110,8 +216,8 @@ namespace RD_AAOW
 			FNReader.Visible = FNFromFNReader.Visible = OFDFromFNReader.Visible =
 				RNMFromFNReader.Visible = !RDGenerics.StartedFromMSStore && AppSettings.EnableExtendedMode; // Уровень 2
 
-			MainTabControl.SelectedIndex = (int)AppSettings.CurrentTab;
-			ConvertorsContainer.SelectedIndex = (int)AppSettings.ConvertorTab;
+			/*MainTabControl.SelectedIndex = (int)AppSettings.CurrentTab;
+			ConvertorsContainer.SelectedIndex = (int)AppSettings.ConvertorTab;*/
 
 			try
 				{
@@ -142,7 +248,7 @@ namespace RD_AAOW
 			CDNSite.Text = KassArrayDB::RD_AAOW.OFD.CDNSite;
 			LoadOFDParameters ();
 
-			LowLevelSearch_Click (LLFindNextButton, null);
+			TermSearch_Click (LLFindNextButton, null);
 
 			try
 				{
@@ -188,9 +294,10 @@ namespace RD_AAOW
 			ConvertTextField.Text = AppSettings.ConversionText;
 
 			// Блокировка расширенных функций при необходимости
-			RNMGenerate.Visible = TLVTab.Enabled = ConnectorsTab.Enabled =
+			/*RNMGenerate.Visible = TLVTab.Enabled = ConnectorsTab.Enabled =
 				PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;   // Уровень 2
-			CodesTab.Enabled = AppSettings.EnableExtendedMode;  // Уровень 1
+			CodesTab.Enabled = AppSettings.EnableExtendedMode;  // Уровень 1*/
+			RNMGenerate.Visible = PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;
 			AddManualLogo.Visible = ManualLogo.Visible = AppSettings.EnableExtendedMode &&
 				!RDGenerics.StartedFromMSStore;
 
@@ -210,6 +317,11 @@ namespace RD_AAOW
 
 			ConvCode.Text = AppSettings.ConversionCode;
 			ConvCode_TextChanged (null, null);
+
+			LowLevelProtocol.Items.AddRange (kb.LLCommands.GetProtocolsNames ().ToArray ());
+			LowLevelProtocol.SelectedIndex = 0;
+			LowLevelProtocol_SelectedIndexChanged (null, null);
+			LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;
 
 			// Настройка иконки в трее
 			ni.Icon = KassArrayResources.KassArrayTray;
@@ -331,8 +443,9 @@ namespace RD_AAOW
 
 			AppSettings.TopMost = TopFlag.Checked;
 
-			AppSettings.CurrentTab = (uint)MainTabControl.SelectedIndex;
-			AppSettings.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;
+			/*AppSettings.CurrentTab = (uint)MainTabControl.SelectedIndex;
+			AppSettings.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;*/
+			AppSettings.CurrentTab = (uint)HeadersList.SelectedIndex;
 
 			AppSettings.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
 			AppSettings.FNLifeEvFlags = (uint)FNLifeEvFlags;
@@ -362,6 +475,9 @@ namespace RD_AAOW
 			AppSettings.EncodingForConvertor = (uint)EncodingCombo.SelectedIndex;
 			AppSettings.ConversionHex = ConvertHexField.Text;
 			AppSettings.ConversionText = ConvertTextField.Text;
+
+			AppSettings.LowLevelProtocol = (uint)LowLevelProtocol.SelectedIndex;
+			AppSettings.LowLevelCode = (uint)LowLevelCommand.SelectedIndex;
 			}
 
 		// Отображение справки
@@ -559,6 +675,17 @@ namespace RD_AAOW
 		private void OverrideCloseButton_CheckedChanged (object sender, EventArgs e)
 			{
 			AppSettings.OverrideCloseButton = OverrideCloseButton.Checked;
+			}
+
+		// Выбор текущей страницы
+		private void HeadersList_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			int idx = HeadersList.SelectedIndex;
+			if (idx < 0)
+				return;
+
+			for (int i = 0; i < tabs.Count; i++)
+				tabs[i].Visible = (i == availableTabs[idx]);
 			}
 
 		#endregion
@@ -986,7 +1113,7 @@ namespace RD_AAOW
 			}
 
 		// Копирование в буфер обмена
-		private void OFDDNSName_Click (object sender, EventArgs e)
+		private void SendButtonTextToClipboard (object sender, EventArgs e)
 			{
 			TMSet (false);
 			RDGenerics.SendToClipboard (((Button)sender).Text, true);
@@ -1033,7 +1160,7 @@ namespace RD_AAOW
 		#region Словарь терминов
 
 		// Поиск по тексту ошибки
-		private void LowLevelSearch_Click (object sender, EventArgs e)
+		private void TermSearch_Click (object sender, EventArgs e)
 			{
 			// Определение запроса
 			TMSet (false);
@@ -1511,6 +1638,54 @@ namespace RD_AAOW
 			{
 			ConvertTextField.Text = "";
 			ConvertHexField.Text = "";
+			}
+
+		#endregion
+
+		#region Команды нижнего уровня
+
+		// Выбор протокола
+		private void LowLevelProtocol_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			LowLevelCommand.Items.Clear ();
+			LowLevelCommand.Items.AddRange (kb.LLCommands.GetCommandsList ((uint)LowLevelProtocol.SelectedIndex).ToArray ());
+			LowLevelCommand.SelectedIndex = 0;
+			}
+
+		// Выбор команды
+		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
+			{
+			LowLevelCommandCode.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+				(uint)LowLevelCommand.SelectedIndex, false);
+			LowLevelCommandDescr.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+				(uint)LowLevelCommand.SelectedIndex, true);
+			}
+
+		// Поиск команды
+		// Поиск по тексту ошибки
+		private void LowLevelSearch_Click (object sender, EventArgs e)
+			{
+			// Определение запроса
+			TMSet (false);
+			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
+				AppSettings.LowLevelSearchMaxLength);
+			TMSet (true);
+
+			if (search[1] == "C")
+				return;
+
+			AppSettings.LowLevelSearch = search[0];
+			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");
+			if (idx < 0)
+				{
+				LowLevelCommandDescr.Text = LowLevelCommandCode.Text = "(описание не найдено)";
+				return;
+				}
+
+			/*AppSettings.LowLevelCode = (uint)idx;
+			LowLevelCommand_SelectedIndexChanged (null, null);*/
+			LowLevelCommand.SelectedIndex = idx;
 			}
 
 		#endregion

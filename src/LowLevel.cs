@@ -104,11 +104,12 @@ namespace RD_AAOW
 		/// </summary>
 		/// <param name="Criteria">Ключевое слово для поиска</param>
 		/// <param name="Continue">Флаг продолжения поиска в порядке следования</param>
+		/// <param name="Protocol">Текущий протокол команд нижнего уровня</param>
 		/// <returns>Возвращает номер найденной команды либо -1, если команда не была найдена</returns>
-		public int FindNext (string Criteria, bool Continue)
+		public int FindNext (uint Protocol, string Criteria, bool Continue)
 			{
 			string criteria = Criteria.ToLower ();
-			int prot = (int)AppSettings.LowLevelProtocol;
+			int prot = (int)Protocol;
 			if (prot >= names.Count)
 				prot = 0;
 

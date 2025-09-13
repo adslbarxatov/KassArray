@@ -2221,7 +2221,7 @@ namespace RD_AAOW
 				return;
 
 			AppSettings.LowLevelSearch = search[0];
-			int idx = kb.LLCommands.FindNext (search[0], search[1] == "I");
+			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");
 			if (idx < 0)
 				{
 				RDInterface.ShowBalloon ("По указанному запросу команда не найдена", true);
