@@ -22,21 +22,6 @@ namespace RD_AAOW
 
 		// Список панелей главного окна
 		private List<Panel> tabs = [];
-		/*private const int usgPage = 0;
-		private const int errPage = 1;
-		private const int tlvPage = 2;
-		private const int fnlPage = 3;
-		private const int rnmPage = 4;
-		private const int ofdPage = 5;
-		private const int tdcPage = 6;
-		private const int codPage = 7;
-		private const int conPage = 8;
-		private const int bcdPage = 9;
-		private const int cvnPage = 10;
-		private const int cvuPage = 11;
-		private const int cvhPage = 12;
-		private const int llvPage = 13;
-		private const int othPage = 14;*/
 		private List<int> availableTabs = [];
 
 		// Сообщение о применимости ФН
@@ -458,9 +443,10 @@ namespace RD_AAOW
 			AppSettings.KKTForCodes = (uint)KKTListForCodes.SelectedIndex;
 			AppSettings.CodesText = TextToConvert.Text;
 
-			List<string> cots = new List<string> ();
-			foreach (object o in TextToConvert.Items)
-				cots.Add (o.ToString ());
+			List<string> cots = [];
+			/*foreach (object o in TextToConvert.Items)*/
+			for (int i = 0; i < TextToConvert.Items.Count; i++)
+				cots.Add (TextToConvert.Items[i].ToString ());
 			AppSettings.CodesOftenTexts = cots.ToArray ();
 
 			AppSettings.BarcodeData = BarcodeData.Text;
@@ -714,6 +700,16 @@ namespace RD_AAOW
 		// Очистка полей
 		private void TextToConvertClear_Click (object sender, EventArgs e)
 			{
+			RDMessageButtons res = RDInterface.MessageBox (RDMessageFlags.Question |
+				RDMessageFlags.CenterText | RDMessageFlags.LockSmallSize,
+				"Вы хотите удалить все сохранённые строки или только текущую?", "Текущую", "Все",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel));
+
+			if (res == RDMessageButtons.ButtonTwo)
+				TextToConvert.Items.Clear ();
+			else if (res == RDMessageButtons.ButtonThree)
+				return;
+
 			TextToConvert.Text = "";
 			}
 

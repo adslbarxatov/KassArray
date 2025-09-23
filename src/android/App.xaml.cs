@@ -1181,8 +1181,17 @@ namespace RD_AAOW
 			}
 
 		// Очистка полей
-		private void CodesClear_Clicked (object sender, EventArgs e)
+		private async void CodesClear_Clicked (object sender, EventArgs e)
 			{
+			int res = await RDInterface.ShowList ("Выберите вариант:",
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
+				["Очистить текущую строку", "Удалить все сохранённые строки"]);
+
+			if (res == 1)
+				kktCodesOftenTexts.Clear ();
+			else if (res < 0)
+				return;
+
 			codesSourceText.Text = "";
 			}
 
