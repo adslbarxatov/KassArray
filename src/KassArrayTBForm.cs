@@ -808,6 +808,11 @@ namespace RD_AAOW
 			else
 				KATBSupport.ApplyField (BlankFields.FNCloseDocumentSign, FNCloseFPDField.Text.PadLeft (10, '0'));
 
+			if (KassArrayTBSettings.AddSignDate)
+				KATBSupport.ApplyField (BlankFields.SignDate, DateTime.Now.ToString ("dd.MM.yyyy"));
+			else
+				KATBSupport.ApplyField (BlankFields.SignDate, "_".PadLeft (10, '_'));
+
 			#endregion
 
 			// Запуск на печать
@@ -973,7 +978,7 @@ namespace RD_AAOW
 			string addressFromFN = KassArrayDB::RD_AAOW.KKTSupport.GetRegTagValue
 				(KassArrayDB::RD_AAOW.RegTags.RegistrationAddress, false);
 			string[] affn = addressFromFN.Split ([',', '.', ' '], StringSplitOptions.RemoveEmptyEntries);
-			
+
 			addressMenu.Items.Clear ();
 			for (int i = 0; i < affn.Length; i++)
 				addressMenu.Items.Add (affn[i], null, AddressMenu_Click);
