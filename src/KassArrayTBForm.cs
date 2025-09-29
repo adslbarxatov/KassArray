@@ -38,7 +38,13 @@ namespace RD_AAOW
 			{
 			Unknown = 0,
 			V1 = 1,
+			V2 = 2,
 			}
+		private static uint[] kbfFieldsCount = [
+			0,
+			86,
+			87,
+			];
 
 		// Ресивер сообщений на повторное открытие окна
 		private EventWaitHandle ewh;
@@ -358,7 +364,9 @@ namespace RD_AAOW
 				}
 			}
 
-		// Формирование заявления
+		/// <summary>
+		/// Метод формирования заявления
+		/// </summary>
 		private void CreateBlank_Click (object sender, EventArgs e)
 			{
 			bool rereg = (BlankTypeCombo.SelectedIndex == 1);
@@ -637,7 +645,17 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.CurrentDate, DateTime.Now.ToString ("dd.MM.yyyy"));
 			KATBSupport.ApplyField (BlankFields.AppendixesCount, "");
 
-			KATBSupport.ApplyField (BlankFields.RegistrationNumber, rereg ? KKTRNMField.Text : "");
+			int l;
+			if (rereg)
+				{
+				KATBSupport.ApplyField (BlankFields.RegistrationNumber, KKTRNMField.Text);
+				}
+			else if (!finish)
+				{
+				// Требует ручного заполнения сотрудником ФНС при первичной регистрации
+				l = (int)KATBSupport.GetFieldLength (BlankFields.RegistrationNumber);
+				KATBSupport.ApplyField (BlankFields.RegistrationNumber, " ".PadLeft (l, ' '));
+				}
 
 			field = (KKTModelCombo.SelectedIndex == 0) ? "" : KKTModelCombo.Text;
 			int idx = field.IndexOf ('(');
@@ -675,9 +693,10 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.FNModelName_Line6, field);
 			KATBSupport.ApplyField (BlankFields.FNSerialNumber, FNSerialField.Text);
 
+			l = (int)KATBSupport.GetFieldLength (BlankFields.UserAddressRegionCode);
 			KATBSupport.ApplyField (BlankFields.UserAddressRegionCode,
 				(AddressRegionCodeCombo.SelectedIndex == 0) || !AddressRegionCodeCombo.Enabled ? "" :
-				AddressRegionCodeCombo.Text.Substring (0, 2));
+				AddressRegionCodeCombo.Text.Substring (0, l));
 			KATBSupport.ApplyField (BlankFields.UserAddressIndex, AddressIndexField.Text);
 			KATBSupport.ApplyField (BlankFields.UserAddressArea, AddressAreaField.Text);
 			KATBSupport.ApplyField (BlankFields.UserAddressCity, AddressCityField.Text);
@@ -712,9 +731,10 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.AutomatNumber, AutomatNumberField.Text);
 			if (AutomatAddressIsSame.Checked)
 				{
+				l = (int)KATBSupport.GetFieldLength (BlankFields.AutomatAddressRegionCode);
 				KATBSupport.ApplyField (BlankFields.AutomatAddressRegionCode,
 					(AddressRegionCodeCombo.SelectedIndex == 0) || !AddressRegionCodeCombo.Enabled ? "" :
-					AddressRegionCodeCombo.Text.Substring (0, 2));
+					AddressRegionCodeCombo.Text.Substring (0, l));
 
 				KATBSupport.ApplyField (BlankFields.AutomatAddressIndex, AddressIndexField.Text);
 				KATBSupport.ApplyField (BlankFields.AutomatAddressArea, AddressAreaField.Text);
@@ -750,7 +770,8 @@ namespace RD_AAOW
 
 			if (OFDVariantCombo.SelectedIndex % 2 == 1)
 				{
-				KATBSupport.ApplyField (BlankFields.OFDINN, "0".PadLeft (12, '0'));
+				l = (int)KATBSupport.GetFieldLength (BlankFields.OFDINN);
+				KATBSupport.ApplyField (BlankFields.OFDINN, "0".PadLeft (l, '0'));
 				}
 			else
 				{
@@ -787,9 +808,14 @@ namespace RD_AAOW
 				}
 
 			if (string.IsNullOrWhiteSpace (FNOpenFPDField.Text))
+				{
 				KATBSupport.ApplyField (BlankFields.FNOpenDocumentSign, "");
+				}
 			else
-				KATBSupport.ApplyField (BlankFields.FNOpenDocumentSign, FNOpenFPDField.Text.PadLeft (10, '0'));
+				{
+				l = (int)KATBSupport.GetFieldLength (BlankFields.FNOpenDocumentSign);
+				KATBSupport.ApplyField (BlankFields.FNOpenDocumentSign, FNOpenFPDField.Text.PadLeft (l, '0'));
+				}
 
 			KATBSupport.ApplyField (BlankFields.FNCloseDocumentNumber, FNCloseFDField.Text);
 			if (FNCloseDateField.Value.Year > FNCloseDateField.MinDate.Year)
@@ -804,14 +830,24 @@ namespace RD_AAOW
 				}
 
 			if (string.IsNullOrWhiteSpace (FNCloseFPDField.Text))
+				{
 				KATBSupport.ApplyField (BlankFields.FNCloseDocumentSign, "");
+				}
 			else
-				KATBSupport.ApplyField (BlankFields.FNCloseDocumentSign, FNCloseFPDField.Text.PadLeft (10, '0'));
+				{
+				l = (int)KATBSupport.GetFieldLength (BlankFields.FNCloseDocumentSign);
+				KATBSupport.ApplyField (BlankFields.FNCloseDocumentSign, FNCloseFPDField.Text.PadLeft (l, '0'));
+				}
 
 			if (KassArrayTBSettings.AddSignDate)
+				{
 				KATBSupport.ApplyField (BlankFields.SignDate, DateTime.Now.ToString ("dd.MM.yyyy"));
+				}
 			else
-				KATBSupport.ApplyField (BlankFields.SignDate, "_".PadLeft (10, '_'));
+				{
+				l = (int)KATBSupport.GetFieldLength (BlankFields.SignDate);
+				KATBSupport.ApplyField (BlankFields.SignDate, "_".PadLeft (l, '_'));
+				}
 
 			#endregion
 
@@ -1096,10 +1132,16 @@ namespace RD_AAOW
 					case "1":
 						version = KBFVersions.V1;
 						break;
+
+					case "2":
+						version = KBFVersions.V2;
+						break;
 					}
 				}
 
-			if ((fields.Length < KATBSupport.FieldsCount + 1) || (version == KBFVersions.Unknown))
+			uint fieldsCount = kbfFieldsCount[(int)version];
+			/*if ((fields.Length < KATBSupport.FieldsCount + 1) || (version == KBFVersions.Unknown))*/
+			if ((fields.Length < fieldsCount + 1) || (version == KBFVersions.Unknown))
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"Указанный файл повреждён или не является поддерживаемым файлом заявления");
@@ -1185,8 +1227,10 @@ namespace RD_AAOW
 		private void SFDialog_FileOk (object sender, CancelEventArgs e)
 			{
 			// Формирование списка
-			string[] fields = new string[KATBSupport.FieldsCount + 1];
-			fields[0] = ((uint)KBFVersions.V1).ToString ();
+			/*string[] fields = new string[KATBSupport.FieldsCount + 1];*/
+			string[] fields = new string[kbfFieldsCount[kbfFieldsCount.Length - 1] + 1];
+			/*fields[0] = ((uint)KBFVersions.V1).ToString ();*/
+			fields[0] = ((uint)KBFVersions.V2).ToString ();
 
 			fields[(int)BlankFields.BlankType] = BlankTypeCombo.SelectedIndex.ToString ();
 			fields[(int)BlankFields.FNChangeFlag] = FNChangeFlag.Checked ? "1" : "0";
