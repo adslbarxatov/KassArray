@@ -201,9 +201,6 @@ namespace RD_AAOW
 			FNReader.Visible = FNFromFNReader.Visible = OFDFromFNReader.Visible =
 				RNMFromFNReader.Visible = !RDGenerics.StartedFromMSStore && AppSettings.EnableExtendedMode; // Уровень 2
 
-			/*MainTabControl.SelectedIndex = (int)AppSettings.CurrentTab;
-			ConvertorsContainer.SelectedIndex = (int)AppSettings.ConvertorTab;*/
-
 			try
 				{
 				KKTListForErrors.SelectedIndex = (int)AppSettings.KKTForErrors;
@@ -279,9 +276,6 @@ namespace RD_AAOW
 			ConvertTextField.Text = AppSettings.ConversionText;
 
 			// Блокировка расширенных функций при необходимости
-			/*RNMGenerate.Visible = TLVTab.Enabled = ConnectorsTab.Enabled =
-				PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;   // Уровень 2
-			CodesTab.Enabled = AppSettings.EnableExtendedMode;  // Уровень 1*/
 			RNMGenerate.Visible = PrintFullUserManual.Visible = AppSettings.EnableExtendedMode;
 			AddManualLogo.Visible = ManualLogo.Visible = AppSettings.EnableExtendedMode &&
 				!RDGenerics.StartedFromMSStore;
@@ -427,9 +421,6 @@ namespace RD_AAOW
 			RDGenerics.SaveWindowDimensions (this);
 
 			AppSettings.TopMost = TopFlag.Checked;
-
-			/*AppSettings.CurrentTab = (uint)MainTabControl.SelectedIndex;
-			AppSettings.ConvertorTab = (uint)ConvertorsContainer.SelectedIndex;*/
 			AppSettings.CurrentTab = (uint)HeadersList.SelectedIndex;
 
 			AppSettings.KKTForErrors = (uint)KKTListForErrors.SelectedIndex;
@@ -444,7 +435,6 @@ namespace RD_AAOW
 			AppSettings.CodesText = TextToConvert.Text;
 
 			List<string> cots = [];
-			/*foreach (object o in TextToConvert.Items)*/
 			for (int i = 0; i < TextToConvert.Items.Count; i++)
 				cots.Add (TextToConvert.Items[i].ToString ());
 			AppSettings.CodesOftenTexts = cots.ToArray ();
@@ -1679,8 +1669,6 @@ namespace RD_AAOW
 				return;
 				}
 
-			/*AppSettings.LowLevelCode = (uint)idx;
-			LowLevelCommand_SelectedIndexChanged (null, null);*/
 			LowLevelCommand.SelectedIndex = idx;
 			}
 

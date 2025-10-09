@@ -896,8 +896,14 @@ namespace RD_AAOW
 						{
 						int idx = lines[2].IndexOf (':');
 						FNCloseFDField.Text = lines[2].Substring (idx + 2);
+
 						idx = lines[3].IndexOf (':');
-						FNCloseDateField.Value = DateTime.Parse (lines[3].Substring (idx + 2).Replace (',', ' '));
+						try
+							{
+							FNCloseDateField.Value = DateTime.Parse (lines[3].Substring (idx + 2).Replace (',', ' '));
+							}
+						catch { }
+
 						idx = lines[4].IndexOf (':');
 						FNCloseFPDField.Text = lines[4].Substring (idx + 2);
 						}
@@ -945,7 +951,13 @@ namespace RD_AAOW
 						{
 						idx = lines[2].IndexOf (':');
 						FNOpenFDField.Text = lines[2].Substring (idx + 2);
-						FNOpenDateField.Value = dto;
+
+						try
+							{
+							FNOpenDateField.Value = dto;
+							}
+						catch { }
+
 						idx = lines[4].IndexOf (':');
 						FNOpenFPDField.Text = lines[4].Substring (idx + 2);
 						}
@@ -1140,7 +1152,6 @@ namespace RD_AAOW
 				}
 
 			uint fieldsCount = kbfFieldsCount[(int)version];
-			/*if ((fields.Length < KATBSupport.FieldsCount + 1) || (version == KBFVersions.Unknown))*/
 			if ((fields.Length < fieldsCount + 1) || (version == KBFVersions.Unknown))
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
@@ -1227,9 +1238,7 @@ namespace RD_AAOW
 		private void SFDialog_FileOk (object sender, CancelEventArgs e)
 			{
 			// Формирование списка
-			/*string[] fields = new string[KATBSupport.FieldsCount + 1];*/
 			string[] fields = new string[kbfFieldsCount[kbfFieldsCount.Length - 1] + 1];
-			/*fields[0] = ((uint)KBFVersions.V1).ToString ();*/
 			fields[0] = ((uint)KBFVersions.V2).ToString ();
 
 			fields[(int)BlankFields.BlankType] = BlankTypeCombo.SelectedIndex.ToString ();
