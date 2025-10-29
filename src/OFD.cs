@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -29,6 +28,9 @@ namespace RD_AAOW
 		private const string notFound = "[не найдено]";
 		private const string notFoundFlag = "?";
 		private const string equivalentFlag = "=";
+		private const string activeFlag = "-";
+
+		private List<string> searchList = [];
 
 		/// <summary>
 		/// Общий адрес сайта ФНС
@@ -71,48 +73,87 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			string str;
-			char[] splitters = ['\t'];
-			uint line = 0;
+			/*char[] splitters = ['\t'];
+			uint line = 0;*/
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
-				line++;
-				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-				if (values.Length != 11)
+				/*line++;*/
+				if (str.StartsWith ('~'))
 					continue;
+				/*string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+				if (values.Length != 11)
+					continue;*/
 
-				inn.Add (values[0]);
+				/*inn.Add (values[0]);
 				names.Add (values[1]);
 
 				dnsNames.Add (values[2] == notFoundFlag ? notFound : values[2]);
 				ip.Add (values[3] == notFoundFlag ? notFound : values[3]);
 				ports.Add (values[4] == notFoundFlag ? "[???]" : values[4]);
 				emails.Add (values[5] == notFoundFlag ? notFound : values[5]);
-				links.Add (values[6] == notFoundFlag ? notFound : values[6]);
+				links.Add (values[6] == notFoundFlag ? notFound : values[6]);*/
+				inn.Add (str);
+				names.Add (SR.ReadLine ());
 
-				if (values[7] == notFoundFlag)
+				str = SR.ReadLine ();
+				dnsNames.Add (str == notFoundFlag ? notFound : str);
+				str = SR.ReadLine ();
+				ip.Add (str == notFoundFlag ? notFound : str);
+				str = SR.ReadLine ();
+				ports.Add (str == notFoundFlag ? "[???]" : str);
+				str = SR.ReadLine ();
+				emails.Add (str == notFoundFlag ? notFound : str);
+				str = SR.ReadLine ();
+				links.Add (str == notFoundFlag ? notFound : str);
+
+				/*if (values[7] == notFoundFlag)
 					dnsNamesM.Add (notFound);
 				else if (values[7] == equivalentFlag)
 					dnsNamesM.Add (dnsNames[dnsNames.Count - 1]);
 				else
-					dnsNamesM.Add (values[7]);
+					dnsNamesM.Add (values[7]);*/
+				str = SR.ReadLine ();
+				if (str == notFoundFlag)
+					dnsNamesM.Add (notFound);
+				else if (str == equivalentFlag)
+					dnsNamesM.Add (dnsNames[dnsNames.Count - 1]);
+				else
+					dnsNamesM.Add (str);
 
-				if (values[8] == notFoundFlag)
+				/*if (values[8] == notFoundFlag)
 					ipM.Add (notFound);
 				else if (values[8] == equivalentFlag)
 					ipM.Add (ip[ip.Count - 1]);
 				else
-					ipM.Add (values[8]);
+					ipM.Add (values[8]);*/
+				str = SR.ReadLine ();
+				if (str == notFoundFlag)
+					ipM.Add (notFound);
+				else if (str == equivalentFlag)
+					ipM.Add (ip[ip.Count - 1]);
+				else
+					ipM.Add (str);
 
-				if (values[9] == notFoundFlag)
+				/*if (values[9] == notFoundFlag)
 					portsM.Add ("[???]");
 				else if (values[9] == equivalentFlag)
 					portsM.Add (ports[ports.Count - 1]);
 				else
 					portsM.Add (values[9]);
 
-				disabledMessages.Add ((values[10] == "-") ? "" : values[10]);
+				disabledMessages.Add ((values[10] == "-") ? "" : values[10]);*/
+				str = SR.ReadLine ();
+				if (str == notFoundFlag)
+					portsM.Add ("[???]");
+				else if (str == equivalentFlag)
+					portsM.Add (ports[ports.Count - 1]);
+				else
+					portsM.Add (str);
+
+				str = SR.ReadLine ();
+				disabledMessages.Add ((str == activeFlag) ? "" : str);
 				}
 
 			// Завершено
@@ -231,6 +272,5 @@ namespace RD_AAOW
 			// Не найдено
 			return -1;
 			}
-		private List<string> searchList = [];
 		}
 	}

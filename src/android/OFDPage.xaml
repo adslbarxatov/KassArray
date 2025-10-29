@@ -29,7 +29,7 @@
 			<Button x:Name="OFDINN" HorizontalOptions="Center" />
 
 			<Label x:Name="OFDDNSNameLabel" />
-			<FlexLayout Direction="Row" JustifyContent="Center" Wrap="Wrap">
+			<FlexLayout Direction="Row" JustifyContent="Center" Wrap="Wrap" x:Name="OFDDNSNameField">
 				<Button x:Name="OFDDNSName" VerticalOptions="Center" />
 				<Button x:Name="OFDIP" VerticalOptions="Center" />
 				<Button x:Name="OFDPort" VerticalOptions="Center" />
@@ -45,7 +45,7 @@
 			<Label />
 
 			<Label x:Name="OFDDNSNameMLabel" />
-			<FlexLayout Direction="Row" JustifyContent="Center" Wrap="Wrap">
+			<FlexLayout Direction="Row" JustifyContent="Center" Wrap="Wrap" x:Name="OFDDNSNameMField">
 				<Button x:Name="OFDDNSNameM" VerticalOptions="Center" />
 				<Button x:Name="OFDIPM" VerticalOptions="Center" />
 				<Button x:Name="OFDPortM" VerticalOptions="Center" />

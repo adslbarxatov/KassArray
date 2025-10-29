@@ -67,7 +67,7 @@ namespace RD_AAOW
 			dictionaryDescriptionField, dictionaryLabelField,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, ofdDisabledLabel, convNumberResultField, convCodeResultField,
-			fontSizeField;
+			fontSizeField, ofdDNSNameLabel, ofdDNSNameMLabel;
 		private List<Label> operationTextLabels = [];
 		private List<Button> operationTextButtons = [];
 		private const string operationButtonSignatureShow = "🖨 ";
@@ -93,7 +93,7 @@ namespace RD_AAOW
 		private DatePicker fnLifeStartDate;
 
 		private StackLayout userManualLayout, menuLayout;
-		private FlexLayout goToButtons;
+		private FlexLayout goToButtons, ofdDNSNameField, ofdDNSNameMField;
 
 		#endregion
 
@@ -648,7 +648,7 @@ namespace RD_AAOW
 			ofdNameButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDName",
 				"- Выберите или введите ИНН -", uiColors[ofdPage][cField], OFDName_Clicked, true);
 
-			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameLabel",
+			ofdDNSNameLabel = RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameLabel",
 				"Адрес ОФД:", RDLabelTypes.HeaderLeft);
 			ofdDNSNameButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSName",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
@@ -656,8 +656,9 @@ namespace RD_AAOW
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
 			ofdPortButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPort",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
+			ofdDNSNameField = (FlexLayout)uiPages[ofdPage].FindByName ("OFDDNSNameField");
 
-			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameMLabel",
+			ofdDNSNameMLabel = RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameMLabel",
 				"Адрес ИСМ:", RDLabelTypes.HeaderLeft);
 			ofdDNSNameMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSNameM",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
@@ -665,6 +666,7 @@ namespace RD_AAOW
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
 			ofdPortMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPortM",
 				"", uiColors[ofdPage][cField], Field_Clicked, true);
+			ofdDNSNameMField = (FlexLayout)uiPages[ofdPage].FindByName ("OFDDNSNameMField");
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameKLabel",
 				"Адрес ОКП (стандартный):", RDLabelTypes.HeaderLeft);
@@ -1667,6 +1669,8 @@ namespace RD_AAOW
 
 			// Обработка аннулированных ОФД
 			ofdDisabledLabel.IsVisible = !string.IsNullOrWhiteSpace (parameters[10]);
+			ofdDNSNameField.IsVisible = ofdDNSNameLabel.IsVisible = ofdDNSNameMField.IsVisible =
+				ofdDNSNameMLabel.IsVisible = !ofdDisabledLabel.IsVisible;
 			if (ofdDisabledLabel.IsVisible)
 				ofdDisabledLabel.Text = parameters[10];
 			}

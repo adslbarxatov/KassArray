@@ -40,12 +40,14 @@ namespace RD_AAOW
 			V1 = 1,
 			V2 = 2,
 			V3 = 3,
+			V4 = 4,
 			}
 		private static uint[] kbfFieldsCount = [
 			0,
 			86,
 			87,
 			87,
+			88,
 			];
 
 		// Ресивер сообщений на повторное открытие окна
@@ -740,6 +742,7 @@ namespace RD_AAOW
 			KATBSupport.ApplyField (BlankFields.ExciseFlag, ExciseFlag.Checked);
 
 			KATBSupport.ApplyField (BlankFields.AutomatNumber, AutomatNumberField.Text);
+			KATBSupport.ApplyField (BlankFields.SecondAutomatNumber, "");
 			if (AutomatAddressIsSame.Checked)
 				{
 				l = (int)KATBSupport.GetFieldLength (BlankFields.AutomatAddressRegionCode);
@@ -1163,6 +1166,10 @@ namespace RD_AAOW
 					case "3":
 						version = KBFVersions.V3;
 						break;
+
+					case "4":
+						version = KBFVersions.V4;
+						break;
 					}
 				}
 
@@ -1189,14 +1196,6 @@ namespace RD_AAOW
 				KKTMissingFlag.Checked = fields[(int)BlankFields.KKTMissingFlag] == "1";
 				FNBrokenFlag.Checked = fields[(int)BlankFields.FNBrokenFlag] == "1";
 
-				/*KKTSerialField.Text = fields[(int)BlankFields.KKTSerialNumber_Line1];
-				KKTModelCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.KKTModelName]);
-				FNSerialField.Text = fields[(int)BlankFields.FNSerialNumber];
-				FNModelCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.FNModelName_Line1]);
-				OFDNameCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.OFDName_Line1]);
-				OFDVariantCombo.SelectedIndex = int.Parse (fields[(int)BlankFields.OFDChangeFlag]); // !!!
-				KKTRNMField.Text = fields[(int)BlankFields.RegistrationNumber];*/
-				
 				KKTSerialField.Text = fields[(int)BlankFields.KKTSerialNumber_Line1];
 				FNSerialField.Text = fields[(int)BlankFields.FNSerialNumber];
 
@@ -1273,7 +1272,7 @@ namespace RD_AAOW
 			{
 			// Формирование списка
 			string[] fields = new string[kbfFieldsCount[kbfFieldsCount.Length - 1] + 1];
-			fields[0] = ((uint)KBFVersions.V3).ToString ();
+			fields[0] = ((uint)KBFVersions.V4).ToString ();
 
 			fields[(int)BlankFields.BlankType] = BlankTypeCombo.SelectedIndex.ToString ();
 			fields[(int)BlankFields.FNChangeFlag] = FNChangeFlag.Checked ? "1" : "0";
@@ -1289,16 +1288,9 @@ namespace RD_AAOW
 			fields[(int)BlankFields.FNBrokenFlag] = FNBrokenFlag.Checked ? "1" : "0";
 
 			fields[(int)BlankFields.KKTSerialNumber_Line1] = KKTSerialField.Text;
-
-			/*fields[(int)BlankFields.KKTModelName] = KKTModelCombo.SelectedIndex.ToString ();*/
 			fields[(int)BlankFields.KKTModelName] = KKTModelCombo.Text;
-
 			fields[(int)BlankFields.FNSerialNumber] = FNSerialField.Text;
-
-			/*fields[(int)BlankFields.FNModelName_Line1] = FNModelCombo.SelectedIndex.ToString ();*/
 			fields[(int)BlankFields.FNModelName_Line1] = FNModelCombo.Text;
-
-			/*fields[(int)BlankFields.OFDName_Line1] = OFDNameCombo.SelectedIndex.ToString ();*/
 			fields[(int)BlankFields.OFDName_Line1] = OFDNameCombo.Text;
 
 			fields[(int)BlankFields.OFDChangeFlag] = OFDVariantCombo.SelectedIndex.ToString (); // !!!

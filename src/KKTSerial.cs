@@ -142,6 +142,7 @@ namespace RD_AAOW
 		private List<string> serialVersions = [];
 		private List<KKTPaperTypes> serialPaperWidths = [];
 		private List<byte> serialPaperLengths = [];
+		private List<string> serialTSPI = [];
 
 		private List<string> regions = [];
 
@@ -158,6 +159,15 @@ namespace RD_AAOW
 		/// </summary>
 		public KKTSerial ()
 			{
+			// Получение файла ТСПИ
+#if !ANDROID
+			byte[] tspiData = KassArrayDBResources.TSPI;
+#else
+			byte[] tspiData = RD_AAOW.Properties.Resources.TSPI;
+#endif
+			string tspi = RDGenerics.GetEncoding (RDEncodings.UTF8).GetString (tspiData);
+			string[] tspiValues = tspi.Split (['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
+
 			// Получение файла заводских номеров и моделей
 #if !ANDROID
 			byte[] data = KassArrayDBResources.KKTSN;
@@ -172,15 +182,16 @@ namespace RD_AAOW
 			char[] splitters = ['\t'];
 
 			// Чтение параметров
+			SR.ReadLine ();	// Заголовок
 			while ((str = SR.ReadLine ()) != null)
 				{
 				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 				// Защита
-				if (values.Length < 5)
+				if (values.Length < 6)
 					throw new Exception ("Invalid data at point 1, debug is required");
 
-				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[4], RDGenerics.HexNumberStyle);
+				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[5], RDGenerics.HexNumberStyle);
 				serialFlags.Add (flags);
 
 				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations))
@@ -216,7 +227,7 @@ namespace RD_AAOW
 				names.Add (values[0]);
 				serialVersions.Add (values[1]);
 
-				if (values[2] == "?")
+				/*if (values[2] == "?")
 					{
 					serialPaperWidths.Add (KKTPaperTypes.Unknown);
 					serialPaperLengths.Add (0);
@@ -236,17 +247,40 @@ namespace RD_AAOW
 					uint paper = uint.Parse (values[2]);
 					serialPaperWidths.Add ((KKTPaperTypes)(paper / 100));
 					serialPaperLengths.Add ((byte)(paper % 100));
+					}*/
+				switch (values[2])
+					{
+					case "?":
+						serialPaperWidths.Add (KKTPaperTypes.Unknown);
+						serialPaperLengths.Add (0);
+						break;
+
+					case "P":
+						serialPaperWidths.Add (KKTPaperTypes.DependsOnPrinter);
+						serialPaperLengths.Add (0);
+						break;
+
+					case "N":
+						serialPaperWidths.Add (KKTPaperTypes.NotUsed);
+						serialPaperLengths.Add (0);
+						break;
+
+					default:
+						uint paper = uint.Parse (values[2]);
+						serialPaperWidths.Add ((KKTPaperTypes)(paper / 100));
+						serialPaperLengths.Add ((byte)(paper % 100));
+						break;
 					}
 
 				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) &&
 					!flags.HasFlag (KKTSerialFlags.NameChanged))
 					{
-					serialLengths.Add (uint.Parse (values[5]));
+					serialLengths.Add (uint.Parse (values[6]));
 					if (maxSNLength < serialLengths[serialLengths.Count - 1])
 						maxSNLength = serialLengths[serialLengths.Count - 1];
 
-					serialSamples.Add (values[6]);
-					serialOffsets.Add (uint.Parse (values[7]));
+					serialSamples.Add (values[7]);
+					serialOffsets.Add (uint.Parse (values[8]));
 
 					registryStats[1 + ffdNames.Length]++;
 					}
@@ -263,6 +297,22 @@ namespace RD_AAOW
 					registryStats[2 + ffdNames.Length]++;
 				if (flags.HasFlag (KKTSerialFlags.RemovedFromRegistry))
 					registryStats[3 + ffdNames.Length]++;
+
+				switch (values[4])
+					{
+					case "-":
+						serialTSPI.Add ("нет сведений");
+						break;
+
+					case "U":
+						serialTSPI.Add ("не поддерживается");
+						break;
+
+					default:
+						int tspiIdx = int.Parse (values[4]) - 1;
+						serialTSPI.Add (tspiValues[tspiIdx].Substring (2));
+						break;
+					}
 				}
 
 			// Завершено
@@ -388,7 +438,8 @@ namespace RD_AAOW
 				us = "нет";
 
 			res += ("  Поддерживаемые ФФД: " + s.Trim ().Replace (" ", ", ").Replace ("&", " ") + RDLocale.RN);
-			res += ("  Неподдерживаемые ФФД: " + us.Trim ().Replace (" ", ", ") + RDLocale.RNRN);
+			res += ("  Неподдерживаемые ФФД: " + us.Trim ().Replace (" ", ", ") + RDLocale.RN);
+			res += ("  Совместимое ТС ПИоТ: " + serialTSPI[i] + RDLocale.RNRN);
 
 			res += "Чековая лента: ";
 			bool addLength = true;

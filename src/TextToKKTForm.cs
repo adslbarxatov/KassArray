@@ -1093,9 +1093,13 @@ namespace RD_AAOW
 			OFDPortM.Text = parameters[9];
 
 			// Обработка аннулированных ОФД
+			// Enabled нужен потому, что Visible на стадии загрузки окна принимает значение false,
+			// несмотря на то, что в коде инициализации имеет значение true (фактически не виден)
 			OFDDisabledLabel.Enabled = OFDDisabledLabel.Visible = !string.IsNullOrWhiteSpace (parameters[10]);
+			OFDIP.Enabled = OFDDNSName.Enabled = OFDPort.Enabled =
+				OFDIPM.Enabled = OFDDNSNameM.Enabled = OFDPortM.Enabled = !OFDDisabledLabel.Enabled;
 			if (OFDDisabledLabel.Enabled)
-				OFDDisabledLabel.Text = parameters[10] + RDLocale.RN;
+				OFDDisabledLabel.Text = parameters[10] /*+ RDLocale.RN*/;
 			}
 
 		// Копирование в буфер обмена
