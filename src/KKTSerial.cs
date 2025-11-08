@@ -154,6 +154,8 @@ namespace RD_AAOW
 			0,	// Исключены из реестра
 			];
 
+		private int lastSearchOffset = 0;
+
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
 		/// </summary>
@@ -227,27 +229,6 @@ namespace RD_AAOW
 				names.Add (values[0]);
 				serialVersions.Add (values[1]);
 
-				/*if (values[2] == "?")
-					{
-					serialPaperWidths.Add (KKTPaperTypes.Unknown);
-					serialPaperLengths.Add (0);
-					}
-				else if (values[2] == "P")
-					{
-					serialPaperWidths.Add (KKTPaperTypes.DependsOnPrinter);
-					serialPaperLengths.Add (0);
-					}
-				else if (values[2] == "N")
-					{
-					serialPaperWidths.Add (KKTPaperTypes.NotUsed);
-					serialPaperLengths.Add (0);
-					}
-				else
-					{
-					uint paper = uint.Parse (values[2]);
-					serialPaperWidths.Add ((KKTPaperTypes)(paper / 100));
-					serialPaperLengths.Add ((byte)(paper % 100));
-					}*/
 				switch (values[2])
 					{
 					case "?":
@@ -376,6 +357,7 @@ namespace RD_AAOW
 			if (i < 0)
 				return "неизвестная модель ККТ";
 
+			lastSearchOffset = i;
 			return names[i] + (serialFlags[i].HasFlag (KKTSerialFlags.SerialIsKnown) ? "" : " (неточно)");
 			}
 
@@ -395,27 +377,27 @@ namespace RD_AAOW
 			}
 
 		/// <summary>
-		/// Метод возвращает характеристики ККТ
+		/// Метод возвращает характеристики ККТ, найденной при последнем поиске
 		/// </summary>
-		/// <param name="KKTModelOrSerial">Часть названия или ЗН КТТ</param>
 		/// <returns>Возвращает строку с описанием ККТ</returns>
-		public string GetKKTDescription (string KKTModelOrSerial)
+		public string GetKKTDescription ()
 			{
-			string sig = FindSignatureByName (KKTModelOrSerial);
+			/*string sig = FindSignatureByName (KKTModelOrSerial, false);
 			if (string.IsNullOrWhiteSpace (sig))
 				sig = KKTModelOrSerial;
 
 			int i = FindKKT (sig);
 			if (i < 0)
-				return "";
+				return "";*/
 
 			// Общие сведения
+			int i = lastSearchOffset;
 			string res = "Модель ККТ: " + names[i] + RDLocale.RN + "Статус: ";
+
 			if (serialFlags[i].HasFlag (KKTSerialFlags.RemovedFromRegistry))
 				res += "! исключена из реестра ФНС !";
 			else
 				res += "присутствует в реестре ФНС";
-
 			res += (RDLocale.RNRN + "Актуальная версия ПО: " + serialVersions[i] + RDLocale.RN);
 
 			string s = "";
@@ -486,24 +468,39 @@ namespace RD_AAOW
 		/// Метод выполняет поиск по известным моделям ККТ и возвращает сигнатуру ЗН в случае успеха
 		/// </summary>
 		/// <param name="KKTModel">Часть или полное название модели ККТ</param>
+		/// <param name="Continue">Флаг продолжения поиска в порядке следования моделей</param>
 		/// <returns>Сигнатура ЗН или пустая строка в случае отсутствия результатов.
 		/// При неизвестной сигнатуре ЗН возвращает номер модели в списке с префиксом U+0001</returns>
-		public string FindSignatureByName (string KKTModel)
+		public string FindSignatureByName (string KKTModel, bool Continue)
 			{
 			// Защита
 			if (string.IsNullOrWhiteSpace (KKTModel))
 				return "";
 
+			if (!Continue)
+				lastSearchOffset = 0;
+			else
+				lastSearchOffset++;
+
 			// Поиск в названиях
 			string model = KKTModel.ToLower ();
 			int i;
-			for (i = 0; i < names.Count; i++)
+			/*for (i = 0; i < names.Count; i++)
 				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
 					names[i].ToLower ().Contains (model))
+					break;*/
+
+			for (i = 0; i < names.Count; i++)
+				{
+				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
+					names[(i + lastSearchOffset) % names.Count].ToLower ().Contains (model))
 					break;
+				}
 
 			if (i >= names.Count)
 				return "";
+			lastSearchOffset = (i + lastSearchOffset) % names.Count;
+			i = lastSearchOffset;
 
 			if (serialFlags[i].HasFlag (KKTSerialFlags.UnknownSignature))
 				return "\x1" + i.ToString ();

@@ -386,10 +386,11 @@ namespace RD_AAOW
 				kb.CodeTables.GetKKTTypeDescription (AppSettings.KKTForCodes), RDLabelTypes.Field,
 				uiColors[codPage][cField]);
 
-			RDInterface.ApplyButtonSettings (uiPages[codPage], "ClearText",
-				RDDefaultButtons.Delete, uiColors[codPage][cField], CodesClear_Clicked);
-			RDInterface.ApplyButtonSettings (uiPages[codPage], "SelectSavedText",
+			Button codB01 = RDInterface.ApplyButtonSettings (uiPages[codPage], "SelectSavedText",
 				"Выбрать", uiColors[codPage][cField], CodesLineGet_Clicked, false);
+			Button codB02 = RDInterface.ApplyButtonSettings (uiPages[codPage], "ClearText",
+				RDDefaultButtons.Delete, uiColors[codPage][cField], CodesClear_Clicked);
+			codB01.HeightRequest = codB01.MaximumHeightRequest = codB02.HeightRequest;
 
 			kktCodesLengthLabel = RDInterface.ApplyLabelSettings (uiPages[codPage], "LengthLabel",
 				"Длина:", RDLabelTypes.HeaderLeft);
@@ -461,13 +462,15 @@ namespace RD_AAOW
 
 			#region Страница определения срока жизни ФН
 
-			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindButton",
+			Button fnlB01 = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindButton",
 				"Найти модель ФН", uiColors[fnlPage][cField],
 				FNLifeFind_Clicked, false);
-			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindBufferButton",
+			Button fnlB02 = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindBufferButton",
 				BufferButton, uiColors[fnlPage][cField], FNLifeFind_Clicked, false);
-			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNResetButton",
+			Button fnlB03 = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNResetButton",
 				RDDefaultButtons.Delete, uiColors[fnlPage][cField], FNLife_Reset);
+			fnlB01.HeightRequest = fnlB01.MaximumHeightRequest =
+				fnlB02.HeightRequest = fnlB02.MaximumHeightRequest = fnlB03.HeightRequest;
 
 			fnLife13 = RDInterface.ApplySwitchSettings (uiPages[fnlPage], "FNLife13", true,
 				uiColors[fnlPage][cField], FnLife13_Toggled, false);
@@ -577,13 +580,19 @@ namespace RD_AAOW
 
 			#region Страница заводских и регистрационных номеров
 
-			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindButton",
+			Button rnmB01 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindButton",
 				"Найти модель ККТ", uiColors[rnmPage][cField],
 				RNMSerial_Search, false);
-			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindBufferButton",
+			Button rnmB02 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindNextButton",
+				"Найти далее", uiColors[rnmPage][cField],
+				RNMSerial_Search, false);
+			Button rnmB03 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindBufferButton",
 				BufferButton, uiColors[rnmPage][cField], RNMSerial_Search, false);
-			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMResetButton",
+			Button rnmB04 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMResetButton",
 				RDDefaultButtons.Delete, uiColors[rnmPage][cField], RNMClear_Clicked);
+			rnmB01.HeightRequest = rnmB01.MaximumHeightRequest =
+				rnmB02.HeightRequest = rnmB02.MaximumHeightRequest =
+				rnmB03.HeightRequest = rnmB03.MaximumHeightRequest = rnmB04.HeightRequest;
 
 			rnmKKTTypeLabel = RDInterface.ApplyLabelSettings (uiPages[rnmPage], "TypeLabel",
 				"", RDLabelTypes.Semaphore);
@@ -1532,14 +1541,14 @@ namespace RD_AAOW
 			AppSettings.KKTSerial = search[0];
 
 			// Подмена названия сигнатурой ЗН
-			string sig = kb.KKTNumbers.FindSignatureByName (search[0]);
+			string sig = kb.KKTNumbers.FindSignatureByName (search[0], search[1] == "I");
 			if (!string.IsNullOrWhiteSpace (sig))
 				search[0] = sig;
 
 			// Заводской номер ККТ
 			if (!string.IsNullOrWhiteSpace (search[0]))
 				{
-				string s = kb.KKTNumbers.GetKKTDescription (search[0]);
+				string s = kb.KKTNumbers.GetKKTDescription (/*search[0]*/);
 				if (!string.IsNullOrWhiteSpace (s))
 					{
 					rnmKKTTypeLabel.Text = s;

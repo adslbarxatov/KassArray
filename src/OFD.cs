@@ -73,27 +73,13 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			string str;
-			/*char[] splitters = ['\t'];
-			uint line = 0;*/
 
 			// Чтение параметров
 			while ((str = SR.ReadLine ()) != null)
 				{
-				/*line++;*/
 				if (str.StartsWith ('~'))
 					continue;
-				/*string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
-				if (values.Length != 11)
-					continue;*/
 
-				/*inn.Add (values[0]);
-				names.Add (values[1]);
-
-				dnsNames.Add (values[2] == notFoundFlag ? notFound : values[2]);
-				ip.Add (values[3] == notFoundFlag ? notFound : values[3]);
-				ports.Add (values[4] == notFoundFlag ? "[???]" : values[4]);
-				emails.Add (values[5] == notFoundFlag ? notFound : values[5]);
-				links.Add (values[6] == notFoundFlag ? notFound : values[6]);*/
 				inn.Add (str);
 				names.Add (SR.ReadLine ());
 
@@ -108,12 +94,6 @@ namespace RD_AAOW
 				str = SR.ReadLine ();
 				links.Add (str == notFoundFlag ? notFound : str);
 
-				/*if (values[7] == notFoundFlag)
-					dnsNamesM.Add (notFound);
-				else if (values[7] == equivalentFlag)
-					dnsNamesM.Add (dnsNames[dnsNames.Count - 1]);
-				else
-					dnsNamesM.Add (values[7]);*/
 				str = SR.ReadLine ();
 				if (str == notFoundFlag)
 					dnsNamesM.Add (notFound);
@@ -122,12 +102,6 @@ namespace RD_AAOW
 				else
 					dnsNamesM.Add (str);
 
-				/*if (values[8] == notFoundFlag)
-					ipM.Add (notFound);
-				else if (values[8] == equivalentFlag)
-					ipM.Add (ip[ip.Count - 1]);
-				else
-					ipM.Add (values[8]);*/
 				str = SR.ReadLine ();
 				if (str == notFoundFlag)
 					ipM.Add (notFound);
@@ -136,14 +110,6 @@ namespace RD_AAOW
 				else
 					ipM.Add (str);
 
-				/*if (values[9] == notFoundFlag)
-					portsM.Add ("[???]");
-				else if (values[9] == equivalentFlag)
-					portsM.Add (ports[ports.Count - 1]);
-				else
-					portsM.Add (values[9]);
-
-				disabledMessages.Add ((values[10] == "-") ? "" : values[10]);*/
 				str = SR.ReadLine ();
 				if (str == notFoundFlag)
 					portsM.Add ("[???]");

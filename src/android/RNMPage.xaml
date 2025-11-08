@@ -5,11 +5,12 @@
 
 	<ScrollView>
 		<StackLayout>
-			<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+			<FlexLayout Direction="Row" JustifyContent="Center" Wrap="Wrap">
 				<Button x:Name="RNMFindButton" VerticalOptions="Center" />
+				<Button x:Name="RNMFindNextButton" VerticalOptions="Center" />
 				<Button x:Name="RNMFindBufferButton" VerticalOptions="Center" />
 				<Button x:Name="RNMResetButton" VerticalOptions="Center" />
-			</StackLayout>
+			</FlexLayout>
 
 			<Label x:Name="TypeLabel" HorizontalOptions="Center" />
 

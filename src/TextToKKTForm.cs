@@ -690,10 +690,12 @@ namespace RD_AAOW
 		// Очистка полей
 		private void TextToConvertClear_Click (object sender, EventArgs e)
 			{
+			TMSet (false);
 			RDMessageButtons res = RDInterface.MessageBox (RDMessageFlags.Question |
 				RDMessageFlags.CenterText | RDMessageFlags.LockSmallSize,
 				"Вы хотите удалить все сохранённые строки или только текущую?", "Текущую", "Все",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel));
+			TMSet (true);
 
 			if (res == RDMessageButtons.ButtonTwo)
 				TextToConvert.Items.Clear ();
@@ -975,7 +977,7 @@ namespace RD_AAOW
 			AppSettings.KKTSerial = search[0];
 
 			// Подмена названия сигнатурой ЗН
-			string sig = kb.KKTNumbers.FindSignatureByName (search[0]);
+			string sig = kb.KKTNumbers.FindSignatureByName (search[0], search[1] == "I");
 			if (!string.IsNullOrWhiteSpace (sig))
 				search[0] = sig;
 
@@ -1033,9 +1035,11 @@ namespace RD_AAOW
 				RNMValue.Text = KassArrayDB::RD_AAOW.KKTSupport.GetFullRNM (RNMUserINN.Text,
 					AppSettings.KKTSerial, RNMValue.Text.Substring (0, 10));
 
+			TMSet (false);
 			if (string.IsNullOrWhiteSpace (RNMValue.Text))
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"Убедитесь, что заводской номер ККТ и ИНН заполнены корректно", 2000);
+			TMSet (true);
 			}
 
 		// Статистика по базе ЗН ККТ
@@ -1052,7 +1056,7 @@ namespace RD_AAOW
 			{
 			TMSet (false);
 
-			string res = kb.KKTNumbers.GetKKTDescription (AppSettings.KKTSerial);
+			string res = kb.KKTNumbers.GetKKTDescription ();
 			if (string.IsNullOrWhiteSpace (res))
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					 "Модель ККТ не найдена", 1000);
@@ -1211,7 +1215,6 @@ namespace RD_AAOW
 			TMSet (false);
 			string s = KassArrayDB::RD_AAOW.KKTSupport.PrintText (text, KassArrayDB::RD_AAOW.PrinterTypes.ManualA4,
 				KassArrayDB::RD_AAOW.PrinterFlags.None);
-			TMSet (true);
 
 			if (!string.IsNullOrWhiteSpace (s))
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
@@ -1219,6 +1222,8 @@ namespace RD_AAOW
 			else
 				RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
 					"Задание отправлено на печать", 700);
+
+			TMSet (true);
 			}
 
 		// Выбор компонентов инструкции
@@ -1249,8 +1254,11 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				TMSet (false);
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText | RDMessageFlags.LockSmallSize,
 					"Выбранный файл недоступен или не является поддерживаемым файлом изображения");
+				TMSet (true);
+
 				return;
 				}
 
@@ -1266,17 +1274,23 @@ namespace RD_AAOW
 				}
 			catch
 				{
+				TMSet (false);
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					string.Format (RDLocale.GetDefaultText (RDLDefaultTexts.Message_SaveFailure_Fmt),
 					KassArrayDB::RD_AAOW.KKTSupport.ManualLogoFileName));
+				TMSet (true);
+
 				b2.Dispose ();
 				return;
 				}
 			b2.Dispose ();
 
 			// Успешно
+			TMSet (false);
 			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText,
 				"Логотип успешно добавлен", 1000);
+			TMSet (true);
+
 			AddManualLogo.Checked = true;
 			}
 
@@ -1397,8 +1411,8 @@ namespace RD_AAOW
 				RDInterface.MessageBox (RDMessageFlags.CenterText | RDMessageFlags.Warning,
 					"Тег входит в состав документа напрямую" + RDLocale.RN +
 					"(не является частью других тегов)");
-
 				TMSet (true);
+
 				return;
 				}
 
