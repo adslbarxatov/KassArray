@@ -581,11 +581,9 @@ namespace RD_AAOW
 			#region Страница заводских и регистрационных номеров
 
 			Button rnmB01 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindButton",
-				"Найти модель ККТ", uiColors[rnmPage][cField],
-				RNMSerial_Search, false);
+				"Найти модель ККТ", uiColors[rnmPage][cField], RNMSerial_Search, false);
 			Button rnmB02 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindNextButton",
-				"Найти далее", uiColors[rnmPage][cField],
-				RNMSerial_Search, false);
+				NextButton, uiColors[rnmPage][cField], RNMSerial_Search, false);
 			Button rnmB03 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindBufferButton",
 				BufferButton, uiColors[rnmPage][cField], RNMSerial_Search, false);
 			Button rnmB04 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMResetButton",
@@ -593,6 +591,7 @@ namespace RD_AAOW
 			rnmB01.HeightRequest = rnmB01.MaximumHeightRequest =
 				rnmB02.HeightRequest = rnmB02.MaximumHeightRequest =
 				rnmB03.HeightRequest = rnmB03.MaximumHeightRequest = rnmB04.HeightRequest;
+			rnmB01.Margin = rnmB02.Margin = rnmB03.Margin = rnmB04.Margin = new Thickness (2);
 
 			rnmKKTTypeLabel = RDInterface.ApplyLabelSettings (uiPages[rnmPage], "TypeLabel",
 				"", RDLabelTypes.Semaphore);
