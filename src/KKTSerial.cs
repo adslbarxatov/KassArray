@@ -184,7 +184,8 @@ namespace RD_AAOW
 			char[] splitters = ['\t'];
 
 			// Чтение параметров
-			SR.ReadLine ();	// Заголовок
+			SR.ReadLine (); // Заголовок
+			SR.ReadLine ();
 			while ((str = SR.ReadLine ()) != null)
 				{
 				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
@@ -394,12 +395,7 @@ namespace RD_AAOW
 			int i = lastSearchOffset;
 			string res = "Модель ККТ: " + names[i] + RDLocale.RN + "Статус: ";
 
-			if (serialFlags[i].HasFlag (KKTSerialFlags.RemovedFromRegistry))
-				res += "! исключена из реестра ФНС !";
-			else
-				res += "присутствует в реестре ФНС";
-			res += (RDLocale.RNRN + "Актуальная версия ПО: " + serialVersions[i] + RDLocale.RN);
-
+			// Поддержка ФФД
 			string s = "";
 			string us = "";
 			FFDSupportStates state = ffdSupport[i];
@@ -419,10 +415,21 @@ namespace RD_AAOW
 			if (string.IsNullOrEmpty (us))
 				us = "нет";
 
+			// Состояние в реестре ФНС
+			if (serialFlags[i].HasFlag (KKTSerialFlags.RemovedFromRegistry))
+				res += "! исключена из реестра ФНС !";
+			else if (!s.Contains (ffdNames[2]))
+				res += "! присутствует в реестре ФНС, но не обновляется !";
+			else
+				res += "присутствует в реестре ФНС";
+			res += (RDLocale.RNRN + "Актуальная версия ПО: " + serialVersions[i] + RDLocale.RN);
+
+			// Поддержка ФФД
 			res += ("  Поддерживаемые ФФД: " + s.Trim ().Replace (" ", ", ").Replace ("&", " ") + RDLocale.RN);
 			res += ("  Неподдерживаемые ФФД: " + us.Trim ().Replace (" ", ", ") + RDLocale.RN);
 			res += ("  Совместимое ТС ПИоТ: " + serialTSPI[i] + RDLocale.RNRN);
 
+			// Чековая лента
 			res += "Чековая лента: ";
 			bool addLength = true;
 			switch (serialPaperWidths[i])

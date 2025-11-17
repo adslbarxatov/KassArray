@@ -1547,6 +1547,7 @@ namespace RD_AAOW
 			// Заводской номер ККТ
 			if (!string.IsNullOrWhiteSpace (search[0]))
 				{
+				_ = kb.KKTNumbers.GetKKTModel (search[0]);	// Завершает определение модели
 				string s = kb.KKTNumbers.GetKKTDescription (/*search[0]*/);
 				if (!string.IsNullOrWhiteSpace (s))
 					{
