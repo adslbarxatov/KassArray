@@ -1056,12 +1056,14 @@ namespace RD_AAOW
 			{
 			TMSet (false);
 
-			string res = kb.KKTNumbers.GetKKTDescription ();
-			if (string.IsNullOrWhiteSpace (res))
+			/*string res = kb.KKTNumbers.GetKKTDescription ();
+			if (string.IsNullOrWhiteSpace (res))*/
+			if (!kb.KKTNumbers.LastKKTSearchResult)
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
-					 "Модель ККТ не найдена", 1000);
+					"Модель ККТ не найдена", 1000);
 			else
-				RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound, res);
+				RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound |
+					RDMessageFlags.LockSmallSize, kb.KKTNumbers.GetKKTDescription ());
 
 			TMSet (true);
 			}
@@ -1103,7 +1105,7 @@ namespace RD_AAOW
 			OFDIP.Enabled = OFDDNSName.Enabled = OFDPort.Enabled =
 				OFDIPM.Enabled = OFDDNSNameM.Enabled = OFDPortM.Enabled = !OFDDisabledLabel.Enabled;
 			if (OFDDisabledLabel.Enabled)
-				OFDDisabledLabel.Text = parameters[10] /*+ RDLocale.RN*/;
+				OFDDisabledLabel.Text = parameters[10];
 			}
 
 		// Копирование в буфер обмена

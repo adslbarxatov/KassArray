@@ -185,7 +185,6 @@ namespace RD_AAOW
 
 			// Чтение параметров
 			SR.ReadLine (); // Заголовок
-			SR.ReadLine ();
 			while ((str = SR.ReadLine ()) != null)
 				{
 				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
@@ -356,11 +355,29 @@ namespace RD_AAOW
 			{
 			int i = FindKKT (KKTSerialNumber);
 			if (i < 0)
+				{
+				lastKKTSearchResult = false;
 				return "неизвестная модель ККТ";
+				}
 
+			lastKKTSearchResult = true;
 			lastSearchOffset = i;
 			return names[i] + (serialFlags[i].HasFlag (KKTSerialFlags.SerialIsKnown) ? "" : " (неточно)");
 			}
+
+		/// <summary>
+		/// Возвращает результат последнего вызова метода GetKKTModel:
+		/// - true, если модель была найдена
+		/// - false в противном случае
+		/// </summary>
+		public bool LastKKTSearchResult
+			{
+			get
+				{
+				return lastKKTSearchResult;
+				}
+			}
+		private bool lastKKTSearchResult = false;
 
 		// Поиск ККТ по фрагментам ЗН
 		private int FindKKT (string KKTSerialNumber)
@@ -383,14 +400,6 @@ namespace RD_AAOW
 		/// <returns>Возвращает строку с описанием ККТ</returns>
 		public string GetKKTDescription ()
 			{
-			/*string sig = FindSignatureByName (KKTModelOrSerial, false);
-			if (string.IsNullOrWhiteSpace (sig))
-				sig = KKTModelOrSerial;
-
-			int i = FindKKT (sig);
-			if (i < 0)
-				return "";*/
-
 			// Общие сведения
 			int i = lastSearchOffset;
 			string res = "Модель ККТ: " + names[i] + RDLocale.RN + "Статус: ";
@@ -427,7 +436,7 @@ namespace RD_AAOW
 			// Поддержка ФФД
 			res += ("  Поддерживаемые ФФД: " + s.Trim ().Replace (" ", ", ").Replace ("&", " ") + RDLocale.RN);
 			res += ("  Неподдерживаемые ФФД: " + us.Trim ().Replace (" ", ", ") + RDLocale.RN);
-			res += ("  Совместимое ТС ПИоТ: " + serialTSPI[i] + RDLocale.RNRN);
+			res += ("  Совместимые ТС ПИоТ: " + serialTSPI[i] + RDLocale.RNRN);
 
 			// Чековая лента
 			res += "Чековая лента: ";
@@ -492,11 +501,6 @@ namespace RD_AAOW
 			// Поиск в названиях
 			string model = KKTModel.ToLower ();
 			int i;
-			/*for (i = 0; i < names.Count; i++)
-				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
-					names[i].ToLower ().Contains (model))
-					break;*/
-
 			for (i = 0; i < names.Count; i++)
 				{
 				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&

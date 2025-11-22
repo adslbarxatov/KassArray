@@ -1547,18 +1547,20 @@ namespace RD_AAOW
 			// Заводской номер ККТ
 			if (!string.IsNullOrWhiteSpace (search[0]))
 				{
-				_ = kb.KKTNumbers.GetKKTModel (search[0]);	// Завершает определение модели
-				string s = kb.KKTNumbers.GetKKTDescription (/*search[0]*/);
-				if (!string.IsNullOrWhiteSpace (s))
-					{
-					rnmKKTTypeLabel.Text = s;
-					rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Start;
-					}
-				else
+				string s = kb.KKTNumbers.GetKKTModel (search[0]);
+				if (kb.KKTNumbers.LastKKTSearchResult)
+					s = kb.KKTNumbers.GetKKTDescription ();
+
+				/*if (!string.IsNullOrWhiteSpace (s))
+					{*/
+				rnmKKTTypeLabel.Text = s;
+				rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Start;
+				/*}*/
+				/*else
 					{
 					rnmKKTTypeLabel.Text = "(модель ККТ не найдена)";
 					rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
-					}
+					}*/
 				}
 			else
 				{

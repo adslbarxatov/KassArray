@@ -661,6 +661,11 @@ namespace RD_AAOW
 		CorrectionOrder = 1179,
 
 		/// <summary>
+		/// Дополнительный реквизит чека (обычно ассоциирован с коррекцией расчёта)
+		/// </summary>
+		ExtraReceiptTag = 1192,
+
+		/// <summary>
 		/// Наименование предмета расчёта
 		/// </summary>
 		GoodName = 1030,
