@@ -53,6 +53,9 @@ namespace RD_AAOW
 		// Ресивер сообщений на повторное открытие окна
 		private EventWaitHandle ewh;
 
+		// Список сохранённых реквизитов
+		private KATBList kl;
+
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
@@ -223,10 +226,28 @@ namespace RD_AAOW
 		// Поиск пользователя
 		private void FindUserButton_Click (object sender, EventArgs e)
 			{
-			RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
-				"ИНН пользователя скопирован в буфер", 1000);
-			RDGenerics.SendToClipboard (INNField.Text, false);
-			RDGenerics.RunURL ("https://egrul.nalog.ru");
+			// Попытка получения из сохранённого списка
+			if (kl == null)
+				kl = new KATBList ();
+
+			string[] req = kl.FindRequisites (INNField.Text);
+			if (req == null)
+				{
+				// Поиск в ЕГРЮЛ
+				RDInterface.MessageBox (RDMessageFlags.Success | RDMessageFlags.CenterText | RDMessageFlags.NoSound,
+					"ИНН пользователя скопирован в буфер", 1000);
+				RDGenerics.SendToClipboard (INNField.Text, false);
+				RDGenerics.RunURL ("https://egrul.nalog.ru");
+				}
+			else
+				{
+				// Подгрузка из списка
+				UserNameField.Text = req[0];
+				OGRNField.Text = req[1];
+				KPPField.Text = req[2];
+				PresenterTypeField.Text = req[3];
+				PresenterTypeFlag.Checked = (req[4] == "1");
+				}
 			}
 
 		// Ввод ЗН ККТ
@@ -865,6 +886,16 @@ namespace RD_AAOW
 
 			#endregion
 
+			// Сохранение реквизитов, если предусмотрено
+			if (KassArrayTBSettings.SaveUserRequisites)
+				{
+				if (kl == null)
+					kl = new KATBList ();
+
+				kl.AddRequisites (INNField.Text, UserNameField.Text, OGRNField.Text,
+					KPPField.Text, PresenterTypeField.Text, PresenterTypeFlag.Checked);
+				}
+
 			// Запуск на печать
 			field = KassArrayDB::RD_AAOW.KKTSupport.PrintText (KATBSupport.Template,
 				KassArrayDB::RD_AAOW.PrinterTypes.BlankA4,
@@ -1259,6 +1290,17 @@ namespace RD_AAOW
 					"Файл заявления повреждён и не может быть загружен полностью. Проверьте поля заявления перед формированием");
 				return;
 				}
+
+			/*// Сохранение реквизитов, если предусмотрено
+			if (KassArrayTBSettings.SaveUserRequisites)
+				{
+				if (kl == null)
+					kl = new KATBList ();
+
+				kl.AddRequisites (INNField.Text, UserNameField.Text, OGRNField.Text,
+					KPPField.Text, PresenterTypeField.Text, PresenterTypeFlag.Checked);
+				}
+			this.Close ();*/
 			}
 
 		// Сохранение данных в файл заявления
