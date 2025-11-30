@@ -109,7 +109,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// 69 мм без термослоя
 		/// </summary>
-		NonTermo69,
+		NonTermo69 = 6,
 
 		/// <summary>
 		/// Зависит от принтера
@@ -123,6 +123,58 @@ namespace RD_AAOW
 
 		/// <summary>
 		/// Неизвестный тип бумаги
+		/// </summary>
+		Unknown = -1,
+		}
+
+	/// <summary>
+	/// Доступные типы устройств ККТ
+	/// </summary>
+	public enum KKTDeviceTypes
+		{
+		/// <summary>
+		/// Фискальный регистратор
+		/// </summary>
+		Printer = 1,
+
+		/// <summary>
+		/// Смарт-терминал
+		/// </summary>
+		Terminal = 2,
+
+		/// <summary>
+		/// Клавиатурная модель
+		/// </summary>
+		Buttons = 0,
+
+		/// <summary>
+		/// Подключаемый модуль (ФА, ФС)
+		/// </summary>
+		Module = 3,
+
+		/// <summary>
+		/// Нет сведений о типе устройства
+		/// </summary>
+		Unknown = -1,
+		}
+
+	/// <summary>
+	/// Доступные типы питания ККТ
+	/// </summary>
+	public enum KKTAccTypes
+		{
+		/// <summary>
+		/// Сеть или адаптер питания
+		/// </summary>
+		Line = 0,
+
+		/// <summary>
+		/// Аккумулятор + сеть или адаптер питания
+		/// </summary>
+		Accumulator = 1,
+
+		/// <summary>
+		/// Нет сведений о типе питания
 		/// </summary>
 		Unknown = -1,
 		}
@@ -143,6 +195,8 @@ namespace RD_AAOW
 		private List<KKTPaperTypes> serialPaperWidths = [];
 		private List<byte> serialPaperLengths = [];
 		private List<string> serialTSPI = [];
+		private List<KKTDeviceTypes> serialDeviceTypes = [];
+		private List<KKTAccTypes> serialAccTypes = [];
 
 		private List<string> regions = [];
 
@@ -185,20 +239,25 @@ namespace RD_AAOW
 
 			// Чтение параметров
 			SR.ReadLine (); // Заголовок
-			while ((str = SR.ReadLine ()) != null)
+			while (!string.IsNullOrWhiteSpace (str = SR.ReadLine ()))
 				{
 				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
 
 				// Защита
-				if (values.Length < 6)
+				if (values.Length < 5)
 					throw new Exception ("Invalid data at point 1, debug is required");
 
-				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[5], RDGenerics.HexNumberStyle);
+				if (values[2].Length != 6)
+					throw new Exception ("Invalid data at point 3, debug is required");
+
+				// Флаги
+				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[4], RDGenerics.HexNumberStyle);
 				serialFlags.Add (flags);
 
 				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations))
 					registryStats[0]++;
 
+				// Поддержка ФФД
 				FFDSupportStates state = FFDSupportStates.None;
 				for (int i = 0; i < ffdNames.Length; i++)
 					{
@@ -225,43 +284,90 @@ namespace RD_AAOW
 						}
 					}
 
-				// Список моделей
 				names.Add (values[0]);
 				serialVersions.Add (values[1]);
 
-				switch (values[2])
+				// Параметры принтера
+				switch (values[2][0])
 					{
-					case "?":
+					case '?':
 						serialPaperWidths.Add (KKTPaperTypes.Unknown);
 						serialPaperLengths.Add (0);
 						break;
 
-					case "P":
+					case 'P':
 						serialPaperWidths.Add (KKTPaperTypes.DependsOnPrinter);
 						serialPaperLengths.Add (0);
 						break;
 
-					case "N":
+					case 'N':
 						serialPaperWidths.Add (KKTPaperTypes.NotUsed);
 						serialPaperLengths.Add (0);
 						break;
 
 					default:
-						uint paper = uint.Parse (values[2]);
+						uint paper = uint.Parse (values[2].Substring (0, 3));
 						serialPaperWidths.Add ((KKTPaperTypes)(paper / 100));
 						serialPaperLengths.Add ((byte)(paper % 100));
 						break;
 					}
 
+				// Тип устройства
+				switch (values[2][3])
+					{
+					case '?':
+						serialDeviceTypes.Add (KKTDeviceTypes.Unknown);
+						break;
+
+					case 'B':
+						serialDeviceTypes.Add (KKTDeviceTypes.Buttons);
+						break;
+
+					case 'R':
+						serialDeviceTypes.Add (KKTDeviceTypes.Printer);
+						break;
+
+					case 'T':
+						serialDeviceTypes.Add (KKTDeviceTypes.Terminal);
+						break;
+
+					case 'M':
+						serialDeviceTypes.Add (KKTDeviceTypes.Module);
+						break;
+
+					default:
+						throw new Exception ("Invalid data at point 4, debug is required");
+					}
+
+				// Питание
+				switch (values[2][4])
+					{
+					case '?':
+						serialAccTypes.Add (KKTAccTypes.Unknown);
+						break;
+
+					case 'A':
+						serialAccTypes.Add (KKTAccTypes.Accumulator);
+						break;
+
+					case 'L':
+						serialAccTypes.Add (KKTAccTypes.Line);
+						break;
+
+					default:
+						throw new Exception ("Invalid data at point 5, debug is required");
+					}
+
+				// Заводской номер
 				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) &&
 					!flags.HasFlag (KKTSerialFlags.NameChanged))
 					{
-					serialLengths.Add (uint.Parse (values[6]));
+					serialLengths.Add (uint.Parse (values[5]));
 					if (maxSNLength < serialLengths[serialLengths.Count - 1])
 						maxSNLength = serialLengths[serialLengths.Count - 1];
 
-					serialSamples.Add (values[7]);
-					serialOffsets.Add (uint.Parse (values[8]));
+					serialSamples.Add (values[6]);
+					serialOffsets.Add (uint.Parse (values[7]));
 
 					registryStats[1 + ffdNames.Length]++;
 					}
@@ -279,18 +385,19 @@ namespace RD_AAOW
 				if (flags.HasFlag (KKTSerialFlags.RemovedFromRegistry))
 					registryStats[3 + ffdNames.Length]++;
 
-				switch (values[4])
+				// ТС ПИоТ
+				switch (values[2][5])
 					{
-					case "-":
+					case '?':
 						serialTSPI.Add ("нет сведений");
 						break;
 
-					case "U":
+					case 'U':
 						serialTSPI.Add ("не поддерживается");
 						break;
 
 					default:
-						int tspiIdx = int.Parse (values[4]) - 1;
+						int tspiIdx = int.Parse (values[2][5].ToString ()) - 1;
 						serialTSPI.Add (tspiValues[tspiIdx].Substring (2));
 						break;
 					}
@@ -431,6 +538,49 @@ namespace RD_AAOW
 				res += "! присутствует в реестре ФНС, но не обновляется !";
 			else
 				res += "присутствует в реестре ФНС";
+
+			res += (RDLocale.RNRN + "Тип устройства: ");
+			switch (serialDeviceTypes[i])
+				{
+				case KKTDeviceTypes.Buttons:
+					res += "клавиатурная ККТ";
+					break;
+
+				case KKTDeviceTypes.Module:
+					res += "подключаемый / встраиваемый модуль";
+					break;
+
+				case KKTDeviceTypes.Printer:
+					res += "фискальный регистратор";
+					break;
+
+				case KKTDeviceTypes.Terminal:
+					res += "смарт-терминал";
+					break;
+
+				default:
+				case KKTDeviceTypes.Unknown:
+					res += "(нет сведений)";
+					break;
+				}
+
+			res += (RDLocale.RN + "  Питание: ");
+			switch (serialAccTypes[i])
+				{
+				case KKTAccTypes.Accumulator:
+					res += "аккумулятор + сеть / адаптер";
+					break;
+
+				case KKTAccTypes.Line:
+					res += "только сеть / адаптер";
+					break;
+
+				default:
+				case KKTAccTypes.Unknown:
+					res += "(нет сведений)";
+					break;
+				}
+
 			res += (RDLocale.RNRN + "Актуальная версия ПО: " + serialVersions[i] + RDLocale.RN);
 
 			// Поддержка ФФД
@@ -472,8 +622,8 @@ namespace RD_AAOW
 				}
 
 			if (addLength)
-				res += (RDLocale.RN + "  Намотка, точно помещающаяся в принтер: " +
-					serialPaperLengths[i].ToString () + " м");
+				res += (RDLocale.RN + "  Намотка, точно помещающаяся в принтер, метров: " +
+					serialPaperLengths[i].ToString ());
 
 			// Готово
 			return res;

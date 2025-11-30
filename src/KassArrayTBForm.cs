@@ -1290,17 +1290,6 @@ namespace RD_AAOW
 					"Файл заявления повреждён и не может быть загружен полностью. Проверьте поля заявления перед формированием");
 				return;
 				}
-
-			/*// Сохранение реквизитов, если предусмотрено
-			if (KassArrayTBSettings.SaveUserRequisites)
-				{
-				if (kl == null)
-					kl = new KATBList ();
-
-				kl.AddRequisites (INNField.Text, UserNameField.Text, OGRNField.Text,
-					KPPField.Text, PresenterTypeField.Text, PresenterTypeFlag.Checked);
-				}
-			this.Close ();*/
 			}
 
 		// Сохранение данных в файл заявления
