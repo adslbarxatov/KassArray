@@ -5,6 +5,8 @@
 
 	<ScrollView>
 		<StackLayout>
+			<Label x:Name="SNLabel" />
+
 			<FlexLayout Direction="Row" JustifyContent="Center" Wrap="Wrap">
 				<Button x:Name="RNMFindButton" VerticalOptions="Center" />
 				<Button x:Name="RNMFindNextButton" VerticalOptions="Center" />

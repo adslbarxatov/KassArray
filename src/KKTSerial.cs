@@ -396,6 +396,12 @@ namespace RD_AAOW
 						serialTSPI.Add ("не поддерживается");
 						break;
 
+					case 'a':
+						// 1, 4, 5
+						serialTSPI.Add (tspiValues[0].Substring (2) + RDLocale.RN + "    " +
+							tspiValues[3].Substring (2) + RDLocale.RN + "    " + tspiValues[4].Substring (2));
+						break;
+
 					default:
 						int tspiIdx = int.Parse (values[2][5].ToString ()) - 1;
 						serialTSPI.Add (tspiValues[tspiIdx].Substring (2));

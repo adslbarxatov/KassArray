@@ -580,8 +580,11 @@ namespace RD_AAOW
 
 			#region Страница заводских и регистрационных номеров
 
+			RDInterface.ApplyLabelSettings (uiPages[rnmPage], "SNLabel",
+				"Модель ККТ:", RDLabelTypes.HeaderLeft);
+
 			Button rnmB01 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindButton",
-				"Найти модель ККТ", uiColors[rnmPage][cField], RNMSerial_Search, false);
+				"Найти", uiColors[rnmPage][cField], RNMSerial_Search, false);
 			Button rnmB02 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindNextButton",
 				NextButton, uiColors[rnmPage][cField], RNMSerial_Search, false);
 			Button rnmB03 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindBufferButton",
