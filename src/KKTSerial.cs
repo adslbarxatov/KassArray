@@ -235,13 +235,13 @@ namespace RD_AAOW
 
 			// Формирование массива 
 			string str;
-			char[] splitters = ['\t'];
+			char[] splitter = ['\t'];
 
 			// Чтение параметров
 			SR.ReadLine (); // Заголовок
 			while (!string.IsNullOrWhiteSpace (str = SR.ReadLine ()))
 				{
-				string[] values = str.Split (splitters, StringSplitOptions.RemoveEmptyEntries);
+				string[] values = str.Split (splitter, StringSplitOptions.RemoveEmptyEntries);
 
 				// Защита
 				if (values.Length < 5)
@@ -254,6 +254,7 @@ namespace RD_AAOW
 				KKTSerialFlags flags = (KKTSerialFlags)byte.Parse (values[4], RDGenerics.HexNumberStyle);
 				serialFlags.Add (flags);
 
+				// > Общее число моделей
 				if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations))
 					registryStats[0]++;
 
@@ -266,6 +267,7 @@ namespace RD_AAOW
 						case 'S':
 							state |= (FFDSupportStates)(1 << i);
 
+							// > Поддержка ФФД
 							if (!flags.HasFlag (KKTSerialFlags.DifferentImplementations) &&
 								!flags.HasFlag (KKTSerialFlags.NameChanged))
 								registryStats[1 + i]++;
@@ -359,8 +361,8 @@ namespace RD_AAOW
 					}
 
 				// Заводской номер
-				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) &&
-					!flags.HasFlag (KKTSerialFlags.NameChanged))
+				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) /*&&
+					!flags.HasFlag (KKTSerialFlags.NameChanged)*/)
 					{
 					serialLengths.Add (uint.Parse (values[5]));
 					if (maxSNLength < serialLengths[serialLengths.Count - 1])
@@ -369,7 +371,9 @@ namespace RD_AAOW
 					serialSamples.Add (values[6]);
 					serialOffsets.Add (uint.Parse (values[7]));
 
-					registryStats[1 + ffdNames.Length]++;
+					// > Все известные сигнатуры
+					if (!flags.HasFlag (KKTSerialFlags.NameChanged))
+						registryStats[1 + ffdNames.Length]++;
 					}
 				else
 					{
@@ -379,9 +383,12 @@ namespace RD_AAOW
 					}
 				ffdSupport.Add (state);
 
+				// > Точно известные сигнатуры
 				if (flags.HasFlag (KKTSerialFlags.SerialIsKnown) &&
 					!flags.HasFlag (KKTSerialFlags.NameChanged))
 					registryStats[2 + ffdNames.Length]++;
+
+				// > Исключённые из реестра
 				if (flags.HasFlag (KKTSerialFlags.RemovedFromRegistry))
 					registryStats[3 + ffdNames.Length]++;
 
@@ -499,10 +506,12 @@ namespace RD_AAOW
 				return int.Parse (KKTSerialNumber.Substring (1));
 
 			for (int i = 0; i < names.Count; i++)
-				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
+				{
+				if ((!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) /*|| KKTSerialNumber.Contains (signatureFiller)*/) &&
 					(KKTSerialNumber.Length == serialLengths[i]) &&
 					KKTSerialNumber.Substring ((int)serialOffsets[i]).StartsWith (serialSamples[i]))
 					return i;
+				}
 
 			return -1;
 			}
@@ -659,30 +668,34 @@ namespace RD_AAOW
 			int i;
 			for (i = 0; i < names.Count; i++)
 				{
-				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
-					names[(i + lastSearchOffset) % names.Count].ToLower ().Contains (model))
+				/*if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&*/
+				if (names[(i + lastSearchOffset) % names.Count].ToLower ().Contains (model))
 					break;
 				}
 
+			// Не найдено
 			if (i >= names.Count)
 				return "";
+
+			// Найдено
 			lastSearchOffset = (i + lastSearchOffset) % names.Count;
 			i = lastSearchOffset;
 
-			if (serialFlags[i].HasFlag (KKTSerialFlags.UnknownSignature))
-				return "\x1" + i.ToString ();
+			/*if (serialFlags[i].HasFlag (KKTSerialFlags.UnknownSignature))*/
+			return "\x1" + i.ToString ();
 
-			// Сборка сигнатуры
+			/*// Сборка сигнатуры
 			string sig = "";
 			for (int j = 0; j < serialOffsets[i]; j++)
-				sig += "X";
+				sig += signatureFiller;
 			sig += serialSamples[i];
 			while (sig.Length < serialLengths[i])
-				sig += "X";
+				sig += signatureFiller;
 
 			// Завершено
-			return sig;
+			return sig;*/
 			}
+		/*private const string signatureFiller = "X";*/
 
 		/// <summary>
 		/// Возвращает максимально возможную длину заводского номера
