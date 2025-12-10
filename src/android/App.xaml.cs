@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.Controls;
+﻿/*using Microsoft.Maui.Controls;*/
 using System.ComponentModel;
 
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
@@ -1377,7 +1377,7 @@ namespace RD_AAOW
 				fnLifeGoodsLabel.Text = "товары";
 
 			// Расчёт срока
-			FNLifeResult res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date, FNLifeEvFlags);
+			FNLifeResult res = KKTSupport.GetFNLifeEndDate (fnLifeStartDate.Date.Value, FNLifeEvFlags);
 
 			fnLifeDate.Text = res.DeadLine;
 			switch (res.Status)
@@ -1554,16 +1554,8 @@ namespace RD_AAOW
 				if (kb.KKTNumbers.LastKKTSearchResult)
 					s = kb.KKTNumbers.GetKKTDescription ();
 
-				/*if (!string.IsNullOrWhiteSpace (s))
-					{*/
 				rnmKKTTypeLabel.Text = s;
 				rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Start;
-				/*}*/
-				/*else
-					{
-					rnmKKTTypeLabel.Text = "(модель ККТ не найдена)";
-					rnmKKTTypeLabel.HorizontalTextAlignment = TextAlignment.Center;
-					}*/
 				}
 			else
 				{

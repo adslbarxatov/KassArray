@@ -361,8 +361,7 @@ namespace RD_AAOW
 					}
 
 				// Заводской номер
-				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature) /*&&
-					!flags.HasFlag (KKTSerialFlags.NameChanged)*/)
+				if (!flags.HasFlag (KKTSerialFlags.UnknownSignature))
 					{
 					serialLengths.Add (uint.Parse (values[5]));
 					if (maxSNLength < serialLengths[serialLengths.Count - 1])
@@ -507,7 +506,7 @@ namespace RD_AAOW
 
 			for (int i = 0; i < names.Count; i++)
 				{
-				if ((!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) /*|| KKTSerialNumber.Contains (signatureFiller)*/) &&
+				if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&
 					(KKTSerialNumber.Length == serialLengths[i]) &&
 					KKTSerialNumber.Substring ((int)serialOffsets[i]).StartsWith (serialSamples[i]))
 					return i;
@@ -668,7 +667,6 @@ namespace RD_AAOW
 			int i;
 			for (i = 0; i < names.Count; i++)
 				{
-				/*if (!serialFlags[i].HasFlag (KKTSerialFlags.NameChanged) &&*/
 				if (names[(i + lastSearchOffset) % names.Count].ToLower ().Contains (model))
 					break;
 				}
@@ -681,21 +679,8 @@ namespace RD_AAOW
 			lastSearchOffset = (i + lastSearchOffset) % names.Count;
 			i = lastSearchOffset;
 
-			/*if (serialFlags[i].HasFlag (KKTSerialFlags.UnknownSignature))*/
 			return "\x1" + i.ToString ();
-
-			/*// Сборка сигнатуры
-			string sig = "";
-			for (int j = 0; j < serialOffsets[i]; j++)
-				sig += signatureFiller;
-			sig += serialSamples[i];
-			while (sig.Length < serialLengths[i])
-				sig += signatureFiller;
-
-			// Завершено
-			return sig;*/
 			}
-		/*private const string signatureFiller = "X";*/
 
 		/// <summary>
 		/// Возвращает максимально возможную длину заводского номера
