@@ -1,5 +1,4 @@
-﻿/*using Microsoft.Maui.Controls;*/
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
 namespace RD_AAOW
@@ -67,7 +66,7 @@ namespace RD_AAOW
 			dictionaryDescriptionField, dictionaryLabelField,
 			tlvDescriptionLabel, tlvTypeLabel, tlvValuesLabel, tlvObligationLabel,
 			barcodeDescriptionLabel, ofdDisabledLabel, convNumberResultField, convCodeResultField,
-			fontSizeField, ofdDNSNameLabel, ofdDNSNameMLabel;
+			fontSizeField, ofdDNSNameLabel, ofdDNSNameMLabel, tlvValuesHeader;
 		private List<Label> operationTextLabels = [];
 		private List<Button> operationTextButtons = [];
 		private const string operationButtonSignatureShow = "🖨 ";
@@ -739,7 +738,7 @@ namespace RD_AAOW
 			tlvTypeLabel = RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVType",
 				"", RDLabelTypes.Field, uiColors[tlvPage][cField]);
 
-			RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVValuesLabel",
+			tlvValuesHeader = RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVValuesLabel",
 				"Возможные значения тега:", RDLabelTypes.HeaderLeft);
 			tlvValuesLabel = RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVValues",
 				"", RDLabelTypes.Field, uiColors[tlvPage][cField]);
@@ -1903,7 +1902,10 @@ namespace RD_AAOW
 				{
 				tlvDescriptionLabel.Text = kb.Tags.LastDescription;
 				tlvTypeLabel.Text = kb.Tags.LastType;
+				
 				tlvValuesLabel.Text = kb.Tags.LastValuesSet;
+				tlvValuesHeader.IsVisible = tlvValuesLabel.IsVisible = !string.IsNullOrWhiteSpace (tlvValuesLabel.Text);
+
 				tlvObligationLabel.Text = kb.Tags.LastObligation;
 				}
 			else

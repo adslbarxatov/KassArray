@@ -189,7 +189,8 @@ namespace RD_AAOW
 			CableType.Items.AddRange (kb.Plugs.GetCablesNames ().ToArray ());
 			CableType.SelectedIndex = 0;
 
-			this.Text = ProgramDescription.AssemblyVisibleName;
+			/*this.Text = ProgramDescription.AssemblyVisibleName;*/
+			this.Text = RDGenerics.DefaultAssemblyVisibleName;
 
 			// Получение настроек
 			RDGenerics.LoadWindowDimensions (this);
@@ -304,7 +305,8 @@ namespace RD_AAOW
 
 			// Настройка иконки в трее
 			ni.Icon = KassArrayResources.KassArrayTray;
-			ni.Text = ProgramDescription.AssemblyVisibleName;
+			/*ni.Text = ProgramDescription.AssemblyVisibleName;*/
+			ni.Text = RDGenerics.DefaultAssemblyVisibleName;
 			ni.Visible = true;
 
 			ni.ContextMenuStrip = new ContextMenuStrip ();
