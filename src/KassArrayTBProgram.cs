@@ -30,7 +30,7 @@ namespace RD_AAOW
 			if (!RDGenerics.IsAppInstanceUnique (false, "TB"))
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-					"Программа " + /*ProgramDescription.AssemblyTitle*/ RDGenerics.DefaultAssemblyVisibleName + " уже запущена." + RDLocale.RNRN +
+					"Программа " + RDGenerics.DefaultAssemblyVisibleName + " уже запущена." + RDLocale.RNRN +
 					"Закройте запущенный экземпляр и повторите попытку");
 
 				try

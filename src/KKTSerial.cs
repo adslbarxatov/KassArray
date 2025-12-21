@@ -10,6 +10,11 @@ namespace RD_AAOW
 	public enum KKTSerialFlags
 		{
 		/// <summary>
+		/// Неточно известный ЗН
+		/// </summary>
+		SerialIsSuppositive = 0x00,
+
+		/// <summary>
 		/// Точно известный ЗН
 		/// </summary>
 		SerialIsKnown = 0x01,
@@ -33,6 +38,11 @@ namespace RD_AAOW
 		/// Модель исключена из реестра
 		/// </summary>
 		RemovedFromRegistry = 0x10,
+
+		/// <summary>
+		/// Модель подлежит исключению из реестра
+		/// </summary>
+		ShouldBeRemovedFromRegistry = 0x20,
 		}
 
 	/// <summary>
@@ -395,11 +405,11 @@ namespace RD_AAOW
 				switch (values[2][5])
 					{
 					case '?':
-						serialTSPI.Add ("нет сведений");
+						serialTSPI.Add ("отсутствуют");
 						break;
 
 					case 'U':
-						serialTSPI.Add ("не поддерживается");
+						serialTSPI.Add ("не поддерживаются");
 						break;
 
 					case 'a':
@@ -548,6 +558,8 @@ namespace RD_AAOW
 			// Состояние в реестре ФНС
 			if (serialFlags[i].HasFlag (KKTSerialFlags.RemovedFromRegistry))
 				res += "! исключена из реестра ФНС !";
+			else if (serialFlags[i].HasFlag (KKTSerialFlags.ShouldBeRemovedFromRegistry))
+				res += "! может быть исключена из реестра ФНС в ближайшее время !";
 			else if (!s.Contains (ffdNames[2]))
 				res += "! присутствует в реестре ФНС, но не обновляется !";
 			else

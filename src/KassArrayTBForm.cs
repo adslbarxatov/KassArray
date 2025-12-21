@@ -75,7 +75,6 @@ namespace RD_AAOW
 				return;
 				}
 
-			/*this.Text = ProgramDescription.AssemblyVisibleName;*/
 			this.Text = RDGenerics.DefaultAssemblyVisibleName;
 
 			OFDialog.Title = "Выберите файл заявления";
