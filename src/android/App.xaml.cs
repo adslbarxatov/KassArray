@@ -1015,7 +1015,8 @@ namespace RD_AAOW
 			b.FontAttributes = FontAttributes.None;
 			b.FontSize = 5 * RDInterface.MasterFontSize / 4;
 			b.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
-			b.Margin = b.Padding = new Thickness (1);
+			b.Margin = new Thickness (1);
+			b.Padding = new Thickness (1, 7);
 
 			uiButtons.Add (b);
 			menuLayout.Children.Add (b);
