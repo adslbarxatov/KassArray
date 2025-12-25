@@ -298,7 +298,7 @@ namespace RD_AAOW
 			ConvCode_TextChanged (null, null);
 
 			LowLevelProtocol.Items.AddRange (kb.LLCommands.GetProtocolsNames ().ToArray ());
-			LowLevelProtocol.SelectedIndex = 0;
+			LowLevelProtocol.SelectedIndex = (int)AppSettings.LowLevelProtocol;
 			LowLevelProtocol_SelectedIndexChanged (null, null);
 			LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;
 
