@@ -1,6 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+#if !ANDROID
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+#endif
 
 namespace RD_AAOW
 	{
@@ -216,9 +218,28 @@ namespace RD_AAOW
 			0,	// Известные сигнатуры
 			0,	// Точно известные сигнатуры
 			0,	// Исключены из реестра
+			0,	// Поддерживаются ТС ПИоТ
 			];
 
 		private int lastSearchOffset = 0;
+
+		// Карта индексов ТС ПИоТ
+		private char[] tsMapNames = [
+			'a',
+			'2',
+			'3',
+			'6',
+			'b',
+			'9',
+			];
+		private byte[][] tsMapIndexes = [
+			[1, 4, 5],
+			[2],
+			[3],
+			[6],
+			[7, 8],
+			[9],
+			];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицу
@@ -412,15 +433,39 @@ namespace RD_AAOW
 						serialTSPI.Add ("не поддерживаются");
 						break;
 
-					case 'a':
+					/*case 'a':
 						// 1, 4, 5
 						serialTSPI.Add (tspiValues[0].Substring (2) + RDLocale.RN + "    " +
 							tspiValues[3].Substring (2) + RDLocale.RN + "    " + tspiValues[4].Substring (2));
 						break;
 
+					case 'b':
+						// 7, 8
+						serialTSPI.Add (tspiValues[6].Substring (2) + RDLocale.RN + "    " +
+							tspiValues[7].Substring (2));
+						break;*/
+
 					default:
-						int tspiIdx = int.Parse (values[2][5].ToString ()) - 1;
-						serialTSPI.Add (tspiValues[tspiIdx].Substring (2));
+						/*int tspiIdx = int.Parse (values[2][5].ToString ()) - 1;
+						serialTSPI.Add (tspiValues[tspiIdx].Substring (2));*/
+
+						int tsMapIdx = tsMapNames.IndexOf (values[2][5]);
+						byte[] tsIndexes = tsMapIndexes[tsMapIdx];
+
+						string tsLine = "";
+						for (int t = 0; t < tsIndexes.Length; t++)
+							{
+							string tsName = tspiValues[tsIndexes[t] - 1];
+							int left = tsName.IndexOf ('\t');
+
+							if (tsIndexes.Length > 1)
+								tsLine += (RDLocale.RN + "    ");
+							tsLine += tsName.Substring (left + 1);
+							}
+
+						serialTSPI.Add (tsLine);
+
+						registryStats[7]++;
 						break;
 					}
 				}
@@ -713,6 +758,8 @@ namespace RD_AAOW
 			{
 			get
 				{
+				uint tsPart = 100 * registryStats[ffdNames.Length + 4] / registryStats[ffdNames.Length];
+
 #if ANDROID
 				string res = "Моделей ККТ в реестре ФНС" + RDLocale.RN +
 					"(на " + ProgramDescription.AssemblyLastUpdate + "): " +
@@ -722,6 +769,10 @@ namespace RD_AAOW
 				for (int i = 0; i < ffdNames.Length; i++)
 					res += "  ФФД " + ffdNames[i] + ": " +
 						registryStats[1 + i].ToString () + RDLocale.RN;
+
+				res += "    из них имеют ТС ПИоТ: " +
+					registryStats[ffdNames.Length + 4].ToString () + " (" +
+					tsPart.ToString () + "%)" + RDLocale.RN;
 
 				res += RDLocale.RN + "Известно сигнатур ЗН: " +
 					registryStats[ffdNames.Length + 1] + RDLocale.RN;
@@ -738,6 +789,10 @@ namespace RD_AAOW
 				for (int i = 0; i < ffdNames.Length; i++)
 					res += "\t  ФФД " + ffdNames[i] + ":  \t\t" +
 						registryStats[1 + i].ToString () + RDLocale.RN;
+
+				res += "\t    из них имеют ТС ПИоТ:\t" +
+					registryStats[ffdNames.Length + 4].ToString () + " (" +
+					tsPart.ToString () + "%)" + RDLocale.RN;
 
 				res += RDLocale.RN + "\tИзвестно сигнатур ЗН:\t" +
 					registryStats[ffdNames.Length + 1] + RDLocale.RN;

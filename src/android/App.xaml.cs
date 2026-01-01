@@ -256,6 +256,8 @@ namespace RD_AAOW
 				bool sectionEnabled = ((sections & (1u << i)) != 0);
 
 				Button bh = new Button ();
+				RDInterface.ApplyButtonDefaults (bh);
+
 				bh.BackgroundColor = uiColors[usgPage][cBack];
 				bh.Clicked += OperationTextButton_Clicked;
 				bh.FontAttributes = FontAttributes.Bold;
@@ -1007,14 +1009,12 @@ namespace RD_AAOW
 				return page;
 
 			Button b = new Button ();
+			RDInterface.ApplyButtonDefaults (b);
+
 			b.Text = PageTitle;
 			b.BackgroundColor = PageBackColor;
 			b.Clicked += HeaderButton_Clicked;
-			b.TextTransform = TextTransform.None;
-
-			b.FontAttributes = FontAttributes.None;
 			b.FontSize = 5 * RDInterface.MasterFontSize / 4;
-			b.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
 			b.Margin = new Thickness (1);
 			b.Padding = new Thickness (1, 7);
 
@@ -1290,14 +1290,11 @@ namespace RD_AAOW
 			for (int i = 0; i < links.Count; i++)
 				{
 				Button b = new Button ();
+				RDInterface.ApplyButtonDefaults (b);
+
 				b.BackgroundColor = uiColors[tdcPage][cField];
-				b.FontAttributes = FontAttributes.None;
-				b.FontSize = RDInterface.MasterFontSize;
-				b.TextColor = RDInterface. GetInterfaceColor (RDInterfaceColors.AndroidTextColor);
-				b.LineBreakMode = LineBreakMode.WordWrap;
 				b.Margin = new Thickness (3);
 				b.Text = links[i];
-				b.TextTransform = TextTransform.None;
 				b.Clicked += GoToButton_Clicked;
 
 				goToButtons.Children.Add (b);
@@ -1410,14 +1407,14 @@ namespace RD_AAOW
 					fnLifeMessage = FNSerial.FNIsAcceptableMessage;
 					break;
 
-				case FNLifeStatus.StronglyUnwelcome:
+				/*case FNLifeStatus.StronglyUnwelcome:
 					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
 					fnLifeStatus.TextColor = fnLifeDate.TextColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
 
 					fnLifeMessage = FNSerial.FNIsStronglyUnwelcomeMessage;
-					break;
+					break;*/
 				}
 
 			if (kb.FNNumbers.IsFNKnown (AppSettings.FNSerial))
@@ -1429,7 +1426,9 @@ namespace RD_AAOW
 					fnLifeStatus.TextColor = fnLifeDate.TextColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
-					fnLifeMessage += (RDLocale.RN + FNSerial.FNIsNotAllowedMessage);
+					// 7.7: сообщение об отсутствии в реестре важнее остальных
+					/*fnLifeMessage += (RDLocale.RN + FNSerial.FNIsNotAllowedMessage);*/
+					fnLifeMessage = FNSerial.FNIsNotAllowedMessage;
 
 					fnLifeModelLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					fnLifeModelLabel.TextColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);

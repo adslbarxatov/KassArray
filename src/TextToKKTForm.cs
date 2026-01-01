@@ -26,6 +26,7 @@ namespace RD_AAOW
 
 		// Сообщение о применимости ФН
 		private string fnLifeMessage = "";
+		private RDMessageFlags fnLifeMessageColor;
 
 		// Число режимов преобразования
 		private uint encodingModesCount;
@@ -825,12 +826,14 @@ namespace RD_AAOW
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotAcceptableMessage;
+					fnLifeMessageColor = RDMessageFlags.Error;
 					break;
 
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Unwelcome:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.WarningText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotRecommendedMessage;
+					fnLifeMessageColor = RDMessageFlags.Warning;
 					break;
 
 				case KassArrayDB::RD_AAOW.FNLifeStatus.Acceptable:
@@ -838,13 +841,14 @@ namespace RD_AAOW
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsAcceptableMessage;
+					fnLifeMessageColor = RDMessageFlags.Success;
 					break;
 
-				case KassArrayDB::RD_AAOW.FNLifeStatus.StronglyUnwelcome:
+				/*case KassArrayDB::RD_AAOW.FNLifeStatus.StronglyUnwelcome:
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsStronglyUnwelcomeMessage;
-					break;
+					break;*/
 				}
 
 			if (kb.FNNumbers.IsFNKnown (AppSettings.FNSerial))
@@ -854,7 +858,9 @@ namespace RD_AAOW
 					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
 						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
-					fnLifeMessage += (RDLocale.RN + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage);
+					// 7.7: переопределение предыдущих сообщений в связи с большей важностью исключения из реестра
+					/*fnLifeMessage += (RDLocale.RN + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage);*/
+					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage;
 					FNLifeName.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					}
 				else
@@ -880,7 +886,7 @@ namespace RD_AAOW
 		private void FNLifeStatus_Click (object sender, EventArgs e)
 			{
 			TMSet (false);
-			RDInterface.MessageBox (RDMessageFlags.Information | RDMessageFlags.NoSound, fnLifeMessage);
+			RDInterface.MessageBox (fnLifeMessageColor | RDMessageFlags.NoSound, fnLifeMessage);
 			TMSet (true);
 			}
 

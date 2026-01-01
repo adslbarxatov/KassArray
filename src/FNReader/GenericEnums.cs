@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !ANDROID
+	using System;
+#endif
 
 namespace RD_AAOW
 	{
@@ -513,10 +515,10 @@ namespace RD_AAOW
 		/// </summary>
 		Inacceptable,
 
-		/// <summary>
+		/*/// <summary>
 		/// ФН допускает использование с указанными параметрами, но данная информация не проверена на практике
 		/// </summary>
-		StronglyUnwelcome
+		StronglyUnwelcome*/
 		}
 
 	/// <summary>
