@@ -1016,7 +1016,7 @@ namespace RD_AAOW
 			b.Clicked += HeaderButton_Clicked;
 			b.FontSize = 5 * RDInterface.MasterFontSize / 4;
 			b.Margin = new Thickness (1);
-			b.Padding = new Thickness (1, 7);
+			b.Padding = new Thickness (1, 9);
 
 			uiButtons.Add (b);
 			menuLayout.Children.Add (b);

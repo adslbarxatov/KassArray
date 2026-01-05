@@ -908,4 +908,72 @@ namespace RD_AAOW
 			status = PStatus;
 			}
 		}
+
+	/// <summary>
+	/// Класс описывает результат запроса критерия поиска
+	/// </summary>
+	public class SearchCriteria
+		{
+		/// <summary>
+		/// Возвращает поисковую строку
+		/// </summary>
+		public string SearchLine
+			{
+			get
+				{
+				return searchLine;
+				}
+			}
+		private string searchLine;
+
+		/// <summary>
+		/// Возвращает true, если поиск был отменён
+		/// </summary>
+		public bool IsCancelled
+			{
+			get
+				{
+				return (flags & 0x01) != 0;
+				}
+			}
+		private byte flags;
+
+		/// <summary>
+		/// Возвращает true, если результат указывает на необходимость
+		/// увеличить поисковое смещение
+		/// </summary>
+		public bool OffsetShouldBeIncreased
+			{
+			get
+				{
+				return (flags & 0x02) != 0;
+				}
+			}
+
+		/*/// <summary>
+		/// Возвращает true, если результат указывает на необходимость
+		/// обнулить поисковое смещение
+		/// </summary>
+		public bool OffsetShouldBeZeroed
+			{
+			get
+				{
+				return (flags & 0x04) != 0;
+				}
+			}*/
+
+		/// <summary>
+		/// Конструктор. Инициализирует экземпляр результата запроса
+		/// </summary>
+		/// <param name="PSearchLine">Строка поиска</param>
+		/// <param name="PFlags">Флаги поиска:
+		/// b0 = отмена поиска;
+		/// b1 = увеличение поискового смещения;
+		/// b2 = обнуление поискового смещения</param>
+		public SearchCriteria (string PSearchLine, byte PFlags)
+			{
+			searchLine = PSearchLine;
+			flags = PFlags;
+			}
+		}
 	}

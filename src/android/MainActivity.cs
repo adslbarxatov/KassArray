@@ -9,7 +9,7 @@ using AndroidX.Core.App;
 
 namespace RD_AAOW
 	{
-	[Activity (Label = "KassArray",
+	[Activity (Label = "KassArrayHC",
 		Icon = "@drawable/icon",
 		Theme = "@style/SplashTheme",
 		MainLauncher = true,

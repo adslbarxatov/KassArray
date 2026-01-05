@@ -133,7 +133,8 @@ namespace RD_AAOW
 				{
 				try
 					{
-					ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
+					ewh = EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName +
+						KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias);
 					}
 				catch { }
 				ShowWindowTimer.Enabled = true;

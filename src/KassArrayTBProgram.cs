@@ -27,16 +27,17 @@ namespace RD_AAOW
 				return;
 
 			// Проверка запуска единственной копии
-			if (!RDGenerics.IsAppInstanceUnique (false, "TB"))
+			if (!RDGenerics.IsAppInstanceUnique (false, KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias))
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-					"Программа " + RDGenerics.DefaultAssemblyVisibleName + " уже запущена." + RDLocale.RNRN +
-					"Закройте запущенный экземпляр и повторите попытку");
+					"Программа " + ProgramDescription.AssemblyMainName + KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias +
+					" уже запущена." + RDLocale.RNRN + "Закройте запущенный экземпляр и повторите попытку");
 
 				try
 					{
 					EventWaitHandle ewh =
-						EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
+						EventWaitHandle.OpenExisting (KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName +
+						KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias);
 					ewh.Set ();
 					}
 				catch { }
@@ -58,10 +59,11 @@ namespace RD_AAOW
 			RDInterface.ShowAbout (true);
 
 			// Отдельная обработка расширений, в обход ответа ShowAbout из верхнего приложения
-			if (RDGenerics.GetAppRegistryValue ("TBHelpShownAt") != ProgramDescription.AssemblyVersion)
+			const string ls = KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias + RDAboutForm.LastShownVersionKey;
+			if (RDGenerics.GetAppRegistryValue (ls) != ProgramDescription.AssemblyVersion)
 				{
 				RDGenerics.RegisterFileAssociations (true);
-				RDGenerics.SetAppRegistryValue ("TBHelpShownAt", ProgramDescription.AssemblyVersion);
+				RDGenerics.SetAppRegistryValue (ls, ProgramDescription.AssemblyVersion);
 				}
 
 			// Запуск

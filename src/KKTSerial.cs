@@ -229,7 +229,7 @@ namespace RD_AAOW
 			'2',
 			'3',
 			'6',
-			'b',
+			//'b',
 			'9',
 			];
 		private byte[][] tsMapIndexes = [
@@ -237,7 +237,7 @@ namespace RD_AAOW
 			[2],
 			[3],
 			[6],
-			[7, 8],
+			//[7, 8],
 			[9],
 			];
 
@@ -433,22 +433,7 @@ namespace RD_AAOW
 						serialTSPI.Add ("не поддерживаются");
 						break;
 
-					/*case 'a':
-						// 1, 4, 5
-						serialTSPI.Add (tspiValues[0].Substring (2) + RDLocale.RN + "    " +
-							tspiValues[3].Substring (2) + RDLocale.RN + "    " + tspiValues[4].Substring (2));
-						break;
-
-					case 'b':
-						// 7, 8
-						serialTSPI.Add (tspiValues[6].Substring (2) + RDLocale.RN + "    " +
-							tspiValues[7].Substring (2));
-						break;*/
-
 					default:
-						/*int tspiIdx = int.Parse (values[2][5].ToString ()) - 1;
-						serialTSPI.Add (tspiValues[tspiIdx].Substring (2));*/
-
 						int tsMapIdx = tsMapNames.IndexOf (values[2][5]);
 						byte[] tsIndexes = tsMapIndexes[tsMapIdx];
 

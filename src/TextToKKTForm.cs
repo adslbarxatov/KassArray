@@ -42,9 +42,10 @@ namespace RD_AAOW
 		private bool closeWindowOnError = false;
 		private bool closeWindowOnRequest = false;
 
-		private EventWaitHandle ewhTB, ewhFN;
+		private EventWaitHandle ewhTB, ewhFS, ewhEC;
 		private bool ewhTBIsActive = true;
-		private bool ewhFNIsActive = true;
+		private bool ewhFSIsActive = true;
+		private bool ewhECIsActive = true;
 
 		#region Главный интерфейс
 
@@ -65,7 +66,9 @@ namespace RD_AAOW
 			try
 				{
 				ewhTB = new EventWaitHandle (false, EventResetMode.AutoReset,
-					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");
+					/*KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");*/
+					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName +
+					KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias);
 				}
 			catch
 				{
@@ -73,12 +76,25 @@ namespace RD_AAOW
 				}
 			try
 				{
-				ewhFN = new EventWaitHandle (false, EventResetMode.AutoReset,
-					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "FN");
+				/*ewhFN = new EventWaitHandle (false, EventResetMode.AutoReset,
+					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "F N");*/
+				ewhFS = new EventWaitHandle (false, EventResetMode.AutoReset,
+					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName +
+					KassArrayDB::RD_AAOW.ProgramDescription.KassArrayFSAlias);
 				}
 			catch
 				{
-				ewhFNIsActive = false;
+				ewhFSIsActive = false;
+				}
+			try
+				{
+				ewhEC = new EventWaitHandle (false, EventResetMode.AutoReset,
+					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName +
+					KassArrayDB::RD_AAOW.ProgramDescription.KassArrayECAlias);
+				}
+			catch
+				{
+				ewhECIsActive = false;
 				}
 
 			if (!RDGenerics.CheckLibrariesVersions (ProgramDescription.AssemblyLibraries, true))
@@ -304,16 +320,17 @@ namespace RD_AAOW
 			LowLevelCommand.SelectedIndex = (int)AppSettings.LowLevelCode;
 
 			// Настройка иконки в трее
-			ni.Icon = KassArrayResources.KassArrayTray;
+			ni.Icon = KassArrayHCResources.KassArrayTray;
 			ni.Text = RDGenerics.DefaultAssemblyVisibleName;
 			ni.Visible = true;
 
 			ni.ContextMenuStrip = new ContextMenuStrip ();
 			ni.ContextMenuStrip.ShowImageMargin = false;
 
-			ni.ContextMenuStrip.Items.Add ("Работа с &ФН", null, CallFNReader);
+			ni.ContextMenuStrip.Items.Add ("Работа с ФН", null, CallFSReader);
 			ni.ContextMenuStrip.Items.Add ("Заявления для ФНС", null, CallTemplateBuilder);
-			ni.ContextMenuStrip.Items[0].Enabled = ni.ContextMenuStrip.Items[1].Enabled =
+			ni.ContextMenuStrip.Items.Add ("Сроки действия ФН", null, CallExpirationController);
+			ni.ContextMenuStrip.Items[0].Enabled = ni.ContextMenuStrip.Items[1].Enabled = ni.ContextMenuStrip.Items[2].Enabled =
 				!RDGenerics.StartedFromMSStore && AppSettings.EnableExtendedMode;
 			ni.ContextMenuStrip.Items.Add (RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit), null,
 				CloseService);
@@ -465,42 +482,82 @@ namespace RD_AAOW
 			TMSet (true);
 			}
 
-		// Вызов библиотеки FNReader
+		// Вызов дополнительных модулей
 		private void FNReader_Click (object sender, EventArgs e)
 			{
 			ni.ContextMenuStrip.Show (FNReader, Point.Empty);
 			}
 
-		private void CallFNReader (object sender, EventArgs e)
+		private void CallFSReader (object sender, EventArgs e)
 			{
-			CallSideTool (true);
+			CallSideTool (0);
 			}
 
 		private void CallTemplateBuilder (object sender, EventArgs e)
 			{
-			CallSideTool (false);
+			CallSideTool (1);
 			}
 
-		private void CallSideTool (bool FN)
+		private void CallExpirationController (object sender, EventArgs e)
+			{
+			CallSideTool (2);
+			}
+
+		private void CallSideTool (byte Index)
 			{
 			// Отправка "сообщения" окну модуля работы с ФН
 			bool problem;
-			if (FN)
+			/*if (FN)
 				problem = ewhFNIsActive ? ewhFN.WaitOne (100) : true;
 			else
-				problem = ewhTBIsActive ? ewhTB.WaitOne (100) : true;
+				problem = ewhTBIsActive ? ewhTB.WaitOne (100) : true;*/
 
+			switch (Index)
+				{
+				case 0:
+				default:
+					problem = ewhFSIsActive ? ewhFS.WaitOne (100) : true;
+					break;
+
+				case 1:
+					problem = ewhTBIsActive ? ewhTB.WaitOne (100) : true;
+					break;
+
+				case 2:
+					problem = ewhECIsActive ? ewhEC.WaitOne (100) : true;
+					break;
+				}
+
+			string proc = KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName;
 			if (!problem)
 				{
-				if (FN)
+				/*if (FN)
 					ewhFN.Set ();
 				else
-					ewhTB.Set ();
+					ewhTB.Set ();*/
+				switch (Index)
+					{
+					case 0:
+					default:
+						ewhFS.Set ();
+						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayFSAlias;
+						break;
+
+					case 1:
+						ewhTB.Set ();
+						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias;
+						break;
+
+					case 2:
+						ewhEC.Set ();
+						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayECAlias;
+						break;
+					}
 				}
 
 			// Контроль на завершение предыдущих процессов
 			bool res;
-			string proc = ProgramDescription.AssemblyMainName + (FN ? "FN" : "TB");
+			/*string proc = ProgramDescription.AssemblyMainName + (FN ? "F N" : "TB");*/
 			if (!problem)
 				{
 				// Тихо
@@ -520,11 +577,11 @@ namespace RD_AAOW
 
 			// Нормальный запуск модуля работы с ФН
 			BExit_Click (null, null);
-			string fnExe = RDGenerics.AppStartupPath + proc + ".exe";
-			if (!RDGenerics.CheckLibrariesExistence (fnExe, true))
+			string exe = RDGenerics.AppStartupPath + proc + ".exe";
+			if (!RDGenerics.CheckLibrariesExistence (exe, true))
 				return;
 
-			RDGenerics.RunURL (fnExe);
+			RDGenerics.RunURL (exe);
 			}
 
 		// Переключение состояния "поверх всех окон"
@@ -740,15 +797,20 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.ErrorCode, "Введите код ошибки или фрагмент её текста", AppSettings.ErrorCodeMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.ErrorCode = search[0];
-			ErrorText.Text = kb.Errors.FindNext ((uint)KKTListForErrors.SelectedIndex, search[0], search[1] == "I");
+			/*AppSettings.ErrorCode = search[0];
+			ErrorText.Text = kb.Errors.FindNext ((uint)KKTListForErrors.SelectedIndex, search[0], search[1] == "I");*/
+			AppSettings.ErrorCode = search.SearchLine;
+			ErrorText.Text = kb.Errors.FindNext ((uint)KKTListForErrors.SelectedIndex, search.SearchLine,
+				search.OffsetShouldBeIncreased);
 			}
 
 		#endregion
@@ -760,35 +822,41 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var searchRes = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.FNSerial, "Введите заводской номер ФН или название модели",
 				AppSettings.FNSerialMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (searchRes.IsCancelled)
 				return;
 
 			// Подмена названия сигнатурой ЗН
-			string sig = kb.FNNumbers.FindSignatureByName (search[0]);
+			/*string sig = kb.FNNumbers.FindSignatureByName (search[0]);
 			if (!string.IsNullOrWhiteSpace (sig))
-				search[0] = sig;
+				search[0] = sig;*/
+			string search = searchRes.SearchLine;
+			string sig = kb.FNNumbers.FindSignatureByName (search);
+			if (!string.IsNullOrWhiteSpace (sig))
+				search = sig;
 
-			AppSettings.FNSerial = search[0];
+			AppSettings.FNSerial = search;
 
 			// Поиск
-			if (!string.IsNullOrWhiteSpace (search[0]))
-				FNLifeName.Text = kb.FNNumbers.GetFNName (search[0]);
+			if (!string.IsNullOrWhiteSpace (search))
+				FNLifeName.Text = kb.FNNumbers.GetFNName (search);
 			else
 				FNLifeName.Text = "(модель ФН не задана)";
 
 			// Определение длины ключа
-			if (!kb.FNNumbers.IsFNKnown (search[0]))
+			if (!kb.FNNumbers.IsFNKnown (search))
 				{
 				FNLife36.Enabled = FNLife13.Enabled = true;
 				}
 			else
 				{
-				if (kb.FNNumbers.IsNotFor36Months (search[0]))
+				if (kb.FNNumbers.IsNotFor36Months (search))
 					{
 					FNLife13.Enabled = true;
 					FNLife13.Checked = true;
@@ -973,23 +1041,28 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var searchRes = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.KKTSerial, "Введите заводской номер ККТ или название модели",
 				kb.KKTNumbers.MaxSerialNumberLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")
 				return;
-			AppSettings.KKTSerial = search[0];
+			AppSettings.KKTSerial = search[0];*/
+			if (searchRes.IsCancelled)
+				return;
+			AppSettings.KKTSerial = searchRes.SearchLine;
 
 			// Подмена названия сигнатурой ЗН
-			string sig = kb.KKTNumbers.FindSignatureByName (search[0], search[1] == "I");
+			string search = searchRes.SearchLine;
+			string sig = kb.KKTNumbers.FindSignatureByName (search, searchRes.OffsetShouldBeIncreased);
 			if (!string.IsNullOrWhiteSpace (sig))
-				search[0] = sig;
+				search = sig;
 
 			// Заводской номер ККТ
-			if (!string.IsNullOrWhiteSpace (search[0]))
-				RNMSerialResult.Text = "Модель ККТ: " + kb.KKTNumbers.GetKKTModel (search[0]);
+			if (!string.IsNullOrWhiteSpace (search))
+				RNMSerialResult.Text = "Модель ККТ: " + kb.KKTNumbers.GetKKTModel (search);
 			else
 				RNMSerialResult.Text = "(модель ККТ не найдена)";
 
@@ -1139,16 +1212,20 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.OFDSearch, "Введите ИНН ОФД или фрагмент его названия",
 				AppSettings.OFDSearchMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.OFDSearch = search[0];
-			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");
+			/*AppSettings.OFDSearch = search[0];
+			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");*/
+			AppSettings.OFDSearch = search.SearchLine;
+			int idx = kb.Ofd.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 			if (idx < 0)
 				OFDNamesList.SelectedIndex = 0;
 			else
@@ -1164,16 +1241,20 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.DictionarySearch, "Введите термин или его сокращение",
 				AppSettings.DictionarySearchMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.DictionarySearch = search[0];
-			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");
+			/*AppSettings.DictionarySearch = search[0];
+			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");*/
+			AppSettings.DictionarySearch = search.SearchLine;
+			string res = kb.Dictionary.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 
 			int idx = res.IndexOf ('\x1');
 			if (idx < 0)
@@ -1354,17 +1435,22 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.TLVData, "Введите номер TLV-тега или фрагмент его описания",
 				AppSettings.TLVDataMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.TLVData = search[0];
+			/*AppSettings.TLVData = search[0];
 
-			if (kb.Tags.FindTag (search[0]))
+			if (kb.Tags.FindTag (search[0]))*/
+			AppSettings.TLVData = search.SearchLine;
+
+			if (kb.Tags.FindTag (search.SearchLine))
 				{
 				TLVDescription.Text = kb.Tags.LastDescription;
 				TLVType.Text = kb.Tags.LastType;
@@ -1484,17 +1570,22 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.CableSearch, "Введите тип или назначение распиновки",
 				AppSettings.CableSearchMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.CableSearch = search[0];
+			/*AppSettings.CableSearch = search[0];
 
-			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");
+			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");*/
+			AppSettings.CableSearch = search.SearchLine;
+
+			int idx = kb.Plugs.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 			if (idx < 0)
 				{
 				CableLeftSide.Text = "(описание не найдено)";
@@ -1609,16 +1700,20 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.ConversionCodeSearch, "Введите название или часть названия блока символов Unicode",
 				AppSettings.ConversionCodeSearchMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.ConversionCodeSearch = search[0];
-			ulong left = kb.Unicodes.FindRange (search[0]);
+			/*AppSettings.ConversionCodeSearch = search[0];
+			ulong left = kb.Unicodes.FindRange (search[0]);*/
+			AppSettings.ConversionCodeSearch = search.SearchLine;
+			ulong left = kb.Unicodes.FindRange (search.SearchLine);
 			if (left != 0)
 				{
 				string[] res = KassArrayDB::RD_AAOW.DataConvertors.GetSymbolDescription ("\x0",
@@ -1677,16 +1772,21 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			string[] search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
+			/*string[]*/
+			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
 				AppSettings.LowLevelSearchMaxLength);
 			TMSet (true);
 
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.LowLevelSearch = search[0];
-			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");
+			/*AppSettings.LowLevelSearch = search[0];
+			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");*/
+			AppSettings.LowLevelSearch = search.SearchLine;
+			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search.SearchLine,
+				search.OffsetShouldBeIncreased);
 			if (idx < 0)
 				{
 				LowLevelCommandDescr.Text = LowLevelCommandCode.Text = "(описание не найдено)";
