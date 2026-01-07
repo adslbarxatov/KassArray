@@ -1,8 +1,6 @@
-#if !ANDROID
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-#endif
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace RD_AAOW
 	{
@@ -273,14 +271,6 @@ namespace RD_AAOW
 		/// </summary>
 		public const string FNIsNotAcceptableMessage =
 			"• Выбранный ФН невозможно использовать с указанными параметрами";
-
-		/*/// <summary>
-		/// Возвращает сообщение о том, что указанный ФН может быть использован при указаных параметрах,
-		/// но существуют сомнения в соответствии описания паспорта ФН и реального поведения устройства
-		/// </summary>
-		public const string FNIsStronglyUnwelcomeMessage =
-			"• Выбранный ФН, согласно паспорту, может быть использован с указанными параметрами, " +
-			"но мы пока не можем это проверить";*/
 
 		/// <summary>
 		/// Возвращает сообщение о том, что указанный может быть использован при указаных параметрах

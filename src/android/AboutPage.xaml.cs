@@ -1,4 +1,7 @@
-﻿namespace RD_AAOW
+﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Xaml;
+
+namespace RD_AAOW
 	{
 	/// <summary>
 	/// Класс описывает страницу сведений о программе

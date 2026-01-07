@@ -1,6 +1,4 @@
-﻿#if !ANDROID
-	using System;
-#endif
+﻿using System;
 
 namespace RD_AAOW
 	{
@@ -514,11 +512,6 @@ namespace RD_AAOW
 		/// ФН не поддерживает использование с указанными параметрами
 		/// </summary>
 		Inacceptable,
-
-		/*/// <summary>
-		/// ФН допускает использование с указанными параметрами, но данная информация не проверена на практике
-		/// </summary>
-		StronglyUnwelcome*/
 		}
 
 	/// <summary>
@@ -950,18 +943,6 @@ namespace RD_AAOW
 				}
 			}
 
-		/*/// <summary>
-		/// Возвращает true, если результат указывает на необходимость
-		/// обнулить поисковое смещение
-		/// </summary>
-		public bool OffsetShouldBeZeroed
-			{
-			get
-				{
-				return (flags & 0x04) != 0;
-				}
-			}*/
-
 		/// <summary>
 		/// Конструктор. Инициализирует экземпляр результата запроса
 		/// </summary>
@@ -975,5 +956,25 @@ namespace RD_AAOW
 			searchLine = PSearchLine;
 			flags = PFlags;
 			}
+		}
+
+	/// <summary>
+	/// Доступные версии универсальных информационных баз программы
+	/// </summary>
+	public enum KAKBLVersions
+		{
+		// База сведений сохранённых реквизитов пользователей для бумажных заявлений
+		PRv1 = 0x0101,
+		PRv2 = 0x0102,
+
+		// База кэшированных статусов и выгрузок ФН
+		FSv1 = 0x0201,
+		FSv2 = 0x0202,
+
+		// База контролируемых сроков действия ФН и тарифов ОФД
+		ECv1 = 0x0301,
+		ECv2 = 0x0302,
+		ECv3 = 0x0303,
+		ECv4 = 0x0304,
 		}
 	}

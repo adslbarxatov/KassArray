@@ -1,11 +1,10 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
-using Android.Graphics;
 using Android.OS;
 using Android.Print;
 using Android.Views;
-using AndroidX.Core.App;
+using Microsoft.Maui;
 
 namespace RD_AAOW
 	{

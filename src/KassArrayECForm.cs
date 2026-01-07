@@ -140,6 +140,10 @@ namespace RD_AAOW
 				else
 					KKTList.SelectedIndex = KKTList.Items.Count - 1;
 				}
+
+			// Прочее
+			CountLabel.Text = "Отслеживается касс: " + kl.ItemsCount.ToString () +
+				"; число владельцев: " + kl.OwnersCount.ToString ();
 			}
 
 		// Выбор ККТ в списке
@@ -171,11 +175,11 @@ namespace RD_AAOW
 			int fnDays = kl.GetDaysToFNExpiration (idx);
 			int ofdDays = kl.GetDaysToOFDExpiration (idx);
 			if ((fnDays < 7) || (ofdDays < 7))
-				InfoLabel.ForeColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
+				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 			else if ((fnDays < 14) || (ofdDays < 14))
-				InfoLabel.ForeColor = RDInterface.GetInterfaceColor (RDInterfaceColors.WarningText);
+				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.WarningMessage);
 			else
-				InfoLabel.ForeColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessText);
+				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
 			}
 
 		// Добавление новой ККТ
@@ -238,6 +242,57 @@ namespace RD_AAOW
 			// Удаление
 			kl.RemoveEntry ((uint)KKTList.SelectedIndex);
 			ReloadList ();
+			}
+
+		// Поиск записи
+		private void SearchButton_Click (object sender, EventArgs e)
+			{
+			// Контроль
+			if (string.IsNullOrWhiteSpace (SearchField.Text))
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Укажите критерий для поиска", 1000);
+				return;
+				}
+
+			// Поиск
+			int idx = kl.FindEntry (SearchField.Text);
+			if (idx < 0)
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Не найдены ККТ, соответствующие указанному критерию", 1500);
+				return;
+				}
+
+			// Успешно
+			KKTList.SelectedIndex = idx;
+			}
+
+		private void SearchField_KeyDown (object sender, KeyEventArgs e)
+			{
+			if (e.KeyCode == Keys.Return)
+				SearchButton_Click (null, null);
+			}
+
+		// Обновление контактов
+		private void BUpdateContacts_Click (object sender, EventArgs e)
+			{
+			if (KKTList.SelectedIndex < 0)
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"ККТ для изменения не выбрана в списке", 1500);
+				return;
+				}
+			uint idx = (uint)KKTList.SelectedIndex;
+
+			string currectContact = kl.GetRequisites (idx)[2];
+			string newContact = RDInterface.MessageBox ("Укажите новые контакты владельца ККТ", true,
+				50, currectContact);
+			if (string.IsNullOrWhiteSpace (newContact))
+				return;
+
+			kl.UpdateContact (idx, newContact);
+			KKTList_SelectedIndexChanged (null, null);
 			}
 		}
 	}

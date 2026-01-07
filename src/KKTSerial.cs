@@ -1,8 +1,6 @@
-#if !ANDROID
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-#endif
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace RD_AAOW
 	{

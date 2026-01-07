@@ -1,4 +1,10 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Graphics;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
 namespace RD_AAOW
@@ -215,9 +221,9 @@ namespace RD_AAOW
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_InterfaceFontSize),
 				RDLabelTypes.DefaultLeft);
 			RDInterface.ApplyButtonSettings (uiPages[setPage], "FontSizeInc",
-				RDDefaultButtons.Increase, uiColors[setPage][cField], FontSizeButton_Clicked);
+				RDDefaultButtons.Increase, uiColors[setPage][cField], FontSizeButton_Clicked, true);
 			RDInterface.ApplyButtonSettings (uiPages[setPage], "FontSizeDec",
-				RDDefaultButtons.Decrease, uiColors[setPage][cField], FontSizeButton_Clicked);
+				RDDefaultButtons.Decrease, uiColors[setPage][cField], FontSizeButton_Clicked, true);
 			fontSizeField = RDInterface.ApplyLabelSettings (uiPages[setPage], "FontSizeField",
 				" ", RDLabelTypes.DefaultCenter);
 
@@ -256,7 +262,7 @@ namespace RD_AAOW
 				bool sectionEnabled = ((sections & (1u << i)) != 0);
 
 				Button bh = new Button ();
-				RDInterface.ApplyButtonDefaults (bh);
+				RDInterface.ApplyButtonDefaults (bh, true);
 
 				bh.BackgroundColor = uiColors[usgPage][cBack];
 				bh.Clicked += OperationTextButton_Clicked;
@@ -289,9 +295,10 @@ namespace RD_AAOW
 				}
 
 			userManualsKKTButton = RDInterface.ApplyButtonSettings (uiPages[usgPage], "KKTButton",
-				"   ", uiColors[usgPage][cField], UserManualsKKTButton_Clicked, true);
+				"   ", uiColors[usgPage][cField], UserManualsKKTButton_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			userManualsPrintButton = RDInterface.ApplyButtonSettings (uiPages[usgPage], "PrintButton",
-				"В файл / на печать", uiColors[usgPage][cField], PrintManual_Clicked, false);
+				"В файл / на печать", uiColors[usgPage][cField], PrintManual_Clicked);
 			userManualsPrintButton.FontSize -= 2.0;
 			userManualsPrintButton.Margin = new Thickness (0);
 			userManualsPrintButton.Padding = new Thickness (3, 0);
@@ -364,7 +371,8 @@ namespace RD_AAOW
 			kktCodesOftenTexts.AddRange (AppSettings.CodesOftenTexts);
 
 			kktCodesKKTButton = RDInterface.ApplyButtonSettings (uiPages[codPage], "KKTButton",
-				kktTypeName, uiColors[codPage][cField], CodesKKTButton_Clicked, true);
+				kktTypeName, uiColors[codPage][cField], CodesKKTButton_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			RDInterface.ApplyLabelSettings (uiPages[codPage], "SourceTextLabel",
 				"Исходный текст:", RDLabelTypes.HeaderLeft);
 
@@ -388,17 +396,17 @@ namespace RD_AAOW
 				uiColors[codPage][cField]);
 
 			Button codB01 = RDInterface.ApplyButtonSettings (uiPages[codPage], "SelectSavedText",
-				"Выбрать", uiColors[codPage][cField], CodesLineGet_Clicked, false);
+				"Выбрать", uiColors[codPage][cField], CodesLineGet_Clicked);
 			Button codB02 = RDInterface.ApplyButtonSettings (uiPages[codPage], "ClearText",
-				RDDefaultButtons.Delete, uiColors[codPage][cField], CodesClear_Clicked);
+				RDDefaultButtons.Cancel, uiColors[codPage][cField], CodesClear_Clicked, true);
 			codB01.HeightRequest = codB01.MaximumHeightRequest = codB02.HeightRequest;
 
 			kktCodesLengthLabel = RDInterface.ApplyLabelSettings (uiPages[codPage], "LengthLabel",
 				"Длина:", RDLabelTypes.HeaderLeft);
 			kktCodesCenterButton = RDInterface.ApplyButtonSettings (uiPages[codPage], "CenterText",
-				"Центрировать", uiColors[codPage][cField], TextToConvertCenter_Click, false);
+				"Центрировать", uiColors[codPage][cField], TextToConvertCenter_Click);
 			RDInterface.ApplyButtonSettings (uiPages[codPage], "RememberText",
-				"Запомнить", uiColors[codPage][cField], TextToConvertRemember_Click, false);
+				"Запомнить", uiColors[codPage][cField], TextToConvertRemember_Click);
 
 			SourceText_TextChanged (null, null);    // Протягивание кодов
 
@@ -419,7 +427,8 @@ namespace RD_AAOW
 				AppSettings.KKTForErrors = 0;
 				}
 			errorsKKTButton = RDInterface.ApplyButtonSettings (uiPages[errPage], "KKTButton",
-				kktTypeName, uiColors[errPage][cField], ErrorsKKTButton_Clicked, true);
+				kktTypeName, uiColors[errPage][cField], ErrorsKKTButton_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[errPage], "ResultTextLabel",
 				"Описание ошибки:", RDLabelTypes.HeaderLeft);
@@ -429,11 +438,11 @@ namespace RD_AAOW
 
 			RDInterface.ApplyButtonSettings (uiPages[errPage], "ErrorFindButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[errPage][cField],
-				ErrorFind_Clicked, false);
+				ErrorFind_Clicked);
 			sampleNextButton = RDInterface.ApplyButtonSettings (uiPages[errPage], "ErrorFindNextButton",
-				NextButton, uiColors[errPage][cField], ErrorFind_Clicked, false);
+				NextButton, uiColors[errPage][cField], ErrorFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[errPage], "ErrorFindBufferButton",
-				BufferButton, uiColors[errPage][cField], ErrorFind_Clicked, false);
+				BufferButton, uiColors[errPage][cField], ErrorFind_Clicked);
 			ErrorFind_Clicked (sampleNextButton, null);
 
 			#endregion
@@ -445,10 +454,10 @@ namespace RD_AAOW
 
 			RDInterface.ApplyButtonSettings (uiPages[aabPage], "ManualsButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_ReferenceMaterials),
-				uiColors[aabPage][cField], ReferenceButton_Click, false);
+				uiColors[aabPage][cField], ReferenceButton_Click);
 			RDInterface.ApplyButtonSettings (uiPages[aabPage], "HelpButton",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_HelpSupport),
-				uiColors[aabPage][cField], HelpButton_Click, false);
+				uiColors[aabPage][cField], HelpButton_Click);
 
 			RDInterface.ApplyLabelSettings (uiPages[aabPage], "HelpHeaderLabel",
 				RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout),
@@ -464,12 +473,11 @@ namespace RD_AAOW
 			#region Страница определения срока жизни ФН
 
 			Button fnlB01 = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindButton",
-				"Найти модель ФН", uiColors[fnlPage][cField],
-				FNLifeFind_Clicked, false);
+				"Найти модель ФН", uiColors[fnlPage][cField], FNLifeFind_Clicked);
 			Button fnlB02 = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNFindBufferButton",
-				BufferButton, uiColors[fnlPage][cField], FNLifeFind_Clicked, false);
+				BufferButton, uiColors[fnlPage][cField], FNLifeFind_Clicked);
 			Button fnlB03 = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNResetButton",
-				RDDefaultButtons.Delete, uiColors[fnlPage][cField], FNLife_Reset);
+				RDDefaultButtons.Cancel, uiColors[fnlPage][cField], FNLife_Reset, true);
 			fnlB01.HeightRequest = fnlB01.MaximumHeightRequest =
 				fnlB02.HeightRequest = fnlB02.MaximumHeightRequest = fnlB03.HeightRequest;
 
@@ -547,9 +555,9 @@ namespace RD_AAOW
 				"Результат:", RDLabelTypes.HeaderLeft);
 
 			fnLifeDate = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNLifeDate", "",
-				uiColors[fnlPage][cField], FNLifeDateCopy, true);
+				uiColors[fnlPage][cField], FNLifeDateCopy, RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			fnLifeStatus = RDInterface.ApplyButtonSettings (uiPages[fnlPage], "FNLifeStatus", "?",
-				uiColors[fnlPage][cField], FNLifeStatusClick, true);
+				uiColors[fnlPage][cField], FNLifeStatusClick, RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			// Применение параметров, которые не могут быть рассчитаны при инициализации
 			fnLifeStatus.WidthRequest = fnLifeStatus.HeightRequest =
@@ -560,7 +568,7 @@ namespace RD_AAOW
 				RDLabelTypes.TipCenter);
 
 			RDInterface.ApplyButtonSettings (uiPages[fnlPage], "RegistryStats",
-				"Статистика реестра ФН", uiColors[fnlPage][cField], FNStats_Clicked, false);
+				"Статистика реестра ФН", uiColors[fnlPage][cField], FNStats_Clicked);
 
 			// Применение всех названий
 			FNLifeEvFlags = (FNLifeFlags)AppSettings.FNLifeEvFlags;
@@ -585,13 +593,13 @@ namespace RD_AAOW
 				"Модель ККТ:", RDLabelTypes.HeaderLeft);
 
 			Button rnmB01 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindButton",
-				"Найти", uiColors[rnmPage][cField], RNMSerial_Search, false);
+				"Найти", uiColors[rnmPage][cField], RNMSerial_Search);
 			Button rnmB02 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindNextButton",
-				NextButton, uiColors[rnmPage][cField], RNMSerial_Search, false);
+				NextButton, uiColors[rnmPage][cField], RNMSerial_Search);
 			Button rnmB03 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMFindBufferButton",
-				BufferButton, uiColors[rnmPage][cField], RNMSerial_Search, false);
+				BufferButton, uiColors[rnmPage][cField], RNMSerial_Search);
 			Button rnmB04 = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMResetButton",
-				RDDefaultButtons.Delete, uiColors[rnmPage][cField], RNMClear_Clicked);
+				RDDefaultButtons.Cancel, uiColors[rnmPage][cField], RNMClear_Clicked, true);
 			rnmB01.HeightRequest = rnmB01.MaximumHeightRequest =
 				rnmB02.HeightRequest = rnmB02.MaximumHeightRequest =
 				rnmB03.HeightRequest = rnmB03.MaximumHeightRequest = rnmB04.HeightRequest;
@@ -625,11 +633,11 @@ namespace RD_AAOW
 				RDLabelTypes.Semaphore);
 
 			rnmGenerate = RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RNMGenerate",
-				"Сгенерировать", uiColors[rnmPage][cField], RNMGenerate_Clicked, false);
+				"Сгенерировать", uiColors[rnmPage][cField], RNMGenerate_Clicked);
 			rnmGenerate.IsVisible = AppSettings.EnableExtendedMode;  // Уровень 2
 
 			RDInterface.ApplyButtonSettings (uiPages[rnmPage], "RegistryStats",
-				"Статистика реестра ККТ", uiColors[rnmPage][cField], RNMStats_Clicked, false);
+				"Статистика реестра ККТ", uiColors[rnmPage][cField], RNMStats_Clicked);
 
 			if (AppSettings.EnableExtendedMode)  // Уровень 2
 				RDInterface.ApplyLabelSettings (uiPages[rnmPage], "RNMAbout",
@@ -643,71 +651,86 @@ namespace RD_AAOW
 			#region Страница настроек ОФД
 
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDFindButton",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[ofdPage][cField],
-				OFDFind_Clicked, false);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find),
+				uiColors[ofdPage][cField], OFDFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDFindNextButton",
-				NextButton, uiColors[ofdPage][cField], OFDFind_Clicked, false);
+				NextButton, uiColors[ofdPage][cField], OFDFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDFindBufferButton",
-				BufferButton, uiColors[ofdPage][cField], OFDFind_Clicked, false);
+				BufferButton, uiColors[ofdPage][cField], OFDFind_Clicked);
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDINNLabel",
 				"ИНН ОФД:", RDLabelTypes.HeaderLeft);
 			ofdINN = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDINN",
-				AppSettings.OFDINN, uiColors[ofdPage][cField], Field_Clicked, true);
+				AppSettings.OFDINN, uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDNameLabel",
 				"Название:", RDLabelTypes.HeaderLeft);
 			ofdNameButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDName",
-				"- Выберите или введите ИНН -", uiColors[ofdPage][cField], OFDName_Clicked, true);
+				"- Выберите или введите ИНН -", uiColors[ofdPage][cField], OFDName_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			ofdDNSNameLabel = RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameLabel",
 				"Адрес ОФД:", RDLabelTypes.HeaderLeft);
 			ofdDNSNameButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSName",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			ofdIPButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDIP",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			ofdPortButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPort",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			ofdDNSNameField = (FlexLayout)uiPages[ofdPage].FindByName ("OFDDNSNameField");
 
 			ofdDNSNameMLabel = RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameMLabel",
 				"Адрес ИСМ:", RDLabelTypes.HeaderLeft);
 			ofdDNSNameMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSNameM",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			ofdIPMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDIPM",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			ofdPortMButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPortM",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			ofdDNSNameMField = (FlexLayout)uiPages[ofdPage].FindByName ("OFDDNSNameMField");
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDDNSNameKLabel",
 				"Адрес ОКП (стандартный):", RDLabelTypes.HeaderLeft);
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDDNSNameK", OFD.OKPSite,
-				uiColors[ofdPage][cField], Field_Clicked, true);
+				uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDIPK", OFD.OKPIP,
-				uiColors[ofdPage][cField], Field_Clicked, true);
+				uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDPortK", OFD.OKPPort,
-				uiColors[ofdPage][cField], Field_Clicked, true);
+				uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDEmailLabel",
 				"E-mail отправителя чеков:", RDLabelTypes.HeaderLeft);
 			ofdEmailButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDEmail",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDSiteLabel",
 				"Сайт ОФД:", RDLabelTypes.HeaderLeft);
 			ofdSiteButton = RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDSite",
-				"", uiColors[ofdPage][cField], Field_Clicked, true);
+				"", uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDNalogSiteLabel",
 				"Сайт ФНС:", RDLabelTypes.HeaderLeft);
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "OFDNalogSite", OFD.FNSSite,
-				uiColors[ofdPage][cField], Field_Clicked, true);
+				uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "CDNSiteLabel",
 				"CDN-площадка ЦРПТ:", RDLabelTypes.HeaderLeft);
 			RDInterface.ApplyButtonSettings (uiPages[ofdPage], "CDNSite", OFD.CDNSite,
-				uiColors[ofdPage][cField], Field_Clicked, true);
+				uiColors[ofdPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[ofdPage], "OFDHelpLabel",
 				"Нажатие кнопок копирует их подписи в буфер обмена",
@@ -724,11 +747,11 @@ namespace RD_AAOW
 			#region Страница TLV-тегов
 
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindButton",
-				"Найти тег", uiColors[tlvPage][cField], TLVFind_Clicked, false);
+				"Найти тег", uiColors[tlvPage][cField], TLVFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindNextButton",
-				NextButton, uiColors[tlvPage][cField], TLVFind_Clicked, false);
+				NextButton, uiColors[tlvPage][cField], TLVFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVFindBufferButton",
-				BufferButton, uiColors[tlvPage][cField], TLVFind_Clicked, false);
+				BufferButton, uiColors[tlvPage][cField], TLVFind_Clicked);
 
 			RDInterface.ApplyLabelSettings (uiPages[tlvPage], "TLVDescriptionLabel",
 				"Описание тега:", RDLabelTypes.HeaderLeft);
@@ -752,9 +775,9 @@ namespace RD_AAOW
 			tlvObligationLabel.TextType = TextType.Html;
 
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVParentsButton",
-				"Родительские теги", uiColors[tlvPage][cField], TLVFindFromParents_Click, false);
+				"Родительские теги", uiColors[tlvPage][cField], TLVFindFromParents_Click);
 			RDInterface.ApplyButtonSettings (uiPages[tlvPage], "TLVObligationHelpLabel",
-				TLVTags.ObligationBase, uiColors[tlvPage][cField], TLVObligationBase_Click, false);
+				TLVTags.ObligationBase, uiColors[tlvPage][cField], TLVObligationBase_Click);
 
 			TLVFind_Clicked (sampleNextButton, null);
 
@@ -763,12 +786,12 @@ namespace RD_AAOW
 			#region Страница словаря терминов
 
 			RDInterface.ApplyButtonSettings (uiPages[tdcPage], "DictionaryFindButton",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[tdcPage][cField],
-				DictionaryFind_Clicked, false);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find),
+				uiColors[tdcPage][cField], DictionaryFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[tdcPage], "DictionaryFindNextButton",
-				NextButton, uiColors[tdcPage][cField], DictionaryFind_Clicked, false);
+				NextButton, uiColors[tdcPage][cField], DictionaryFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[tdcPage], "DictionaryFindBufferButton",
-				BufferButton, uiColors[tdcPage][cField], DictionaryFind_Clicked, false);
+				BufferButton, uiColors[tdcPage][cField], DictionaryFind_Clicked);
 
 			RDInterface.ApplyLabelSettings (uiPages[tdcPage], "DictionaryDescrLabel",
 				"Описание:", RDLabelTypes.HeaderLeft);
@@ -803,9 +826,9 @@ namespace RD_AAOW
 				"", RDLabelTypes.Field, uiColors[bcdPage][cField]);
 
 			RDInterface.ApplyButtonSettings (uiPages[bcdPage], "Clear",
-				RDDefaultButtons.Delete, uiColors[bcdPage][cField], BarcodeClear_Clicked);
+				RDDefaultButtons.Cancel, uiColors[bcdPage][cField], BarcodeClear_Clicked, true);
 			RDInterface.ApplyButtonSettings (uiPages[bcdPage], "GetFromClipboard",
-				RDDefaultButtons.Copy, uiColors[bcdPage][cField], BarcodeGet_Clicked);
+				RDDefaultButtons.Copy, uiColors[bcdPage][cField], BarcodeGet_Clicked, true);
 
 			BarcodeText_TextChanged (null, null);
 
@@ -814,18 +837,18 @@ namespace RD_AAOW
 			#region Страница распиновок
 
 			RDInterface.ApplyButtonSettings (uiPages[conPage], "ConnFindButton",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[conPage][cField],
-				ConnFind_Clicked, false);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find),
+				uiColors[conPage][cField], ConnFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[conPage], "ConnFindNextButton",
-				NextButton, uiColors[conPage][cField], ConnFind_Clicked, false);
+				NextButton, uiColors[conPage][cField], ConnFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[conPage], "ConnFindBufferButton",
-				BufferButton, uiColors[conPage][cField], ConnFind_Clicked, false);
+				BufferButton, uiColors[conPage][cField], ConnFind_Clicked);
 
 			RDInterface.ApplyLabelSettings (uiPages[conPage], "CableLabel",
 				"Тип кабеля:", RDLabelTypes.HeaderLeft);
 			cableTypeButton = RDInterface.ApplyButtonSettings (uiPages[conPage], "CableTypeButton",
 				kb.Plugs.GetCablesNames ()[(int)AppSettings.CableType], uiColors[conPage][cField],
-				CableTypeButton_Clicked, true);
+				CableTypeButton_Clicked, RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[conPage], "CableDescriptionLabel",
 				"Сопоставление контактов:", RDLabelTypes.HeaderLeft);
@@ -863,11 +886,11 @@ namespace RD_AAOW
 				ConvNumber_TextChanged, true);
 
 			RDInterface.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberInc",
-				RDDefaultButtons.Increase, uiColors[cvsPage][cField], ConvNumberAdd_Click);
+				RDDefaultButtons.Increase, uiColors[cvsPage][cField], ConvNumberAdd_Click, true);
 			RDInterface.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberDec",
-				RDDefaultButtons.Decrease, uiColors[cvsPage][cField], ConvNumberAdd_Click);
+				RDDefaultButtons.Decrease, uiColors[cvsPage][cField], ConvNumberAdd_Click, true);
 			RDInterface.ApplyButtonSettings (uiPages[cvsPage], "ConvNumberClear",
-				RDDefaultButtons.Delete, uiColors[cvsPage][cField], ConvNumberClear_Click);
+				RDDefaultButtons.Cancel, uiColors[cvsPage][cField], ConvNumberClear_Click, true);
 
 			RDInterface.ApplyLabelSettings (uiPages[cvsPage], "ConvNumberResultLabel",
 				"Представление:", RDLabelTypes.HeaderLeft);
@@ -883,11 +906,11 @@ namespace RD_AAOW
 			#region Страница конвертора символов Unicode
 
 			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindButton",
-				"Найти блок", uiColors[cvuPage][cField], ConvCodeFind_Click, false);
+				"Найти блок", uiColors[cvuPage][cField], ConvCodeFind_Click);
 			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindNextButton",
-				NextButton, uiColors[cvuPage][cField], ConvCodeFind_Click, false);
+				NextButton, uiColors[cvuPage][cField], ConvCodeFind_Click);
 			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeFindBufferButton",
-				BufferButton, uiColors[cvuPage][cField], ConvCodeFind_Click, false);
+				BufferButton, uiColors[cvuPage][cField], ConvCodeFind_Click);
 
 			encodingModesCount = (uint)(DataConvertors.AvailableEncodings.Length / 2);
 
@@ -898,11 +921,11 @@ namespace RD_AAOW
 				ConvCode_TextChanged, true);
 
 			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeInc",
-				RDDefaultButtons.Increase, uiColors[cvuPage][cField], ConvCodeAdd_Click);
+				RDDefaultButtons.Increase, uiColors[cvuPage][cField], ConvCodeAdd_Click, true);
 			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeDec",
-				RDDefaultButtons.Decrease, uiColors[cvuPage][cField], ConvCodeAdd_Click);
+				RDDefaultButtons.Decrease, uiColors[cvuPage][cField], ConvCodeAdd_Click, true);
 			RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeClear",
-				RDDefaultButtons.Delete, uiColors[cvuPage][cField], ConvCodeClear_Click);
+				RDDefaultButtons.Cancel, uiColors[cvuPage][cField], ConvCodeClear_Click, true);
 
 			RDInterface.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeResultLabel",
 				"Символ Unicode:", RDLabelTypes.HeaderLeft);
@@ -911,8 +934,9 @@ namespace RD_AAOW
 			RDInterface.ApplyLabelSettings (uiPages[cvuPage], "ConvCodeDescrLabel",
 				"Описание символа:", RDLabelTypes.HeaderLeft);
 
-			convCodeSymbolField = RDInterface.ApplyButtonSettings (uiPages[cvuPage], "ConvCodeSymbolField",
-				" ", uiColors[cvuPage][cField], CopyCharacter_Click, true);
+			convCodeSymbolField = RDInterface.ApplyButtonSettings (uiPages[cvuPage],
+				"ConvCodeSymbolField", " ", uiColors[cvuPage][cField], CopyCharacter_Click,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			convCodeSymbolField.FontSize *= 5;
 			ConvCode_TextChanged (null, null);
 
@@ -931,11 +955,11 @@ namespace RD_AAOW
 			convHexField.HorizontalOptions = LayoutOptions.Fill;
 
 			RDInterface.ApplyButtonSettings (uiPages[cvhPage], "HexToTextButton",
-				RDDefaultButtons.Down, uiColors[cvhPage][cField], ConvertHexToText_Click);
+				RDDefaultButtons.Down, uiColors[cvhPage][cField], ConvertHexToText_Click, true);
 			RDInterface.ApplyButtonSettings (uiPages[cvhPage], "TextToHexButton",
-				RDDefaultButtons.Up, uiColors[cvhPage][cField], ConvertTextToHex_Click);
+				RDDefaultButtons.Up, uiColors[cvhPage][cField], ConvertTextToHex_Click, true);
 			RDInterface.ApplyButtonSettings (uiPages[cvhPage], "ClearButton",
-				RDDefaultButtons.Delete, uiColors[cvhPage][cField], ClearConvertText_Click);
+				RDDefaultButtons.Cancel, uiColors[cvhPage][cField], ClearConvertText_Click, true);
 
 			RDInterface.ApplyLabelSettings (uiPages[cvhPage], "TextLabel",
 				"Данные (текст):", RDLabelTypes.HeaderLeft);
@@ -945,8 +969,9 @@ namespace RD_AAOW
 
 			RDInterface.ApplyLabelSettings (uiPages[cvhPage], "EncodingLabel",
 				"Кодировка:", RDLabelTypes.HeaderLeft);
-			encodingButton = RDInterface.ApplyButtonSettings (uiPages[cvhPage], "EncodingButton",
-				" ", uiColors[cvhPage][cField], EncodingButton_Clicked, true);
+			encodingButton = RDInterface.ApplyButtonSettings (uiPages[cvhPage],
+				"EncodingButton", " ", uiColors[cvhPage][cField], EncodingButton_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 			EncodingButton_Clicked (null, null);
 
 			#endregion
@@ -954,37 +979,41 @@ namespace RD_AAOW
 			#region Страница команд нижнего уровня
 
 			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindButton",
-				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find), uiColors[llvPage][cField],
-				LowLevelFind_Clicked, false);
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Find),
+				uiColors[llvPage][cField], LowLevelFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindNextButton",
-				NextButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
+				NextButton, uiColors[llvPage][cField], LowLevelFind_Clicked);
 			RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandFindBufferButton",
-				BufferButton, uiColors[llvPage][cField], LowLevelFind_Clicked, false);
+				BufferButton, uiColors[llvPage][cField], LowLevelFind_Clicked);
 
 			RDInterface.ApplyLabelSettings (uiPages[llvPage], "ProtocolLabel",
 				"Протокол:", RDLabelTypes.HeaderLeft);
 			lowLevelProtocol = RDInterface.ApplyButtonSettings (uiPages[llvPage], "ProtocolButton",
 				kb.LLCommands.GetProtocolsNames ()[(int)AppSettings.LowLevelProtocol],
-				uiColors[llvPage][cField], LowLevelProtocol_Clicked, true);
+				uiColors[llvPage][cField], LowLevelProtocol_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandLabel",
 				"Команда:", RDLabelTypes.HeaderLeft);
 			lowLevelCommand = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandButton",
 				kb.LLCommands.GetCommandsList (AppSettings.LowLevelProtocol)[(int)AppSettings.LowLevelCode],
-				uiColors[llvPage][cField], LowLevelCommandCodeButton_Clicked, true);
+				uiColors[llvPage][cField], LowLevelCommandCodeButton_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandCodeLabel",
 				"Код команды:", RDLabelTypes.HeaderLeft);
+			string[] llValues = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode);
 			lowLevelCommandCode = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandCodeButton",
-				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, false),
-				uiColors[llvPage][cField], Field_Clicked, true);
+				/*kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, false),*/
+				llValues[0], uiColors[llvPage][cField], Field_Clicked,
+				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
 			RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescrLabel",
 				"Пояснение:", RDLabelTypes.HeaderLeft);
 
 			lowLevelCommandDescr = RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescr",
-				kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true),
-				RDLabelTypes.Field, uiColors[llvPage][cField]);
+				/*kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true),*/
+				llValues[1], RDLabelTypes.Field, uiColors[llvPage][cField]);
 
 			RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
 				"Нажатие кнопки копирует команду в буфер обмена",
@@ -1009,7 +1038,7 @@ namespace RD_AAOW
 				return page;
 
 			Button b = new Button ();
-			RDInterface.ApplyButtonDefaults (b);
+			RDInterface.ApplyButtonDefaults (b, true);
 
 			b.Text = PageTitle;
 			b.BackgroundColor = PageBackColor;
@@ -1149,14 +1178,19 @@ namespace RD_AAOW
 		private async void ErrorFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.ErrorCode, "Введите код ошибки или фрагмент её текста", AppSettings.ErrorCodeMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search.IsCancelled)
 				return;
 
-			AppSettings.ErrorCode = search[0];
+			/*AppSettings.ErrorCode = search[0];
 			errorsResultText.Text = kb.Errors.FindNext (AppSettings.KKTForErrors,
-				search[0], search[1] == "I");
+				search[0], search[1] == "I");*/
+			AppSettings.ErrorCode = search.SearchLine;
+			errorsResultText.Text = kb.Errors.FindNext (AppSettings.KKTForErrors,
+				search.SearchLine, search.OffsetShouldBeIncreased);
 			}
 
 		#endregion
@@ -1252,15 +1286,19 @@ namespace RD_AAOW
 		private async void DictionaryFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.DictionarySearch, "Введите термин или его сокращение",
 				AppSettings.DictionarySearchMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (search .IsCancelled)
 				return;
 
 			// Поиск
-			AppSettings.DictionarySearch = search[0];
-			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");
+			/*AppSettings.DictionarySearch = search[0];
+			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");*/
+			AppSettings.DictionarySearch = search.SearchLine;
+			string res = kb.Dictionary.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 
 			int idx = res.IndexOf ('\x1');
 			if (idx < 0)
@@ -1290,7 +1328,7 @@ namespace RD_AAOW
 			for (int i = 0; i < links.Count; i++)
 				{
 				Button b = new Button ();
-				RDInterface.ApplyButtonDefaults (b);
+				RDInterface.ApplyButtonDefaults (b, true);
 
 				b.BackgroundColor = uiColors[tdcPage][cField];
 				b.Margin = new Thickness (3);
@@ -1315,28 +1353,31 @@ namespace RD_AAOW
 		private async void FNLifeFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var searchRes = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.FNSerial, "Введите заводской номер ФН или название модели",
 				AppSettings.FNSerialMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")*/
+			if (searchRes.IsCancelled)
 				return;
 
 			// Подмена названия сигнатурой ЗН
-			string sig = kb.FNNumbers.FindSignatureByName (search[0]);
+			string search = searchRes.SearchLine;
+			string sig = kb.FNNumbers.FindSignatureByName (search);
 			if (!string.IsNullOrWhiteSpace (sig))
-				search[0] = sig;
+				search = sig;
 
-			AppSettings.FNSerial = search[0];
+			AppSettings.FNSerial = search;
 
 			// Поиск
-			if (!string.IsNullOrWhiteSpace (search[0]))
-				fnLifeModelLabel.Text = kb.FNNumbers.GetFNName (search[0]);
+			if (!string.IsNullOrWhiteSpace (search))
+				fnLifeModelLabel.Text = kb.FNNumbers.GetFNName (search);
 			else
 				fnLifeModelLabel.Text = "(модель ФН не задана)";
 
 			// Определение длины ключа
-			fnLife13.IsToggled = !kb.FNNumbers.IsNotFor36Months (search[0]);
-			fnLife13.IsVisible = !kb.FNNumbers.IsFNKnown (search[0]);
+			fnLife13.IsToggled = !kb.FNNumbers.IsNotFor36Months (search);
+			fnLife13.IsVisible = !kb.FNNumbers.IsFNKnown (search);
 
 			// Принудительное изменение
 			FnLife13_Toggled (null, null);
@@ -1406,15 +1447,6 @@ namespace RD_AAOW
 
 					fnLifeMessage = FNSerial.FNIsAcceptableMessage;
 					break;
-
-				/*case FNLifeStatus.StronglyUnwelcome:
-					fnLifeStatus.BackgroundColor = fnLifeDate.BackgroundColor =
-						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionMessage);
-					fnLifeStatus.TextColor = fnLifeDate.TextColor =
-						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
-
-					fnLifeMessage = FNSerial.FNIsStronglyUnwelcomeMessage;
-					break;*/
 				}
 
 			if (kb.FNNumbers.IsFNKnown (AppSettings.FNSerial))
@@ -1427,7 +1459,6 @@ namespace RD_AAOW
 						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
 					// 7.7: сообщение об отсутствии в реестре важнее остальных
-					/*fnLifeMessage += (RDLocale.RN + FNSerial.FNIsNotAllowedMessage);*/
 					fnLifeMessage = FNSerial.FNIsNotAllowedMessage;
 
 					fnLifeModelLabel.BackgroundColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
@@ -1534,22 +1565,27 @@ namespace RD_AAOW
 		private async void RNMSerial_Search (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var searchRes = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.KKTSerial, "Введите заводской номер ККТ или название модели",
 				kb.KKTNumbers.MaxSerialNumberLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")
 				return;
-			AppSettings.KKTSerial = search[0];
+			AppSettings.KKTSerial = search[0];*/
+			if (searchRes.IsCancelled)
+				return;
+			AppSettings.KKTSerial = searchRes.SearchLine;
 
 			// Подмена названия сигнатурой ЗН
-			string sig = kb.KKTNumbers.FindSignatureByName (search[0], search[1] == "I");
+			string search = searchRes.SearchLine;
+			string sig = kb.KKTNumbers.FindSignatureByName (search, searchRes.OffsetShouldBeIncreased);
 			if (!string.IsNullOrWhiteSpace (sig))
-				search[0] = sig;
+				search = sig;
 
 			// Заводской номер ККТ
-			if (!string.IsNullOrWhiteSpace (search[0]))
+			if (!string.IsNullOrWhiteSpace (search))
 				{
-				string s = kb.KKTNumbers.GetKKTModel (search[0]);
+				string s = kb.KKTNumbers.GetKKTModel (search);
 				if (kb.KKTNumbers.LastKKTSearchResult)
 					s = kb.KKTNumbers.GetKKTDescription ();
 
@@ -1706,15 +1742,22 @@ namespace RD_AAOW
 		private async void OFDFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.OFDSearch, "Введите ИНН ОФД или фрагмент его названия",
 				AppSettings.OFDSearchMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")
 				return;
 
 			AppSettings.OFDSearch = search[0];
 
-			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");
+			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");*/
+			if (search.IsCancelled)
+				return;
+
+			AppSettings.OFDSearch = search.SearchLine;
+
+			int idx = kb.Ofd.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 			if (idx < 0)
 				{
 				RDInterface.ShowBalloon ("По указанному запросу ОФД не найден", true);
@@ -1889,16 +1932,24 @@ namespace RD_AAOW
 		private async void TLVFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.TLVData, "Введите номер TLV-тега или фрагмент его описания",
 				AppSettings.TLVDataMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")
 				return;
 
 			AppSettings.TLVData = search[0];
 
 			// Заполнение
-			if (kb.Tags.FindTag (search[0]))
+			if (kb.Tags.FindTag (search[0]))*/
+			if (search.IsCancelled)
+				return;
+
+			AppSettings.TLVData = search.SearchLine;
+
+			// Заполнение
+			if (kb.Tags.FindTag (search.SearchLine))
 				{
 				tlvDescriptionLabel.Text = kb.Tags.LastDescription;
 				tlvTypeLabel.Text = kb.Tags.LastType;
@@ -2025,14 +2076,20 @@ namespace RD_AAOW
 		private async void ConnFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.CableSearch, "Введите тип или назначение распиновки",
 				AppSettings.CableSearchMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")
 				return;
 
 			AppSettings.CableSearch = search[0];
-			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");
+			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");*/
+			if (search.IsCancelled)
+				return;
+
+			AppSettings.CableSearch = search.SearchLine;
+			int idx = kb.Plugs.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 			if (idx < 0)
 				{
 				RDInterface.ShowBalloon ("По указанному запросу распиновка не найдена", true);
@@ -2122,15 +2179,22 @@ namespace RD_AAOW
 		private async void ConvCodeFind_Click (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.ConversionCodeSearch, "Введите название или часть названия блока символов Unicode",
 				AppSettings.ConversionCodeSearchMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")
 				return;
 
 			AppSettings.ConversionCodeSearch = search[0];
 
-			ulong left = kb.Unicodes.FindRange (search[0]);
+			ulong left = kb.Unicodes.FindRange (search[0]);*/
+			if (search.IsCancelled)
+				return;
+
+			AppSettings.ConversionCodeSearch = search.SearchLine;
+
+			ulong left = kb.Unicodes.FindRange (search.SearchLine);
 			if (left != 0)
 				{
 				string[] res = DataConvertors.GetSymbolDescription ("\x0", (long)left, kb.Unicodes);
@@ -2204,8 +2268,11 @@ namespace RD_AAOW
 				AppSettings.LowLevelCode = (uint)res;
 				lowLevelCommand.Text = list[res];
 
-				lowLevelCommandCode.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, false);
-				lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, true);
+				string[] values = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res);
+				/*lowLevelCommandCode.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, false);
+				lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, true);*/
+				lowLevelCommandCode.Text = values[0];
+				lowLevelCommandDescr.Text = values[1];
 				}
 
 			list.Clear ();
@@ -2235,14 +2302,21 @@ namespace RD_AAOW
 		private async void LowLevelFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			string[] search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
+			/*string[]*/
+			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
 				AppSettings.LowLevelSearchMaxLength);
-			if (search[1] == "C")
+			/*if (search[1] == "C")
 				return;
 
 			AppSettings.LowLevelSearch = search[0];
-			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");
+			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");*/
+			if (search.IsCancelled)
+				return;
+
+			AppSettings.LowLevelSearch = search.SearchLine;
+			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search.SearchLine,
+				search.OffsetShouldBeIncreased);
 			if (idx < 0)
 				{
 				RDInterface.ShowBalloon ("По указанному запросу команда не найдена", true);

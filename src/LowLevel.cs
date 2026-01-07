@@ -79,15 +79,19 @@ namespace RD_AAOW
 		/// Метод возвращает содержимое команды
 		/// </summary>
 		/// <param name="CommandNumber">Номер команды из списка</param>
-		/// <param name="ReturnDescription">Флаг указывает на возврат описания вместо команды</param>
 		/// <param name="ArrayNumber">Номер списка команд</param>
-		public string GetCommand (uint ArrayNumber, uint CommandNumber, bool ReturnDescription)
+		/// <returns>Возвращает массив и двух строк – команды и её описания</returns>
+		public string[] GetCommand (uint ArrayNumber, uint CommandNumber)
 			{
 			if ((ArrayNumber >= names.Count) || (CommandNumber >= names[(int)ArrayNumber].Count))
-				return "";
+				return null;
 
-			return (ReturnDescription ? descriptions[(int)ArrayNumber][(int)CommandNumber] :
-				commands[(int)ArrayNumber][(int)CommandNumber]);
+			/*return (ReturnDescription ? descriptions[(int)ArrayNumber][(int)CommandNumber] :
+				commands[(int)ArrayNumber][(int)CommandNumber]);*/
+			return [
+				commands[(int)ArrayNumber][(int)CommandNumber],
+				descriptions[(int)ArrayNumber][(int)CommandNumber],
+				];
 			}
 
 		/// <summary>

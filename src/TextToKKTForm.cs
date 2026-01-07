@@ -42,8 +42,8 @@ namespace RD_AAOW
 		private bool closeWindowOnError = false;
 		private bool closeWindowOnRequest = false;
 
-		private EventWaitHandle ewhTB, ewhFS, ewhEC;
-		private bool ewhTBIsActive = true;
+		private EventWaitHandle ewhPR, ewhFS, ewhEC;
+		private bool ewhPRIsActive = true;
 		private bool ewhFSIsActive = true;
 		private bool ewhECIsActive = true;
 
@@ -65,19 +65,16 @@ namespace RD_AAOW
 
 			try
 				{
-				ewhTB = new EventWaitHandle (false, EventResetMode.AutoReset,
-					/*KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "TB");*/
+				ewhPR = new EventWaitHandle (false, EventResetMode.AutoReset,
 					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName +
-					KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias);
+					KassArrayDB::RD_AAOW.ProgramDescription.KassArrayPRAlias);
 				}
 			catch
 				{
-				ewhTBIsActive = false;
+				ewhPRIsActive = false;
 				}
 			try
 				{
-				/*ewhFN = new EventWaitHandle (false, EventResetMode.AutoReset,
-					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName + "F N");*/
 				ewhFS = new EventWaitHandle (false, EventResetMode.AutoReset,
 					KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName +
 					KassArrayDB::RD_AAOW.ProgramDescription.KassArrayFSAlias);
@@ -507,11 +504,6 @@ namespace RD_AAOW
 			{
 			// Отправка "сообщения" окну модуля работы с ФН
 			bool problem;
-			/*if (FN)
-				problem = ewhFNIsActive ? ewhFN.WaitOne (100) : true;
-			else
-				problem = ewhTBIsActive ? ewhTB.WaitOne (100) : true;*/
-
 			switch (Index)
 				{
 				case 0:
@@ -520,7 +512,7 @@ namespace RD_AAOW
 					break;
 
 				case 1:
-					problem = ewhTBIsActive ? ewhTB.WaitOne (100) : true;
+					problem = ewhPRIsActive ? ewhPR.WaitOne (100) : true;
 					break;
 
 				case 2:
@@ -531,10 +523,6 @@ namespace RD_AAOW
 			string proc = KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName;
 			if (!problem)
 				{
-				/*if (FN)
-					ewhFN.Set ();
-				else
-					ewhTB.Set ();*/
 				switch (Index)
 					{
 					case 0:
@@ -544,8 +532,8 @@ namespace RD_AAOW
 						break;
 
 					case 1:
-						ewhTB.Set ();
-						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayTBAlias;
+						ewhPR.Set ();
+						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayPRAlias;
 						break;
 
 					case 2:
@@ -557,7 +545,6 @@ namespace RD_AAOW
 
 			// Контроль на завершение предыдущих процессов
 			bool res;
-			/*string proc = ProgramDescription.AssemblyMainName + (FN ? "F N" : "TB");*/
 			if (!problem)
 				{
 				// Тихо
@@ -797,17 +784,13 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.ErrorCode, "Введите код ошибки или фрагмент её текста", AppSettings.ErrorCodeMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.ErrorCode = search[0];
-			ErrorText.Text = kb.Errors.FindNext ((uint)KKTListForErrors.SelectedIndex, search[0], search[1] == "I");*/
 			AppSettings.ErrorCode = search.SearchLine;
 			ErrorText.Text = kb.Errors.FindNext ((uint)KKTListForErrors.SelectedIndex, search.SearchLine,
 				search.OffsetShouldBeIncreased);
@@ -1760,10 +1743,14 @@ namespace RD_AAOW
 		// Выбор команды
 		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			LowLevelCommandCode.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+			/*LowLevelCommandCode.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
 				(uint)LowLevelCommand.SelectedIndex, false);
 			LowLevelCommandDescr.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
-				(uint)LowLevelCommand.SelectedIndex, true);
+				(uint)LowLevelCommand.SelectedIndex, true);*/
+			string[] values = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
+				(uint)LowLevelCommand.SelectedIndex);
+			LowLevelCommandCode.Text = values[0];
+			LowLevelCommandDescr.Text = values[1];
 			}
 
 		// Поиск команды
@@ -1785,7 +1772,7 @@ namespace RD_AAOW
 			/*AppSettings.LowLevelSearch = search[0];
 			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");*/
 			AppSettings.LowLevelSearch = search.SearchLine;
-			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search.SearchLine,
+			int idx = kb.LLCommands.FindNext ((uint)LowLevelProtocol.SelectedIndex, search.SearchLine,
 				search.OffsetShouldBeIncreased);
 			if (idx < 0)
 				{

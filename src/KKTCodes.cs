@@ -20,7 +20,7 @@ namespace RD_AAOW
 		public const string EmptyCode = "xxx";
 
 		// Разделители
-		private char[] splitters = [ '\n', '\t' ];
+		private char[] splitters = ['\n', '\t'];
 
 		/// <summary>
 		/// Конструктор. Инициализирует таблицы кодов
