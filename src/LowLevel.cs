@@ -86,8 +86,6 @@ namespace RD_AAOW
 			if ((ArrayNumber >= names.Count) || (CommandNumber >= names[(int)ArrayNumber].Count))
 				return null;
 
-			/*return (ReturnDescription ? descriptions[(int)ArrayNumber][(int)CommandNumber] :
-				commands[(int)ArrayNumber][(int)CommandNumber]);*/
 			return [
 				commands[(int)ArrayNumber][(int)CommandNumber],
 				descriptions[(int)ArrayNumber][(int)CommandNumber],

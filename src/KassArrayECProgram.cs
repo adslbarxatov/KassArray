@@ -67,7 +67,16 @@ namespace RD_AAOW
 				}
 
 			// Запуск
-			Application.Run (new KassArrayECForm ());
+			if (args.Length > 0)
+				{
+				if (args[0] == "-a")
+					{
+					Application.Run (new KassArrayECForm (true));
+					return;
+					}
+				}
+
+			Application.Run (new KassArrayECForm (false));
 			}
 		}
 	}

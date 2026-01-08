@@ -805,20 +805,15 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var searchRes = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.FNSerial, "Введите заводской номер ФН или название модели",
 				AppSettings.FNSerialMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (searchRes.IsCancelled)
 				return;
 
 			// Подмена названия сигнатурой ЗН
-			/*string sig = kb.FNNumbers.FindSignatureByName (search[0]);
-			if (!string.IsNullOrWhiteSpace (sig))
-				search[0] = sig;*/
 			string search = searchRes.SearchLine;
 			string sig = kb.FNNumbers.FindSignatureByName (search);
 			if (!string.IsNullOrWhiteSpace (sig))
@@ -894,12 +889,6 @@ namespace RD_AAOW
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsAcceptableMessage;
 					fnLifeMessageColor = RDMessageFlags.Success;
 					break;
-
-				/*case KassArrayDB::RD_AAOW.FNLifeStatus.StronglyUnwelcome:
-					FNLifeDate.ForeColor = FNLifeStatus.ForeColor =
-						RDInterface.GetInterfaceColor (RDInterfaceColors.QuestionText);
-					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsStronglyUnwelcomeMessage;
-					break;*/
 				}
 
 			if (kb.FNNumbers.IsFNKnown (AppSettings.FNSerial))
@@ -910,7 +899,6 @@ namespace RD_AAOW
 						RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorText);
 
 					// 7.7: переопределение предыдущих сообщений в связи с большей важностью исключения из реестра
-					/*fnLifeMessage += (RDLocale.RN + KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage);*/
 					fnLifeMessage = KassArrayDB::RD_AAOW.FNSerial.FNIsNotAllowedMessage;
 					FNLifeName.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					}
@@ -1024,15 +1012,11 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var searchRes = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.KKTSerial, "Введите заводской номер ККТ или название модели",
 				kb.KKTNumbers.MaxSerialNumberLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")
-				return;
-			AppSettings.KKTSerial = search[0];*/
 			if (searchRes.IsCancelled)
 				return;
 			AppSettings.KKTSerial = searchRes.SearchLine;

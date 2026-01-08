@@ -14,6 +14,7 @@ namespace RD_AAOW
 		// Переменные и константы
 		private KassArrayDB::RD_AAOW.KnowledgeBase kb;
 		private bool closeWindowOnError = false;
+		private bool getValuesFromRegistration;
 
 		// Ресивер сообщений на повторное открытие окна
 		private EventWaitHandle ewh;
@@ -24,7 +25,9 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
-		public KassArrayECForm ()
+		/// <param name="GetValuesFromRegistration">Флаг командной строки, указывающий на необходимость
+		/// получения параметров ККТ из статуса ФН</param>
+		public KassArrayECForm (bool GetValuesFromRegistration)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -38,6 +41,7 @@ namespace RD_AAOW
 				return;
 				}
 
+			getValuesFromRegistration = GetValuesFromRegistration;
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
 
 			this.Text = RDGenerics.DefaultAssemblyVisibleName;
@@ -65,8 +69,21 @@ namespace RD_AAOW
 
 		private void KassArrayECForm_Shown (object sender, EventArgs e)
 			{
+			// Прерывание при ошибке
 			if (closeWindowOnError)
+				{
 				this.Close ();
+				return;
+				}
+
+			// Запуск переданных реквизитов на редактирование
+			if (getValuesFromRegistration)
+				{
+				KassArrayECEntry kaec = new KassArrayECEntry (kl, true);
+				if (!kaec.Cancelled)
+					ReloadList ();
+				kaec.Dispose ();
+				}
 			}
 
 		// Закрытие окна
@@ -125,11 +142,23 @@ namespace RD_AAOW
 
 			// Сброс списка
 			KKTList.Items.Clear ();
+			uint warnings = 0;
 			for (uint i = 0; i < kl.ItemsCount; i++)
 				{
 				string[] values = kl.GetRequisites (i);
 				string model = kb.KKTNumbers.GetKKTModel (values[0]);
-				KKTList.Items.Add (model + " | " + values[1]);
+				string warning;
+				if ((kl.GetDaysToFNExpiration (i) < 14) || (kl.GetDaysToOFDExpiration (i) < 14))
+					{
+					warning = "!  ";
+					warnings++;
+					}
+				else
+					{
+					warning = "";
+					}
+
+				KKTList.Items.Add (warning + model + "  |  " + values[1]);
 				}
 
 			// Восстановление позиции
@@ -143,7 +172,10 @@ namespace RD_AAOW
 
 			// Прочее
 			CountLabel.Text = "Отслеживается касс: " + kl.ItemsCount.ToString () +
-				"; число владельцев: " + kl.OwnersCount.ToString ();
+				"  |  Число владельцев: " + kl.OwnersCount.ToString () + RDLocale.RN +
+				"Предупреждений: " + warnings.ToString ();
+			CountLabel.BackColor = RDInterface.GetInterfaceColor ((warnings > 0) ? RDInterfaceColors.WarningMessage :
+				RDInterfaceColors.SuccessMessage);
 			}
 
 		// Выбор ККТ в списке
@@ -185,7 +217,7 @@ namespace RD_AAOW
 		// Добавление новой ККТ
 		private void BAddNew_Click (object sender, EventArgs e)
 			{
-			KassArrayECEntry kaec = new KassArrayECEntry (kl);
+			KassArrayECEntry kaec = new KassArrayECEntry (kl, false);
 			if (!kaec.Cancelled)
 				ReloadList ();
 			kaec.Dispose ();
