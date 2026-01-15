@@ -1179,18 +1179,14 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.OFDSearch, "Введите ИНН ОФД или фрагмент его названия",
 				AppSettings.OFDSearchMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.OFDSearch = search[0];
-			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");*/
 			AppSettings.OFDSearch = search.SearchLine;
 			int idx = kb.Ofd.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 			if (idx < 0)
@@ -1208,18 +1204,14 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.DictionarySearch, "Введите термин или его сокращение",
 				AppSettings.DictionarySearchMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.DictionarySearch = search[0];
-			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");*/
 			AppSettings.DictionarySearch = search.SearchLine;
 			string res = kb.Dictionary.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 
@@ -1402,19 +1394,14 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.TLVData, "Введите номер TLV-тега или фрагмент его описания",
 				AppSettings.TLVDataMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.TLVData = search[0];
-
-			if (kb.Tags.FindTag (search[0]))*/
 			AppSettings.TLVData = search.SearchLine;
 
 			if (kb.Tags.FindTag (search.SearchLine))
@@ -1537,19 +1524,14 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.CableSearch, "Введите тип или назначение распиновки",
 				AppSettings.CableSearchMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.CableSearch = search[0];
-
-			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");*/
 			AppSettings.CableSearch = search.SearchLine;
 
 			int idx = kb.Plugs.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
@@ -1667,18 +1649,14 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.ConversionCodeSearch, "Введите название или часть названия блока символов Unicode",
 				AppSettings.ConversionCodeSearchMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.ConversionCodeSearch = search[0];
-			ulong left = kb.Unicodes.FindRange (search[0]);*/
 			AppSettings.ConversionCodeSearch = search.SearchLine;
 			ulong left = kb.Unicodes.FindRange (search.SearchLine);
 			if (left != 0)
@@ -1727,10 +1705,6 @@ namespace RD_AAOW
 		// Выбор команды
 		private void LowLevelCommand_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			/*LowLevelCommandCode.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
-				(uint)LowLevelCommand.SelectedIndex, false);
-			LowLevelCommandDescr.Text = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
-				(uint)LowLevelCommand.SelectedIndex, true);*/
 			string[] values = kb.LLCommands.GetCommand ((uint)LowLevelProtocol.SelectedIndex,
 				(uint)LowLevelCommand.SelectedIndex);
 			LowLevelCommandCode.Text = values[0];
@@ -1743,18 +1717,14 @@ namespace RD_AAOW
 			{
 			// Определение запроса
 			TMSet (false);
-			/*string[]*/
 			var search = KassArrayDB::RD_AAOW.KKTSupport.ObtainSearchCriteria (((Button)sender).Name,
 				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
 				AppSettings.LowLevelSearchMaxLength);
 			TMSet (true);
 
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.LowLevelSearch = search[0];
-			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");*/
 			AppSettings.LowLevelSearch = search.SearchLine;
 			int idx = kb.LLCommands.FindNext ((uint)LowLevelProtocol.SelectedIndex, search.SearchLine,
 				search.OffsetShouldBeIncreased);

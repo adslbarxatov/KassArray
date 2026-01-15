@@ -45,8 +45,8 @@ namespace RD_AAOW
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
 
 			this.Text = RDGenerics.DefaultAssemblyVisibleName;
-			BExit.Text = RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit);
-			BHelp.Text = RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout);
+			/*BExit.Text = RDLocale.GetDefaultText (RDLDefaultTexts.Button_Exit);
+			BAppAbout.Text = RDLocale.GetDefaultText (RDLDefaultTexts.Control_AppAbout);*/
 			TipLabel.Text = "ККТ в списке отсортированы по порядку истечения сроков жизни ФН, начиная с тех, " +
 				"замена которых потребуется раньше всех (относительно текущей даты)";
 
@@ -87,7 +87,7 @@ namespace RD_AAOW
 			}
 
 		// Закрытие окна
-		private void BExit_Click (object sender, EventArgs e)
+		private void MExit_Click (object sender, EventArgs e)
 			{
 			this.Close ();
 			}
@@ -102,7 +102,7 @@ namespace RD_AAOW
 			}
 
 		// Отображение справки
-		private void BHelp_Clicked (object sender, EventArgs e)
+		private void MHelp_Clicked (object sender, EventArgs e)
 			{
 			RDInterface.ShowAbout (false);
 			}
@@ -148,7 +148,9 @@ namespace RD_AAOW
 				string[] values = kl.GetRequisites (i);
 				string model = kb.KKTNumbers.GetKKTModel (values[0]);
 				string warning;
-				if ((kl.GetDaysToFNExpiration (i) < 14) || (kl.GetDaysToOFDExpiration (i) < 14))
+				uint yellowTs = KassArrayECSettings.YellowWarningThreshold;
+
+				if ((kl.GetDaysToFNExpiration (i) < yellowTs) || (kl.GetDaysToOFDExpiration (i) < yellowTs))
 					{
 					warning = "!  ";
 					warnings++;
@@ -198,7 +200,8 @@ namespace RD_AAOW
 			InfoLabel.Text += "Срок действия ФН: " + values[4] + RDLocale.RN;
 			InfoLabel.Text += "  Осталось дней: " + values[5] + RDLocale.RN;
 
-			if (values[6] != "-")
+			/*if (values[6] != "- ")*/
+			if (values[6] != KAECList.NoOFDAlias)
 				{
 				InfoLabel.Text += "Срок тарифа ОФД: " + values[6] + RDLocale.RN;
 				InfoLabel.Text += "  Осталось дней: " + values[7];
@@ -206,9 +209,12 @@ namespace RD_AAOW
 
 			int fnDays = kl.GetDaysToFNExpiration (idx);
 			int ofdDays = kl.GetDaysToOFDExpiration (idx);
-			if ((fnDays < 7) || (ofdDays < 7))
+			uint yellowTs = KassArrayECSettings.YellowWarningThreshold;
+			uint redTs = KassArrayECSettings.RedWarningThreshold;
+
+			if ((fnDays < redTs) || (ofdDays < redTs))
 				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
-			else if ((fnDays < 14) || (ofdDays < 14))
+			else if ((fnDays < yellowTs) || (ofdDays < yellowTs))
 				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.WarningMessage);
 			else
 				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
@@ -325,6 +331,31 @@ namespace RD_AAOW
 
 			kl.UpdateContact (idx, newContact);
 			KKTList_SelectedIndexChanged (null, null);
+			}
+
+		// Вызов настроек
+		private void MSettings_Click (object sender, EventArgs e)
+			{
+			_ = new KassArrayECSettings ();
+			ReloadList ();
+			}
+
+		// Экспорт данных
+		private void MExport_Click (object sender, EventArgs e)
+			{
+			if (kl.ItemsCount < 1)
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Нет сведений для экспорта", 1000);
+				return;
+				}
+
+			int idx = KKTList.SelectedIndex;
+			if (idx < 0)
+				idx = 0;
+
+			string[] values = kl.GetRequisites ((uint)idx);
+			_ = new KassArrayECExport (kl, values[1], kb);
 			}
 		}
 	}
