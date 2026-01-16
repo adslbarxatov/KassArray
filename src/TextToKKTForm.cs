@@ -34,10 +34,10 @@ namespace RD_AAOW
 		// Пересчитанная ширина логотипа для руководств пользователя
 		private int manualLogoWidth = 1200;
 
-		/// <summary>
+		/*/// <summary>
 		/// Ключ командной строки, используемый при автозапуске для скрытия главного окна приложения
 		/// </summary>
-		public const string HideWindowKey = "-h";
+		public const string HideWindowKey = "-h";*/
 		private bool hideWindow = false;
 		private bool closeWindowOnError = false;
 		private bool closeWindowOnRequest = false;
@@ -52,8 +52,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
-		/// <param name="Flags">Флаги запуска приложения</param>
-		public TextToKKTForm (string Flags)
+		public TextToKKTForm (/*string Flags*/ bool HideWindow)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -61,7 +60,8 @@ namespace RD_AAOW
 				RDLocale.CurrentLanguage = RDLanguages.ru_ru;
 
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
-			hideWindow = (Flags == HideWindowKey);
+			/*hideWindow = (Flags == KassArrayDB::RD_AAOW.KKTSupport.HideWindowKey);*/
+			hideWindow = HideWindow;
 
 			try
 				{
@@ -188,7 +188,8 @@ namespace RD_AAOW
 				}
 
 			// Настройка контролов
-			OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;
+			/*OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;*/
+			OverrideCloseButton.Checked = KassArrayDB::RD_AAOW.KKTSupport.OverrideCloseButton;
 
 			KKTListForCodes.Items.AddRange (kb.CodeTables.GetKKTTypeNames ().ToArray ());
 			KKTListForCodes.SelectedIndex = 0;
@@ -416,7 +417,7 @@ namespace RD_AAOW
 			if (closeWindowOnError)
 				return;
 
-			if (AppSettings.OverrideCloseButton && !closeWindowOnRequest)
+			if (KassArrayDB::RD_AAOW.KKTSupport.OverrideCloseButton && !closeWindowOnRequest)
 				{
 				e.Cancel = true;
 				BExit_Click (null, null);
@@ -504,23 +505,28 @@ namespace RD_AAOW
 			{
 			// Отправка "сообщения" окну модуля работы с ФН
 			bool problem;
+			string proc = KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName;
+
 			switch (Index)
 				{
 				case 0:
 				default:
 					problem = ewhFSIsActive ? ewhFS.WaitOne (100) : true;
+					proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayFSAlias;
 					break;
 
 				case 1:
 					problem = ewhPRIsActive ? ewhPR.WaitOne (100) : true;
+					proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayPRAlias;
 					break;
 
 				case 2:
 					problem = ewhECIsActive ? ewhEC.WaitOne (100) : true;
+					proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayECAlias;
 					break;
 				}
 
-			string proc = KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName;
+			/*string proc = KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName;*/
 			if (!problem)
 				{
 				switch (Index)
@@ -528,17 +534,17 @@ namespace RD_AAOW
 					case 0:
 					default:
 						ewhFS.Set ();
-						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayFSAlias;
+						/*proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayFSAlias;*/
 						break;
 
 					case 1:
 						ewhPR.Set ();
-						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayPRAlias;
+						/*proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayPRAlias;*/
 						break;
 
 					case 2:
 						ewhEC.Set ();
-						proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayECAlias;
+						/*proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayECAlias;*/
 						break;
 					}
 				}
@@ -695,7 +701,7 @@ namespace RD_AAOW
 		// Включение / выключение отдельной кнопки сворачивания
 		private void OverrideCloseButton_CheckedChanged (object sender, EventArgs e)
 			{
-			AppSettings.OverrideCloseButton = OverrideCloseButton.Checked;
+			KassArrayDB::RD_AAOW.KKTSupport.OverrideCloseButton = OverrideCloseButton.Checked;
 			}
 
 		// Выбор текущей страницы

@@ -71,12 +71,17 @@ namespace RD_AAOW
 				{
 				if (args[0] == "-a")
 					{
-					Application.Run (new KassArrayECForm (true));
+					Application.Run (new KassArrayECForm (true, false));
+					return;
+					}
+				else if (args[0] == KassArrayDB::RD_AAOW.KKTSupport.HideWindowKey)
+					{
+					Application.Run (new KassArrayECForm (false, true));
 					return;
 					}
 				}
 
-			Application.Run (new KassArrayECForm (false));
+			Application.Run (new KassArrayECForm (false, false));
 			}
 		}
 	}

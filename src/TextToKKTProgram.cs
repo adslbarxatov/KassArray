@@ -1,4 +1,6 @@
-﻿using System;
+﻿extern alias KassArrayDB;
+
+using System;
 using System.Windows.Forms;
 
 namespace RD_AAOW
@@ -42,10 +44,20 @@ namespace RD_AAOW
 			RDInterface.ShowAbout (true);
 
 			// Запуск
-			if (args.Length > 0)
+			/*if (args.Length > 0)
 				Application.Run (new TextToKKTForm (args[0]));
 			else
-				Application.Run (new TextToKKTForm (""));
+				Application.Run (new TextToKKTForm (""));*/
+			if (args.Length > 0)
+				{
+				if (args[0] == KassArrayDB::RD_AAOW.KKTSupport.HideWindowKey)
+					{
+					Application.Run (new TextToKKTForm (true));
+					return;
+					}
+				}
+
+			Application.Run (new TextToKKTForm (false));
 			}
 		}
 	}
