@@ -48,7 +48,6 @@ namespace RD_AAOW
 
 			getValuesFromRegistration = GetValuesFromRegistration;
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
-			/*hideWindow = (Flags == "-h");*/
 			hideWindow = HideWindow;
 
 			this.Text = RDGenerics.DefaultAssemblyVisibleName;
@@ -121,8 +120,14 @@ namespace RD_AAOW
 
 		private void MExit_Click (object sender, EventArgs e)
 			{
-			/*this.Close ();*/
-			this.Hide ();
+			if (KassArrayDB::RD_AAOW.KKTSupport.OverrideCloseButton)
+				{
+				this.Hide ();
+				return;
+				}
+
+			closeWindowOnRequest = true;
+			this.Close ();
 			}
 
 		private void KassArrayECForm_FormClosing (object sender, FormClosingEventArgs e)

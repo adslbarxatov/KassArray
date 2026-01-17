@@ -1004,7 +1004,6 @@ namespace RD_AAOW
 				"Код команды:", RDLabelTypes.HeaderLeft);
 			string[] llValues = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode);
 			lowLevelCommandCode = RDInterface.ApplyButtonSettings (uiPages[llvPage], "CommandCodeButton",
-				/*kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, false),*/
 				llValues[0], uiColors[llvPage][cField], Field_Clicked,
 				RDButtonFlags.BiggerFontSize | RDButtonFlags.EnableShadow);
 
@@ -1012,7 +1011,6 @@ namespace RD_AAOW
 				"Пояснение:", RDLabelTypes.HeaderLeft);
 
 			lowLevelCommandDescr = RDInterface.ApplyLabelSettings (uiPages[llvPage], "CommandDescr",
-				/*kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, AppSettings.LowLevelCode, true),*/
 				llValues[1], RDLabelTypes.Field, uiColors[llvPage][cField]);
 
 			RDInterface.ApplyLabelSettings (uiPages[llvPage], "LowLevelHelpLabel",
@@ -1178,16 +1176,11 @@ namespace RD_AAOW
 		private async void ErrorFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.ErrorCode, "Введите код ошибки или фрагмент её текста", AppSettings.ErrorCodeMaxLength);
-			/*if (search[1] == "C")*/
 			if (search.IsCancelled)
 				return;
 
-			/*AppSettings.ErrorCode = search[0];
-			errorsResultText.Text = kb.Errors.FindNext (AppSettings.KKTForErrors,
-				search[0], search[1] == "I");*/
 			AppSettings.ErrorCode = search.SearchLine;
 			errorsResultText.Text = kb.Errors.FindNext (AppSettings.KKTForErrors,
 				search.SearchLine, search.OffsetShouldBeIncreased);
@@ -1286,17 +1279,13 @@ namespace RD_AAOW
 		private async void DictionaryFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.DictionarySearch, "Введите термин или его сокращение",
 				AppSettings.DictionarySearchMaxLength);
-			/*if (search[1] == "C")*/
 			if (search .IsCancelled)
 				return;
 
 			// Поиск
-			/*AppSettings.DictionarySearch = search[0];
-			string res = kb.Dictionary.FindNext (search[0], search[1] == "I");*/
 			AppSettings.DictionarySearch = search.SearchLine;
 			string res = kb.Dictionary.FindNext (search.SearchLine, search.OffsetShouldBeIncreased);
 
@@ -1353,11 +1342,9 @@ namespace RD_AAOW
 		private async void FNLifeFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var searchRes = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.FNSerial, "Введите заводской номер ФН или название модели",
 				AppSettings.FNSerialMaxLength);
-			/*if (search[1] == "C")*/
 			if (searchRes.IsCancelled)
 				return;
 
@@ -1565,13 +1552,9 @@ namespace RD_AAOW
 		private async void RNMSerial_Search (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var searchRes = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.KKTSerial, "Введите заводской номер ККТ или название модели",
 				kb.KKTNumbers.MaxSerialNumberLength);
-			/*if (search[1] == "C")
-				return;
-			AppSettings.KKTSerial = search[0];*/
 			if (searchRes.IsCancelled)
 				return;
 			AppSettings.KKTSerial = searchRes.SearchLine;
@@ -1742,16 +1725,9 @@ namespace RD_AAOW
 		private async void OFDFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.OFDSearch, "Введите ИНН ОФД или фрагмент его названия",
 				AppSettings.OFDSearchMaxLength);
-			/*if (search[1] == "C")
-				return;
-
-			AppSettings.OFDSearch = search[0];
-
-			int idx = kb.Ofd.FindNext (search[0], search[1] == "I");*/
 			if (search.IsCancelled)
 				return;
 
@@ -1932,17 +1908,9 @@ namespace RD_AAOW
 		private async void TLVFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.TLVData, "Введите номер TLV-тега или фрагмент его описания",
 				AppSettings.TLVDataMaxLength);
-			/*if (search[1] == "C")
-				return;
-
-			AppSettings.TLVData = search[0];
-
-			// Заполнение
-			if (kb.Tags.FindTag (search[0]))*/
 			if (search.IsCancelled)
 				return;
 
@@ -2076,15 +2044,9 @@ namespace RD_AAOW
 		private async void ConnFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.CableSearch, "Введите тип или назначение распиновки",
 				AppSettings.CableSearchMaxLength);
-			/*if (search[1] == "C")
-				return;
-
-			AppSettings.CableSearch = search[0];
-			int idx = kb.Plugs.FindNext (search[0], search[1] == "I");*/
 			if (search.IsCancelled)
 				return;
 
@@ -2179,16 +2141,9 @@ namespace RD_AAOW
 		private async void ConvCodeFind_Click (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.ConversionCodeSearch, "Введите название или часть названия блока символов Unicode",
 				AppSettings.ConversionCodeSearchMaxLength);
-			/*if (search[1] == "C")
-				return;
-
-			AppSettings.ConversionCodeSearch = search[0];
-
-			ulong left = kb.Unicodes.FindRange (search[0]);*/
 			if (search.IsCancelled)
 				return;
 
@@ -2269,8 +2224,6 @@ namespace RD_AAOW
 				lowLevelCommand.Text = list[res];
 
 				string[] values = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res);
-				/*lowLevelCommandCode.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, false);
-				lowLevelCommandDescr.Text = kb.LLCommands.GetCommand (AppSettings.LowLevelProtocol, (uint)res, true);*/
 				lowLevelCommandCode.Text = values[0];
 				lowLevelCommandDescr.Text = values[1];
 				}
@@ -2302,15 +2255,9 @@ namespace RD_AAOW
 		private async void LowLevelFind_Clicked (object sender, EventArgs e)
 			{
 			// Определение запроса
-			/*string[]*/
 			var search = await KKTSupport.ObtainSearchCriteria (ButtonNameFromText ((Button)sender),
 				AppSettings.LowLevelSearch, "Введите описание или фрагмент описания команды",
 				AppSettings.LowLevelSearchMaxLength);
-			/*if (search[1] == "C")
-				return;
-
-			AppSettings.LowLevelSearch = search[0];
-			int idx = kb.LLCommands.FindNext (AppSettings.LowLevelProtocol, search[0], search[1] == "I");*/
 			if (search.IsCancelled)
 				return;
 
