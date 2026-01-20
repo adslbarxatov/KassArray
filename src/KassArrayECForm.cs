@@ -1,6 +1,7 @@
 ﻿extern alias KassArrayDB;
 
 using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -26,6 +27,16 @@ namespace RD_AAOW
 		private bool closeWindowOnRequest = false;
 		private bool hideWindow = false;
 		private NotifyIcon ni = new NotifyIcon ();
+
+		// Текущая выбранная строка
+		private uint selectedIndex = 0;
+
+		// Число оповещений, видимых в поле списка без прокрутки
+		private const uint visibleNotificationsInList = 10;
+
+		// Стандартные компоненты стиля полей списка ККТ
+		private Font kktFont;
+		private Padding kktMargin = new Padding (3, 3, 3, 3);
 
 		/// <summary>
 		/// Конструктор. Запускает главную форму
@@ -85,6 +96,7 @@ namespace RD_AAOW
 
 			// Загрузка списка
 			kl = new KAECList ();
+			kktFont = new Font (this.Font, FontStyle.Bold);
 			ReloadList ();
 			}
 
@@ -215,23 +227,32 @@ namespace RD_AAOW
 		// Перезагрузка списка ККТ
 		private void ReloadList ()
 			{
-			// Сохранение позиции
+			/*// Сохранение позиции
 			int idx = KKTList.SelectedIndex;
 			if (idx < 0)
 				idx = 0;
 
 			// Сброс списка
-			KKTList.Items.Clear ();
+			KKTList.Items.Clear ();*/
+			// Сброс списка
+			KKTList2.Controls.Clear ();
+
+			if (kl.ItemsCount < 1)
+				selectedIndex = 0;
+			else if (selectedIndex >= kl.ItemsCount)
+				selectedIndex = kl.ItemsCount - 1;
+
 			uint yWarnings = 0;
 			uint rWarnings = 0;
 			uint yellowTs = KassArrayECSettings.YellowWarningThreshold;
 			uint redTs = KassArrayECSettings.RedWarningThreshold;
 
+			// Формирование контролов
 			for (uint i = 0; i < kl.ItemsCount; i++)
 				{
 				string[] values = kl.GetRequisites (i);
 				string model = kb.KKTNumbers.GetKKTModel (values[0]);
-				string warning;
+				/*string warning;
 
 				if ((kl.GetDaysToFNExpiration (i) < redTs) || (kl.GetDaysToOFDExpiration (i) < redTs))
 					{
@@ -248,10 +269,44 @@ namespace RD_AAOW
 					warning = "";
 					}
 
-				KKTList.Items.Add (warning + model + "  |  " + values[1]);
+				KKTList.Items.Add (warning + model + "  |  " + values[1]);*/
+
+				// Сборка контрола
+				Label l = new Label ();
+				l.AutoSize = false;
+
+				if ((kl.GetDaysToFNExpiration (i) < redTs) || (kl.GetDaysToOFDExpiration (i) < redTs))
+					{
+					l.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
+					rWarnings++;
+					}
+				else if ((kl.GetDaysToFNExpiration (i) < yellowTs) || (kl.GetDaysToOFDExpiration (i) < yellowTs))
+					{
+					l.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.WarningMessage);
+					yWarnings++;
+					}
+				else
+					{
+					l.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.SuccessMessage);
+					}
+
+				l.ForeColor = RDInterface.GetInterfaceColor (RDInterfaceColors.DefaultText);
+				l.Click += KKTList_LabelClicked;
+				l.Font = kktFont;
+				l.Text = model + "  |  " + values[1];
+				l.Margin = kktMargin;
+				l.Padding = kktMargin;
+
+				// Блокировка и применение размера
+				l.MaximumSize = l.MinimumSize = new Size (KKTList2.Width - 6 -
+					((kl.ItemsCount > visibleNotificationsInList) ? 18 : 0), 0);
+				l.AutoSize = true;
+
+				// Добавление
+				KKTList2.Controls.Add (l);
 				}
 
-			// Восстановление позиции
+			/*// Восстановление позиции
 			if (KKTList.Items.Count > 0)
 				{
 				if (idx < KKTList.Items.Count)
@@ -259,8 +314,12 @@ namespace RD_AAOW
 				else
 					KKTList.SelectedIndex = KKTList.Items.Count - 1;
 				}
+			((Label)KKTList2.Controls[(int)selectedIndex]).BorderStyle = BorderStyle.FixedSingle;*/
 
 			// Прочее
+			BAddSameOwner.Enabled = BUpdate.Enabled = BRemove.Enabled = BUpdateContacts.Enabled =
+				SearchButton.Enabled = SearchField.Enabled = (kl.ItemsCount > 0);
+
 			CountLabel.Text = "Отслеживается касс: " + kl.ItemsCount.ToString () +
 				"  |  Число владельцев: " + kl.OwnersCount.ToString () + RDLocale.RN +
 				"Предупреждений: " + (yWarnings + rWarnings).ToString ();
@@ -293,16 +352,50 @@ namespace RD_AAOW
 				}
 
 			CountLabel.BackColor = RDInterface.GetInterfaceColor (color);
+
+			// Загрузка описания
+			KKTList_LabelClicked (null, null);
+
+			if (kl.ItemsCount > 0)
+				KKTList2.ScrollControlIntoView (KKTList2.Controls[(int)selectedIndex]);
 			}
 
 		// Выбор ККТ в списке
-		private void KKTList_SelectedIndexChanged (object sender, EventArgs e)
+		private void KKTList_LabelClicked (object sender, EventArgs e)
 			{
-			if (KKTList.SelectedIndex < 0)
-				return;
+			// Поиск индекса
+			/*if (KKTList.SelectedIndex < 0)
+				return;*/
+			if (sender != null)
+				{
+				int idx = KKTList2.Controls.IndexOf ((Control)sender);
+				if (idx < 0)
+					return;
+				else
+					selectedIndex = (uint)idx;
+				}
 
-			uint idx = (uint)KKTList.SelectedIndex;
-			string[] values = kl.GetRequisites (idx);
+			// Обновление стиля
+			for (int i = 0; i < kl.ItemsCount; i++)
+				{
+				/*((Label)KKTList2.Controls[i]).BorderStyle = (i == selectedIndex) ?
+					BorderStyle.FixedSingle : BorderStyle.None;*/
+				((Label)KKTList2.Controls[i]).BorderStyle = (i == selectedIndex) ? BorderStyle.FixedSingle :
+					BorderStyle.None;
+				}
+
+			// Загрузка состояния
+			/*uint idx = (uint)KKTList.SelectedIndex;
+				string[] values = kl.GetRequisites (idx);*/
+			if (kl.ItemsCount < 1)
+				{
+				InfoLabel.Text = "(отсутствуют ККТ для отображения)";
+				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.LightGrey);
+
+				return;
+				}
+
+			string[] values = kl.GetRequisites (selectedIndex);
 			string model = kb.KKTNumbers.GetKKTModel (values[0]);
 
 			InfoLabel.Text = "Заводской номер ККТ: " + values[0] + RDLocale.RN;
@@ -315,15 +408,16 @@ namespace RD_AAOW
 			InfoLabel.Text += "Срок действия ФН: " + values[4] + RDLocale.RN;
 			InfoLabel.Text += "  Осталось дней: " + values[5] + RDLocale.RN;
 
-			/*if (values[6] != "- ")*/
 			if (values[6] != KAECList.NoOFDAlias)
 				{
 				InfoLabel.Text += "Срок тарифа ОФД: " + values[6] + RDLocale.RN;
 				InfoLabel.Text += "  Осталось дней: " + values[7];
 				}
 
-			int fnDays = kl.GetDaysToFNExpiration (idx);
-			int ofdDays = kl.GetDaysToOFDExpiration (idx);
+			/*int fnDays = kl.GetDaysToFNExpiration (idx);
+			int ofdDays = kl.GetDaysToOFDExpiration (idx);*/
+			int fnDays = kl.GetDaysToFNExpiration (selectedIndex);
+			int ofdDays = kl.GetDaysToOFDExpiration (selectedIndex);
 			uint yellowTs = KassArrayECSettings.YellowWarningThreshold;
 			uint redTs = KassArrayECSettings.RedWarningThreshold;
 
@@ -347,14 +441,22 @@ namespace RD_AAOW
 		// Добавление ККТ к существующему пользователю
 		private void BAddSameOwner_Click (object sender, EventArgs e)
 			{
-			if (KKTList.SelectedIndex < 0)
+			/*if (KKTList.SelectedIndex < 0)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"ККТ для копирования не выбрана в списке", 1500);
 				return;
 				}
 
-			KassArrayECEntry kaec = new KassArrayECEntry (kl, (uint)KKTList.SelectedIndex, true);
+			KassArrayECEntry kaec = new KassArrayECEntry (kl, (uint)KKTList.SelectedIndex, true);*/
+			if (kl.ItemsCount < 1)
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Отсутствуют ККТ для копирования реквизитов", 1500);
+				return;
+				}
+
+			KassArrayECEntry kaec = new KassArrayECEntry (kl, selectedIndex, true);
 			if (!kaec.Cancelled)
 				ReloadList ();
 			kaec.Dispose ();
@@ -363,14 +465,22 @@ namespace RD_AAOW
 		// Обновление записи
 		private void BUpdate_Click (object sender, EventArgs e)
 			{
-			if (KKTList.SelectedIndex < 0)
+			/*if (KKTList.SelectedIndex < 0)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"ККТ для изменения не выбрана в списке", 1500);
 				return;
 				}
 
-			KassArrayECEntry kaec = new KassArrayECEntry (kl, (uint)KKTList.SelectedIndex, false);
+			KassArrayECEntry kaec = new KassArrayECEntry (kl, (uint)KKTList.SelectedIndex, false);*/
+			if (kl.ItemsCount < 1)
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Нет ККТ для обновления", 1000);
+				return;
+				}
+
+			KassArrayECEntry kaec = new KassArrayECEntry (kl, selectedIndex, false);
 			if (!kaec.Cancelled)
 				ReloadList ();
 			kaec.Dispose ();
@@ -380,10 +490,16 @@ namespace RD_AAOW
 		private void BRemove_Click (object sender, EventArgs e)
 			{
 			// Контроль
-			if (KKTList.SelectedIndex < 0)
+			/*if (KKTList.SelectedIndex < 0)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"ККТ для удаления не выбрана в списке", 1500);
+				return;
+				}*/
+			if (kl.ItemsCount < 1)
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Список ККТ пуст", 1000);
 				return;
 				}
 
@@ -393,7 +509,8 @@ namespace RD_AAOW
 				return;
 
 			// Удаление
-			kl.RemoveEntry ((uint)KKTList.SelectedIndex);
+			/*kl.RemoveEntry ((uint)KKTList.SelectedIndex);*/
+			kl.RemoveEntry (selectedIndex);
 			ReloadList ();
 			}
 
@@ -418,7 +535,10 @@ namespace RD_AAOW
 				}
 
 			// Успешно
-			KKTList.SelectedIndex = idx;
+			/*KKTList.SelectedIndex = idx;*/
+			selectedIndex = (uint)idx;
+			KKTList_LabelClicked (null, null);
+			KKTList2.ScrollControlIntoView (KKTList2.Controls[(int)selectedIndex]);
 			}
 
 		private void SearchField_KeyDown (object sender, KeyEventArgs e)
@@ -430,22 +550,31 @@ namespace RD_AAOW
 		// Обновление контактов
 		private void BUpdateContacts_Click (object sender, EventArgs e)
 			{
-			if (KKTList.SelectedIndex < 0)
+			/*if (KKTList.SelectedIndex < 0)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"ККТ для изменения не выбрана в списке", 1500);
 				return;
 				}
-			uint idx = (uint)KKTList.SelectedIndex;
+			uint idx = (uint)KKTList.SelectedIndex;*/
+			if (kl.ItemsCount < 1)
+				{
+				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
+					"Нет ККТ для обновления", 1000);
+				return;
+				}
 
-			string currectContact = kl.GetRequisites (idx)[2];
+			/*string currectContact = kl.GetRequisites (idx)[2];*/
+			string currectContact = kl.GetRequisites (selectedIndex)[2];
 			string newContact = RDInterface.MessageBox ("Укажите новые контакты владельца ККТ", true,
 				50, currectContact);
 			if (string.IsNullOrWhiteSpace (newContact))
 				return;
 
-			kl.UpdateContact (idx, newContact);
-			KKTList_SelectedIndexChanged (null, null);
+			/*kl.UpdateContact (idx, newContact);
+			KKTList_SelectedIndexChanged (null, null);*/
+			kl.UpdateContact (selectedIndex, newContact);
+			KKTList_LabelClicked (null, null);
 			}
 
 		// Вызов настроек
@@ -465,11 +594,12 @@ namespace RD_AAOW
 				return;
 				}
 
-			int idx = KKTList.SelectedIndex;
+			/*int idx = KKTList.SelectedIndex;
 			if (idx < 0)
 				idx = 0;
 
-			string[] values = kl.GetRequisites ((uint)idx);
+			string[] values = kl.GetRequisites ((uint)idx);*/
+			string[] values = kl.GetRequisites (selectedIndex);
 			_ = new KassArrayECExport (kl, values[1], kb);
 			}
 		}

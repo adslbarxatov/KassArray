@@ -44,10 +44,6 @@ namespace RD_AAOW
 			RDInterface.ShowAbout (true);
 
 			// Запуск
-			/*if (args.Length > 0)
-				Application.Run (new TextToKKTForm (args[0]));
-			else
-				Application.Run (new TextToKKTForm (""));*/
 			if (args.Length > 0)
 				{
 				if (args[0] == KassArrayDB::RD_AAOW.KKTSupport.HideWindowKey)

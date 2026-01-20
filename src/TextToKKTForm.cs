@@ -34,10 +34,6 @@ namespace RD_AAOW
 		// Пересчитанная ширина логотипа для руководств пользователя
 		private int manualLogoWidth = 1200;
 
-		/*/// <summary>
-		/// Ключ командной строки, используемый при автозапуске для скрытия главного окна приложения
-		/// </summary>
-		public const string HideWindowKey = "-h";*/
 		private bool hideWindow = false;
 		private bool closeWindowOnError = false;
 		private bool closeWindowOnRequest = false;
@@ -52,7 +48,7 @@ namespace RD_AAOW
 		/// <summary>
 		/// Конструктор. Запускает главную форму
 		/// </summary>
-		public TextToKKTForm (/*string Flags*/ bool HideWindow)
+		public TextToKKTForm (bool HideWindow)
 			{
 			// Инициализация
 			InitializeComponent ();
@@ -60,7 +56,6 @@ namespace RD_AAOW
 				RDLocale.CurrentLanguage = RDLanguages.ru_ru;
 
 			kb = new KassArrayDB::RD_AAOW.KnowledgeBase ();
-			/*hideWindow = (Flags == KassArrayDB::RD_AAOW.KKTSupport.HideWindowKey);*/
 			hideWindow = HideWindow;
 
 			try
@@ -188,7 +183,6 @@ namespace RD_AAOW
 				}
 
 			// Настройка контролов
-			/*OverrideCloseButton.Checked = AppSettings.OverrideCloseButton;*/
 			OverrideCloseButton.Checked = KassArrayDB::RD_AAOW.KKTSupport.OverrideCloseButton;
 
 			KKTListForCodes.Items.AddRange (kb.CodeTables.GetKKTTypeNames ().ToArray ());
@@ -526,7 +520,6 @@ namespace RD_AAOW
 					break;
 				}
 
-			/*string proc = KassArrayDB::RD_AAOW.ProgramDescription.AssemblyMainName;*/
 			if (!problem)
 				{
 				switch (Index)
@@ -534,17 +527,14 @@ namespace RD_AAOW
 					case 0:
 					default:
 						ewhFS.Set ();
-						/*proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayFSAlias;*/
 						break;
 
 					case 1:
 						ewhPR.Set ();
-						/*proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayPRAlias;*/
 						break;
 
 					case 2:
 						ewhEC.Set ();
-						/*proc += KassArrayDB::RD_AAOW.ProgramDescription.KassArrayECAlias;*/
 						break;
 					}
 				}
