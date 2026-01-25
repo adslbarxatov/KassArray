@@ -144,11 +144,6 @@ namespace RD_AAOW
 
 		private void KassArrayECForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
-			/*// Контроль
-			if (closeWindowOnError)
-				return;
-
-			RDGenerics.SaveWindowDimensions (this);*/
 			if (closeWindowOnError)
 				return;
 
@@ -227,13 +222,6 @@ namespace RD_AAOW
 		// Перезагрузка списка ККТ
 		private void ReloadList ()
 			{
-			/*// Сохранение позиции
-			int idx = KKTList.SelectedIndex;
-			if (idx < 0)
-				idx = 0;
-
-			// Сброс списка
-			KKTList.Items.Clear ();*/
 			// Сброс списка
 			KKTList2.Controls.Clear ();
 
@@ -252,24 +240,6 @@ namespace RD_AAOW
 				{
 				string[] values = kl.GetRequisites (i);
 				string model = kb.KKTNumbers.GetKKTModel (values[0]);
-				/*string warning;
-
-				if ((kl.GetDaysToFNExpiration (i) < redTs) || (kl.GetDaysToOFDExpiration (i) < redTs))
-					{
-					warning = "❌  ";
-					rWarnings++;
-					}
-				else if ((kl.GetDaysToFNExpiration (i) < yellowTs) || (kl.GetDaysToOFDExpiration (i) < yellowTs))
-					{
-					warning = "⚠  ";
-					yWarnings++;
-					}
-				else
-					{
-					warning = "";
-					}
-
-				KKTList.Items.Add (warning + model + "  |  " + values[1]);*/
 
 				// Сборка контрола
 				Label l = new Label ();
@@ -305,16 +275,6 @@ namespace RD_AAOW
 				// Добавление
 				KKTList2.Controls.Add (l);
 				}
-
-			/*// Восстановление позиции
-			if (KKTList.Items.Count > 0)
-				{
-				if (idx < KKTList.Items.Count)
-					KKTList.SelectedIndex = idx;
-				else
-					KKTList.SelectedIndex = KKTList.Items.Count - 1;
-				}
-			((Label)KKTList2.Controls[(int)selectedIndex]).BorderStyle = BorderStyle.FixedSingle;*/
 
 			// Прочее
 			BAddSameOwner.Enabled = BUpdate.Enabled = BRemove.Enabled = BUpdateContacts.Enabled =
@@ -364,8 +324,6 @@ namespace RD_AAOW
 		private void KKTList_LabelClicked (object sender, EventArgs e)
 			{
 			// Поиск индекса
-			/*if (KKTList.SelectedIndex < 0)
-				return;*/
 			if (sender != null)
 				{
 				int idx = KKTList2.Controls.IndexOf ((Control)sender);
@@ -378,15 +336,11 @@ namespace RD_AAOW
 			// Обновление стиля
 			for (int i = 0; i < kl.ItemsCount; i++)
 				{
-				/*((Label)KKTList2.Controls[i]).BorderStyle = (i == selectedIndex) ?
-					BorderStyle.FixedSingle : BorderStyle.None;*/
 				((Label)KKTList2.Controls[i]).BorderStyle = (i == selectedIndex) ? BorderStyle.FixedSingle :
 					BorderStyle.None;
 				}
 
 			// Загрузка состояния
-			/*uint idx = (uint)KKTList.SelectedIndex;
-				string[] values = kl.GetRequisites (idx);*/
 			if (kl.ItemsCount < 1)
 				{
 				InfoLabel.Text = "(отсутствуют ККТ для отображения)";
@@ -414,8 +368,6 @@ namespace RD_AAOW
 				InfoLabel.Text += "  Осталось дней: " + values[7];
 				}
 
-			/*int fnDays = kl.GetDaysToFNExpiration (idx);
-			int ofdDays = kl.GetDaysToOFDExpiration (idx);*/
 			int fnDays = kl.GetDaysToFNExpiration (selectedIndex);
 			int ofdDays = kl.GetDaysToOFDExpiration (selectedIndex);
 			uint yellowTs = KassArrayECSettings.YellowWarningThreshold;
@@ -441,14 +393,6 @@ namespace RD_AAOW
 		// Добавление ККТ к существующему пользователю
 		private void BAddSameOwner_Click (object sender, EventArgs e)
 			{
-			/*if (KKTList.SelectedIndex < 0)
-				{
-				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
-					"ККТ для копирования не выбрана в списке", 1500);
-				return;
-				}
-
-			KassArrayECEntry kaec = new KassArrayECEntry (kl, (uint)KKTList.SelectedIndex, true);*/
 			if (kl.ItemsCount < 1)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
@@ -465,14 +409,6 @@ namespace RD_AAOW
 		// Обновление записи
 		private void BUpdate_Click (object sender, EventArgs e)
 			{
-			/*if (KKTList.SelectedIndex < 0)
-				{
-				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
-					"ККТ для изменения не выбрана в списке", 1500);
-				return;
-				}
-
-			KassArrayECEntry kaec = new KassArrayECEntry (kl, (uint)KKTList.SelectedIndex, false);*/
 			if (kl.ItemsCount < 1)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
@@ -490,12 +426,6 @@ namespace RD_AAOW
 		private void BRemove_Click (object sender, EventArgs e)
 			{
 			// Контроль
-			/*if (KKTList.SelectedIndex < 0)
-				{
-				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
-					"ККТ для удаления не выбрана в списке", 1500);
-				return;
-				}*/
 			if (kl.ItemsCount < 1)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
@@ -509,7 +439,6 @@ namespace RD_AAOW
 				return;
 
 			// Удаление
-			/*kl.RemoveEntry ((uint)KKTList.SelectedIndex);*/
 			kl.RemoveEntry (selectedIndex);
 			ReloadList ();
 			}
@@ -535,7 +464,6 @@ namespace RD_AAOW
 				}
 
 			// Успешно
-			/*KKTList.SelectedIndex = idx;*/
 			selectedIndex = (uint)idx;
 			KKTList_LabelClicked (null, null);
 			KKTList2.ScrollControlIntoView (KKTList2.Controls[(int)selectedIndex]);
@@ -550,13 +478,6 @@ namespace RD_AAOW
 		// Обновление контактов
 		private void BUpdateContacts_Click (object sender, EventArgs e)
 			{
-			/*if (KKTList.SelectedIndex < 0)
-				{
-				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
-					"ККТ для изменения не выбрана в списке", 1500);
-				return;
-				}
-			uint idx = (uint)KKTList.SelectedIndex;*/
 			if (kl.ItemsCount < 1)
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
@@ -564,15 +485,12 @@ namespace RD_AAOW
 				return;
 				}
 
-			/*string currectContact = kl.GetRequisites (idx)[2];*/
 			string currectContact = kl.GetRequisites (selectedIndex)[2];
 			string newContact = RDInterface.MessageBox ("Укажите новые контакты владельца ККТ", true,
 				50, currectContact);
 			if (string.IsNullOrWhiteSpace (newContact))
 				return;
 
-			/*kl.UpdateContact (idx, newContact);
-			KKTList_SelectedIndexChanged (null, null);*/
 			kl.UpdateContact (selectedIndex, newContact);
 			KKTList_LabelClicked (null, null);
 			}
@@ -594,11 +512,6 @@ namespace RD_AAOW
 				return;
 				}
 
-			/*int idx = KKTList.SelectedIndex;
-			if (idx < 0)
-				idx = 0;
-
-			string[] values = kl.GetRequisites ((uint)idx);*/
 			string[] values = kl.GetRequisites (selectedIndex);
 			_ = new KassArrayECExport (kl, values[1], kb);
 			}

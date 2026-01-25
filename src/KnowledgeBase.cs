@@ -6,30 +6,6 @@
 	public class KnowledgeBase
 		{
 		/// <summary>
-		/// Возвращает преобразователь текста в коды символов ККТ
-		/// </summary>
-		public KKTCodes CodeTables
-			{
-			get
-				{
-				return kktc;
-				}
-			}
-		private KKTCodes kktc;
-
-		/// <summary>
-		/// Возвращает справочник ошибок ККТ
-		/// </summary>
-		public KKTErrorsList Errors
-			{
-			get
-				{
-				return kkte;
-				}
-			}
-		private KKTErrorsList kkte;
-
-		/// <summary>
 		/// Возвращает справочник ОФД
 		/// </summary>
 		public OFD Ofd
@@ -40,30 +16,6 @@
 				}
 			}
 		private OFD ofd;
-
-		/// <summary>
-		/// Возвращает справочник команд нижнего уровня
-		/// </summary>
-		public TermsDictionary Dictionary
-			{
-			get
-				{
-				return td;
-				}
-			}
-		private TermsDictionary td;
-
-		/// <summary>
-		/// Возвращает оператор руководств пользователя ККТ
-		/// </summary>
-		public UserGuides UserGuides
-			{
-			get
-				{
-				return ug;
-				}
-			}
-		private UserGuides ug;
 
 		/// <summary>
 		/// Возвращает оператор заводских номеров ККТ
@@ -88,6 +40,56 @@
 				}
 			}
 		private FNSerial fns;
+
+#if !KASSARRAYPR
+
+		/// <summary>
+		/// Возвращает преобразователь текста в коды символов ККТ
+		/// </summary>
+		public KKTCodes CodeTables
+			{
+			get
+				{
+				return kktc;
+				}
+			}
+		private KKTCodes kktc;
+
+		/// <summary>
+		/// Возвращает справочник ошибок ККТ
+		/// </summary>
+		public KKTErrorsList Errors
+			{
+			get
+				{
+				return kkte;
+				}
+			}
+		private KKTErrorsList kkte;
+
+		/// <summary>
+		/// Возвращает справочник команд нижнего уровня
+		/// </summary>
+		public TermsDictionary Dictionary
+			{
+			get
+				{
+				return td;
+				}
+			}
+		private TermsDictionary td;
+
+		/// <summary>
+		/// Возвращает оператор руководств пользователя ККТ
+		/// </summary>
+		public UserGuides UserGuides
+			{
+			get
+				{
+				return ug;
+				}
+			}
+		private UserGuides ug;
 
 		/// <summary>
 		/// Возвращает справочник TLV-тегов
@@ -149,23 +151,30 @@
 			}
 		private LowLevel ll;
 
+#endif
+
 		/// <summary>
 		/// Конструктор. Инициализирует базу знаний
 		/// </summary>
 		public KnowledgeBase ()
 			{
-			kktc = new KKTCodes ();
-			kkte = new KKTErrorsList ();
 			ofd = new OFD ();
-			td = new TermsDictionary ();
-			ug = new UserGuides ();
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
+
+#if !KASSARRAYPR
+
+			kktc = new KKTCodes ();
+			kkte = new KKTErrorsList ();
+			td = new TermsDictionary ();
+			ug = new UserGuides ();
 			tlvt = new TLVTags ();
 			barc = new BarCodes ();
 			conn = new Connectors ();
 			ud = new UnicodeDescriptor ();
 			ll = new LowLevel ();
+
+#endif
 			}
 		}
 	}
