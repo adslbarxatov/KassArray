@@ -71,8 +71,8 @@ namespace RD_AAOW
 
 			OFDialog.Title = "Выберите файл заявления";
 			SFDialog.Title = "Укажите расположение для файла заявления";
-			OFDialog.Filter = SFDialog.Filter = "Файлы заявлений " + ProgramDescription.AssemblyMainName + " для ФНС (*." +
-				ProgramDescription.AppExtension + ")|*." + ProgramDescription.AppExtension;
+			OFDialog.Filter = SFDialog.Filter = "Файлы заявлений " + ProgramDescription.AssemblyMainName + " для ФНС (*" +
+				KAPRSupport.BlankFileExtension + ")|*" + KAPRSupport.BlankFileExtension;
 
 			// Настройка контролов
 			KKTModelCombo.Items.Add (KAPRSupport.FillableFieldAlias);
@@ -305,9 +305,6 @@ namespace RD_AAOW
 		// Выбор типа заявления
 		private void BlankTypeCombo_SelectedIndexChanged (object sender, EventArgs e)
 			{
-			/*bool rereg = (BlankTypeCombo.SelectedIndex == registrationChangeMode);
-			bool finish = (BlankTypeCombo.SelectedIndex == unregistrationMode);*/
-
 			KKTStolenFlag.Enabled = KKTMissingFlag.Enabled = IsUnregistration;
 			if (!KKTStolenFlag.Enabled)
 				KKTStolenFlag.Checked = KKTMissingFlag.Checked = false;
@@ -341,8 +338,6 @@ namespace RD_AAOW
 				OFDVariantCombo.SelectedIndex = ofdIdx;
 
 			OFDVariantLabel.Enabled = OFDVariantCombo.Enabled = !IsUnregistration;
-			/*if (!OFDVariantLabel.Enabled)
-				OFDVariantCombo.SelectedIndex = continueWithOFD;*/
 			OFDVariantCombo_SelectedIndexChanged (null, null);
 
 			AddressRegionCodeLabel.Enabled = AddressRegionCodeCombo.Enabled =
@@ -354,7 +349,7 @@ namespace RD_AAOW
 				AddressHouseLabel.Enabled = AddressHouseField.Enabled =
 				AddressBuildingLabel.Enabled = AddressBuildingField.Enabled =
 				AddressAppartmentLabel.Enabled = AddressAppartmentField.Enabled =
-				PlaceLabel.Enabled = PlaceField.Enabled = !IsUnregistration;
+				PlaceLabel.Enabled = PlaceField.Enabled = FindPostIndex.Enabled = !IsUnregistration;
 
 			LotteryFlag.Enabled = GamblingFlag.Enabled = GamblingExchangeFlag.Enabled =
 				BankAgentFlag.Enabled = AgentFlag.Enabled = DeliveryFlag.Enabled =
@@ -441,8 +436,7 @@ namespace RD_AAOW
 
 				if (!string.IsNullOrWhiteSpace (fileName))
 					{
-					SFDialog.FileName = KAPRSupport.BackupsPath + fileName + "." +
-						ProgramDescription.AppExtension;
+					SFDialog.FileName = KAPRSupport.BackupsPath + fileName + KAPRSupport.BlankFileExtension;
 					SFDialog_FileOk (null, null);
 					}
 				}
@@ -1427,10 +1421,10 @@ namespace RD_AAOW
 				MarkFlag.Checked = fieldsSet[(int)KBFFields.MarkFlag] == "1";
 				InternetFlag.Checked = fieldsSet[(int)KBFFields.InternetFlag] == "1";
 				OtherChangeFlag.Checked = fieldsSet[(int)KBFFields.OtherChangeFlag] == "1";
+				AutomatFlag.Checked = fieldsSet[(int)KBFFields.AutomatFlag] == "1";	// Должен предшествовать остальным
 				AutomatNumberField.Text = fieldsSet[(int)KBFFields.AutomatNumber];
 				AutomatAddressIsSame.Checked = fieldsSet[(int)KBFFields.AutomatAddressIsSameFlag] == "1";
 				AutomatChangeFlag.Checked = fieldsSet[(int)KBFFields.AutomatChangeFlag] == "1";
-				AutomatFlag.Checked = fieldsSet[(int)KBFFields.AutomatFlag] == "1";
 
 				FNCloseFDField.Text = fieldsSet[(int)KBFFields.FNCloseDocumentNumber];
 				FNCloseDateField.Value = DateTime.Parse (fieldsSet[(int)KBFFields.FNCloseDate], RDLocale.GetCulture (RDLanguages.ru_ru));
@@ -1602,10 +1596,10 @@ namespace RD_AAOW
 			fieldsSet[(int)KBFFields.AutomatFlag] = AutomatFlag.Checked ? "1" : "0";
 
 			fieldsSet[(int)KBFFields.FNCloseDocumentNumber] = FNCloseFDField.Text;
-			fieldsSet[(int)KBFFields.FNCloseDate] = FNCloseDateField.Value.ToString (RDLocale.GetCulture (RDLanguages.ru_ru));
+			fieldsSet[(int)KBFFields.FNCloseDate] = FNCloseDateField.Value.ToString (KAPRSupport.FullDateTimeFormat);
 			fieldsSet[(int)KBFFields.FNCloseDocumentSign] = FNCloseFPDField.Text;
 			fieldsSet[(int)KBFFields.FNOpenDocumentNumber] = FNOpenFDField.Text;
-			fieldsSet[(int)KBFFields.FNOpenDate] = FNOpenDateField.Value.ToString (RDLocale.GetCulture (RDLanguages.ru_ru));
+			fieldsSet[(int)KBFFields.FNOpenDate] = FNOpenDateField.Value.ToString (KAPRSupport.FullDateTimeFormat);
 			fieldsSet[(int)KBFFields.FNOpenDocumentSign] = FNOpenFPDField.Text;
 			}
 
