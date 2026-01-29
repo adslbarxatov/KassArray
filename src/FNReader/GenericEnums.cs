@@ -959,6 +959,27 @@ namespace RD_AAOW
 		}
 
 	/// <summary>
+	/// Режимы кэширования статусов ФН
+	/// </summary>
+	public enum StatusesCacheModes
+		{
+		/// <summary>
+		/// Кэширование отключено
+		/// </summary>
+		Disable = 0,
+
+		/// <summary>
+		/// Кэширование выполняется с сохранением в директорию приложения
+		/// </summary>
+		LocalCache = 1,
+
+		/// <summary>
+		/// Кэширование выполняется с сохранением в директорию выгрузок ФН
+		/// </summary>
+		RemoteCache = 2
+		}
+
+	/// <summary>
 	/// Доступные версии универсальных информационных баз программы
 	/// </summary>
 	public enum KAKBLVersions
@@ -976,5 +997,6 @@ namespace RD_AAOW
 		ECv2 = 0x0302,
 		ECv3 = 0x0303,
 		ECv4 = 0x0304,
+		ECv5 = 0x0305,
 		}
 	}

@@ -245,7 +245,11 @@ namespace RD_AAOW
 				Label l = new Label ();
 				l.AutoSize = false;
 
-				if ((kl.GetDaysToFNExpiration (i) < redTs) || (kl.GetDaysToOFDExpiration (i) < redTs))
+				if (kl.GetNoControlStatus(i))
+					{
+					l.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.MediumGrey);
+					}
+				else if ((kl.GetDaysToFNExpiration (i) < redTs) || (kl.GetDaysToOFDExpiration (i) < redTs))
 					{
 					l.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
 					rWarnings++;
