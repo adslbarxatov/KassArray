@@ -22,9 +22,6 @@ namespace RD_AAOW
 
 		private ContextMenuStrip addressMenu;
 
-		/*// Переменная обмена значениями полей
-		private string[] fieldsSet = new string[KAPRSupport.FieldsCount];*/
-
 		// Ресивер сообщений на повторное открытие окна
 		private EventWaitHandle ewh;
 
@@ -423,73 +420,24 @@ namespace RD_AAOW
 			FlushFields ();
 
 			// Контроль значений
-			switch (KAPRSupport.CheckFields (/*fieldsSet,*/ IsRegistrationChange, AddressIndexField.Enabled,
+			switch (KAPRSupport.CheckFields (IsRegistrationChange, AddressIndexField.Enabled,
 				FNOpenDateField.Enabled && FNCloseDateField.Enabled))
 				{
 				case -1:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"ИНН пользователя должен быть числом длиной в 10 (организация) или 12 " +
-						"(предприниматель) цифр." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -2:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"ОГРН пользователя должен быть числом длиной в 13 (организация) или 15 " +
-						"(предприниматель) цифр." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -3:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"КПП должен быть числом длиной в 9 цифр. Кроме того, он не должен быть указан, " +
-						"если пользователь является индивидуальным предпринимателем." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -4:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Заводской номер ФН должен быть числом, состоящим из 16 цифр." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -5:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Регистрационный номер ККТ должен быть числом, состоящим из 16 цифр." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -6:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Почтовый индекс должен быть числом, состоящим из 6 цифр. В случае, если регион РФ " +
-						"выбран, это поле является обязательным для заполнения." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -7:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Номер фискального документа (ФД) должен быть числом между 1 и 250000 " +
-						"(включительно)." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -8:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Фискальный признак документа (ФПД) должен быть числом между 1 и " + 0xFFFFFFFF.ToString () +
-						" (включительно)." + KAPRSupport.LeftEmptyAlias);
-					return;*/
-
 				case -9:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Не указана ни одна из причин перерегистрации");
-					return;*/
-
 				case -10:
-					/*RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
-						"Указанный регистрационный номер не соответствует ИНН пользователя и ЗН ККТ");*/
 					RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.LockSmallSize,
 						KAPRSupport.CheckFieldsError);
 					return;
 
 				case -11:
-					/*if (RDInterface.MessageBox (RDMessageFlags.Question | RDMessageFlags.LockSmallSize,
-						"Отчёт о (пере)регистрации старше отчёта о закрытии архива ФН. Если это – ожидаемая " +
-						"ситуация, и все реквизиты заполнены корректно, нажмите кнопку «Далее»",
-						RDLocale.GetDefaultText (RDLDefaultTexts.Button_Next),
-						RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel)) != RDMessageButtons.ButtonOne)*/
 					if (RDInterface.MessageBox (RDMessageFlags.Question | RDMessageFlags.LockSmallSize,
 						KAPRSupport.CheckFieldsError,
 						RDLocale.GetDefaultText (RDLDefaultTexts.Button_Next),
@@ -500,7 +448,7 @@ namespace RD_AAOW
 				}
 
 			// Формирование заявления
-			string template = KAPRSupport.BuildTemplate (/*fieldsSet,*/ kb);
+			string template = KAPRSupport.BuildTemplate (kb);
 
 			// Сохранение реквизитов, если предусмотрено
 			if (KAPRSupport.SaveUserRequisites)
@@ -806,17 +754,12 @@ namespace RD_AAOW
 			else
 				file = RDGenerics.GetEncoding (RDEncodings.CP1251).GetString (data);
 
-			/*string[] values = KAPRSupport.ParseFile (file, kb);
-			if (values == null)*/
 			if (!KAPRSupport.ParseFile (file, kb))
 				{
 				RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText,
 					"Указанный файл повреждён или не является поддерживаемым файлом заявления");
 				return;
 				}
-
-			/*for (int i = 0; i < values.Length; i++)
-				fieldsSet[i] = values[i];*/
 
 			// Загрузка
 			LoadFields ();
@@ -828,46 +771,27 @@ namespace RD_AAOW
 			try
 				{
 				FNChangeFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.FNChangeFlag);
-				/*FNChangeFlag.Checked = fieldsSet[(int)KBFFields.FNChangeFlag] == "1";*/
 				UserNameField.Text = KAPRSupport.GetFieldAsString (KBFFields.UserName);
 				INNField.Text = KAPRSupport.GetFieldAsString (KBFFields.INN);
 				OGRNField.Text = KAPRSupport.GetFieldAsString (KBFFields.OGRN);
 				KPPField.Text = KAPRSupport.GetFieldAsString (KBFFields.KPP);
 				PresenterTypeField.Text = KAPRSupport.GetFieldAsString (KBFFields.UserPresenter);
-				/*UserNameField.Text = fieldsSet[(int)KBFFields.UserName];
-				INNField.Text = fieldsSet[(int)KBFFields.INN];
-				OGRNField.Text = fieldsSet[(int)KBFFields.OGRN];
-				KPPField.Text = fieldsSet[(int)KBFFields.KPP];
-				PresenterTypeField.Text = fieldsSet[(int)KBFFields.UserPresenter];*/
 				PresenterTypeFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.UserPresenterType);
 				UserNameChangeFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.NameChangeFlag);
 				KKTStolenFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.KKTStolenFlag);
 				KKTMissingFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.KKTMissingFlag);
 				FNBrokenFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.FNBrokenFlag);
-				/*PresenterTypeFlag.Checked = fieldsSet[(int)KBFFields.UserPresenterType] == "1";
-				UserNameChangeFlag.Checked = fieldsSet[(int)KBFFields.NameChangeFlag] == "1";
-				KKTStolenFlag.Checked = fieldsSet[(int)KBFFields.KKTStolenFlag] == "1";
-				KKTMissingFlag.Checked = fieldsSet[(int)KBFFields.KKTMissingFlag] == "1";
-				FNBrokenFlag.Checked = fieldsSet[(int)KBFFields.FNBrokenFlag] == "1";*/
 
 				KKTSerialField.Text = KAPRSupport.GetFieldAsString (KBFFields.KKTSerialNumber);
 				FNSerialField.Text = KAPRSupport.GetFieldAsString (KBFFields.FNSerialNumber);
 				KKTModelCombo.Text = KAPRSupport.GetFieldAsString (KBFFields.KKTModelName);
 				FNModelCombo.Text = KAPRSupport.GetFieldAsString (KBFFields.FNModelName);
 				OFDNameCombo.Text = KAPRSupport.GetFieldAsString (KBFFields.OFDName);
-				/*KKTSerialField.Text = fieldsSet[(int)KBFFields.KKTSerialNumber];
-				FNSerialField.Text = fieldsSet[(int)KBFFields.FNSerialNumber];
-				KKTModelCombo.Text = fieldsSet[(int)KBFFields.KKTModelName];
-				FNModelCombo.Text = fieldsSet[(int)KBFFields.FNModelName];
-				OFDNameCombo.Text = fieldsSet[(int)KBFFields.OFDName];*/
 
 				OFDVariantCombo.SelectedIndex = (int)KAPRSupport.GetFieldAsUint (KBFFields.OFDVariant);
-				/*OFDVariantCombo.SelectedIndex = int.Parse (fieldsSet[(int)KBFFields.OFDVariant]);*/
 				KKTRNMField.Text = KAPRSupport.GetFieldAsString (KBFFields.RegistrationNumber);
-				/*KKTRNMField.Text = fieldsSet[(int)KBFFields.RegistrationNumber];*/
 
 				AddressRegionCodeCombo.SelectedIndex = (int)KAPRSupport.GetFieldAsUint (KBFFields.AddressRegionCode);
-				/*AddressRegionCodeCombo.SelectedIndex = int.Parse (fieldsSet[(int)KBFFields.AddressRegionCode]);*/
 				AddressAreaField.Text = KAPRSupport.GetFieldAsString (KBFFields.AddressArea);
 				AddressCityField.Text = KAPRSupport.GetFieldAsString (KBFFields.AddressCity);
 				AddressTownField.Text = KAPRSupport.GetFieldAsString (KBFFields.AddressTown);
@@ -877,17 +801,7 @@ namespace RD_AAOW
 				AddressBuildingField.Text = KAPRSupport.GetFieldAsString (KBFFields.AddressBuildingNumber);
 				AddressAppartmentField.Text = KAPRSupport.GetFieldAsString (KBFFields.AddressAppartmentNumber);
 				PlaceField.Text = KAPRSupport.GetFieldAsString (KBFFields.Place);
-				/*AddressAreaField.Text = fieldsSet[(int)KBFFields.AddressArea];
-				AddressCityField.Text = fieldsSet[(int)KBFFields.AddressCity];
-				AddressTownField.Text = fieldsSet[(int)KBFFields.AddressTown];
-				AddressIndexField.Text = fieldsSet[(int)KBFFields.AddressIndex];
-				AddressStreetField.Text = fieldsSet[(int)KBFFields.AddressStreet];
-				AddressHouseField.Text = fieldsSet[(int)KBFFields.AddressHouseNumber];
-				AddressBuildingField.Text = fieldsSet[(int)KBFFields.AddressBuildingNumber];
-				AddressAppartmentField.Text = fieldsSet[(int)KBFFields.AddressAppartmentNumber];
-				PlaceField.Text = fieldsSet[(int)KBFFields.Place];*/
 				AddressPlaceChangeFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.AddressPlaceChangeFlag);
-				/*AddressPlaceChangeFlag.Checked = fieldsSet[(int)KBFFields.AddressPlaceChangeFlag] == "1";*/
 
 				LotteryFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.LotteryFlag);
 				GamblingFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.GamblingFlag);
@@ -901,41 +815,19 @@ namespace RD_AAOW
 				InternetFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.InternetFlag);
 				OtherChangeFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.OtherChangeFlag);
 				AutomatFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.AutomatFlag);   // Должен предшествовать остальным
-				/*LotteryFlag.Checked = fieldsSet[(int)KBFFields.LotteryFlag] == "1";
-				GamblingFlag.Checked = fieldsSet[(int)KBFFields.GamblingFlag] == "1";
-				GamblingExchangeFlag.Checked = fieldsSet[(int)KBFFields.GamblingExchangeFlag] == "1";
-				BSOFlag.Checked = fieldsSet[(int)KBFFields.BSOFlag] == "1";
-				BankAgentFlag.Checked = fieldsSet[(int)KBFFields.BankPaymentAgentFlag] == "1";
-				AgentFlag.Checked = fieldsSet[(int)KBFFields.PaymentAgentFlag] == "1";
-				DeliveryFlag.Checked = fieldsSet[(int)KBFFields.DeliveryFlag] == "1";
-				ExciseFlag.Checked = fieldsSet[(int)KBFFields.ExciseFlag] == "1";
-				MarkFlag.Checked = fieldsSet[(int)KBFFields.MarkFlag] == "1";
-				InternetFlag.Checked = fieldsSet[(int)KBFFields.InternetFlag] == "1";
-				OtherChangeFlag.Checked = fieldsSet[(int)KBFFields.OtherChangeFlag] == "1";
-				AutomatFlag.Checked = fieldsSet[(int)KBFFields.AutomatFlag] == "1";	// Должен предшествовать остальным*/
 				AutomatNumberField.Text = KAPRSupport.GetFieldAsString (KBFFields.AutomatNumber);
-				/*AutomatNumberField.Text = fieldsSet[(int)KBFFields.AutomatNumber];*/
 				AutomatAddressIsSame.Checked = KAPRSupport.GetFieldAsBool (KBFFields.AutomatAddressIsSameFlag);
 				AutomatChangeFlag.Checked = KAPRSupport.GetFieldAsBool (KBFFields.AutomatChangeFlag);
-				/*AutomatAddressIsSame.Checked = fieldsSet[(int)KBFFields.AutomatAddressIsSameFlag] == "1";
-				AutomatChangeFlag.Checked = fieldsSet[(int)KBFFields.AutomatChangeFlag] == "1";*/
 
 				FNCloseFDField.Text = KAPRSupport.GetFieldAsString (KBFFields.FNCloseDocumentNumber);
-				/*FNCloseFDField.Text = fieldsSet[(int)KBFFields.FNCloseDocumentNumber];*/
 				FNCloseDateField.Value = KAPRSupport.GetFieldAsDateTime (KBFFields.FNCloseDate);
-				/*FNCloseDateField.Value = DateTime.Parse (fieldsSet[(int)KBFFields.FNCloseDate], RDLocale.GetCulture (RDLanguages.ru_ru));*/
 				FNCloseFPDField.Text = KAPRSupport.GetFieldAsString (KBFFields.FNCloseDocumentSign);
 				FNOpenFDField.Text = KAPRSupport.GetFieldAsString (KBFFields.FNOpenDocumentNumber);
-				/*FNCloseFPDField.Text = fieldsSet[(int)KBFFields.FNCloseDocumentSign];
-				FNOpenFDField.Text = fieldsSet[(int)KBFFields.FNOpenDocumentNumber];*/
 				FNOpenDateField.Value = KAPRSupport.GetFieldAsDateTime (KBFFields.FNOpenDate);
-				/*FNOpenDateField.Value = DateTime.Parse (fieldsSet[(int)KBFFields.FNOpenDate], RDLocale.GetCulture (RDLanguages.ru_ru));*/
 				FNOpenFPDField.Text = KAPRSupport.GetFieldAsString (KBFFields.FNOpenDocumentSign);
-				/*FNOpenFPDField.Text = fieldsSet[(int)KBFFields.FNOpenDocumentSign];*/
 
 				// В последнюю очередь, поскольку событие запускает внутренние проверки
 				BlankTypeCombo.SelectedIndex = (int)KAPRSupport.GetFieldAsUint (KBFFields.BlankType);
-				/*BlankTypeCombo.SelectedIndex = int.Parse (fieldsSet[(int)KBFFields.BlankType]);*/
 				}
 			catch
 				{
@@ -961,7 +853,7 @@ namespace RD_AAOW
 			// Запись
 			try
 				{
-				File.WriteAllText (SFDialog.FileName, KAPRSupport.BuildFile (/*fieldsSet*/),
+				File.WriteAllText (SFDialog.FileName, KAPRSupport.BuildFile (),
 					RDGenerics.GetEncoding (RDEncodings.UTF8));
 				}
 			catch
@@ -976,50 +868,29 @@ namespace RD_AAOW
 		private void FlushFields ()
 			{
 			// 12 + 5 + 2 + 11 + 15 + 6 = 51
-			/*fieldsSet[(int)KBFFields.FileVersion] = ((uint)KBFVersions.Actual).ToString ();*/
 			KAPRSupport.SetField (KBFFields.BlankType, (uint)BlankTypeCombo.SelectedIndex);
-			/*fieldsSet[(int)KBFFields.BlankType] = BlankTypeCombo.SelectedIndex.ToString ();*/
 			KAPRSupport.SetField (KBFFields.FNChangeFlag, FNChangeFlag.Checked);
-			/*fieldsSet[(int)KBFFields.FNChangeFlag] = FNChangeFlag.Checked ? "1" : "0";*/
 			KAPRSupport.SetField (KBFFields.UserName, UserNameField.Text);
 			KAPRSupport.SetField (KBFFields.INN, INNField.Text);
 			KAPRSupport.SetField (KBFFields.OGRN, OGRNField.Text);
 			KAPRSupport.SetField (KBFFields.KPP, KPPField.Text);
 			KAPRSupport.SetField (KBFFields.UserPresenter, PresenterTypeField.Text);
-			/*fieldsSet[(int)KBFFields.UserName] = UserNameField.Text;
-			fieldsSet[(int)KBFFields.INN] = INNField.Text;
-			fieldsSet[(int)KBFFields.OGRN] = OGRNField.Text;
-			fieldsSet[(int)KBFFields.KPP] = KPPField.Text;
-			fieldsSet[(int)KBFFields.UserPresenter] = PresenterTypeField.Text;*/
 			KAPRSupport.SetField (KBFFields.UserPresenterType, PresenterTypeFlag.Checked);
 			KAPRSupport.SetField (KBFFields.NameChangeFlag, UserNameChangeFlag.Checked);
 			KAPRSupport.SetField (KBFFields.KKTStolenFlag, KKTStolenFlag.Checked);
 			KAPRSupport.SetField (KBFFields.KKTMissingFlag, KKTMissingFlag.Checked);
 			KAPRSupport.SetField (KBFFields.FNBrokenFlag, FNBrokenFlag.Checked);
-			/*fieldsSet[(int)KBFFields.UserPresenterType] = PresenterTypeFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.NameChangeFlag] = UserNameChangeFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.KKTStolenFlag] = KKTStolenFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.KKTMissingFlag] = KKTMissingFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.FNBrokenFlag] = FNBrokenFlag.Checked ? "1" : "0";*/
 
 			KAPRSupport.SetField (KBFFields.KKTSerialNumber, KKTSerialField.Text);
 			KAPRSupport.SetField (KBFFields.KKTModelName, KKTModelCombo.Text);
 			KAPRSupport.SetField (KBFFields.FNSerialNumber, FNSerialField.Text);
 			KAPRSupport.SetField (KBFFields.FNModelName, FNModelCombo.Text);
 			KAPRSupport.SetField (KBFFields.OFDName, OFDNameCombo.Text);
-			/*fieldsSet[(int)KBFFields.KKTSerialNumber] = KKTSerialField.Text;
-			fieldsSet[(int)KBFFields.KKTModelName] = KKTModelCombo.Text;
-			fieldsSet[(int)KBFFields.FNSerialNumber] = FNSerialField.Text;
-			fieldsSet[(int)KBFFields.FNModelName] = FNModelCombo.Text;
-			fieldsSet[(int)KBFFields.OFDName] = OFDNameCombo.Text;*/
 
 			KAPRSupport.SetField (KBFFields.OFDVariant, (uint)OFDVariantCombo.SelectedIndex);
-			/*fieldsSet[(int)KBFFields.OFDVariant] = OFDVariantCombo.SelectedIndex.ToString ();*/
 			KAPRSupport.SetField (KBFFields.RegistrationNumber, KKTRNMField.Text);
-			/*fieldsSet[(int)KBFFields.RegistrationNumber] = KKTRNMField.Text;*/
 
 			KAPRSupport.SetField (KBFFields.AddressRegionCode, (uint)AddressRegionCodeCombo.SelectedIndex);
-			/*fieldsSet[(int)KBFFields.AddressRegionCode] = AddressRegionCodeCombo.SelectedIndex.ToString ();*/
 			KAPRSupport.SetField (KBFFields.AddressArea, AddressAreaField.Text);
 			KAPRSupport.SetField (KBFFields.AddressCity, AddressCityField.Text);
 			KAPRSupport.SetField (KBFFields.AddressTown, AddressTownField.Text);
@@ -1029,17 +900,7 @@ namespace RD_AAOW
 			KAPRSupport.SetField (KBFFields.AddressBuildingNumber, AddressBuildingField.Text);
 			KAPRSupport.SetField (KBFFields.AddressAppartmentNumber, AddressAppartmentField.Text);
 			KAPRSupport.SetField (KBFFields.Place, PlaceField.Text);
-			/*fieldsSet[(int)KBFFields.AddressArea] = AddressAreaField.Text;
-			fieldsSet[(int)KBFFields.AddressCity] = AddressCityField.Text;
-			fieldsSet[(int)KBFFields.AddressTown] = AddressTownField.Text;
-			fieldsSet[(int)KBFFields.AddressIndex] = AddressIndexField.Text;
-			fieldsSet[(int)KBFFields.AddressStreet] = AddressStreetField.Text;
-			fieldsSet[(int)KBFFields.AddressHouseNumber] = AddressHouseField.Text;
-			fieldsSet[(int)KBFFields.AddressBuildingNumber] = AddressBuildingField.Text;
-			fieldsSet[(int)KBFFields.AddressAppartmentNumber] = AddressAppartmentField.Text;
-			fieldsSet[(int)KBFFields.Place] = PlaceField.Text;*/
 			KAPRSupport.SetField (KBFFields.AddressPlaceChangeFlag, AddressPlaceChangeFlag.Checked);
-			/*fieldsSet[(int)KBFFields.AddressPlaceChangeFlag] = AddressPlaceChangeFlag.Checked ? "1" : "0";*/
 
 			KAPRSupport.SetField (KBFFields.LotteryFlag, LotteryFlag.Checked);
 			KAPRSupport.SetField (KBFFields.GamblingFlag, GamblingFlag.Checked);
@@ -1052,38 +913,17 @@ namespace RD_AAOW
 			KAPRSupport.SetField (KBFFields.MarkFlag, MarkFlag.Checked);
 			KAPRSupport.SetField (KBFFields.InternetFlag, InternetFlag.Checked);
 			KAPRSupport.SetField (KBFFields.OtherChangeFlag, OtherChangeFlag.Checked);
-			/*fieldsSet[(int)KBFFields.LotteryFlag] = LotteryFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.GamblingFlag] = GamblingFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.GamblingExchangeFlag] = GamblingExchangeFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.BSOFlag] = BSOFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.BankPaymentAgentFlag] = BankAgentFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.PaymentAgentFlag] = AgentFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.DeliveryFlag] = DeliveryFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.ExciseFlag] = ExciseFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.MarkFlag] = MarkFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.InternetFlag] = InternetFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.OtherChangeFlag] = OtherChangeFlag.Checked ? "1" : "0";*/
 			KAPRSupport.SetField (KBFFields.AutomatNumber, AutomatNumberField.Text);
-			/*fieldsSet[(int)KBFFields.AutomatNumber] = AutomatNumberField.Text;*/
 			KAPRSupport.SetField (KBFFields.AutomatAddressIsSameFlag, AutomatAddressIsSame.Checked);
 			KAPRSupport.SetField (KBFFields.AutomatChangeFlag, AutomatChangeFlag.Checked);
 			KAPRSupport.SetField (KBFFields.AutomatFlag, AutomatFlag.Checked);
-			/*fieldsSet[(int)KBFFields.AutomatAddressIsSameFlag] = AutomatAddressIsSame.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.AutomatChangeFlag] = AutomatChangeFlag.Checked ? "1" : "0";
-			fieldsSet[(int)KBFFields.AutomatFlag] = AutomatFlag.Checked ? "1" : "0";*/
 
 			KAPRSupport.SetField (KBFFields.FNCloseDocumentNumber, FNCloseFDField.Text);
-			/*fieldsSet[(int)KBFFields.FNCloseDocumentNumber] = FNCloseFDField.Text;*/
 			KAPRSupport.SetField (KBFFields.FNCloseDate, FNCloseDateField.Value);
-			/*fieldsSet[(int)KBFFields.FNCloseDate] = FNCloseDateField.Value.ToString (KAPRSupport.FullDateTimeFormat);*/
 			KAPRSupport.SetField (KBFFields.FNCloseDocumentSign, FNCloseFPDField.Text);
 			KAPRSupport.SetField (KBFFields.FNOpenDocumentNumber, FNOpenFDField.Text);
-			/*fieldsSet[(int)KBFFields.FNCloseDocumentSign] = FNCloseFPDField.Text;
-			fieldsSet[(int)KBFFields.FNOpenDocumentNumber] = FNOpenFDField.Text;*/
 			KAPRSupport.SetField (KBFFields.FNOpenDate, FNOpenDateField.Value);
-			/*fieldsSet[(int)KBFFields.FNOpenDate] = FNOpenDateField.Value.ToString (KAPRSupport.FullDateTimeFormat);*/
 			KAPRSupport.SetField (KBFFields.FNOpenDocumentSign, FNOpenFPDField.Text);
-			/*fieldsSet[(int)KBFFields.FNOpenDocumentSign] = FNOpenFPDField.Text;*/
 			}
 
 		// Обработчик контекстного меню адресных полей

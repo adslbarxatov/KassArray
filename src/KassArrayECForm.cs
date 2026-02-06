@@ -489,13 +489,14 @@ namespace RD_AAOW
 				return;
 				}
 
-			string currectContact = kl.GetRequisites (selectedIndex)[2];
+			string[] values = kl.GetRequisites (selectedIndex);
 			string newContact = RDInterface.MessageBox ("Укажите новые контакты владельца ККТ", true,
-				50, currectContact);
+				50, values[2]);
 			if (string.IsNullOrWhiteSpace (newContact))
 				return;
 
-			kl.UpdateContact (selectedIndex, newContact);
+			// !!! ВРЕМЕННО
+			kl.UpdateOwnerData (selectedIndex, values[1], values[9], newContact);
 			KKTList_LabelClicked (null, null);
 			}
 
