@@ -245,7 +245,7 @@ namespace RD_AAOW
 				Label l = new Label ();
 				l.AutoSize = false;
 
-				if (kl.GetNoControlStatus(i))
+				if (kl.GetNoControlStatus (i))
 					{
 					l.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.MediumGrey);
 					}
@@ -366,7 +366,11 @@ namespace RD_AAOW
 			InfoLabel.Text += "Срок действия ФН: " + values[4] + RDLocale.RN;
 			InfoLabel.Text += "  Осталось дней: " + values[5] + RDLocale.RN;
 
-			if (values[6] != KAECList.NoOFDAlias)
+			if (values[6] == KAECList.UnknownOFDAlias)
+				{
+				InfoLabel.Text += "Состояние ОФД: неизвестно";
+				}
+			else if (values[6] != KAECList.NoOFDAlias)
 				{
 				InfoLabel.Text += "Срок тарифа ОФД: " + values[6] + RDLocale.RN;
 				InfoLabel.Text += "  Осталось дней: " + values[7];
@@ -490,14 +494,22 @@ namespace RD_AAOW
 				}
 
 			string[] values = kl.GetRequisites (selectedIndex);
-			string newContact = RDInterface.MessageBox ("Укажите новые контакты владельца ККТ", true,
+			/*string newContact = RDInterface.MessageBox ("Укажите новые контакты владельца ККТ", true,
 				50, values[2]);
 			if (string.IsNullOrWhiteSpace (newContact))
+				return;*/
+			KassArrayECOwner kaeco = new KassArrayECOwner (values[1], values[9], values[2]);
+			bool cancel = kaeco.Cancelled;
+			kaeco.Dispose ();
+
+			if (cancel)
 				return;
 
-			// !!! ВРЕМЕННО
-			kl.UpdateOwnerData (selectedIndex, values[1], values[9], newContact);
-			KKTList_LabelClicked (null, null);
+			/*kl.UpdateOwnerData (selectedIndex, values[1], values[9], newContact);*/
+			kl.UpdateOwnerData (selectedIndex, kaeco.NewOwner.KKTOwner, kaeco.NewOwner.KKTOwnerINN,
+				kaeco.NewOwner.KKTOwnerContact);
+			/*KKTList_LabelClicked (null, null);*/
+			ReloadList ();
 			}
 
 		// Вызов настроек
@@ -518,7 +530,11 @@ namespace RD_AAOW
 				}
 
 			string[] values = kl.GetRequisites (selectedIndex);
-			_ = new KassArrayECExport (kl, values[1], kb);
+
+			KassArrayECExport kaece = new KassArrayECExport (kl, values[1], kb);
+			if (kaece.ReloadRequired)
+				ReloadList ();
+			kaece.Dispose ();
 			}
 		}
 	}
