@@ -223,7 +223,7 @@ namespace RD_AAOW
 		private void ReloadList ()
 			{
 			// Сброс списка
-			KKTList2.Controls.Clear ();
+			KKTList.Controls.Clear ();
 
 			if (kl.ItemsCount < 1)
 				selectedIndex = 0;
@@ -267,17 +267,23 @@ namespace RD_AAOW
 				l.ForeColor = RDInterface.GetInterfaceColor (RDInterfaceColors.DefaultText);
 				l.Click += KKTList_LabelClicked;
 				l.Font = kktFont;
-				l.Text = model + "  |  " + values[1];
+
+				/*l.Text = model + "  |  " + values[1];*/
+				if (values[10] == "1")
+					l.Text = model + "  |  " + values[1];
+				else
+					l.Text = model + "  |  [ИНН не задан] " + values[1];
+
 				l.Margin = kktMargin;
 				l.Padding = kktMargin;
 
 				// Блокировка и применение размера
-				l.MaximumSize = l.MinimumSize = new Size (KKTList2.Width - 6 -
+				l.MaximumSize = l.MinimumSize = new Size (KKTList.Width - 6 -
 					((kl.ItemsCount > visibleNotificationsInList) ? 18 : 0), 0);
 				l.AutoSize = true;
 
 				// Добавление
-				KKTList2.Controls.Add (l);
+				KKTList.Controls.Add (l);
 				}
 
 			// Прочее
@@ -321,7 +327,7 @@ namespace RD_AAOW
 			KKTList_LabelClicked (null, null);
 
 			if (kl.ItemsCount > 0)
-				KKTList2.ScrollControlIntoView (KKTList2.Controls[(int)selectedIndex]);
+				KKTList.ScrollControlIntoView (KKTList.Controls[(int)selectedIndex]);
 			}
 
 		// Выбор ККТ в списке
@@ -330,7 +336,7 @@ namespace RD_AAOW
 			// Поиск индекса
 			if (sender != null)
 				{
-				int idx = KKTList2.Controls.IndexOf ((Control)sender);
+				int idx = KKTList.Controls.IndexOf ((Control)sender);
 				if (idx < 0)
 					return;
 				else
@@ -340,7 +346,7 @@ namespace RD_AAOW
 			// Обновление стиля
 			for (int i = 0; i < kl.ItemsCount; i++)
 				{
-				((Label)KKTList2.Controls[i]).BorderStyle = (i == selectedIndex) ? BorderStyle.FixedSingle :
+				((Label)KKTList.Controls[i]).BorderStyle = (i == selectedIndex) ? BorderStyle.FixedSingle :
 					BorderStyle.None;
 				}
 
@@ -474,7 +480,7 @@ namespace RD_AAOW
 			// Успешно
 			selectedIndex = (uint)idx;
 			KKTList_LabelClicked (null, null);
-			KKTList2.ScrollControlIntoView (KKTList2.Controls[(int)selectedIndex]);
+			KKTList.ScrollControlIntoView (KKTList.Controls[(int)selectedIndex]);
 			}
 
 		private void SearchField_KeyDown (object sender, KeyEventArgs e)
