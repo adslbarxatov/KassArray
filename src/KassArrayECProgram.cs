@@ -76,7 +76,7 @@ namespace RD_AAOW
 					}
 				else if (args[0] == KassArrayDB::RD_AAOW.KKTSupport.HideWindowKey)
 					{
-					if (KassArrayECSettings.AllowAutostart)
+					if (KAECList.AllowAutostart)
 						Application.Run (new KassArrayECForm (false, true));
 
 					return;

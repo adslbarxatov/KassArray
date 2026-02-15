@@ -41,7 +41,7 @@
 			}
 		private FNSerial fns;
 
-#if !KASSARRAYPR
+#if !KASSARRAYPR && !KASSARRAYEC
 
 		/// <summary>
 		/// Возвращает преобразователь текста в коды символов ККТ
@@ -162,7 +162,7 @@
 			kkts = new KKTSerial ();
 			fns = new FNSerial ();
 
-#if !KASSARRAYPR
+#if !KASSARRAYPR && !KASSARRAYEC
 
 			kktc = new KKTCodes ();
 			kkte = new KKTErrorsList ();

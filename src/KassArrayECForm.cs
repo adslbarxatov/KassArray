@@ -232,8 +232,8 @@ namespace RD_AAOW
 
 			uint yWarnings = 0;
 			uint rWarnings = 0;
-			uint yellowTs = KassArrayECSettings.YellowWarningThreshold;
-			uint redTs = KassArrayECSettings.RedWarningThreshold;
+			uint yellowTs = KAECList.YellowWarningThreshold;
+			uint redTs = KAECList.RedWarningThreshold;
 
 			// Формирование контролов
 			for (uint i = 0; i < kl.ItemsCount; i++)
@@ -384,8 +384,8 @@ namespace RD_AAOW
 
 			int fnDays = kl.GetDaysToFNExpiration (selectedIndex);
 			int ofdDays = kl.GetDaysToOFDExpiration (selectedIndex);
-			uint yellowTs = KassArrayECSettings.YellowWarningThreshold;
-			uint redTs = KassArrayECSettings.RedWarningThreshold;
+			uint yellowTs = KAECList.YellowWarningThreshold;
+			uint redTs = KAECList.RedWarningThreshold;
 
 			if ((fnDays < redTs) || (ofdDays < redTs))
 				InfoLabel.BackColor = RDInterface.GetInterfaceColor (RDInterfaceColors.ErrorMessage);
@@ -400,7 +400,13 @@ namespace RD_AAOW
 			{
 			KassArrayECEntry kaec = new KassArrayECEntry (kl, false);
 			if (!kaec.Cancelled)
+				{
 				ReloadList ();
+
+				SearchField.Text = kaec.LastSerialNumber;
+				SearchButton_Click (null, null);
+				}
+
 			kaec.Dispose ();
 			}
 
@@ -416,7 +422,13 @@ namespace RD_AAOW
 
 			KassArrayECEntry kaec = new KassArrayECEntry (kl, selectedIndex, true);
 			if (!kaec.Cancelled)
+				{
 				ReloadList ();
+
+				SearchField.Text = kaec.LastSerialNumber;
+				SearchButton_Click (null, null);
+				}
+
 			kaec.Dispose ();
 			}
 
@@ -432,7 +444,13 @@ namespace RD_AAOW
 
 			KassArrayECEntry kaec = new KassArrayECEntry (kl, selectedIndex, false);
 			if (!kaec.Cancelled)
+				{
 				ReloadList ();
+
+				SearchField.Text = kaec.LastSerialNumber;
+				SearchButton_Click (null, null);
+				}
+
 			kaec.Dispose ();
 			}
 
@@ -499,11 +517,7 @@ namespace RD_AAOW
 				return;
 				}
 
-			string[] values = kl.GetRequisites (selectedIndex);
-			/*string newContact = RDInterface.MessageBox ("Укажите новые контакты владельца ККТ", true,
-				50, values[2]);
-			if (string.IsNullOrWhiteSpace (newContact))
-				return;*/
+			/*string[] values = kl.GetRequisites (selectedIndex);
 			KassArrayECOwner kaeco = new KassArrayECOwner (values[1], values[9], values[2]);
 			bool cancel = kaeco.Cancelled;
 			kaeco.Dispose ();
@@ -511,11 +525,13 @@ namespace RD_AAOW
 			if (cancel)
 				return;
 
-			/*kl.UpdateOwnerData (selectedIndex, values[1], values[9], newContact);*/
 			kl.UpdateOwnerData (selectedIndex, kaeco.NewOwner.KKTOwner, kaeco.NewOwner.KKTOwnerINN,
 				kaeco.NewOwner.KKTOwnerContact);
-			/*KKTList_LabelClicked (null, null);*/
-			ReloadList ();
+			ReloadList ();*/
+			KassArrayECEntry kaec = new KassArrayECEntry (selectedIndex, kl);
+			if (!kaec.Cancelled)
+				ReloadList ();
+			kaec.Dispose ();
 			}
 
 		// Вызов настроек
