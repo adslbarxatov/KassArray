@@ -2,9 +2,15 @@
 
 ## Описание
 
-Инструмент сервис-инженера контрольно-кассовой техники (ККТ, 54-ФЗ).
+Набор инструментов сервис-инженера контрольно-кассовой техники (ККТ, 54-ФЗ).
 
-Подробное описание приложения доступно на [отдельной странице](https://adslbarxatov.github.io/KassArray).
+:warning: ***Репозиторий заменён отдельными проектами для каждого инструмента из набора:***
+- Справочный центр сервис-инженера ККТ [KassArrayHC](https://adslbarxatov.github.io/KassArrayHC);
+- Модуль чтения и обработки данных ФН [KassArrayFS](https://adslbarxatov.github.io/KassArrayFS);
+- Конструктор заявлений для ФНС [KassArrayPR](https://adslbarxatov.github.io/KassArrayPR);
+- Контроллер сроков действия ФН [KassArrayEC](https://adslbarxatov.github.io/KassArrayEC);
+
+***Данный репозиторий более не будет получать обновления***
 
 ---
 
